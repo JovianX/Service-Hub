@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:14.3
+    environment:
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=super_secret_password
+      - POSTGRES_DB=service_hub
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - service-network
+networks:
+  service-network:
+    name: service-network

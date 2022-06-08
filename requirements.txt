@@ -1,0 +1,8 @@
+alembic
+fastapi
+fastapi-users[sqlalchemy]
+httpx-oauth
+pydantic
+sqlalchemy[asyncio]
+asyncpg
+uvicorn[standard]
