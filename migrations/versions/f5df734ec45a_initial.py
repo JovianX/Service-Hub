@@ -1,13 +1,14 @@
-"""Initial.
+"""
+Initial.
 
 Revision ID: f5df734ec45a
 Revises:
 Create Date: 2022-06-08 17:38:08.950109
-
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
+
 
 # revision identifiers, used by Alembic.
 revision = 'f5df734ec45a'

@@ -14,7 +14,9 @@ from httpx_oauth.clients.google import GoogleOAuth2
 
 from ..core.configuration import settings
 from ..db.session import get_session
-from ..models.user import User, OAuthAccount
+from ..models.user import OAuthAccount
+from ..models.user import User
+
 
 google_client = GoogleOAuth2(settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET)
 bearer_transport = BearerTransport(tokenUrl='api/v1/auth/jwt/login')

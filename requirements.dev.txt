@@ -1,3 +1,6 @@
 -r ./requirements.txt
 
 python-dotenv
+autopep8
+docformatter
+isort
