@@ -15,14 +15,20 @@ setup: ## Setup this project's python dependencies
 	. $(VE_DIRECTORY)/bin/activate; pip install --upgrade pip
 	. $(VE_DIRECTORY)/bin/activate; pip install --requirement requirements.dev.txt
 
+migrate: ## Apply all unapplied migrations.
+	. $(VE_DIRECTORY)/bin/activate; alembic upgrade head
+
 up: ## Launch dockerized infrastructure
 	docker-compose up --detach
 
 down: ## Shut down dockerized infrastructure
 	docker-compose down
 
+logs: ## Show contaiters logs.
+	@docker-compose logs --follow || true
+
 db_shell: ## PostgreSQL shell
-	docker-compose exec postgres psql --user=$(DB_USER) $(DB_NAME)
+	docker-compose exec postgres psql --user=$(DB_USER) --dbname=$(DB_NAME)
 
 run: ## Launch local appserver.
 	. $(VE_DIRECTORY)/bin/activate; uvicorn application.instance:instance

@@ -1,8 +1,8 @@
 """Initial.
 
-Revision ID: 01bde52479c9
+Revision ID: f5df734ec45a
 Revises:
-Create Date: 2022-06-07 21:41:44.090386
+Create Date: 2022-06-08 17:38:08.950109
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '01bde52479c9'
+revision = 'f5df734ec45a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,7 +25,8 @@ def upgrade() -> None:
         sa.Column('is_superuser', sa.BOOLEAN(), autoincrement=False, nullable=False),
         sa.Column('is_verified', sa.BOOLEAN(), autoincrement=False, nullable=False),
         sa.Column('id', postgresql.UUID(), autoincrement=False, nullable=False),
-        sa.PrimaryKeyConstraint('id', name='user_pkey')
+        sa.PrimaryKeyConstraint('id', name='user_pkey'),
+        postgresql_ignore_search_path=False
     )
     op.create_index('ix_user_email', 'user', ['email'], unique=False)
     op.create_table(
@@ -46,8 +47,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index('ix_user_email', table_name='user')
-    op.drop_table('user')
     op.drop_index('ix_oauth_account_account_id', table_name='oauth_account')
     op.drop_index('ix_oauth_account_oauth_name', table_name='oauth_account')
     op.drop_table('oauth_account')
+    op.drop_index('ix_user_email', table_name='user')
+    op.drop_table('user')

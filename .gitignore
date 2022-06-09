@@ -3,5 +3,4 @@ __pycache__
 *.pyc
 
 # Project resources
-postgres-data/
 .venv

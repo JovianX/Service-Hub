@@ -1,6 +1,18 @@
 version: '3.9'
 
 services:
+  application:
+    build:
+      context: .
+      dockerfile: application/Dockerfile
+    volumes:
+      - .:/code
+    networks:
+      - service-network
+    ports:
+      - '8000:8000'
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
   postgres:
     image: postgres:14.3
     environment:
@@ -10,7 +22,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./docker-data/postgres-data:/var/lib/postgresql/data
     networks:
       - service-network
 networks:
