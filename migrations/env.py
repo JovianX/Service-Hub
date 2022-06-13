@@ -3,7 +3,6 @@ import os
 from logging.config import fileConfig
 
 from alembic import context
-from dotenv import load_dotenv
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
@@ -12,7 +11,11 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from application.db.base_class import Base
 
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 if not DATABASE_URL:

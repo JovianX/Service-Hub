@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: application/Dockerfile
+      args:
+        HELM_VERSION: ${HELM_VERSION}
     volumes:
       - .:/code
     networks:
@@ -13,6 +15,8 @@ services:
       - '8000:8000'
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
+      TEST_DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
+      FILE_STORAGE_ROOT: /tmp
   postgres:
     image: postgres:14.3
     environment:
