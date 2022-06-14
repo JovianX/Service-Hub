@@ -1,18 +1,25 @@
-from urllib import response
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncSession
 from httpx import AsyncClient
-from application.instance import instance
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from sqlalchemy.orm import selectinload
+from application.models.user import User
 
 
 @pytest.mark.asyncio
-async def test_user_register(db: AsyncSession) -> None:
+async def test_user_register(client: AsyncClient, session: AsyncSession) -> None:
+    email = 'user@mail.com'
+    password = '123123'
     data = {
-        'email': 'user@mail.com',
-        'password': '123123'
+        'email': email,
+        'password': password
     }
-    async with AsyncClient(app=instance, base_url='http://localhost:8000') as client:
-        response = await client.post('/api/v1/auth/register', json=data)
+    response = await client.post('/auth/register', json=data)
     assert 200 <= response.status_code < 300
     created_user = response.json()
+    result = await session.execute(
+        select(User).options(selectinload(User.oauth_accounts)).where(User.email == email)
+    )
+    db_user = result.scalars().first()
+    assert created_user['email'] == db_user.email

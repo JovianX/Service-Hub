@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     SECRET: str = 'SUW2kc5vw4XXASRmdefbUVWLQ0dRq8ylEdetifdKgzU'
 
     # Path to Helm executable.
-    HELM_EXECUTABLE: str = 'helm3'
+    HELM_EXECUTABLE: str = 'helm'
 
     # OAuth authentication
     GOOGLE_CLIENT_ID: str = ''

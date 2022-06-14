@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 ENV HELM_TARBALL helm-$HELM_VERSION-linux-amd64.tar.gz
 ADD https://get.helm.sh/${HELM_TARBALL} /tmp
 RUN tar -zxvf /tmp/${HELM_TARBALL} -C /tmp \
-    && mv /tmp/linux-amd64/helm /bin/helm3 \
+    && mv /tmp/linux-amd64/helm /bin/helm \
     && rm -rf /tmp/*
 
 COPY . /code
