@@ -1,6 +1,9 @@
 -r ./requirements.txt
 
-python-dotenv
 autopep8
 docformatter
 isort
+pytest
+pytest-asyncio
+python-dotenv
+httpx
