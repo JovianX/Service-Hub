@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  application:
+    build:
+      context: .
+      dockerfile: application/Dockerfile
+      args:
+        HELM_VERSION: ${HELM_VERSION}
+    volumes:
+      - .:/code
+    networks:
+      - service-network
+    ports:
+      - '8000:8000'
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
+      TEST_DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
+      FILE_STORAGE_ROOT: /tmp
+  postgres:
+    image: postgres:14.3
+    environment:
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=super_secret_password
+      - POSTGRES_DB=service_hub
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./docker-data/postgres-data:/var/lib/postgresql/data
+    networks:
+      - service-network
+networks:
+  service-network:
+    name: service-network

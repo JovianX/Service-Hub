@@ -1,0 +1,6 @@
+# Commonly Python ignored resources
+__pycache__
+*.pyc
+
+# Project resources
+.venv

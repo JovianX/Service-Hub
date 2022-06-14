@@ -1,0 +1,5 @@
+[pycodestyle]
+statistics = true
+max_line_length = 120
+max_doc_length = 80
+aggressive = 3
