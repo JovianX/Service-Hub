@@ -1,4 +1,5 @@
 from typing import List
+
 import yaml
 
 from application.exceptions.shell import NonZeroStatusException
