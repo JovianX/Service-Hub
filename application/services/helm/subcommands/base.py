@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Dict
 
 from application.core.configuration import settings
-from application.models.user import User
 from application.utils.shell import run
 
 
@@ -10,17 +9,17 @@ class HelmBase:
     """
     Base class for all helm commands.
     """
-    user: User
+    configuration: str
+    home_directory: str
 
-    def __init__(self, user: User):
-        self.user = user
-
-    @property
-    def configuration(self) -> str:
+    def __init__(self, kubernetes_configuration: str, helm_home: str) -> None:
         """
-        Path to Kubernetes configuration file.
+        Parameters:
+        kubernetes_configuration - path to Kubernetes configuration file.
+        helm_home - path to directory where stored Helm data.
         """
-        return settings.KUBERNETES_CONFIGURATION
+        self.configuration = kubernetes_configuration
+        self.home_directory = Path(helm_home)
 
     @property
     def environment(self) -> Dict[str, str]:
@@ -28,11 +27,10 @@ class HelmBase:
         Environment variables, in form of dictionary, with which helm mush be
         executed.
         """
-        helm_root = Path(settings.FILE_STORAGE_ROOT) / str(self.user.id) / 'helm'
         return {
-            'HELM_CACHE_HOME': helm_root / 'cache',
-            'HELM_CONFIG_HOME': helm_root / 'config',
-            'HELM_DATA_HOME': helm_root / 'data',
+            'HELM_CACHE_HOME': self.home_directory / 'cache',
+            'HELM_CONFIG_HOME': self.home_directory / 'config',
+            'HELM_DATA_HOME': self.home_directory / 'data',
             'KUBECONFIG': self.configuration
         }
 

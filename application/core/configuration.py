@@ -11,15 +11,12 @@ class Settings(BaseSettings):
     SECRET: str = 'SUW2kc5vw4XXASRmdefbUVWLQ0dRq8ylEdetifdKgzU'
 
     # Path to Helm executable.
-    HELM_EXECUTABLE: str = 'helm3'
+    HELM_EXECUTABLE: str = 'helm'
 
     # OAuth authentication
     GOOGLE_CLIENT_ID: str = ''
     GOOGLE_CLIENT_SECRET: str = ''
 
-    # Path to Kubernetes configuration file. This should temporary setting until
-    # we not introduce "Organizations" and thair's settings.
-    KUBERNETES_CONFIGURATION: FilePath
     # Path to directory where stored all project's files.
     FILE_STORAGE_ROOT: DirectoryPath
 
