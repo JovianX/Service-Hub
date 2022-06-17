@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+              "@fuse/*": ["./src/@fuse/*"],
+              "@history*": ["./src/@history"],
+              "@lodash": ["./src/@lodash"],
+              "@mock-api": ["./src/@mock-api"],
+              "app/store/*": ["./src/app/store/*"],
+              "app/shared-components/*": ["./src/app/shared-components/*"],
+              "app/configs/*": ["./src/app/configs/*"],
+              "app/theme-layouts/*": ["./src/app/theme-layouts/*"],
+              "app/AppContext": ["./src/app/AppContext"]
+        }
+      }
+}
