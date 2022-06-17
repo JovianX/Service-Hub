@@ -1,5 +1,6 @@
-from typing import List, Optional
+from typing import List
 from typing import Literal
+from typing import Optional
 from typing import Union
 
 from pydantic import AnyHttpUrl
@@ -10,6 +11,9 @@ from pydantic import Field
 class KubernetesConfigurationClusterDefenitionSchema(BaseModel):
     certificate_authority_data: str = Field(alias='certificate-authority-data', description='Admin certificate.')
     server: AnyHttpUrl = Field(description='Server URL.')
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 class KubernetesConfigurationClusterSchema(BaseModel):
@@ -37,28 +41,16 @@ class KubernetesConfigurationUserSchema(BaseModel):
     name: str = Field(description='Name of user entity.')
 
 
-# TODO: During serialization Pydantic renders JSON with field_name instead of
-# field-name. This brackes validation on next check.
-# class KubernetesConfigurationSchema(BaseModel):
-#     kind: Literal['Config'] = Field(description='Type of entity. For configuration always must be "Config".')
-#     apiVersion: str = Field(description='Version of using API in form of semantic versioning')
-#     current_context: str = Field(alias='current-context', description='Default context.')
-#     clusters: List[KubernetesConfigurationClusterSchema] = Field(description='List of clusters.')
-#     contexts: List[KubernetesConfigurationContextSchema] = Field(description='List of contexts.')
-#     users: List[KubernetesConfigurationUserSchema] = Field(description='List of users.')
-
-
 class KubernetesConfigurationSchema(BaseModel):
-    __root__: dict
+    kind: Literal['Config'] = Field(description='Type of entity. For configuration always must be "Config".')
+    apiVersion: str = Field(description='Version of using API in form of semantic versioning')
+    current_context: str = Field(alias='current-context', description='Default context.')
+    clusters: List[KubernetesConfigurationClusterSchema] = Field(description='List of clusters.')
+    contexts: List[KubernetesConfigurationContextSchema] = Field(description='List of contexts.')
+    users: List[KubernetesConfigurationUserSchema] = Field(description='List of users.')
 
-    def __iter__(self):
-        return iter(self.__root__)
-
-    def __getitem__(self, item):
-        return self.__root__[item]
-
-    def dict(self, *args, **kwargs):
-        return self.__root__
+    class Config:
+        allow_population_by_field_name = True
 
 
 class SettingsSchema(BaseModel):
