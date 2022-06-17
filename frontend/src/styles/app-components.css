@@ -1,0 +1,12 @@
+/**
+ * Component classes registered by plugins.
+ *
+ */
+
+@import 'print.css';
+
+@import 'tables.css';
+
+@import 'prism.css';
+
+@tailwind components;
