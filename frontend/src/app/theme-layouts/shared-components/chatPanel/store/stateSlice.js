@@ -11,7 +11,8 @@ const stateSlice = createSlice({
   extraReducers: {},
 });
 
-export const { toggleChatPanel, openChatPanel, closeChatPanel } = stateSlice.actions;
+export const { toggleChatPanel, openChatPanel, closeChatPanel } =
+  stateSlice.actions;
 
 export const selectChatPanelState = ({ chatPanel }) => chatPanel.state;
 

@@ -1,15 +1,13 @@
-import { forwardRef, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { convertToRaw, EditorState } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import draftToHtml from 'draftjs-to-html';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import clsx from 'clsx';
+import { convertToRaw, EditorState } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
+import { forwardRef, useState } from 'react';
+import { Editor } from 'react-draft-wysiwyg';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 const Root = styled('div')({
-  '& .rdw-dropdown-selectedtext': {
-    color: 'inherit',
-  },
+  '& .rdw-dropdown-selectedtext': { color: 'inherit' },
   '& .rdw-editor-toolbar': {
     borderWidth: '0 0 1px 0!important',
     margin: '0!important',
@@ -26,12 +24,23 @@ const WYSIWYGEditor = forwardRef((props, ref) => {
   function onEditorStateChange(_editorState) {
     setEditorState(_editorState);
 
-    return props.onChange(draftToHtml(convertToRaw(_editorState.getCurrentContent())));
+    return props.onChange(
+      draftToHtml(convertToRaw(_editorState.getCurrentContent())),
+    );
   }
 
   return (
-    <Root className={clsx('rounded-4 border-1 overflow-hidden w-full', props.className)} ref={ref}>
-      <Editor editorState={editorState} onEditorStateChange={onEditorStateChange} />
+    <Root
+      className={clsx(
+        'rounded-4 border-1 overflow-hidden w-full',
+        props.className,
+      )}
+      ref={ref}
+    >
+      <Editor
+        editorState={editorState}
+        onEditorStateChange={onEditorStateChange}
+      />
     </Root>
   );
 });

@@ -1,6 +1,10 @@
 import { createTheme, getContrastRatio } from '@mui/material/styles';
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import _ from '@lodash';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
+
 import {
   defaultSettings,
   defaultThemeOptions,
@@ -8,10 +12,11 @@ import {
   getParsedQuerySettings,
   mustHaveThemeOptions,
 } from '@fuse/default-settings';
+import _ from '@lodash';
 import settingsConfig from 'app/configs/settingsConfig';
-import themeLayoutConfigs from 'app/theme-layouts/themeLayoutConfigs';
-import { setUser, updateUserSettings } from 'app/store/userSlice';
 import { darkPaletteText, lightPaletteText } from 'app/configs/themesConfig';
+import { setUser, updateUserSettings } from 'app/store/userSlice';
+import themeLayoutConfigs from 'app/theme-layouts/themeLayoutConfigs';
 
 export const changeFuseTheme = (theme) => (dispatch, getState) => {
   const { fuse } = getState();
@@ -32,20 +37,32 @@ export const changeFuseTheme = (theme) => (dispatch, getState) => {
 
 function getInitialSettings() {
   const defaultLayoutStyle =
-    settingsConfig.layout && settingsConfig.layout.style ? settingsConfig.layout.style : 'layout1';
+    settingsConfig.layout && settingsConfig.layout.style
+      ? settingsConfig.layout.style
+      : 'layout1';
   const layout = {
     style: defaultLayoutStyle,
     config: themeLayoutConfigs[defaultLayoutStyle].defaults,
   };
-  return _.merge({}, defaultSettings, { layout }, settingsConfig, getParsedQuerySettings());
+  return _.merge(
+    {},
+    defaultSettings,
+    { layout },
+    settingsConfig,
+    getParsedQuerySettings(),
+  );
 }
 
 export function generateSettings(_defaultSettings, _newSettings) {
   const response = _.merge(
     {},
     _defaultSettings,
-    { layout: { config: themeLayoutConfigs[_newSettings?.layout?.style]?.defaults } },
-    _newSettings
+    {
+      layout: {
+        config: themeLayoutConfigs[_newSettings?.layout?.style]?.defaults,
+      },
+    },
+    _newSettings,
   );
 
   return response;
@@ -73,7 +90,7 @@ export const setDefaultSettings = createAsyncThunk(
       defaults: _.merge({}, defaults),
       current: _.merge({}, defaults),
     };
-  }
+  },
 );
 
 const settingsSlice = createSlice({
@@ -103,7 +120,10 @@ const settingsSlice = createSlice({
   extraReducers: {
     [setDefaultSettings.fulfilled]: (state, action) => action.payload,
     [setUser.fulfilled]: (state, action) => {
-      const defaults = generateSettings(state.defaults, action.payload?.data?.settings);
+      const defaults = generateSettings(
+        state.defaults,
+        action.payload?.data?.settings,
+      );
       return {
         ...state,
         defaults: _.merge({}, defaults),
@@ -125,7 +145,7 @@ function generateMuiTheme(theme, direction) {
     _.merge({}, data, {
       mixins: extendThemeWithMixins(data),
       direction,
-    })
+    }),
   );
   return response;
 }
@@ -168,72 +188,82 @@ function changeThemeMode(theme, mode) {
 
 export const selectMainTheme = createSelector(
   [getMainTheme, getDirection],
-  (theme, direction, id) => generateMuiTheme(theme, direction)
+  (theme, direction, id) => generateMuiTheme(theme, direction),
 );
 
 export const selectMainThemeDark = createSelector(
   [getMainTheme, getDirection],
-  (theme, direction) => generateMuiTheme(changeThemeMode(theme, 'dark'), direction)
+  (theme, direction) =>
+    generateMuiTheme(changeThemeMode(theme, 'dark'), direction),
 );
 
 export const selectMainThemeLight = createSelector(
   [getMainTheme, getDirection],
-  (theme, direction) => generateMuiTheme(changeThemeMode(theme, 'light'), direction)
+  (theme, direction) =>
+    generateMuiTheme(changeThemeMode(theme, 'light'), direction),
 );
 
 export const selectNavbarTheme = createSelector(
   [getNavbarTheme, getDirection],
-  (theme, direction) => generateMuiTheme(theme, direction)
+  (theme, direction) => generateMuiTheme(theme, direction),
 );
 
 export const selectNavbarThemeDark = createSelector(
   [getNavbarTheme, getDirection],
-  (theme, direction) => generateMuiTheme(changeThemeMode(theme, 'dark'), direction)
+  (theme, direction) =>
+    generateMuiTheme(changeThemeMode(theme, 'dark'), direction),
 );
 
 export const selectNavbarThemeLight = createSelector(
   [getNavbarTheme, getDirection],
-  (theme, direction) => generateMuiTheme(changeThemeMode(theme, 'light'), direction)
+  (theme, direction) =>
+    generateMuiTheme(changeThemeMode(theme, 'light'), direction),
 );
 
 export const selectToolbarTheme = createSelector(
   [getToolbarTheme, getDirection],
-  (theme, direction) => generateMuiTheme(theme, direction)
+  (theme, direction) => generateMuiTheme(theme, direction),
 );
 
 export const selectToolbarThemeDark = createSelector(
   [getToolbarTheme, getDirection],
-  (theme, direction) => generateMuiTheme(changeThemeMode(theme, 'dark'), direction)
+  (theme, direction) =>
+    generateMuiTheme(changeThemeMode(theme, 'dark'), direction),
 );
 
 export const selectToolbarThemeLight = createSelector(
   [getToolbarTheme, getDirection],
-  (theme, direction) => generateMuiTheme(changeThemeMode(theme, 'light'), direction)
+  (theme, direction) =>
+    generateMuiTheme(changeThemeMode(theme, 'light'), direction),
 );
 
 export const selectFooterTheme = createSelector(
   [getFooterTheme, getDirection],
-  (theme, direction) => generateMuiTheme(theme, direction)
+  (theme, direction) => generateMuiTheme(theme, direction),
 );
 
 export const selectFooterThemeDark = createSelector(
   [getFooterTheme, getDirection],
-  (theme, direction) => generateMuiTheme(changeThemeMode(theme, 'dark'), direction)
+  (theme, direction) =>
+    generateMuiTheme(changeThemeMode(theme, 'dark'), direction),
 );
 
 export const selectFooterThemeLight = createSelector(
   [getFooterTheme, getDirection],
-  (theme, direction) => generateMuiTheme(changeThemeMode(theme, 'light'), direction)
+  (theme, direction) =>
+    generateMuiTheme(changeThemeMode(theme, 'light'), direction),
 );
 
 export const selectFuseCurrentSettings = ({ fuse }) => fuse.settings.current;
 
-export const selectFuseCurrentLayoutConfig = ({ fuse }) => fuse.settings.current.layout.config;
+export const selectFuseCurrentLayoutConfig = ({ fuse }) =>
+  fuse.settings.current.layout.config;
 
 export const selectFuseDefaultSettings = ({ fuse }) => fuse.settings.defaults;
 
 export const selectFuseThemesSettings = ({ fuse }) => fuse.settings.themes;
 
-export const { resetSettings, setInitialSettings, setSettings } = settingsSlice.actions;
+export const { resetSettings, setInitialSettings, setSettings } =
+  settingsSlice.actions;
 
 export default settingsSlice.reducer;

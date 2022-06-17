@@ -16,12 +16,8 @@ const config = {
       display: true,
       style: 'fixed',
     },
-    leftSidePanel: {
-      display: true,
-    },
-    rightSidePanel: {
-      display: true,
-    },
+    leftSidePanel: { display: true },
+    rightSidePanel: { display: true },
   },
   form: {
     mode: {

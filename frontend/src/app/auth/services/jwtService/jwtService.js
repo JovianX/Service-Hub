@@ -1,6 +1,8 @@
-import FuseUtils from '@fuse/utils/FuseUtils';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
+
+import FuseUtils from '@fuse/utils/FuseUtils';
+
 import jwtServiceConfig from './jwtServiceConfig';
 
 /* eslint-disable camelcase */
@@ -18,14 +20,18 @@ class JwtService extends FuseUtils.EventEmitter {
       },
       (err) => {
         return new Promise((resolve, reject) => {
-          if (err.response.status === 401 && err.config && !err.config.__isRetryRequest) {
+          if (
+            err.response.status === 401 &&
+            err.config &&
+            !err.config.__isRetryRequest
+          ) {
             // if you ever get an unauthorized response, logout the user
             this.emit('onAutoLogout', 'Invalid access_token');
             this.setSession(null);
           }
           throw err;
         });
-      }
+      },
     );
   };
 
@@ -86,9 +92,7 @@ class JwtService extends FuseUtils.EventEmitter {
     return new Promise((resolve, reject) => {
       axios
         .get(jwtServiceConfig.accessToken, {
-          data: {
-            access_token: this.getAccessToken(),
-          },
+          data: { access_token: this.getAccessToken() },
         })
         .then((response) => {
           if (response.data.user) {
@@ -107,9 +111,7 @@ class JwtService extends FuseUtils.EventEmitter {
   };
 
   updateUserData = (user) => {
-    return axios.post(jwtServiceConfig.updateUser, {
-      user,
-    });
+    return axios.post(jwtServiceConfig.updateUser, { user });
   };
 
   setSession = (access_token) => {

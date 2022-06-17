@@ -1,5 +1,6 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 import i18n from 'src/i18n';
+
 import { setDefaultSettings } from './fuse/settingsSlice';
 
 export const changeLanguage = (languageId) => (dispatch, getState) => {
@@ -27,9 +28,21 @@ const i18nSlice = createSlice({
   initialState: {
     language: i18n.options.lng,
     languages: [
-      { id: 'en', title: 'English', flag: 'US' },
-      { id: 'tr', title: 'Turkish', flag: 'TR' },
-      { id: 'ar', title: 'Arabic', flag: 'SA' },
+      {
+        id: 'en',
+        title: 'English',
+        flag: 'US',
+      },
+      {
+        id: 'tr',
+        title: 'Turkish',
+        flag: 'TR',
+      },
+      {
+        id: 'ar',
+        title: 'Arabic',
+        flag: 'SA',
+      },
     ],
   },
   reducers: {
@@ -43,15 +56,18 @@ export const selectCurrentLanguageId = ({ i18n: _i18n }) => _i18n.language;
 
 export const selectLanguages = ({ i18n: _i18n }) => _i18n.languages;
 
-export const selectCurrentLanguageDirection = createSelector([selectCurrentLanguageId], (id) => {
-  return i18n.dir(id);
-});
+export const selectCurrentLanguageDirection = createSelector(
+  [selectCurrentLanguageId],
+  (id) => {
+    return i18n.dir(id);
+  },
+);
 
 export const selectCurrentLanguage = createSelector(
   [selectCurrentLanguageId, selectLanguages],
   (id, languages) => {
     return languages.find((lng) => lng.id === id);
-  }
+  },
 );
 
 export default i18nSlice.reducer;

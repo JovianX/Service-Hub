@@ -1,14 +1,23 @@
 import Hidden from '@mui/material/Hidden';
 import { styled, ThemeProvider } from '@mui/material/styles';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import { navbarCloseMobile, selectFuseNavbar } from 'app/store/fuse/navbarSlice';
 import clsx from 'clsx';
 import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectFuseCurrentLayoutConfig, selectNavbarTheme } from 'app/store/fuse/settingsSlice';
+
+import {
+  navbarCloseMobile,
+  selectFuseNavbar,
+} from 'app/store/fuse/navbarSlice';
+import {
+  selectFuseCurrentLayoutConfig,
+  selectNavbarTheme,
+} from 'app/store/fuse/settingsSlice';
+
+import NavbarToggleFab from '../../shared-components/NavbarToggleFab';
+
 import NavbarLayout3 from './NavbarLayout3';
 import NavbarMobileLayout3 from './NavbarMobileLayout3';
-import NavbarToggleFab from '../../shared-components/NavbarToggleFab';
 
 const StyledSwipeableDrawer = styled(SwipeableDrawer)(({ theme }) => ({
   '& > .MuiDrawer-paper': {
@@ -39,8 +48,8 @@ function NavbarWrapperLayout3(props) {
 
         <Hidden lgUp>
           <StyledSwipeableDrawer
-            anchor="left"
-            variant="temporary"
+            anchor='left'
+            variant='temporary'
             open={navbar.mobileOpen}
             onClose={() => dispatch(navbarCloseMobile())}
             onOpen={() => {}}

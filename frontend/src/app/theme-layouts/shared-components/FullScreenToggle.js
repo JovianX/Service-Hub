@@ -1,10 +1,12 @@
+import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import IconButton from '@mui/material/IconButton';
+
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
-const useEnhancedEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+const useEnhancedEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 const HeaderFullScreenToggle = (props) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -81,11 +83,11 @@ const HeaderFullScreenToggle = (props) => {
   }
 
   return (
-    <Tooltip title="Fullscreen toggle" placement="bottom">
+    <Tooltip title='Fullscreen toggle' placement='bottom'>
       <IconButton
         onClick={toggleFullScreen}
         className={clsx('w-40 h-40', props.className)}
-        size="large"
+        size='large'
       >
         <FuseSvgIcon>heroicons-outline:arrows-expand</FuseSvgIcon>
       </IconButton>

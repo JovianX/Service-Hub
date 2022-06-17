@@ -1,14 +1,16 @@
-import FuseScrollbars from '@fuse/core/FuseScrollbars';
-import { styled } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
+import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { memo, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import FuseScrollbars from '@fuse/core/FuseScrollbars';
+
+import ContactButton from './ContactButton';
 import { getChat } from './store/chatSlice';
+import { selectChats } from './store/chatsSlice';
 import { selectContacts, selectSelectedContactId } from './store/contactsSlice';
 import { openChatPanel } from './store/stateSlice';
-import ContactButton from './ContactButton';
-import { selectChats } from './store/chatsSlice';
 
 const Root = styled(FuseScrollbars)(({ theme }) => ({
   background: theme.palette.background.paper,
@@ -27,7 +29,7 @@ function ContactList(props) {
 
   return (
     <Root
-      className="flex shrink-0 flex-col overflow-y-auto py-8 overscroll-contain"
+      className='flex shrink-0 flex-col overflow-y-auto py-8 overscroll-contain'
       ref={contactListScroll}
       option={{ suppressScrollX: true, wheelPropagation: false }}
     >
@@ -46,13 +48,7 @@ function ContactList(props) {
           scrollToTop();
         };
 
-        const container = {
-          show: {
-            transition: {
-              staggerChildren: 0.05,
-            },
-          },
-        };
+        const container = { show: { transition: { staggerChildren: 0.05 } } };
 
         const item = {
           hidden: { opacity: 0, scale: 0.6 },
@@ -64,9 +60,9 @@ function ContactList(props) {
             <>
               <motion.div
                 variants={container}
-                initial="hidden"
-                animate="show"
-                className="flex flex-col shrink-0"
+                initial='hidden'
+                animate='show'
+                className='flex flex-col shrink-0'
               >
                 {chatListContacts &&
                   chatListContacts.map((contact) => {
@@ -80,9 +76,11 @@ function ContactList(props) {
                       </motion.div>
                     );
                   })}
-                <Divider className="mx-24 my-8" />
+                <Divider className='mx-24 my-8' />
                 {contacts.map((contact) => {
-                  const chatContact = chats.find((_chat) => _chat.contactId === contact.id);
+                  const chatContact = chats.find(
+                    (_chat) => _chat.contactId === contact.id,
+                  );
 
                   return !chatContact ? (
                     <motion.div variants={item} key={contact.id}>

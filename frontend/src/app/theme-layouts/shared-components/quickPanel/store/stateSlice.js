@@ -10,7 +10,8 @@ const stateSlice = createSlice({
   },
 });
 
-export const { toggleQuickPanel, openQuickPanel, closeQuickPanel } = stateSlice.actions;
+export const { toggleQuickPanel, openQuickPanel, closeQuickPanel } =
+  stateSlice.actions;
 
 export const selectQuickPanelState = ({ quickPanel }) => quickPanel.state;
 
