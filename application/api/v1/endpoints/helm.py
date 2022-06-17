@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import Query
 
 from application.core.authentication import current_active_user
 from application.managers.helm import HelmManager
@@ -55,6 +56,7 @@ async def list_charts_in_repsitories(
 
 @router.get('/release/list')
 async def list_releases(
+    namespace: str | None = Query(default=None),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
 ):
