@@ -50,12 +50,12 @@ class HelmManager:
                 await helm_service.repository.update()
                 return await helm_service.search.repositories()
 
-    async def list_releases(self, organization: Organization):
+    async def list_releases(self, organization: Organization, namespace: str = None):
         """
-        List releases in all namespaces using default context in kubernetes
-        configuration.
+        List releases in namespace if it is present otherwise in all namespaces
+        using default context in kubernetes configuration.
         """
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
-                return await helm_service.list.all_releases()
+                return await helm_service.list.releases(namespace)
