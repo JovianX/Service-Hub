@@ -1,6 +1,7 @@
-import '@mock-api';
+// import '@mock-api';
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
+import axios from 'axios';
 import { SnackbarProvider } from 'notistack';
 import { useSelector } from 'react-redux';
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -18,13 +19,9 @@ import themeLayouts from 'app/theme-layouts/themeLayouts';
 import { AuthProvider } from './auth/AuthContext';
 import withAppProviders from './withAppProviders';
 
-// import axios from 'axios';
-/**
- * Axios HTTP Request defaults
- */
-// axios.defaults.baseURL = "";
-// axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-// axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const emotionCacheOptions = {
   rtl: {
@@ -49,10 +46,7 @@ const App = () => {
       <FuseTheme theme={mainTheme} direction={langDirection}>
         <AuthProvider>
           <BrowserRouter>
-            <FuseAuthorization
-              userRole={user.role}
-              loginRedirectUrl={settingsConfig.loginRedirectUrl}
-            >
+            <FuseAuthorization userRole={user.role} loginRedirectUrl={settingsConfig.loginRedirectUrl}>
               <SnackbarProvider
                 maxSnack={5}
                 anchorOrigin={{
@@ -60,8 +54,7 @@ const App = () => {
                   horizontal: 'right',
                 }}
                 classes={{
-                  containerRoot:
-                    'bottom-0 right-0 mb-52 md:mb-68 mr-8 lg:mr-80 z-99',
+                  containerRoot: 'bottom-0 right-0 mb-52 md:mb-68 mr-8 lg:mr-80 z-99',
                 }}
               >
                 <FuseLayout layouts={themeLayouts} />

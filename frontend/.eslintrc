@@ -30,7 +30,6 @@
         }
     },
     "rules": {
-        // Prettier configs based on airbnb guide
         "prettier/prettier": [
             "warn",
             {
@@ -38,7 +37,7 @@
                 "bracketSpacing": true,
                 "jsxBracketSameLine": false,
                 "jsxSingleQuote": true,
-                "printWidth": 80,
+                "printWidth": 120,
                 "proseWrap": "always",
                 "quoteProps": "as-needed",
                 "semi": true,

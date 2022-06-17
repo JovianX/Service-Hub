@@ -9,7 +9,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
@@ -40,21 +39,13 @@ const defaultValues = {
 };
 
 function SignInPage() {
-  const { control, formState, handleSubmit, setError, setValue } = useForm({
+  const { control, formState, handleSubmit, setError } = useForm({
     mode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema),
   });
 
   const { isValid, dirtyFields, errors } = formState;
-
-  useEffect(() => {
-    setValue('email', 'admin@fusetheme.com', {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    setValue('password', 'admin', { shouldDirty: true, shouldValidate: true });
-  }, [setValue]);
 
   function onSubmit({ email, password }) {
     jwtService

@@ -3,10 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -18,11 +14,7 @@ import _ from '@lodash';
 
 import jwtService from '../../auth/services/jwtService';
 
-/**
- * Form Validation Schema
- */
 const schema = yup.object().shape({
-  displayName: yup.string().required('You must enter display name'),
   email: yup
     .string()
     .email('You must enter a valid email')
@@ -34,17 +26,12 @@ const schema = yup.object().shape({
   passwordConfirm: yup
     .string()
     .oneOf([yup.ref('password'), null], 'Passwords must match'),
-  acceptTermsConditions: yup
-    .boolean()
-    .oneOf([true], 'The terms and conditions must be accepted.'),
 });
 
 const defaultValues = {
-  displayName: '',
   email: '',
   password: '',
   passwordConfirm: '',
-  acceptTermsConditions: false,
 };
 
 function SignUpPage() {
@@ -56,10 +43,9 @@ function SignUpPage() {
 
   const { isValid, dirtyFields, errors, setError } = formState;
 
-  function onSubmit({ displayName, password, email }) {
+  function onSubmit({ password, email }) {
     jwtService
       .createUser({
-        displayName,
         password,
         email,
       })
@@ -98,25 +84,6 @@ function SignUpPage() {
             className='flex flex-col justify-center w-full mt-32'
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Controller
-              name='displayName'
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  className='mb-24'
-                  label='Display name'
-                  autoFocus
-                  type='name'
-                  error={!!errors.displayName}
-                  helperText={errors?.displayName?.message}
-                  variant='outlined'
-                  required
-                  fullWidth
-                />
-              )}
-            />
-
             <Controller
               name='email'
               control={control}
@@ -171,25 +138,6 @@ function SignUpPage() {
               )}
             />
 
-            <Controller
-              name='acceptTermsConditions'
-              control={control}
-              render={({ field }) => (
-                <FormControl
-                  className='items-center'
-                  error={!!errors.acceptTermsConditions}
-                >
-                  <FormControlLabel
-                    label='I agree to the Terms of Service and Privacy Policy'
-                    control={<Checkbox size='small' {...field} />}
-                  />
-                  <FormHelperText>
-                    {errors?.acceptTermsConditions?.message}
-                  </FormHelperText>
-                </FormControl>
-              )}
-            />
-
             <Button
               variant='contained'
               color='secondary'
@@ -199,7 +147,7 @@ function SignUpPage() {
               type='submit'
               size='large'
             >
-              Create your free account
+              Create account
             </Button>
           </form>
         </div>
