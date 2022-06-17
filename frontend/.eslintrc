@@ -38,15 +38,15 @@
                 "bracketSpacing": true,
                 "jsxBracketSameLine": false,
                 "jsxSingleQuote": true,
-                "printWidth": 100,
+                "printWidth": 80,
                 "proseWrap": "always",
                 "quoteProps": "as-needed",
                 "semi": true,
                 "singleQuote": true,
                 "tabWidth": 2,
-                "trailingComma": "es5",
                 "useTabs": false,
-                "endOfLine": "auto"
+                "endOfLine": "auto",
+                "trailingComma": "all"
             }
         ],
         "react/jsx-filename-extension": [
@@ -62,9 +62,9 @@
         "no-unused-vars": "off",
         "no-console": "off",
         "no-underscore-dangle": "off",
-        "no-param-reassign": "off", // mutating redux state in redux-toolkit.
-        "import/no-unresolved": "off", // raw-loader
-        "global-require": "off", // raw-loader
+        "no-param-reassign": "off",
+        "import/no-unresolved": "off",
+        "global-require": "off",
         "react/no-unescaped-entities": "off",
         "react/destructuring-assignment": "off",
         "react/jsx-props-no-spreading": "off",
@@ -84,30 +84,7 @@
             2,
             "prefer-single"
         ],
-        "object-curly-newline": [
-            "error",
-            {
-                "ObjectExpression": {
-                    "multiline": true,
-                    "minProperties": 3
-                },
-                "ObjectPattern": {
-                    "multiline": true,
-                    "minProperties": 3
-                },
-                "ImportDeclaration": {
-                    "multiline": true,
-                    "minProperties": 3
-                },
-                "ExportDeclaration": {
-                    "multiline": true,
-                    "minProperties": 3
-                }
-            }
-        ],
-        "react/jsx-first-prop-new-line": [2, "multiline"],
-        "react/jsx-max-props-per-line": [1, { "maximum": 2 }],
-        "comma-dangle": ["error", "always-multiline"],
+        "object-curly-newline": "off",
         "object-curly-spacing": ["error", "always"],
         "object-property-newline": "error",
         "import/newline-after-import": "error",
