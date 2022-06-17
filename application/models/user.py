@@ -18,4 +18,4 @@ class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):
 class User(SQLAlchemyBaseUserTableUUID, Base):
     oauth_accounts: List[OAuthAccount] = relationship('OAuthAccount', lazy='joined')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
-    organization = relationship('Organization', back_populates='members')
+    organization = relationship('Organization', back_populates='members', lazy='joined')

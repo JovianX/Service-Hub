@@ -43,3 +43,8 @@ class BaseDatabase:
     async def delete(self, instance) -> None:
         await self.session.delete(instance)
         await self.session.commit()
+
+    async def save(self, instance):
+        self.session.add(instance)
+        await self.session.commit()
+        await self.session.refresh(instance)

@@ -1,9 +1,9 @@
 """
 Initial.
 
-Revision ID: bdc49e043161
+Revision ID: 003aa70bf346
 Revises:
-Create Date: 2022-06-15 15:33:15.325242
+Create Date: 2022-06-16 16:21:51.529427
 """
 import sqlalchemy as sa
 from alembic import op
@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
-revision = 'bdc49e043161'
+revision = '003aa70bf346'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,6 +22,8 @@ def upgrade() -> None:
         'organization',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('title', sa.String(), nullable=False),
+        sa.Column('settings', sa.JSON(), nullable=False),
+        sa.Column('helm_home', sa.LargeBinary(), nullable=True),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_organization_id'), 'organization', ['id'], unique=False)

@@ -16,8 +16,8 @@ from httpx_oauth.clients.google import GoogleOAuth2
 
 from ..core.configuration import settings
 from ..db.session import get_session
-from ..managers.organizations import OrganizationManager
-from ..managers.organizations import get_organization_manager
+from ..managers.organizations.manager import OrganizationManager
+from ..managers.organizations.manager import get_organization_manager
 from ..models.user import OAuthAccount
 from ..models.user import User
 from ..schemas.users import UserCreate

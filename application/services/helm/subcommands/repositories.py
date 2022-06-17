@@ -38,3 +38,12 @@ class HelmRepository(HelmBase):
             raise
 
         return yaml.safe_load(output)
+
+    async def update(self):
+        """
+        Updates repository cache.
+
+        Full description: https://helm.sh/docs/helm/helm_repo_update/
+        """
+        command = self._formup_command('update')
+        await self._run_command(command)

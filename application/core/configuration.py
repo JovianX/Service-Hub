@@ -17,9 +17,6 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = ''
     GOOGLE_CLIENT_SECRET: str = ''
 
-    # Path to Kubernetes configuration file. This should temporary setting until
-    # we not introduce "Organizations" and thair's settings.
-    KUBERNETES_CONFIGURATION: FilePath
     # Path to directory where stored all project's files.
     FILE_STORAGE_ROOT: DirectoryPath
 
