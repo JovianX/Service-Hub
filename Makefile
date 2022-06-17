@@ -3,7 +3,7 @@
 export
 
 VE_DIRECTORY = .venv
-PYTHON = python3
+PYTHON = python3.10
 DB_NAME = service_hub
 DB_USER = postgres_user
 
@@ -22,7 +22,7 @@ setup_helm: ## Install Helm CLI.
 	@mkdir -p $(VE_DIRECTORY)/tmp/helm
 	@wget --output-document=$(VE_DIRECTORY)/tmp/helm.tar.gz https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz
 	@tar --extract --gzip --directory=$(VE_DIRECTORY)/tmp/helm --file=$(VE_DIRECTORY)/tmp/helm.tar.gz
-	@mv $(VE_DIRECTORY)/tmp/helm/linux-amd64/helm $(VE_DIRECTORY)/bin/helm3
+	@mv $(VE_DIRECTORY)/tmp/helm/linux-amd64/helm $(VE_DIRECTORY)/bin/helm
 
 	@rm $(VE_DIRECTORY)/tmp/helm.tar.gz
 	@rm -rf $(VE_DIRECTORY)/tmp/helm
