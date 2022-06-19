@@ -19,7 +19,7 @@ class JwtService extends FuseUtils.EventEmitter {
         return response;
       },
       (err) => {
-        return new Promise((resolve, reject) => {
+        return new Promise(() => {
           if (err?.response?.status === 401 && err?.config && !err?.config?.__isRetryRequest) {
             // if you ever get an unauthorized response, logout the user
             this.emit('onAutoLogout', 'Invalid access_token');
@@ -49,39 +49,24 @@ class JwtService extends FuseUtils.EventEmitter {
     }
   };
 
-  createUser = (data) => {
-    return new Promise((resolve, reject) => {
-      axios.post(jwtServiceConfig.signUp, data).then((response) => {
-        if (response.data.user) {
-          this.setSession(response.data.access_token);
-          resolve(response.data.user);
-          this.emit('onLogin', response.data.user);
-        } else {
-          reject(response.data.error);
-        }
-      });
-    });
+  createUser = async (data) => {
+    await axios.post(jwtServiceConfig.signUp, data);
   };
 
-  signInWithEmailAndPassword = (email, password) => {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(jwtServiceConfig.signIn, {
-          data: {
-            email,
-            password,
-          },
-        })
-        .then((response) => {
-          if (response.data.user) {
-            this.setSession(response.data.access_token);
-            resolve(response.data.user);
-            this.emit('onLogin', response.data.user);
-          } else {
-            reject(response.data.error);
-          }
-        });
-    });
+  signInWithEmailAndPassword = async (email, password) => {
+    const formData = new FormData();
+    formData.append('username', email);
+    formData.append('password', password);
+
+    const response = await axios.post(jwtServiceConfig.signIn, formData);
+
+    if (response.data.access_token) {
+      this.setSession(response.data.access_token);
+
+      this.emit('onLogin', response.data);
+    } else {
+      throw new Error(response.data.error);
+    }
   };
 
   signInWithToken = () => {
@@ -99,7 +84,7 @@ class JwtService extends FuseUtils.EventEmitter {
             reject(new Error('Failed to login with token.'));
           }
         })
-        .catch((error) => {
+        .catch(() => {
           this.logout();
           reject(new Error('Failed to login with token.'));
         });

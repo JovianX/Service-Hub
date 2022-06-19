@@ -62,7 +62,7 @@ function AuthProvider({ children }) {
       Promise.all([
         dispatch(setUser(user)),
         // You can receive data in here before app initialization
-      ]).then((values) => {
+      ]).then(() => {
         setWaitAuthCheck(false);
         setIsAuthenticated(true);
       });
@@ -81,9 +81,7 @@ function AuthProvider({ children }) {
   return waitAuthCheck ? (
     <FuseSplashScreen />
   ) : (
-    <AuthContext.Provider value={{ isAuthenticated }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ isAuthenticated }}>{children}</AuthContext.Provider>
   );
 }
 

@@ -1,4 +1,3 @@
-// import '@mock-api';
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
 import axios from 'axios';
