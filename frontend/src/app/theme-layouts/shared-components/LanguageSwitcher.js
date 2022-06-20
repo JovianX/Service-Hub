@@ -7,7 +7,12 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { changeLanguage, selectCurrentLanguage, selectLanguages } from 'app/store/i18nSlice';
+
+import {
+  changeLanguage,
+  selectCurrentLanguage,
+  selectLanguages,
+} from 'app/store/i18nSlice';
 
 function LanguageSwitcher(props) {
   const currentLanguage = useSelector(selectCurrentLanguage);
@@ -31,14 +36,17 @@ function LanguageSwitcher(props) {
 
   return (
     <>
-      <Button className="h-40 w-64" onClick={langMenuClick}>
+      <Button className='h-40 w-64' onClick={langMenuClick}>
         <img
-          className="mx-4 min-w-20"
+          className='mx-4 min-w-20'
           src={`assets/images/flags/${currentLanguage.flag}.svg`}
           alt={currentLanguage.title}
         />
 
-        <Typography className="mx-4 font-semibold uppercase" color="text.secondary">
+        <Typography
+          className='mx-4 font-semibold uppercase'
+          color='text.secondary'
+        >
           {currentLanguage.id}
         </Typography>
       </Button>
@@ -55,15 +63,13 @@ function LanguageSwitcher(props) {
           vertical: 'top',
           horizontal: 'center',
         }}
-        classes={{
-          paper: 'py-8',
-        }}
+        classes={{ paper: 'py-8' }}
       >
         {languages.map((lng) => (
           <MenuItem key={lng.id} onClick={() => handleLanguageChange(lng)}>
-            <ListItemIcon className="min-w-40">
+            <ListItemIcon className='min-w-40'>
               <img
-                className="min-w-20"
+                className='min-w-20'
                 src={`assets/images/flags/${lng.flag}.svg`}
                 alt={lng.title}
               />
@@ -74,11 +80,11 @@ function LanguageSwitcher(props) {
 
         <MenuItem
           component={Link}
-          to="/documentation/configuration/multi-language"
+          to='/documentation/configuration/multi-language'
           onClick={langMenuClose}
-          role="button"
+          role='button'
         >
-          <ListItemText primary="Learn More" />
+          <ListItemText primary='Learn More' />
         </MenuItem>
       </Popover>
     </>

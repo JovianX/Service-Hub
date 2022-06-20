@@ -1,23 +1,33 @@
 import AppBar from '@mui/material/AppBar';
-import { styled, useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
+import { styled, useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import withReducer from 'app/store/withReducer';
 import keycode from 'keycode';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSwipeable } from 'react-swipeable';
+
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import withReducer from 'app/store/withReducer';
+
 import Chat from './Chat';
 import ContactList from './ContactList';
 import reducer from './store';
-import { getContacts, selectContacts, selectSelectedContactId } from './store/contactsSlice';
-import { closeChatPanel, openChatPanel, selectChatPanelState } from './store/stateSlice';
-import { getUserData } from './store/userSlice';
 import { getChats } from './store/chatsSlice';
+import {
+  getContacts,
+  selectContacts,
+  selectSelectedContactId,
+} from './store/contactsSlice';
+import {
+  closeChatPanel,
+  openChatPanel,
+  selectChatPanelState,
+} from './store/stateSlice';
+import { getUserData } from './store/userSlice';
 
 const Root = styled('div')(({ theme, opened }) => ({
   position: 'sticky',
@@ -37,9 +47,7 @@ const Root = styled('div')(({ theme, opened }) => ({
     minWidth: 0,
   },
 
-  ...(opened && {
-    overflow: 'visible',
-  }),
+  ...(opened && { overflow: 'visible' }),
 
   ...(!opened && {
     overflow: 'hidden',
@@ -60,7 +68,8 @@ const Root = styled('div')(({ theme, opened }) => ({
     overflow: 'hidden',
     zIndex: 1000,
     backgroundColor: theme.palette.background.paper,
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    boxShadow:
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     transform: 'translate3d(0,0,0)',
     transition: theme.transitions.create(['transform'], {
       easing: theme.transitions.easing.easeInOut,
@@ -68,13 +77,19 @@ const Root = styled('div')(({ theme, opened }) => ({
     }),
 
     ...(opened && {
-      transform: theme.direction === 'rtl' ? 'translate3d(290px,0,0)' : 'translate3d(-290px,0,0)',
+      transform:
+        theme.direction === 'rtl'
+          ? 'translate3d(290px,0,0)'
+          : 'translate3d(-290px,0,0)',
     }),
 
     [theme.breakpoints.down('lg')]: {
       left: 'auto',
       position: 'fixed',
-      transform: theme.direction === 'rtl' ? 'translate3d(-360px,0,0)' : 'translate3d(360px,0,0)',
+      transform:
+        theme.direction === 'rtl'
+          ? 'translate3d(-360px,0,0)'
+          : 'translate3d(360px,0,0)',
       boxShadow: 'none',
       width: 320,
       minWidth: 320,
@@ -82,21 +97,16 @@ const Root = styled('div')(({ theme, opened }) => ({
 
       ...(opened && {
         transform: 'translate3d(0,0,0)',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        boxShadow:
+          '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       }),
     },
   },
 
   '@keyframes hide-panel': {
-    '0%': {
-      overflow: 'visible',
-    },
-    '99%': {
-      overflow: 'visible',
-    },
-    '100%': {
-      overflow: 'hidden',
-    },
+    '0%': { overflow: 'visible' },
+    '99%': { overflow: 'visible' },
+    '100%': { overflow: 'hidden' },
   },
 }));
 
@@ -117,7 +127,9 @@ function ChatPanel(props) {
     },
   });
 
-  const selectedContact = contacts.find((_contact) => _contact.id === selectedContactId);
+  const selectedContact = contacts.find(
+    (_contact) => _contact.id === selectedContactId,
+  );
 
   const handleDocumentKeyDown = useCallback(
     (event) => {
@@ -125,7 +137,7 @@ function ChatPanel(props) {
         dispatch(closeChatPanel());
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   useEffect(() => {
@@ -168,52 +180,61 @@ function ChatPanel(props) {
 
   return (
     <Root opened={state ? 1 : 0} {...handlers}>
-      <div className="panel flex flex-col max-w-full" ref={ref}>
-        <AppBar position="static" className="shadow-md">
-          <Toolbar className="px-4">
+      <div className='panel flex flex-col max-w-full' ref={ref}>
+        <AppBar position='static' className='shadow-md'>
+          <Toolbar className='px-4'>
             {(!state || !selectedContactId) && (
-              <div className="flex flex-1 items-center px-8 space-x-12">
+              <div className='flex flex-1 items-center px-8 space-x-12'>
                 <IconButton
-                  className=""
-                  color="inherit"
+                  className=''
+                  color='inherit'
                   onClick={(ev) => dispatch(openChatPanel())}
-                  size="large"
+                  size='large'
                 >
-                  <FuseSvgIcon size={24}>heroicons-outline:chat-alt-2</FuseSvgIcon>
+                  <FuseSvgIcon size={24}>
+                    heroicons-outline:chat-alt-2
+                  </FuseSvgIcon>
                 </IconButton>
                 {!selectedContactId && (
-                  <Typography className="text-16" color="inherit">
+                  <Typography className='text-16' color='inherit'>
                     Team Chat
                   </Typography>
                 )}
               </div>
             )}
             {state && selectedContact && (
-              <div className="flex flex-1 items-center px-12">
+              <div className='flex flex-1 items-center px-12'>
                 <Avatar src={selectedContact.avatar} />
-                <Typography className="mx-16 text-16" color="inherit">
+                <Typography className='mx-16 text-16' color='inherit'>
                   {selectedContact.name}
                 </Typography>
               </div>
             )}
-            <div className="flex px-4">
-              <IconButton onClick={(ev) => dispatch(closeChatPanel())} color="inherit" size="large">
+            <div className='flex px-4'>
+              <IconButton
+                onClick={(ev) => dispatch(closeChatPanel())}
+                color='inherit'
+                size='large'
+              >
                 <FuseSvgIcon>heroicons-outline:x</FuseSvgIcon>
               </IconButton>
             </div>
           </Toolbar>
         </AppBar>
-        <Paper className="flex flex-1 flex-row min-h-px shadow-0">
-          <ContactList className="flex shrink-0" />
+        <Paper className='flex flex-1 flex-row min-h-px shadow-0'>
+          <ContactList className='flex shrink-0' />
 
           {state && selectedContact ? (
-            <Chat className="flex flex-1 z-10" />
+            <Chat className='flex flex-1 z-10' />
           ) : (
-            <div className="flex flex-col flex-1 items-center justify-center p-24">
-              <FuseSvgIcon size={128} color="disabled">
+            <div className='flex flex-col flex-1 items-center justify-center p-24'>
+              <FuseSvgIcon size={128} color='disabled'>
                 heroicons-outline:chat
               </FuseSvgIcon>
-              <Typography className="px-16 pb-24 mt-24 text-center" color="text.secondary">
+              <Typography
+                className='px-16 pb-24 mt-24 text-center'
+                color='text.secondary'
+              >
                 Select a contact to start a conversation.
               </Typography>
             </div>

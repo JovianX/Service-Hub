@@ -1,14 +1,16 @@
 import Hidden from '@mui/material/Hidden';
 import { styled } from '@mui/material/styles';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import { useDispatch, useSelector } from 'react-redux';
+
 import {
   navbarCloseFolded,
   navbarCloseMobile,
   navbarOpenFolded,
   selectFuseNavbar,
 } from 'app/store/fuse/navbarSlice';
-import { useDispatch, useSelector } from 'react-redux';
 import { selectFuseCurrentLayoutConfig } from 'app/store/fuse/settingsSlice';
+
 import NavbarStyle2Content from './NavbarStyle2Content';
 
 const navbarWidth = 280;
@@ -41,13 +43,9 @@ const StyledNavbar = styled('div')(
       duration: theme.transitions.duration.shorter,
     }),
 
-    ...(position === 'left' && {
-      left: 0,
-    }),
+    ...(position === 'left' && { left: 0 }),
 
-    ...(position === 'right' && {
-      right: 0,
-    }),
+    ...(position === 'right' && { right: 0 }),
 
     ...(folded && {
       position: 'absolute',
@@ -68,21 +66,11 @@ const StyledNavbar = styled('div')(
           width: 44,
           height: 44,
         },
-        '& .logo-text': {
-          opacity: 0,
-        },
-        '& .react-badge': {
-          opacity: 0,
-        },
-        '& .fuse-list-item': {
-          width: 56,
-        },
-        '& .fuse-list-item-text, & .arrow-icon, & .item-badge': {
-          opacity: 0,
-        },
-        '& .fuse-list-subheader .fuse-list-subheader-text': {
-          opacity: 0,
-        },
+        '& .logo-text': { opacity: 0 },
+        '& .react-badge': { opacity: 0 },
+        '& .fuse-list-item': { width: 56 },
+        '& .fuse-list-item-text, & .arrow-icon, & .item-badge': { opacity: 0 },
+        '& .fuse-list-subheader .fuse-list-subheader-text': { opacity: 0 },
         '& .fuse-list-subheader:before': {
           content: '""',
           display: 'block',
@@ -91,12 +79,10 @@ const StyledNavbar = styled('div')(
           borderTop: '2px solid',
           opacity: 0.2,
         },
-        '& .collapse-children': {
-          display: 'none',
-        },
+        '& .collapse-children': { display: 'none' },
       },
     }),
-  })
+  }),
 );
 
 const StyledNavbarMobile = styled(SwipeableDrawer)(({ theme, position }) => ({
@@ -126,12 +112,12 @@ function NavbarStyle2(props) {
     <Root
       folded={folded ? 1 : 0}
       open={navbar.open}
-      id="fuse-navbar"
-      className="sticky top-0 h-screen shrink-0 z-20 shadow-5"
+      id='fuse-navbar'
+      className='sticky top-0 h-screen shrink-0 z-20 shadow-5'
     >
       <Hidden lgDown>
         <StyledNavbar
-          className="flex-col flex-auto"
+          className='flex-col flex-auto'
           position={config.navbar.position}
           folded={folded ? 1 : 0}
           foldedandopened={foldedandopened ? 1 : 0}
@@ -139,20 +125,18 @@ function NavbarStyle2(props) {
           onMouseEnter={() => foldedandclosed && dispatch(navbarOpenFolded())}
           onMouseLeave={() => foldedandopened && dispatch(navbarCloseFolded())}
         >
-          <NavbarStyle2Content className="NavbarStyle2-content" />
+          <NavbarStyle2Content className='NavbarStyle2-content' />
         </StyledNavbar>
       </Hidden>
 
       <Hidden lgUp>
         <StyledNavbarMobile
-          classes={{
-            paper: 'flex-col flex-auto h-full',
-          }}
+          classes={{ paper: 'flex-col flex-auto h-full' }}
           folded={folded ? 1 : 0}
           foldedandopened={foldedandopened ? 1 : 0}
           foldedandclosed={foldedandclosed ? 1 : 0}
           anchor={config.navbar.position}
-          variant="temporary"
+          variant='temporary'
           open={navbar.mobileOpen}
           onClose={() => dispatch(navbarCloseMobile())}
           onOpen={() => {}}
@@ -161,7 +145,7 @@ function NavbarStyle2(props) {
             keepMounted: true, // Better open performance on mobile.
           }}
         >
-          <NavbarStyle2Content className="NavbarStyle2-content" />
+          <NavbarStyle2Content className='NavbarStyle2-content' />
         </StyledNavbarMobile>
       </Hidden>
     </Root>

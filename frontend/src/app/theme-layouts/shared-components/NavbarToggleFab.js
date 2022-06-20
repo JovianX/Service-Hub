@@ -1,12 +1,12 @@
 import Fab from '@mui/material/Fab';
 import { styled } from '@mui/material/styles';
-
 import Tooltip from '@mui/material/Tooltip';
-import { navbarToggle, navbarToggleMobile } from 'app/store/fuse/navbarSlice';
 import clsx from 'clsx';
 import { useDispatch, useSelector } from 'react-redux';
-import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
+
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
+import { navbarToggle, navbarToggleMobile } from 'app/store/fuse/navbarSlice';
 import { selectFuseCurrentLayoutConfig } from 'app/store/fuse/settingsSlice';
 
 const Root = styled(Tooltip)(({ theme, position }) => ({
@@ -24,7 +24,7 @@ const Root = styled(Tooltip)(({ theme, position }) => ({
       {
         easing: theme.transitions.easing.easeInOut,
         duration: theme.transitions.duration.shorter,
-      }
+      },
     ),
     '&:hover': {
       width: 52,
@@ -52,9 +52,7 @@ const Root = styled(Tooltip)(({ theme, position }) => ({
       borderTopRightRadius: 0,
       paddingRight: 4,
       right: 0,
-      '& > .button-icon': {
-        transform: 'rotate(-180deg)',
-      },
+      '& > .button-icon': { transform: 'rotate(-180deg)' },
     }),
   },
 }));
@@ -67,16 +65,18 @@ function NavbarToggleFab(props) {
 
   return (
     <Root
-      title="Show Navigation"
+      title='Show Navigation'
       placement={config.navbar.position === 'left' ? 'right' : 'left'}
       position={config.navbar.position}
     >
       <Fab
         className={clsx('button', props.className)}
-        onClick={(ev) => dispatch(isMobile ? navbarToggleMobile() : navbarToggle())}
+        onClick={(ev) =>
+          dispatch(isMobile ? navbarToggleMobile() : navbarToggle())
+        }
         disableRipple
       >
-        <FuseSvgIcon color="action" className="button-icon">
+        <FuseSvgIcon color='action' className='button-icon'>
           heroicons-outline:view-list
         </FuseSvgIcon>
       </Fab>

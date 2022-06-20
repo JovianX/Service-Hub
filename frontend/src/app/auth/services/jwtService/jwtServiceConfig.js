@@ -1,8 +1,11 @@
+const authApiPath = 'api/v1/auth';
+
 const jwtServiceConfig = {
-  signIn: 'api/auth/sign-in',
-  signUp: 'api/auth/sign-up',
-  accessToken: 'api/auth/access-token',
-  updateUser: 'api/auth/user/update',
+  signIn: `${authApiPath}/jwt/login`,
+  logout: `${authApiPath}/jwt/logout`,
+  signUp: `${authApiPath}/register`,
+  forgotPassword: `${authApiPath}/forgot-password`,
+  resetPassword: `${authApiPath}/reset-password`,
 };
 
 export default jwtServiceConfig;

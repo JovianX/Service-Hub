@@ -1,28 +1,26 @@
-import '@mock-api';
-import BrowserRouter from '@fuse/core/BrowserRouter';
-import FuseLayout from '@fuse/core/FuseLayout';
-import FuseTheme from '@fuse/core/FuseTheme';
+import createCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
+import axios from 'axios';
 import { SnackbarProvider } from 'notistack';
 import { useSelector } from 'react-redux';
 import rtlPlugin from 'stylis-plugin-rtl';
-import createCache from '@emotion/cache';
-import { CacheProvider } from '@emotion/react';
+
+import BrowserRouter from '@fuse/core/BrowserRouter';
+import FuseAuthorization from '@fuse/core/FuseAuthorization';
+import FuseLayout from '@fuse/core/FuseLayout';
+import FuseTheme from '@fuse/core/FuseTheme';
+import settingsConfig from 'app/configs/settingsConfig';
+import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { selectCurrentLanguageDirection } from 'app/store/i18nSlice';
 import { selectUser } from 'app/store/userSlice';
 import themeLayouts from 'app/theme-layouts/themeLayouts';
-import { selectMainTheme } from 'app/store/fuse/settingsSlice';
-import FuseAuthorization from '@fuse/core/FuseAuthorization';
-import settingsConfig from 'app/configs/settingsConfig';
-import withAppProviders from './withAppProviders';
-import { AuthProvider } from './auth/AuthContext';
 
-// import axios from 'axios';
-/**
- * Axios HTTP Request defaults
- */
-// axios.defaults.baseURL = "";
-// axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-// axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+import { AuthProvider } from './auth/AuthContext';
+import withAppProviders from './withAppProviders';
+
+axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const emotionCacheOptions = {
   rtl: {
@@ -47,10 +45,7 @@ const App = () => {
       <FuseTheme theme={mainTheme} direction={langDirection}>
         <AuthProvider>
           <BrowserRouter>
-            <FuseAuthorization
-              userRole={user.role}
-              loginRedirectUrl={settingsConfig.loginRedirectUrl}
-            >
+            <FuseAuthorization userRole={user.role} loginRedirectUrl={settingsConfig.loginRedirectUrl}>
               <SnackbarProvider
                 maxSnack={5}
                 anchorOrigin={{

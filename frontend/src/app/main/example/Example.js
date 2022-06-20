@@ -1,7 +1,8 @@
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import FusePageSimple from '@fuse/core/FusePageSimple';
+
 import DemoContent from '@fuse/core/DemoContent';
+import FusePageSimple from '@fuse/core/FusePageSimple';
 
 const Root = styled(FusePageSimple)(({ theme }) => ({
   '& .FusePageSimple-header': {
@@ -22,18 +23,18 @@ function ExamplePage(props) {
   return (
     <Root
       header={
-        <div className="p-24">
+        <div className='p-24'>
           <h4>{t('TITLE')}</h4>
         </div>
       }
       content={
-        <div className="p-24">
+        <div className='p-24'>
           <h4>Content</h4>
           <br />
           <DemoContent />
         </div>
       }
-      scroll="content"
+      scroll='content'
     />
   );
 }
