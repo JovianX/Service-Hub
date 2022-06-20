@@ -16,18 +16,8 @@ import NotificationTemplate from 'app/theme-layouts/shared-components/notificati
 import NotificationModel from './model/NotificationModel';
 import NotificationCard from './NotificationCard';
 import reducer from './store';
-import {
-  addNotification,
-  dismissAll,
-  dismissItem,
-  getNotifications,
-  selectNotifications,
-} from './store/dataSlice';
-import {
-  closeNotificationPanel,
-  selectNotificationPanelState,
-  toggleNotificationPanel,
-} from './store/stateSlice';
+import { addNotification, dismissAll, dismissItem, selectNotifications } from './store/dataSlice';
+import { closeNotificationPanel, selectNotificationPanelState, toggleNotificationPanel } from './store/stateSlice';
 
 const StyledSwipeableDrawer = styled(SwipeableDrawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
@@ -36,7 +26,7 @@ const StyledSwipeableDrawer = styled(SwipeableDrawer)(({ theme }) => ({
   },
 }));
 
-function NotificationPanel(props) {
+function NotificationPanel() {
   const location = useLocation();
   const dispatch = useDispatch();
   const state = useSelector(selectNotificationPanelState);
@@ -44,12 +34,12 @@ function NotificationPanel(props) {
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    /*
-		Get Notifications from db
-		 */
-    dispatch(getNotifications());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   /*
+  // 	Get Notifications from db
+  // 	 */
+  //   dispatch(getNotifications());
+  // }, [dispatch]);
 
   useEffect(() => {
     if (state) {
@@ -92,39 +82,24 @@ function NotificationPanel(props) {
     <StyledSwipeableDrawer
       open={state}
       anchor='right'
-      onOpen={(ev) => {}}
-      onClose={(ev) => dispatch(toggleNotificationPanel())}
+      onOpen={() => {}}
+      onClose={() => dispatch(toggleNotificationPanel())}
       disableSwipeToOpen
     >
-      <IconButton
-        className='m-4 absolute top-0 right-0 z-999'
-        onClick={handleClose}
-        size='large'
-      >
+      <IconButton className='m-4 absolute top-0 right-0 z-999' onClick={handleClose} size='large'>
         <FuseSvgIcon color='action'>heroicons-outline:x</FuseSvgIcon>
       </IconButton>
       {notifications.length > 0 ? (
         <FuseScrollbars className='p-16'>
           <div className='flex flex-col'>
             <div className='flex justify-between items-end pt-136 mb-36'>
-              <Typography className='text-28 font-semibold leading-none'>
-                Notifications
-              </Typography>
-              <Typography
-                className='text-12 underline cursor-pointer'
-                color='secondary'
-                onClick={handleDismissAll}
-              >
+              <Typography className='text-28 font-semibold leading-none'>Notifications</Typography>
+              <Typography className='text-12 underline cursor-pointer' color='secondary' onClick={handleDismissAll}>
                 dismiss all
               </Typography>
             </div>
             {notifications.map((item) => (
-              <NotificationCard
-                key={item.id}
-                className='mb-16'
-                item={item}
-                onClose={handleDismiss}
-              />
+              <NotificationCard key={item.id} className='mb-16' item={item} onClose={handleDismiss} />
             ))}
           </div>
         </FuseScrollbars>
@@ -144,7 +119,4 @@ function NotificationPanel(props) {
   );
 }
 
-export default withReducer(
-  'notificationPanel',
-  reducer,
-)(memo(NotificationPanel));
+export default withReducer('notificationPanel', reducer)(memo(NotificationPanel));

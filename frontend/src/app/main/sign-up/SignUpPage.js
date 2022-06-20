@@ -12,6 +12,7 @@ import * as yup from 'yup';
 
 import _ from '@lodash';
 
+import history from '../../../@history/@history';
 import jwtService from '../../auth/services/jwtService';
 
 const schema = yup.object().shape({
@@ -46,6 +47,8 @@ function SignUpPage() {
       });
 
       await jwtService.signInWithEmailAndPassword(email, password);
+
+      history.push('/');
     } catch (errors) {
       setError('email', {
         type: 'manual',
