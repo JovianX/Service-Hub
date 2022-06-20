@@ -5,18 +5,19 @@ import FuseUtils from '@fuse/utils';
 import settingsConfig from 'app/configs/settingsConfig';
 
 import Error404Page from '../main/404/Error404Page';
+import DashboardConfig from '../main/dashboard/DashboardConfig';
 import ExampleConfig from '../main/example/ExampleConfig';
 import SignInConfig from '../main/sign-in/SignInConfig';
 import SignOutConfig from '../main/sign-out/SignOutConfig';
 import SignUpConfig from '../main/sign-up/SignUpConfig';
 
-const routeConfigs = [ExampleConfig, SignOutConfig, SignInConfig, SignUpConfig];
+const routeConfigs = [DashboardConfig, ExampleConfig, SignOutConfig, SignInConfig, SignUpConfig];
 
 const routes = [
   ...FuseUtils.generateRoutesFromConfigs(routeConfigs, settingsConfig.defaultAuth),
   {
     path: '/',
-    element: <Navigate to='/example' />,
+    element: <Navigate to='/dashboard' />,
     // auth: settingsConfig.defaultAuth,
   },
   {

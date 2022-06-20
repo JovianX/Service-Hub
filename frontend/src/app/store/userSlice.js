@@ -9,31 +9,25 @@ import { setInitialSettings } from 'app/store/fuse/settingsSlice';
 
 import jwtService from '../auth/services/jwtService';
 
-export const setUser = createAsyncThunk(
-  'user/setUser',
-  async (user, { dispatch, getState }) => {
-    /*
+export const setUser = createAsyncThunk('user/setUser', async (user, { dispatch, getState }) => {
+  /*
     You can redirect the logged-in user to a specific route depending on his role
     */
-    if (user.loginRedirectUrl) {
-      settingsConfig.loginRedirectUrl = user.loginRedirectUrl; // for example 'apps/academy'
-    }
+  if (user.loginRedirectUrl) {
+    settingsConfig.loginRedirectUrl = user.loginRedirectUrl; // for example 'apps/academy'
+  }
 
-    return user;
-  },
-);
+  return user;
+});
 
-export const updateUserSettings = createAsyncThunk(
-  'user/updateSettings',
-  async (settings, { dispatch, getState }) => {
-    const { user } = getState();
-    const newUser = _.merge({}, user, { data: { settings } });
+export const updateUserSettings = createAsyncThunk('user/updateSettings', async (settings, { dispatch, getState }) => {
+  const { user } = getState();
+  const newUser = _.merge({}, user, { data: { settings } });
 
-    dispatch(updateUserData(newUser));
+  dispatch(updateUserData(newUser));
 
-    return newUser;
-  },
-);
+  return newUser;
+});
 
 export const updateUserShortcuts = createAsyncThunk(
   'user/updateShortucts',
@@ -56,12 +50,12 @@ export const updateUserShortcuts = createAsyncThunk(
 export const logoutUser = () => async (dispatch, getState) => {
   const { user } = getState();
 
-  if (!user.role || user.role.length === 0) {
-    // is guest
-    return null;
-  }
+  // if (!user.role || user.role.length === 0) {
+  //   // is guest
+  //   return null;
+  // }
 
-  history.push({ pathname: '/' });
+  history.push({ pathname: '/sign-in' });
 
   dispatch(setInitialSettings());
 
