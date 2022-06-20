@@ -1,22 +1,27 @@
 /* eslint import/no-extraneous-dependencies: off */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
 import history from '@history';
 import _ from '@lodash';
-import { setInitialSettings } from 'app/store/fuse/settingsSlice';
-import { showMessage } from 'app/store/fuse/messageSlice';
 import settingsConfig from 'app/configs/settingsConfig';
+import { showMessage } from 'app/store/fuse/messageSlice';
+import { setInitialSettings } from 'app/store/fuse/settingsSlice';
+
 import jwtService from '../auth/services/jwtService';
 
-export const setUser = createAsyncThunk('user/setUser', async (user, { dispatch, getState }) => {
-  /*
+export const setUser = createAsyncThunk(
+  'user/setUser',
+  async (user, { dispatch, getState }) => {
+    /*
     You can redirect the logged-in user to a specific route depending on his role
     */
-  if (user.loginRedirectUrl) {
-    settingsConfig.loginRedirectUrl = user.loginRedirectUrl; // for example 'apps/academy'
-  }
+    if (user.loginRedirectUrl) {
+      settingsConfig.loginRedirectUrl = user.loginRedirectUrl; // for example 'apps/academy'
+    }
 
-  return user;
-});
+    return user;
+  },
+);
 
 export const updateUserSettings = createAsyncThunk(
   'user/updateSettings',
@@ -27,7 +32,7 @@ export const updateUserSettings = createAsyncThunk(
     dispatch(updateUserData(newUser));
 
     return newUser;
-  }
+  },
 );
 
 export const updateUserShortcuts = createAsyncThunk(
@@ -45,7 +50,7 @@ export const updateUserShortcuts = createAsyncThunk(
     dispatch(updateUserData(newUser));
 
     return newUser;
-  }
+  },
 );
 
 export const logoutUser = () => async (dispatch, getState) => {
@@ -56,9 +61,7 @@ export const logoutUser = () => async (dispatch, getState) => {
     return null;
   }
 
-  history.push({
-    pathname: '/',
-  });
+  history.push({ pathname: '/' });
 
   dispatch(setInitialSettings());
 
@@ -94,9 +97,7 @@ const initialState = {
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    userLoggedOut: (state, action) => initialState,
-  },
+  reducers: { userLoggedOut: (state, action) => initialState },
   extraReducers: {
     [updateUserSettings.fulfilled]: (state, action) => action.payload,
     [updateUserShortcuts.fulfilled]: (state, action) => action.payload,

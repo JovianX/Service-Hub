@@ -1,10 +1,14 @@
 import IconButton from '@mui/material/IconButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectFuseCurrentSettings, setDefaultSettings } from 'app/store/fuse/settingsSlice';
-import _ from '@lodash';
-import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
-import { navbarToggle, navbarToggleMobile } from 'app/store/fuse/navbarSlice';
+
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
+import _ from '@lodash';
+import { navbarToggle, navbarToggleMobile } from 'app/store/fuse/navbarSlice';
+import {
+  selectFuseCurrentSettings,
+  setDefaultSettings,
+} from 'app/store/fuse/settingsSlice';
 
 function NavbarToggleButton(props) {
   const dispatch = useDispatch();
@@ -15,16 +19,20 @@ function NavbarToggleButton(props) {
   return (
     <IconButton
       className={props.className}
-      color="inherit"
-      size="small"
+      color='inherit'
+      size='small'
       onClick={(ev) => {
         if (isMobile) {
           dispatch(navbarToggleMobile());
         } else if (config.navbar.style === 'style-2') {
           dispatch(
             setDefaultSettings(
-              _.set({}, 'layout.config.navbar.folded', !settings.layout.config.navbar.folded)
-            )
+              _.set(
+                {},
+                'layout.config.navbar.folded',
+                !settings.layout.config.navbar.folded,
+              ),
+            ),
           );
         } else {
           dispatch(navbarToggle());
@@ -38,7 +46,7 @@ function NavbarToggleButton(props) {
 
 NavbarToggleButton.defaultProps = {
   children: (
-    <FuseSvgIcon size={20} color="action">
+    <FuseSvgIcon size={20} color='action'>
       heroicons-outline:view-list
     </FuseSvgIcon>
   ),

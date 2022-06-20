@@ -1,5 +1,5 @@
-import _ from '@lodash';
 import FuseUtils from '@fuse/utils';
+import _ from '@lodash';
 
 function NotificationModel(data) {
   data = data || {};

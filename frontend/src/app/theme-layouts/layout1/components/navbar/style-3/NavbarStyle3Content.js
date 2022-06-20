@@ -1,15 +1,16 @@
-import FuseScrollbars from '@fuse/core/FuseScrollbars';
-import { styled, ThemeProvider, useTheme } from '@mui/material/styles';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
+import { styled, ThemeProvider, useTheme } from '@mui/material/styles';
 import clsx from 'clsx';
 import { memo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import FuseNavigation from '@fuse/core/FuseNavigation';
-import { navbarCloseMobile } from 'app/store/fuse/navbarSlice';
-import { selectContrastMainTheme } from 'app/store/fuse/settingsSlice';
 import { useLocation } from 'react-router-dom';
+
+import FuseNavigation from '@fuse/core/FuseNavigation';
+import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
+import { navbarCloseMobile } from 'app/store/fuse/navbarSlice';
 import { selectNavigation } from 'app/store/fuse/navigationSlice';
+import { selectContrastMainTheme } from 'app/store/fuse/settingsSlice';
 
 const Root = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -46,7 +47,10 @@ function isUrlInChildren(parent, url) {
         return true;
       }
     }
-    if (parent.children[i].url === url || url.includes(parent.children[i].url)) {
+    if (
+      parent.children[i].url === url ||
+      url.includes(parent.children[i].url)
+    ) {
       return true;
     }
   }
@@ -61,7 +65,9 @@ function NavbarStyle3Content(props) {
   const [panelOpen, setPanelOpen] = useState(false);
   const theme = useTheme();
   const dispatch = useDispatch();
-  const contrastTheme = useSelector(selectContrastMainTheme(theme.palette.primary.main));
+  const contrastTheme = useSelector(
+    selectContrastMainTheme(theme.palette.primary.main),
+  );
   const location = useLocation();
 
   useEffect(() => {
@@ -106,17 +112,24 @@ function NavbarStyle3Content(props) {
     <ClickAwayListener onClickAway={() => setPanelOpen(false)}>
       <Root className={clsx('flex flex-auto flex h-full', props.className)}>
         <ThemeProvider theme={contrastTheme}>
-          <div id="fuse-navbar-side-panel" className="flex shrink-0 flex-col items-center">
-            <img className="w-44 my-32" src="assets/images/logo/logo.svg" alt="logo" />
+          <div
+            id='fuse-navbar-side-panel'
+            className='flex shrink-0 flex-col items-center'
+          >
+            <img
+              className='w-44 my-32'
+              src='assets/images/logo/logo.svg'
+              alt='logo'
+            />
 
             <FuseScrollbars
-              className="flex flex-1 min-h-0 justify-center w-full overflow-y-auto overflow-x-hidden"
+              className='flex flex-1 min-h-0 justify-center w-full overflow-y-auto overflow-x-hidden'
               option={{ suppressScrollX: true, wheelPropagation: false }}
             >
               <FuseNavigation
                 className={clsx('navigation')}
                 navigation={navigation}
-                layout="vertical-2"
+                layout='vertical-2'
                 onItemClick={handleParentItemClick}
                 firstLevel
                 selectedId={selectedNavigation[0]?.id}
@@ -128,7 +141,7 @@ function NavbarStyle3Content(props) {
 
         {selectedNavigation.length > 0 && (
           <StyledPanel
-            id="fuse-navbar-panel"
+            id='fuse-navbar-panel'
             opened={panelOpen}
             className={clsx('shadow-5 overflow-y-auto overflow-x-hidden')}
             option={{ suppressScrollX: true, wheelPropagation: false }}
@@ -136,7 +149,7 @@ function NavbarStyle3Content(props) {
             <FuseNavigation
               className={clsx('navigation')}
               navigation={selectedNavigation}
-              layout="vertical"
+              layout='vertical'
               onItemClick={handleChildItemClick}
             />
           </StyledPanel>

@@ -1,9 +1,10 @@
-import FuseUtils from '@fuse/utils';
-import AppContext from 'app/AppContext';
 import { Component } from 'react';
 import { matchRoutes } from 'react-router-dom';
+
 import withRouter from '@fuse/core/withRouter';
+import FuseUtils from '@fuse/utils';
 import history from '@history';
+import AppContext from 'app/AppContext';
 
 let loginRedirectUrl = null;
 

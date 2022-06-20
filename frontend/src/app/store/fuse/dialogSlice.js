@@ -4,9 +4,7 @@ const dialogSlice = createSlice({
   name: 'dialog',
   initialState: {
     state: false,
-    options: {
-      children: 'Hi',
-    },
+    options: { children: 'Hi' },
   },
   reducers: {
     openDialog: (state, action) => {

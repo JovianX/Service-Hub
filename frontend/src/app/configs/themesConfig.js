@@ -1,5 +1,6 @@
-import { fuseDark, skyBlue } from '@fuse/colors';
 import { blueGrey } from '@mui/material/colors';
+
+import { fuseDark, skyBlue } from '@fuse/colors';
 
 export const lightPaletteText = {
   primary: 'rgb(17, 24, 39)',
@@ -45,9 +46,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   defaultDark: {
     palette: {
@@ -79,9 +78,7 @@ const themesConfig = {
         main: '#f44336',
         dark: '#b71c1c',
       },
-      status: {
-        danger: 'orange',
-      },
+      status: { danger: 'orange' },
     },
   },
   legacy: {
@@ -115,9 +112,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light1: {
     palette: {
@@ -146,9 +141,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light2: {
     palette: {
@@ -177,9 +170,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light3: {
     palette: {
@@ -208,9 +199,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light4: {
     palette: {
@@ -239,9 +228,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light5: {
     palette: {
@@ -270,9 +257,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light6: {
     palette: {
@@ -301,9 +286,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light7: {
     palette: {
@@ -332,9 +315,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light8: {
     palette: {
@@ -363,9 +344,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light9: {
     palette: {
@@ -394,9 +373,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light10: {
     palette: {
@@ -425,9 +402,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   light11: {
     palette: {
@@ -456,9 +431,7 @@ const themesConfig = {
         dark: '#E3B9B9',
       },
     },
-    status: {
-      danger: 'yellow',
-    },
+    status: { danger: 'yellow' },
   },
   light12: {
     palette: {
@@ -487,9 +460,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark1: {
     palette: {
@@ -518,9 +489,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark2: {
     palette: {
@@ -549,9 +518,7 @@ const themesConfig = {
         dark: '#E3B9B9',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark3: {
     palette: {
@@ -580,9 +547,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark4: {
     palette: {
@@ -611,9 +576,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark5: {
     palette: {
@@ -642,9 +605,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark6: {
     palette: {
@@ -673,9 +634,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark7: {
     palette: {
@@ -704,9 +663,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark8: {
     palette: {
@@ -735,9 +692,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark9: {
     palette: {
@@ -766,9 +721,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark10: {
     palette: {
@@ -797,9 +750,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark11: {
     palette: {
@@ -828,9 +779,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   dark12: {
     palette: {
@@ -859,9 +808,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
   greyDark: {
     palette: {
@@ -890,9 +837,7 @@ const themesConfig = {
         dark: '#b71c1c',
       },
     },
-    status: {
-      danger: 'orange',
-    },
+    status: { danger: 'orange' },
   },
 };
 

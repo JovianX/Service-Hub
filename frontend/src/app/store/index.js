@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import createReducer from './rootReducer';
 
 if (process.env.NODE_ENV === 'development' && module.hot) {
@@ -11,8 +12,10 @@ if (process.env.NODE_ENV === 'development' && module.hot) {
 const middlewares = [];
 
 if (process.env.NODE_ENV === 'development') {
-  const { createLogger } = require(`redux-logger`);
-  const logger = createLogger({ collapsed: (getState, action, logEntry) => !logEntry.error });
+  const { createLogger } = require('redux-logger');
+  const logger = createLogger({
+    collapsed: (getState, action, logEntry) => !logEntry.error,
+  });
 
   middlewares.push(logger);
 }

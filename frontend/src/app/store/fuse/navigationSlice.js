@@ -1,24 +1,38 @@
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import navigationConfig from 'app/configs/navigationConfig';
-import FuseUtils from '@fuse/utils';
+import {
+  createEntityAdapter,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import i18next from 'i18next';
+
+import FuseUtils from '@fuse/utils';
 import _ from '@lodash';
+import navigationConfig from 'app/configs/navigationConfig';
 
 const navigationAdapter = createEntityAdapter();
 const emptyInitialState = navigationAdapter.getInitialState();
-const initialState = navigationAdapter.upsertMany(emptyInitialState, navigationConfig);
+const initialState = navigationAdapter.upsertMany(
+  emptyInitialState,
+  navigationConfig,
+);
 
-export const appendNavigationItem = (item, parentId) => (dispatch, getState) => {
-  const navigation = selectNavigationAll(getState());
+export const appendNavigationItem =
+  (item, parentId) => (dispatch, getState) => {
+    const navigation = selectNavigationAll(getState());
 
-  return dispatch(setNavigation(FuseUtils.appendNavItem(navigation, item, parentId)));
-};
+    return dispatch(
+      setNavigation(FuseUtils.appendNavItem(navigation, item, parentId)),
+    );
+  };
 
-export const prependNavigationItem = (item, parentId) => (dispatch, getState) => {
-  const navigation = selectNavigationAll(getState());
+export const prependNavigationItem =
+  (item, parentId) => (dispatch, getState) => {
+    const navigation = selectNavigationAll(getState());
 
-  return dispatch(setNavigation(FuseUtils.prependNavItem(navigation, item, parentId)));
-};
+    return dispatch(
+      setNavigation(FuseUtils.prependNavItem(navigation, item, parentId)),
+    );
+  };
 
 export const updateNavigationItem = (id, item) => (dispatch, getState) => {
   const navigation = selectNavigationAll(getState());
@@ -73,10 +87,12 @@ export const selectNavigation = createSelector(
     return setTranslationValues(
       _.merge(
         [],
-        filterRecursively(navigation, (item) => FuseUtils.hasPermission(item.auth, userRole))
-      )
+        filterRecursively(navigation, (item) =>
+          FuseUtils.hasPermission(item.auth, userRole),
+        ),
+      ),
     );
-  }
+  },
 );
 
 function filterRecursively(arr, predicate) {
@@ -89,8 +105,9 @@ function filterRecursively(arr, predicate) {
   });
 }
 
-export const selectFlatNavigation = createSelector([selectNavigation], (navigation) =>
-  FuseUtils.getFlatNavigation(navigation)
+export const selectFlatNavigation = createSelector(
+  [selectNavigation],
+  (navigation) => FuseUtils.getFlatNavigation(navigation),
 );
 
 export default navigationSlice.reducer;

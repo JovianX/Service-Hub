@@ -1,25 +1,16 @@
-import SignUpPage from './SignUpPage';
 import authRoles from '../../auth/authRoles';
+
+import SignUpPage from './SignUpPage';
 
 const SignUpConfig = {
   settings: {
     layout: {
       config: {
-        navbar: {
-          display: false,
-        },
-        toolbar: {
-          display: false,
-        },
-        footer: {
-          display: false,
-        },
-        leftSidePanel: {
-          display: false,
-        },
-        rightSidePanel: {
-          display: false,
-        },
+        navbar: { display: false },
+        toolbar: { display: false },
+        footer: { display: false },
+        leftSidePanel: { display: false },
+        rightSidePanel: { display: false },
       },
     },
   },

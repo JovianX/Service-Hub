@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from typing import Literal
 from typing import Union
 
@@ -62,7 +62,7 @@ class KubernetesConfigurationSchema(BaseModel):
 
 
 class SettingsSchema(BaseModel):
-    kubernetes_configuration: Optional[KubernetesConfigurationSchema] = Field(
+    kubernetes_configuration: KubernetesConfigurationSchema = Field(
         description='Kubernetes configuration to use during application management.'
     )
 

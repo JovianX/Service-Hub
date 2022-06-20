@@ -1,5 +1,3 @@
-const locale = {
-  TITLE: 'Örnek Sayfa',
-};
+const locale = { TITLE: 'Örnek Sayfa' };
 
 export default locale;

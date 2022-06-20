@@ -1,8 +1,8 @@
-import Tooltip from '@mui/material/Tooltip';
-import Button from '@mui/material/Button';
-import clsx from 'clsx';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
+import clsx from 'clsx';
 
 const Root = styled(Tooltip)(({ theme, active }) => ({
   width: 70,
@@ -14,7 +14,7 @@ const Root = styled(Tooltip)(({ theme, active }) => ({
       top: 8,
       right: 0,
       bottom: 8,
-      content: "''",
+      content: '""',
       width: 4,
       borderTopLeftRadius: 4,
       borderBottomLeftRadius: 4,
@@ -52,34 +52,32 @@ const StyledStatus = styled('div')(({ theme, value }) => ({
   borderRadius: '50%',
   zIndex: 10,
 
-  ...(value === 'online' && {
-    backgroundColor: '#4CAF50',
-  }),
+  ...(value === 'online' && { backgroundColor: '#4CAF50' }),
 
-  ...(value === 'do-not-disturb' && {
-    backgroundColor: '#F44336',
-  }),
+  ...(value === 'do-not-disturb' && { backgroundColor: '#F44336' }),
 
-  ...(value === 'away' && {
-    backgroundColor: '#FFC107',
-  }),
+  ...(value === 'away' && { backgroundColor: '#FFC107' }),
 
-  ...(value === 'offline' && {
-    backgroundColor: '#646464',
-  }),
+  ...(value === 'offline' && { backgroundColor: '#646464' }),
 }));
 
 const ContactButton = ({ contact, selectedContactId, onClick }) => {
   return (
-    <Root title={contact.name} placement="left" active={selectedContactId === contact.id ? 1 : 0}>
+    <Root
+      title={contact.name}
+      placement='left'
+      active={selectedContactId === contact.id ? 1 : 0}
+    >
       <Button
         onClick={() => onClick(contact.id)}
         className={clsx(
           'contactButton rounded-0 py-4 h-auto min-h-auto max-h-none',
-          selectedContactId === contact.id && 'active'
+          selectedContactId === contact.id && 'active',
         )}
       >
-        {contact.unread && <StyledUreadBadge>{contact.unread}</StyledUreadBadge>}
+        {contact.unread && (
+          <StyledUreadBadge>{contact.unread}</StyledUreadBadge>
+        )}
 
         <StyledStatus value={contact.status} />
 

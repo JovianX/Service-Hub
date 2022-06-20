@@ -1,10 +1,11 @@
-import FuseNavigation from '@fuse/core/FuseNavigation';
 import clsx from 'clsx';
 import { memo, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectNavigation } from 'app/store/fuse/navigationSlice';
+
+import FuseNavigation from '@fuse/core/FuseNavigation';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
 import { navbarCloseMobile } from 'app/store/fuse/navbarSlice';
+import { selectNavigation } from 'app/store/fuse/navigationSlice';
 
 function Navigation(props) {
   const navigation = useSelector(selectNavigation);
@@ -29,11 +30,17 @@ function Navigation(props) {
         onItemClick={handleItemClick}
       />
     );
-  }, [dispatch, isMobile, navigation, props.active, props.className, props.dense, props.layout]);
+  }, [
+    dispatch,
+    isMobile,
+    navigation,
+    props.active,
+    props.className,
+    props.dense,
+    props.layout,
+  ]);
 }
 
-Navigation.defaultProps = {
-  layout: 'vertical',
-};
+Navigation.defaultProps = { layout: 'vertical' };
 
 export default memo(Navigation);
