@@ -13,14 +13,11 @@ import SignUpConfig from '../main/sign-up/SignUpConfig';
 const routeConfigs = [ExampleConfig, SignOutConfig, SignInConfig, SignUpConfig];
 
 const routes = [
-  ...FuseUtils.generateRoutesFromConfigs(
-    routeConfigs,
-    settingsConfig.defaultAuth,
-  ),
+  ...FuseUtils.generateRoutesFromConfigs(routeConfigs, settingsConfig.defaultAuth),
   {
     path: '/',
     element: <Navigate to='/example' />,
-    auth: settingsConfig.defaultAuth,
+    // auth: settingsConfig.defaultAuth,
   },
   {
     path: 'loading',

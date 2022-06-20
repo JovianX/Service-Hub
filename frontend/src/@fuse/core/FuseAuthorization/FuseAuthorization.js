@@ -1,8 +1,6 @@
 import { Component } from 'react';
-import { matchRoutes } from 'react-router-dom';
 
 import withRouter from '@fuse/core/withRouter';
-import FuseUtils from '@fuse/utils';
 import history from '@history';
 import AppContext from 'app/AppContext';
 
@@ -35,27 +33,29 @@ class FuseAuthorization extends Component {
     }
   }
 
-  static getDerivedStateFromProps(props, state) {
-    const { location, userRole } = props;
-    const { pathname } = location;
-
-    const matchedRoutes = matchRoutes(state.routes, pathname);
-
-    const matched = matchedRoutes ? matchedRoutes[0] : false;
-    return {
-      accessGranted: matched ? FuseUtils.hasPermission(matched.route.auth, userRole) : true,
-    };
-  }
+  // TODO: update persmission logic
+  // static getDerivedStateFromProps(props, state) {
+  //   const { location, userRole } = props;
+  //   const { pathname } = location;
+  //
+  //   const matchedRoutes = matchRoutes(state.routes, pathname);
+  //
+  //   const matched = matchedRoutes ? matchedRoutes[0] : false;
+  //   return {
+  //     accessGranted: matched ? FuseUtils.hasPermission(matched.route.auth, userRole) : true,
+  //   };
+  // }
 
   redirectRoute() {
+    console.log('redirectRoute');
     const { location, userRole } = this.props;
     const { pathname } = location;
     const redirectUrl = loginRedirectUrl || this.defaultLoginRedirectUrl;
 
     /*
-        User is guest
-        Redirect to Login Page
-        */
+      User is guest
+      Redirect to Login Page
+      */
     if (!userRole || userRole.length === 0) {
       setTimeout(() => history.push('/sign-in'), 0);
       loginRedirectUrl = pathname;

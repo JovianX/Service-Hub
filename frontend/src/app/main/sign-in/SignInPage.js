@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import history from '@history';
 import _ from '@lodash';
 
 import jwtService from '../../auth/services/jwtService';
@@ -47,6 +48,8 @@ function SignInPage() {
   const onSubmit = async ({ email, password }) => {
     try {
       await jwtService.signInWithEmailAndPassword(email, password);
+
+      history.push('/');
     } catch (errors) {
       setError('email', {
         type: 'manual',
