@@ -6,6 +6,7 @@ from httpx import AsyncClient
 
 from application.exceptions.shell import NonZeroStatusException
 from application.models.user import User
+from application.utils.kubernetes import KubernetesConfigurationFile
 
 
 class TestHelm:
@@ -13,14 +14,17 @@ class TestHelm:
     @pytest.mark.asyncio
     async def test_empty_repository_list(self, client: AsyncClient, current_user: User) -> None:
         with mock.patch('application.services.helm.subcommands.base.run', autospec=True) as shell_call:
-            shell_call.side_effect = Mock(
-                side_effect=NonZeroStatusException(
-                    command='helm repo list --output=yaml',
-                    status_code=1,
-                    stderr_message='Error: no repositories to show\n'
+            with mock.patch('application.managers.organizations.manager.OrganizationManager.get_kubernetes_configuration') as organization_manager:
+                organization_manager.return_value = KubernetesConfigurationFile({})
+                shell_call.side_effect = Mock(
+                    side_effect=NonZeroStatusException(
+                        command='helm repo list --output=yaml',
+                        status_code=1,
+                        stderr_message='Error: no repositories to show\n'
+                    )
                 )
-            )
-            response = await client.get('/helm/repository/list')
+
+                response = await client.get('/helm/repository/list')
 
         assert 200 == response.status_code, 'Expected status 200.'
         response_data = response.json()
@@ -34,16 +38,20 @@ class TestHelm:
             'url': 'https://coda-charts.storage.googleapis.com'
         }
         with mock.patch('application.services.helm.subcommands.base.run', autospec=True) as shell_call:
-            shell_call.return_value = '"mina" has been added to your repositories\n'
-            response = await client.post('/helm/repository/add', json=data)
+            with mock.patch('application.managers.organizations.manager.OrganizationManager.get_kubernetes_configuration') as organization_manager:
+                organization_manager.return_value = KubernetesConfigurationFile({})
+                shell_call.return_value = '"mina" has been added to your repositories\n'
+                response = await client.post('/helm/repository/add', json=data)
 
         assert 200 == response.status_code, 'Expected status 200.'
 
     @pytest.mark.asyncio
     async def test_repository_list(self, client: AsyncClient, current_user: User) -> None:
         with mock.patch('application.services.helm.subcommands.base.run', autospec=True) as shell_call:
-            shell_call.return_value = '- name: mina\n  url: https://coda-charts.storage.googleapis.com\n'
-            response = await client.get('/helm/repository/list')
+            with mock.patch('application.managers.organizations.manager.OrganizationManager.get_kubernetes_configuration') as organization_manager:
+                organization_manager.return_value = KubernetesConfigurationFile({})
+                shell_call.return_value = '- name: mina\n  url: https://coda-charts.storage.googleapis.com\n'
+                response = await client.get('/helm/repository/list')
 
         assert 200 == response.status_code, 'Expected status 200.'
         response_data = response.json()

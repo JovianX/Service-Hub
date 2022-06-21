@@ -5,18 +5,16 @@ import tempfile
 
 import yaml
 
-from application.managers.organizations.settings_schemas import KubernetesConfigurationSchema
-
 
 class KubernetesConfigurationFile:
     """
     Context manager that allows to save organization Kubernetes configuration
     into file and after use deletes it.
     """
-    configuration: KubernetesConfigurationSchema
+    configuration: dict
     file = None
 
-    def __init__(self, configuration: KubernetesConfigurationSchema):
+    def __init__(self, configuration: dict):
         self.configuration = configuration
 
     def __enter__(self):

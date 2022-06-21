@@ -85,8 +85,8 @@ async def get_user_db(session=Depends(get_session)):
     yield SQLAlchemyUserDatabase(session, User, OAuthAccount)
 
 
-async def get_user_manager(user_db=Depends(get_user_db), organizations=Depends(get_organization_manager)):
-    yield UserManager(user_db, organizations)
+async def get_user_manager(user_db=Depends(get_user_db), organization_manager=Depends(get_organization_manager)):
+    yield UserManager(user_db, organization_manager)
 
 
 def get_jwt_strategy() -> JWTStrategy:
