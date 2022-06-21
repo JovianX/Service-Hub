@@ -1,4 +1,4 @@
-.PHONY: help setup setup_helm migrate up down logs db_shell run format tests
+.PHONY: help setup setup_helm migrate up down serve logs db_shell run format tests
 
 export
 
@@ -33,8 +33,11 @@ migrate: ## Apply all unapplied migrations.
 up: ## Launch dockerized infrastructure.
 	docker-compose up --detach
 
-down: ## Shut down dockerized infrastructure.
+down: ## Shutdown dockerized infrastructure.
 	docker-compose down
+
+serve: ## Run only infrastructure containers.
+	docker-compose up --detach postgres
 
 logs: ## Show contaiters logs.
 	@docker-compose logs --follow || true

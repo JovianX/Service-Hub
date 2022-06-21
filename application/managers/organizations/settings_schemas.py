@@ -10,7 +10,11 @@ from pydantic import Field
 
 class KubernetesConfigurationClusterDefenitionSchema(BaseModel):
     certificate_authority_data: str = Field(alias='certificate-authority-data', description='Admin certificate.')
-    server: AnyHttpUrl = Field(description='Server URL.')
+    # TODO: Find way to properly serialize server property. Currently it is serialized as:
+    #       `'server': AnyHttpUrl('https://35.224.212.222', scheme='https', host='35.224.212.222', host_type='ipv4')`
+    #       and it is breaks Kubernetes configuration file.
+    # server: AnyHttpUrl = Field(description='Server URL.')
+    server: str = Field(description='Server URL.')
 
     class Config:
         allow_population_by_field_name = True
@@ -43,7 +47,7 @@ class KubernetesConfigurationUserSchema(BaseModel):
 
 class KubernetesConfigurationSchema(BaseModel):
     kind: Literal['Config'] = Field(description='Type of entity. For configuration always must be "Config".')
-    apiVersion: str = Field(description='Version of using API in form of semantic versioning')
+    api_version: str = Field(alias='apiVersion', description='Version of using API in form of semantic versioning')
     current_context: str = Field(alias='current-context', description='Default context.')
     clusters: List[KubernetesConfigurationClusterSchema] = Field(description='List of clusters.')
     contexts: List[KubernetesConfigurationContextSchema] = Field(description='List of contexts.')
@@ -51,6 +55,10 @@ class KubernetesConfigurationSchema(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+    def dict(self, *args, **kwargs):
+        kwargs['by_alias'] = True
+        return super().dict(*args, **kwargs)
 
 
 class SettingsSchema(BaseModel):

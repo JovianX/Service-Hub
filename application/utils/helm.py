@@ -37,7 +37,8 @@ class HelmArchive:
         Creating archive of Helm home directory with excluded cache and saving
         it into organization database record.
         """
-        await run(f'tar --gzip --create --directory={self.helm_home} --exclude=cache --file={self.helm_home_archive} .')
-        with open(self.helm_home_archive, mode='rb') as file:
-            self.organization.helm_home = file.read()
-        await self.organization_manager.db.save(self.organization)
+        if self.helm_home.exists():
+            await run(f'tar --gzip --create --directory={self.helm_home} --exclude=cache --file={self.helm_home_archive} .')
+            with open(self.helm_home_archive, mode='rb') as file:
+                self.organization.helm_home = file.read()
+            await self.organization_manager.db.save(self.organization)
