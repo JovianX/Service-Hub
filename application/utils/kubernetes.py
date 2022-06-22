@@ -5,6 +5,8 @@ import tempfile
 
 import yaml
 
+from application.core.configuration import settings
+
 
 class KubernetesConfigurationFile:
     """
@@ -18,7 +20,7 @@ class KubernetesConfigurationFile:
         self.configuration = configuration
 
     def __enter__(self):
-        self.file = tempfile.NamedTemporaryFile(mode='w', suffix='.yaml')
+        self.file = tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', dir=settings.FILE_STORAGE_ROOT)
         yaml.dump(self.configuration, self.file, default_flow_style=False)
 
         return self.file.name

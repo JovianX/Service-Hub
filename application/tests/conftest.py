@@ -14,6 +14,7 @@ from application.db.session import get_session_maker
 from application.instance import instance
 from application.utils.user import create_user
 from application.utils.user import delete_user
+
 from .fixtures.cluster_configuration import cluster_configuration
 
 

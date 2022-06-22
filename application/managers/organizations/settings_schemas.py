@@ -62,7 +62,7 @@ class KubernetesConfigurationSchema(BaseModel):
 
 
 class SettingsSchema(BaseModel):
-    kubernetes_configuration: KubernetesConfigurationSchema = Field(
+    kubernetes_configuration: Optional[KubernetesConfigurationSchema] = Field(
         description='Kubernetes configuration to use during application management.'
     )
 

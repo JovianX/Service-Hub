@@ -1,5 +1,6 @@
 import datetime
 
+
 kubernetes_deployment_details_fixture = {
     "api_version": "apps/v1",
     "kind": "Deployment",

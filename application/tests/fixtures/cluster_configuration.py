@@ -6,7 +6,7 @@ cluster_configuration = {
     "clusters": [
         {
             "cluster": {
-                "certificate-authority-data": "token",
+                "certificate-authority-data": "dG9rZW4=",
                 "server": "https://42.42.42.42",
             },
             "name": "some-cluster",
