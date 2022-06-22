@@ -15,7 +15,7 @@ class K8sManager:
     def __init__(self, configuration_path: str) -> None:
         self.client = K8sClient(configuration_path)
 
-    async def get_details(self, kind: K8sKinds, namespace: str, name: str):
+    async def get_details(self, kind: K8sKinds, namespace: str, name: str) -> K8sEntitySchema:
         """
         Returns entity details.
         """

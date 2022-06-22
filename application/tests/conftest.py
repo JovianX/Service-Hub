@@ -14,6 +14,7 @@ from application.db.session import get_session_maker
 from application.instance import instance
 from application.utils.user import create_user
 from application.utils.user import delete_user
+from .fixtures.cluster_configuration import cluster_configuration
 
 
 engine = get_engine(settings.TEST_DATABASE_URL)
@@ -90,6 +91,7 @@ async def client(session):
 @pytest_asyncio.fixture
 async def current_user(session):
     user = await create_user(session, 'user@mail.com', '123123')
+    user.organization.settings = {'kubernetes_configuration': cluster_configuration}
 
     async def get_user():
         yield user

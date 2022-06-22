@@ -57,7 +57,7 @@ class ManifestSchema(BaseModel):
     Entity manifest.
     """
     api_version: str = Field(alias='apiVersion', description='API version')
-    kind: str = Field(description='Type if entity')
+    kind: str = Field(description='Type of entity')
     metadata: ManifestMetaSchema = Field(description='Entity metadata')
     specification: Optional[dict] = Field(alias='spec', default={}, description='Entity technical specification')
 
