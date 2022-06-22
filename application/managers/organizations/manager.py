@@ -2,7 +2,6 @@
 Classes that include business logic of Organizations.
 """
 import tempfile
-from typing import Any
 
 import yaml
 from faker import Faker
