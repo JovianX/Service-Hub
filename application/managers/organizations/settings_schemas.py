@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 from typing import Literal
 from typing import Optional
@@ -67,9 +68,12 @@ class SettingsSchema(BaseModel):
     )
 
 
-ROOT_SETTING_NAMES = Union[  # type: ignore
-    tuple(Literal[field_name] for field_name in SettingsSchema.__fields__.keys())  # type: ignore
-]
+ROOT_SETTING_NAMES = Enum(
+    'SettingNames',
+    {field_name: field_name for field_name in SettingsSchema.__fields__.keys()},
+    type=str
+)
+
 
 ROOT_SETTING_SCHEMAS = Union[  # type: ignore
     tuple(field.type_ for field in SettingsSchema.__fields__.values())

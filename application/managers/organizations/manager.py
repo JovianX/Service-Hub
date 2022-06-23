@@ -2,6 +2,7 @@
 Classes that include business logic of Organizations.
 """
 import tempfile
+from typing import Any
 
 import yaml
 from faker import Faker
@@ -12,6 +13,7 @@ from kubernetes.config.kube_config import KubeConfigMerger
 from application.core.configuration import settings
 from application.crud.organizations import OrganizationDatabase
 from application.db.session import get_session
+from application.managers.kubernetes import K8sManager
 from application.models.organization import Organization
 from application.utils.kubernetes import KubernetesConfigurationFile
 
@@ -38,6 +40,17 @@ class OrganizationManager:
         return await self.db.create({
             'title': title
         })
+
+    async def delete_context(self, instance: Organization, context_name: str) -> None:
+        """
+        Delete context from Kubernetes configuration with helm of kubectl.
+        """
+        with self.get_kubernetes_configuration(instance) as k8s_configuration_path:
+            k8s_manager = K8sManager(k8s_configuration_path)
+            await k8s_manager.delete_context(context_name)
+            with open(k8s_configuration_path) as k8s_configuration_file:
+                configuratoin = yaml.safe_load(k8s_configuration_file)
+        await self.update_setting(instance, 'kubernetes_configuration', configuratoin)
 
     async def merge_kubernetes_configurations(self, current_configuration: dict, incoming_configuration: dict) -> dict:
         """
@@ -66,7 +79,18 @@ class OrganizationManager:
 
         return merged_configuration
 
-    async def update_setting(self, instance: Organization, setting_name: str, setting_value: ROOT_SETTING_SCHEMAS):
+    async def update_kubernetes_configuration(self, instance: Organization, configuration: dict):
+        """
+        Saves new of does merge with existing Kubernetes configuration.
+        """
+        current_settings = instance.settings
+        if 'kubernetes_configuration' in current_settings:
+            configuration = await self.merge_kubernetes_configurations(
+                current_settings['kubernetes_configuration'], configuration
+            )
+        await self.update_setting(instance, 'kubernetes_configuration', configuration)
+
+    async def update_setting(self, instance: Organization, setting_name: str, setting_value: Any):
         """
         Sets organization settings and updates organization record in database.
 
@@ -75,13 +99,12 @@ class OrganizationManager:
         """
         if setting_name not in SettingsSchema.__fields__:
             raise ValueError(f'Unknown organization setting: "{setting_name}".')
-        if setting_name == 'kubernetes_configuration':
-            current_configuration = self.get_setting(instance, 'kubernetes_configuration')
-            setting_value = await self.merge_kubernetes_configurations(
-                current_configuration.dict(), setting_value.dict()
-            )
-        settings = SettingsSchema.parse_obj({**instance.settings, **{setting_name: setting_value}})
-        instance.settings = settings.dict(exclude_unset=True)
+        # Validating incoming setting value.
+        SettingsSchema.parse_obj({setting_name: setting_value})
+
+        # It look like SQLAlchemy badly tracking changes of JSON field. Forcing
+        # it to spot field change by replacing full field value.
+        instance.settings = {**instance.settings, **{setting_name: setting_value}}
         await self.db.save(instance)
 
     def get_setting(self, instance: Organization, setting_name: str) -> ROOT_SETTING_SCHEMAS:
