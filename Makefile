@@ -65,4 +65,4 @@ format: ## Format source code.
 	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports .
 
 tests: ## Run all test.
-	@. $(VE_DIRECTORY)/bin/activate; pytest ./application/tests
+	@. $(VE_DIRECTORY)/bin/activate; pytest -v ./application/tests

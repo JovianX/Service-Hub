@@ -83,6 +83,7 @@ class OrganizationManager:
         """
         Saves new of does merge with existing Kubernetes configuration.
         """
+        SettingsSchema.parse_obj({'kubernetes_configuration': configuration})
         current_settings = instance.settings
         if 'kubernetes_configuration' in current_settings:
             configuration = await self.merge_kubernetes_configurations(

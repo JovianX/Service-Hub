@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest import mock
 from unittest.mock import Mock
 
@@ -14,6 +13,7 @@ from application.services.helm.schemas import ManifestMetaSchema
 from application.services.helm.schemas import ManifestSchema
 from application.services.helm.schemas import ReleaseSchema
 from application.services.kubernetes.schemas import K8sEntitySchema
+from application.tests.fixtures.cluster_configuration import cluster_configuration
 from application.tests.fixtures.k8s_deployment import kubernetes_deployment_details_fixture
 from application.utils.kubernetes import KubernetesConfigurationFile
 
@@ -75,6 +75,7 @@ class TestHelm:
 
     @pytest.mark.asyncio
     async def test_release_list(self, client: AsyncClient, current_user: User) -> None:
+        current_user.organization.settings = {'kubernetes_configuration': cluster_configuration}
         with mock.patch('application.managers.organizations.manager.OrganizationManager.get_kubernetes_configuration') as organization_manager:
             with mock.patch('application.services.helm.subcommands.list.HelmList.releases', autospec=True) as releases:
                 with mock.patch('application.services.helm.subcommands.get.HelmGet.manifest') as manifest:

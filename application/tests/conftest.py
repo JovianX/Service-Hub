@@ -92,12 +92,11 @@ async def client(session):
 @pytest_asyncio.fixture
 async def current_user(session):
     user = await create_user(session, 'user@mail.com', '123123')
-    user.organization.settings = {'kubernetes_configuration': cluster_configuration}
 
     async def get_user():
         yield user
 
     instance.dependency_overrides[current_active_user] = get_user
-    yield
+    yield user
     del instance.dependency_overrides[current_active_user]
     await delete_user(session, user)

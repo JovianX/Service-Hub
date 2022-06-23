@@ -53,6 +53,7 @@ class KubernetesConfigurationSchema(BaseModel):
     clusters: List[KubernetesConfigurationClusterSchema] = Field(description='List of clusters.')
     contexts: List[KubernetesConfigurationContextSchema] = Field(description='List of contexts.')
     users: List[KubernetesConfigurationUserSchema] = Field(description='List of users.')
+    preferences: dict = Field(description='Various settings.')
 
     class Config:
         allow_population_by_field_name = True

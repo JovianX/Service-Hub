@@ -1,5 +1,7 @@
 from typing import Any
+
 from fastapi import APIRouter
+from fastapi import Body
 from fastapi import Depends
 from fastapi import Query
 
@@ -29,8 +31,8 @@ async def save_setting(
 
 @router.post('/settings/{setting_name}')
 async def save_setting(
-    data: Any,
     setting_name: ROOT_SETTING_NAMES,
+    setting_value: Any = Body(),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
 ):
@@ -39,9 +41,9 @@ async def save_setting(
     """
     organization = user.organization
     if setting_name == 'kubernetes_configuration':
-        await organization_manager.update_kubernetes_configuration(organization, data)
+        await organization_manager.update_kubernetes_configuration(organization, setting_value)
     else:
-        await organization_manager.update_setting(organization, setting_name, data)
+        await organization_manager.update_setting(organization, setting_name, setting_value)
 
 
 @router.get('/settings/{setting_name}')
