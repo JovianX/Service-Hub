@@ -15,16 +15,16 @@ class HelmList(HelmBase):
     """
     subcommand = 'list'
 
-    async def releases(self, namespace: str = None) -> List[ReleaseSchema]:
+    async def releases(self, context_name: str, namespace: str = None) -> List[ReleaseSchema]:
         """
         Lists all releases.
 
         Full description: https://helm.sh/docs/helm/helm_list/
         """
         if namespace:
-            command = self._formup_command(namespace=namespace, output='yaml')
+            command = self._formup_command(kube_context=context_name, namespace=namespace, output='yaml')
         else:
-            command = self._formup_command('--all-namespaces', output='yaml')
+            command = self._formup_command('--all-namespaces', kube_context=context_name, output='yaml')
         output = await self._run_command(command)
         releases = yaml.safe_load(output)
 

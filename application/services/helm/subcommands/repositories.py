@@ -33,7 +33,9 @@ class HelmRepository(HelmBase):
         try:
             output = await self._run_command(command)
         except NonZeroStatusException as error:
-            if error.stderr_message.strip() == 'Error: no repositories to show':
+            no_repository_added_message = 'Error: no repositories to show'
+            error_message = error.stderr_message.strip()
+            if error_message == no_repository_added_message:
                 return []
             raise
 
@@ -46,4 +48,11 @@ class HelmRepository(HelmBase):
         Full description: https://helm.sh/docs/helm/helm_repo_update/
         """
         command = self._formup_command('update')
-        await self._run_command(command)
+        try:
+            await self._run_command(command)
+        except NonZeroStatusException as error:
+            no_repository_message = 'Error: no repositories found. You must add one before updating'
+            error_message = error.stderr_message.strip()
+            if error_message == no_repository_message:
+                return
+            raise

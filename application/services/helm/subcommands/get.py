@@ -13,13 +13,13 @@ class HelmGet(HelmBase):
 
     subcommand = 'get'
 
-    async def manifest(self, release_name: str, namespace: str) -> List[ManifestSchema]:
+    async def manifest(self, context_name: str, namespace: str, release_name: str) -> List[ManifestSchema]:
         """
         Returns release entity list.
 
         Full description: https://helm.sh/docs/helm/helm_get_manifest/
         """
-        command = self._formup_command('manifest', release_name, namespace=namespace)
+        command = self._formup_command('manifest', release_name, kube_context=context_name, namespace=namespace)
         output = await self._run_command(command)
         parsed_manifests = [yaml.safe_load(item) for item in output.split('---\n') if item]
         manifests = []

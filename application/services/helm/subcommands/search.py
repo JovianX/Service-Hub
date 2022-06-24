@@ -1,5 +1,7 @@
 import yaml
 
+from application.exceptions.shell import NonZeroStatusException
+
 from .base import HelmBase
 
 
@@ -18,6 +20,13 @@ class HelmSearch(HelmBase):
         """
         command = self._formup_command('repo', output='yaml')
 
-        output = await self._run_command(command)
+        try:
+            output = await self._run_command(command)
+        except NonZeroStatusException as error:
+            no_repository_added_message = 'Error: no repositories configured'
+            error_message = error.stderr_message.strip()
+            if error_message == no_repository_added_message:
+                return []
+            raise
 
         return yaml.safe_load(output)

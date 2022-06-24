@@ -55,14 +55,15 @@ run: ## Launch local appserver.
 	. $(VE_DIRECTORY)/bin/activate; uvicorn --reload --reload-exclude=docker-data/* application.instance:instance
 
 format: ## Format source code.
-	@. $(VE_DIRECTORY)/bin/activate; autopep8 --in-place --recursive .
+	@. $(VE_DIRECTORY)/bin/activate; autopep8 --in-place --recursive application migrations
 	@. $(VE_DIRECTORY)/bin/activate; docformatter \
 		--wrap-summaries=80 \
 		--wrap-descriptions=80 \
 		--pre-summary-newline \
 		--make-summary-multi-line \
-		--in-place --recursive .
-	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports .
+		--in-place --recursive \
+		application migrations
+	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports application migrations
 
 tests: ## Run all test.
 	@. $(VE_DIRECTORY)/bin/activate; pytest -v ./application/tests
