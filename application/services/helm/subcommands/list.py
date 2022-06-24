@@ -5,6 +5,7 @@ from typing import List
 
 import yaml
 
+from ..schemas import ReleaseSchema
 from .base import HelmBase
 
 
@@ -14,13 +15,17 @@ class HelmList(HelmBase):
     """
     subcommand = 'list'
 
-    async def all_releases(self) -> List[dict]:
+    async def releases(self, namespace: str = None) -> List[ReleaseSchema]:
         """
         Lists all releases.
 
         Full description: https://helm.sh/docs/helm/helm_list/
         """
-        command = self._formup_command('--all-namespaces', output='yaml')
+        if namespace:
+            command = self._formup_command(namespace=namespace, output='yaml')
+        else:
+            command = self._formup_command('--all-namespaces', output='yaml')
         output = await self._run_command(command)
+        releases = yaml.safe_load(output)
 
-        return yaml.safe_load(output)
+        return [ReleaseSchema.parse_obj(release) for release in releases]

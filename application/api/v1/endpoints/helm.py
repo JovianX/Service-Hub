@@ -1,8 +1,12 @@
+from typing import List
+
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import Query
 
 from application.core.authentication import current_active_user
-from application.managers.helm import HelmManager
+from application.managers.helm.manager import HelmManager
+from application.managers.helm.schemas import ReleaseListItemSchema
 from application.managers.organizations.manager import OrganizationManager
 from application.managers.organizations.manager import get_organization_manager
 from application.models.user import User
@@ -53,8 +57,9 @@ async def list_charts_in_repsitories(
     return {'data': repositories}
 
 
-@router.get('/release/list')
+@router.get('/release/list', response_model=List[ReleaseListItemSchema])
 async def list_releases(
+    namespace: str | None = Query(default=None),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
 ):
@@ -62,6 +67,6 @@ async def list_releases(
     List releases in all namespaces using default context.
     """
     helm_manager = HelmManager(organization_manager)
-    releases = await helm_manager.list_releases(user.organization)
+    releases = await helm_manager.list_releases(user.organization, namespace=namespace)
 
-    return {'data': releases}
+    return releases

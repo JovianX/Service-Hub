@@ -4,6 +4,8 @@ Faker #  This dependency temporary must be in production requirements until Orga
 fastapi
 fastapi-users[sqlalchemy]
 httpx-oauth
+kubernetes
+kubernetes_asyncio==22.6.5 #  Version locked because of issue https://github.com/kubernetes-client/python/issues/1718 and https://github.com/kubernetes-client/python/issues/1751
 pydantic
 pyyaml
 sqlalchemy[asyncio]

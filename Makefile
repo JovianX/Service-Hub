@@ -1,9 +1,9 @@
-.PHONY: help setup setup_helm migrate up down logs db_shell run format tests
+.PHONY: help setup setup_helm migrate up down serve logs db_shell run format tests
 
 export
 
 VE_DIRECTORY = .venv
-PYTHON = python3
+PYTHON = python3.10
 DB_NAME = service_hub
 DB_USER = postgres_user
 
@@ -22,7 +22,7 @@ setup_helm: ## Install Helm CLI.
 	@mkdir -p $(VE_DIRECTORY)/tmp/helm
 	@wget --output-document=$(VE_DIRECTORY)/tmp/helm.tar.gz https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz
 	@tar --extract --gzip --directory=$(VE_DIRECTORY)/tmp/helm --file=$(VE_DIRECTORY)/tmp/helm.tar.gz
-	@mv $(VE_DIRECTORY)/tmp/helm/linux-amd64/helm $(VE_DIRECTORY)/bin/helm3
+	@mv $(VE_DIRECTORY)/tmp/helm/linux-amd64/helm $(VE_DIRECTORY)/bin/helm
 
 	@rm $(VE_DIRECTORY)/tmp/helm.tar.gz
 	@rm -rf $(VE_DIRECTORY)/tmp/helm
@@ -33,8 +33,11 @@ migrate: ## Apply all unapplied migrations.
 up: ## Launch dockerized infrastructure.
 	docker-compose up --detach
 
-down: ## Shut down dockerized infrastructure.
+down: ## Shutdown dockerized infrastructure.
 	docker-compose down
+
+serve: ## Run only infrastructure containers.
+	docker-compose up --detach postgres
 
 logs: ## Show contaiters logs.
 	@docker-compose logs --follow || true
