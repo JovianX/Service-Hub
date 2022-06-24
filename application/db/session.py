@@ -13,7 +13,7 @@ def get_engine(database_url: str) -> AsyncEngine:
 
 
 def get_session_maker(engine: str):
-    return sessionmaker(engine, class_=AsyncSession, autocommit=False, autoflush=False)
+    return sessionmaker(engine, class_=AsyncSession, autocommit=False, autoflush=False, expire_on_commit=False)
 
 
 engine = get_engine(settings.DATABASE_URL)

@@ -19,6 +19,7 @@ services:
       dockerfile: application/Dockerfile
       args:
         HELM_VERSION: ${HELM_VERSION}
+        KUBECTL_VERSION: ${KUBECTL_VERSION}
     volumes:
       - .:/code
     networks:

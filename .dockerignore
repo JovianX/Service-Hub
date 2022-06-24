@@ -1,1 +1,7 @@
-docker-data
+*
+
+!nothing-interesting
+!application
+!migrations
+!requirements.txt
+!requirements.dev.txt

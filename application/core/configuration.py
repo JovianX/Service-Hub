@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     # Path to Helm executable.
     HELM_EXECUTABLE: str = 'helm'
+    KUBECTL_EXECUTABLE: str = 'kubectl'
 
     # OAuth authentication
     GOOGLE_CLIENT_ID: str = ''

@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 from typing import Literal
 from typing import Optional
@@ -52,6 +53,7 @@ class KubernetesConfigurationSchema(BaseModel):
     clusters: List[KubernetesConfigurationClusterSchema] = Field(description='List of clusters.')
     contexts: List[KubernetesConfigurationContextSchema] = Field(description='List of contexts.')
     users: List[KubernetesConfigurationUserSchema] = Field(description='List of users.')
+    preferences: dict = Field(description='Various settings.')
 
     class Config:
         allow_population_by_field_name = True
@@ -62,14 +64,17 @@ class KubernetesConfigurationSchema(BaseModel):
 
 
 class SettingsSchema(BaseModel):
-    kubernetes_configuration: KubernetesConfigurationSchema = Field(
+    kubernetes_configuration: Optional[KubernetesConfigurationSchema] = Field(
         description='Kubernetes configuration to use during application management.'
     )
 
 
-ROOT_SETTING_NAMES = Union[  # type: ignore
-    tuple(Literal[field_name] for field_name in SettingsSchema.__fields__.keys())  # type: ignore
-]
+ROOT_SETTING_NAMES = Enum(
+    'SettingNames',
+    {field_name: field_name for field_name in SettingsSchema.__fields__.keys()},
+    type=str
+)
+
 
 ROOT_SETTING_SCHEMAS = Union[  # type: ignore
     tuple(field.type_ for field in SettingsSchema.__fields__.values())

@@ -1,4 +1,4 @@
-.PHONY: help setup setup_helm migrate up down serve logs db_shell run format tests
+.PHONY: help setup setup_helm setup_kubectl migrate up down serve logs db_shell run format tests
 
 export
 
@@ -26,6 +26,12 @@ setup_helm: ## Install Helm CLI.
 
 	@rm $(VE_DIRECTORY)/tmp/helm.tar.gz
 	@rm -rf $(VE_DIRECTORY)/tmp/helm
+
+setup_kubectl: ## Install Kubernetes CLI.
+	@test -d $(VE_DIRECTORY) || (echo 'Setup virtual environment first. You can do this by running `make setup`.' && exit 1)
+
+	@wget --output-document=$(VE_DIRECTORY)/bin/kubectl https://dl.k8s.io/release/v1.24.1/bin/linux/amd64/kubectl
+	@chmod +x $(VE_DIRECTORY)/bin/kubectl
 
 migrate: ## Apply all unapplied migrations.
 	. $(VE_DIRECTORY)/bin/activate; alembic upgrade head
@@ -59,4 +65,4 @@ format: ## Format source code.
 	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports .
 
 tests: ## Run all test.
-	@. $(VE_DIRECTORY)/bin/activate; pytest ./application/tests
+	@. $(VE_DIRECTORY)/bin/activate; pytest -v ./application/tests
