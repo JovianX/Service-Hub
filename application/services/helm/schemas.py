@@ -2,6 +2,7 @@
 Helm schemas.
 """
 from datetime import datetime
+from datetime import timezone
 from typing import Optional
 
 from pydantic import BaseModel
@@ -21,13 +22,20 @@ class helm_datetime(datetime):
         Parses date time that sends us helm.
 
         Value example: '2022-06-01 12:46:15.24955073 +0000 UTC'
+                       '2022-06-07 16:13:40.907107 +0300 +0300'
         """
         # Reducing microseconds count to 6 by cutting redundant digits.
         # Helm returns time with 8 digits in microseconds Python supports only 6.
         date_parts = list(value.split())
         date_parts[1] = date_parts[1][:15]
+        # Removing time zone. Sometimes date contains Time zone as UTC sometimes
+        # as +0300. It breaks parsing of date.
+        fixed_value = ' '.join(date_parts[:-1])
 
-        return datetime.strptime(' '.join(date_parts), '%Y-%m-%d %H:%M:%S.%f %z %Z')
+        parsed_datetime = datetime.strptime(fixed_value, '%Y-%m-%d %H:%M:%S.%f %z')
+        # Setting UTC time zone manually.
+        parsed_datetime.replace(tzinfo=timezone.utc)
+        return parsed_datetime
 
 
 class ReleaseSchema(BaseModel):
