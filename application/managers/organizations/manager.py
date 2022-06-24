@@ -1,18 +1,16 @@
 """
 Classes that include business logic of Organizations.
 """
-import tempfile
 from typing import Any
 
 import yaml
 from faker import Faker
 from fastapi import Depends
-from kubernetes.config.kube_config import ENV_KUBECONFIG_PATH_SEPARATOR
-from kubernetes.config.kube_config import KubeConfigMerger
+from fastapi import status
 
-from application.core.configuration import settings
 from application.crud.organizations import OrganizationDatabase
 from application.db.session import get_session
+from application.exceptions.common import CommonException
 from application.managers.kubernetes import K8sManager
 from application.models.organization import Organization
 from application.utils.kubernetes import KubernetesConfiguration
@@ -97,6 +95,11 @@ class OrganizationManager:
 
     def get_kubernetes_configuration(self, instance: Organization) -> KubernetesConfiguration:
         setting = self.get_setting(instance, 'kubernetes_configuration')
+        if not setting:
+            raise CommonException(
+                'Organization does not have uploaded Kubernetes configuration.',
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
 
         return KubernetesConfiguration(setting.dict(exclude_unset=True))
 
