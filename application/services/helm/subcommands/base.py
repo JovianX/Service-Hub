@@ -43,7 +43,7 @@ class HelmBase:
 
     def _formup_command(self, *args, **kwargs) -> str:
         positional_args = ' '.join(args)
-        key_value_args = ' '.join((f'--{key}={value}' for key, value in kwargs.items()))
+        key_value_args = ' '.join((f'--{key.replace("_", "-")}={value}' for key, value in kwargs.items()))
         return f'{settings.HELM_EXECUTABLE} {self.subcommand} {positional_args} {key_value_args}'.strip()
 
     async def _run_command(self, command: str) -> str:

@@ -1,17 +1,11 @@
-from datetime import datetime
-from unittest import mock
-from unittest.mock import Mock
 from unittest import TestCase
-from xml.dom import NOT_FOUND_ERR
 
 import pytest
 from httpx import AsyncClient
 
-from application.exceptions.shell import NonZeroStatusException
 from application.models.user import User
 from application.tests.fixtures.cluster_configuration import cluster_configuration
 from application.tests.fixtures.cluster_configuration import cluster_configuration_2
-from application.utils.kubernetes import KubernetesConfigurationFile
 
 
 class TestOrganization:

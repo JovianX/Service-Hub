@@ -1,21 +1,19 @@
 """
 Classes that include business logic of Organizations.
 """
-import tempfile
 from typing import Any
 
 import yaml
 from faker import Faker
 from fastapi import Depends
-from kubernetes.config.kube_config import ENV_KUBECONFIG_PATH_SEPARATOR
-from kubernetes.config.kube_config import KubeConfigMerger
+from fastapi import status
 
-from application.core.configuration import settings
 from application.crud.organizations import OrganizationDatabase
 from application.db.session import get_session
+from application.exceptions.common import CommonException
 from application.managers.kubernetes import K8sManager
 from application.models.organization import Organization
-from application.utils.kubernetes import KubernetesConfigurationFile
+from application.utils.kubernetes import KubernetesConfiguration
 
 from .settings_schemas import ROOT_SETTING_SCHEMAS
 from .settings_schemas import SettingsSchema
@@ -52,44 +50,20 @@ class OrganizationManager:
                 configuratoin = yaml.safe_load(k8s_configuration_file)
         await self.update_setting(instance, 'kubernetes_configuration', configuratoin)
 
-    async def merge_kubernetes_configurations(self, current_configuration: dict, incoming_configuration: dict) -> dict:
-        """
-        Merges existing(if present) and incoming configurations.
-        """
-        if not current_configuration:
-            # No configuration was set previously, nothing to merge with.
-            return current_configuration
-
-        # kubectl and merger from Python Kubernetes client works with files only.
-        temp_file_params = {
-            'mode': 'w',
-            'suffix': '.yaml',
-            'dir': settings.FILE_STORAGE_ROOT
-        }
-        with tempfile.NamedTemporaryFile(**temp_file_params) as current_conf_file:
-            with tempfile.NamedTemporaryFile(**temp_file_params) as incoming_conf_file:
-                yaml.safe_dump(current_configuration, current_conf_file)
-                yaml.safe_dump(incoming_configuration, incoming_conf_file)
-                merger = KubeConfigMerger(
-                    ENV_KUBECONFIG_PATH_SEPARATOR.join([incoming_conf_file.name, current_conf_file.name])
-                )
-                merged_configuration = merger.config_merged.value
-                for node_name in ('clusters', 'contexts', 'users'):
-                    merged_configuration[node_name] = [item.value for item in merged_configuration[node_name]]
-
-        return merged_configuration
-
-    async def update_kubernetes_configuration(self, instance: Organization, configuration: dict):
+    async def update_kubernetes_configuration(self, instance: Organization, incoming_configuration: dict):
         """
         Saves new of does merge with existing Kubernetes configuration.
         """
-        SettingsSchema.parse_obj({'kubernetes_configuration': configuration})
+        # Validating incoming configuration.
+        SettingsSchema.parse_obj({'kubernetes_configuration': incoming_configuration})
+
         current_settings = instance.settings
-        if 'kubernetes_configuration' in current_settings:
-            configuration = await self.merge_kubernetes_configurations(
-                current_settings['kubernetes_configuration'], configuration
-            )
-        await self.update_setting(instance, 'kubernetes_configuration', configuration)
+        kubernetes_configuration = incoming_configuration
+        if current_settings.get('kubernetes_configuration'):
+            configuration = KubernetesConfiguration(current_settings['kubernetes_configuration'])
+            kubernetes_configuration = configuration.merge(incoming_configuration)
+
+        await self.update_setting(instance, 'kubernetes_configuration', kubernetes_configuration)
 
     async def update_setting(self, instance: Organization, setting_name: str, setting_value: Any):
         """
@@ -119,10 +93,15 @@ class OrganizationManager:
 
         return getattr(settings, setting_name)
 
-    def get_kubernetes_configuration(self, instance: Organization) -> KubernetesConfigurationFile:
+    def get_kubernetes_configuration(self, instance: Organization) -> KubernetesConfiguration:
         setting = self.get_setting(instance, 'kubernetes_configuration')
+        if not setting:
+            raise CommonException(
+                'Organization does not have uploaded Kubernetes configuration.',
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
 
-        return KubernetesConfigurationFile(setting.dict(exclude_unset=True))
+        return KubernetesConfiguration(setting.dict(exclude_unset=True))
 
 
 async def get_organization_db(session=Depends(get_session)):

@@ -11,7 +11,7 @@ router = APIRouter()
 
 router.include_router(authorization.router, prefix='/auth', tags=['auth'])
 
-router.include_router(helm.router, prefix='/helm', tags=['kubernetes', 'helm'])
+router.include_router(helm.router, prefix='/helm', tags=['helm'])
 
 router.include_router(organizations.router, prefix='/organization', tags=['organizations'])
 

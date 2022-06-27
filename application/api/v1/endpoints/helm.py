@@ -6,6 +6,7 @@ from fastapi import Query
 
 from application.core.authentication import current_active_user
 from application.managers.helm.manager import HelmManager
+from application.managers.helm.schemas import ReleaseDetails
 from application.managers.helm.schemas import ReleaseListItemSchema
 from application.managers.organizations.manager import OrganizationManager
 from application.managers.organizations.manager import get_organization_manager
@@ -70,3 +71,23 @@ async def list_releases(
     releases = await helm_manager.list_releases(user.organization, namespace=namespace)
 
     return releases
+
+
+@router.get('/release/details', response_model=ReleaseDetails)
+async def release_details(
+    context_name: str = Query(title='Name of context to use during data fetch'),
+    namespase: str = Query(title='Name of namespace to use during data fetch'),
+    release_name: str = Query(title='Name of relase to get details'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Returns details for given release such as user values, computed values,
+    manifest, hooks and notes.
+    """
+    helm_manager = HelmManager(organization_manager)
+    details = await helm_manager.release_details(
+        user.organization, context_name=context_name, namespace=namespase, release_name=release_name
+    )
+
+    return details
