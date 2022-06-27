@@ -18,7 +18,7 @@ class K8sManager:
         self.client = K8sClient(configuration_path)
         self.cli = KubectlCLI(configuration_path)
 
-    async def get_details(self, context_name: str, namespace: str, kind: K8sKinds, name: str) -> K8sEntitySchema:
+    async def get_details(self, context_name: str, namespace: str, kind: K8sKinds, name: str) -> K8sEntitySchema | None:
         """
         Returns entity details.
         """
@@ -28,10 +28,14 @@ class K8sManager:
             return await self.client.get_cluster_role_binding_details(context_name=context_name, name=name)
         elif kind == K8sKinds.config_map:
             return await self.client.get_config_map_details(context_name=context_name, namespace=namespace, name=name)
+        elif kind == K8sKinds.cron_job:
+            return await self.client.get_cron_job_details(context_name=context_name, namespace=namespace, name=name)
         elif kind == K8sKinds.daemon_set:
             return await self.client.get_daemon_set_details(context_name=context_name, namespace=namespace, name=name)
         elif kind == K8sKinds.deployment:
             return await self.client.get_deployment_details(context_name=context_name, namespace=namespace, name=name)
+        elif kind == K8sKinds.job:
+            return await self.client.get_job_details(context_name=context_name, namespace=namespace, name=name)
         elif kind == K8sKinds.persistent_volume_claim:
             return await self.client.get_persistent_volume_claim_details(
                 context_name=context_name, namespace=namespace, name=name
