@@ -1,7 +1,10 @@
+from typing import List
+
 import yaml
 
 from application.exceptions.shell import NonZeroStatusException
 
+from ..schemas import ChartSchema
 from .base import HelmBase
 
 
@@ -12,7 +15,7 @@ class HelmSearch(HelmBase):
 
     subcommand = 'search'
 
-    async def repositories(self):
+    async def repositories(self) -> List[ChartSchema]:
         """
         Searches for repositories and displays charts detailed information.
 
@@ -28,5 +31,6 @@ class HelmSearch(HelmBase):
             if error_message == no_repository_added_message:
                 return []
             raise
+        parsed_charts = yaml.safe_load(output)
 
-        return yaml.safe_load(output)
+        return [ChartSchema.parse_obj(item) for item in parsed_charts]
