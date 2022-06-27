@@ -67,7 +67,10 @@ class HelmManager:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 k8s_manager = K8sManager(k8s_config_path)
                 for context_name in kubernetes_configuration.contexts:
-                    releases = await helm_service.list.releases(context_name, namespace)
+                    releases, charts = await asyncio.gather(
+                        helm_service.list.releases(context_name, namespace),
+                        self.list_repositories_charts(organization)
+                    )
 
                     async def get_entity_details(release_name, namespace):
                         manifests = await helm_service.get.manifest(context_name, namespace, release_name)
@@ -95,9 +98,14 @@ class HelmManager:
                     ])
                     for release, entities_details in zip(releases, releases_entities_details):
                         item = release.dict()
+                        item['available_chart'] = next(
+                            ({'chart_name': chart.name, 'chart_verstion': chart.version}
+                             for chart in charts if chart.chart_name == release.chart_name),
+                            None
+                        )
                         item['health_status'] = ReleaseHealthStatuses.healthy
                         item['entities_health_status'] = {}
-                        item['cluster'] = context_name
+                        item['context_name'] = context_name
                         for entity in entities_details:
                             entity_is_healthy = entity.is_healthy
                             entity_name = entity.metadata['name']
@@ -114,7 +122,7 @@ class HelmManager:
         self, organization: Organization, context_name: str, namespace: str, release_name: str
     ) -> ReleaseDetails:
         """
-        Get release detailed information
+        Get release detailed information.
         """
         details = {}
         kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)

@@ -7,6 +7,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import root_validator
 
 from application.constants.helm import ReleaseStatuses
 
@@ -53,6 +54,24 @@ class ReleaseSchema(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
+    @property
+    def chart_name(self) -> str:
+        """
+        Extracted Helm chart name.
+        """
+        *splited_name, chart_version = self.chart.split('-')
+
+        return '-'.join(splited_name)
+
+    @property
+    def chart_version(self) -> str:
+        """
+        Extracted Helm chart name.
+        """
+        *splited_name, chart_version = self.chart.split('-')
+
+        return chart_version
+
 
 class ManifestMetaSchema(BaseModel):
     name: str = Field(description='Entity name')
@@ -71,3 +90,38 @@ class ManifestSchema(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+
+class ChartSchema(BaseModel):
+    """
+    Helm chart description.
+    """
+    application_version: str = Field(alias='app_version', description='Version of application deployed by chart')
+    description: str = Field(description='Chart description')
+    name: str = Field(description='Chart name')
+    version: str = Field(description='Chart version')
+
+    class Config:
+        allow_population_by_field_name = True
+
+    @property
+    def repository_name(self) -> str:
+        """
+        Repository name where chart stored.
+        """
+        repository_name, chart_name = self.name.split('/')
+
+        return repository_name
+
+    @property
+    def chart_name(self) -> str:
+        """
+        Chart name.
+        """
+        repository_name, chart_name = self.name.split('/')
+
+        return chart_name
+
+    def dict(self, *args, **kwargs):
+        kwargs['by_alias'] = True
+        return super().dict(*args, **kwargs)

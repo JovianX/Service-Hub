@@ -1,11 +1,21 @@
 from datetime import datetime
 from typing import List
+from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import root_validator
 
 from application.constants.helm import ReleaseHealthStatuses
 from application.constants.helm import ReleaseStatuses
+
+
+class AvailableChart(BaseModel):
+    """
+    Information about chart that can be used for release upgrade.
+    """
+    chart_name: str = Field(description='Chart name')
+    chart_verstion: str = Field(description='Version of chart')
 
 
 class ReleaseListItemSchema(BaseModel):
@@ -13,6 +23,7 @@ class ReleaseListItemSchema(BaseModel):
     Helm release list item.
     """
     application_version: str = Field(description='Application version')
+    chart_version: str = Field(description='Used chart version')
     chart: str = Field(description='Used chart name')
     name: str = Field(description='Release name')
     namespace: str = Field(description='Namespace')
@@ -21,7 +32,19 @@ class ReleaseListItemSchema(BaseModel):
     updated: datetime = Field(description='Release last update date')
     health_status: ReleaseHealthStatuses = Field(description='Release health status')
     entities_health_status: dict = Field(description='Release detailed description of release health condition')
-    cluster: str = Field(description='Kubernetes configuration context name')
+    context_name: str = Field(description='Kubernetes configuration context name with which was accessed release')
+    available_chart: Optional[AvailableChart] = Field(description='Release chart update candidate')
+
+    @root_validator(pre=True)
+    def extract_chart_version(cls, values: dict) -> dict:
+        """
+        Helm don't returns chart name in CLI output, but we can extract it from
+        chart name.
+        """
+        *_, chart_version = values['chart'].split('-')
+        values['chart_version'] = chart_version
+
+        return values
 
     class Config:
         json_encoders = {
