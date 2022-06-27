@@ -161,7 +161,7 @@ class HelmManager:
         return {
             'user_supplied_values': user_supplied_values,
             'computed_values': computed_values,
-            'hooks': hooks_details,
-            'manifests': manifests_details,
+            'hooks': [item for item in hooks_details if item is not None],
+            'manifests': [item for item in manifests_details if item is not None],
             'notes': notes
         }
