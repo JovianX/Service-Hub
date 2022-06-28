@@ -6,7 +6,7 @@ fastapi-users[sqlalchemy]
 httpx-oauth
 kubernetes
 kubernetes_asyncio==22.6.5 #  Version locked because of issue https://github.com/kubernetes-client/python/issues/1718 and https://github.com/kubernetes-client/python/issues/1751
-pydantic
+pydantic[dotenv]
 pyyaml
 sqlalchemy[asyncio]
 uvicorn[standard]

@@ -35,3 +35,9 @@ services:
 networks:
   service-network:
     name: service-network
+
+secrets:
+  GITHUB_CLIENT_ID:
+    file: ./nothing-interesting/GITHUB_CLIENT_ID
+  GITHUB_CLIENT_SECRET:
+    file: ./nothing-interesting/GITHUB_CLIENT_SECRET
