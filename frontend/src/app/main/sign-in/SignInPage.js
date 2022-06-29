@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
 import history from '@history';
 import _ from '@lodash';
@@ -107,10 +108,20 @@ function SignInPage() {
               )}
             />
 
-            <div className='flex flex-col sm:flex-row items-center justify-end'>
-              <Link className='text-md font-medium' to='/pages/auth/forgot-password'>
-                Forgot password?
-              </Link>
+            <div className="flex items-center mt-32">
+              <div className="flex-auto mt-px border-t" />
+              <Typography className="mx-8" color="text.secondary">
+                Or continue with
+              </Typography>
+              <div className="flex-auto mt-px border-t" />
+            </div>
+
+            <div className="flex items-center mt-32 space-x-16">
+              <Button variant="outlined" className="flex-auto">
+                <FuseSvgIcon size={20} color="action">
+                  feather:github
+                </FuseSvgIcon>
+              </Button>
             </div>
 
             <Button
