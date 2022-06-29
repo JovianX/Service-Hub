@@ -60,7 +60,7 @@ class JwtService extends FuseUtils.EventEmitter {
 
     const response = await axios.post(jwtServiceConfig.signIn, formData);
 
-    if (response.data.access_token) {
+    if (response?.data?.access_token) {
       this.setSession(response.data.access_token);
 
       this.emit('onLogin', response.data);
@@ -69,27 +69,15 @@ class JwtService extends FuseUtils.EventEmitter {
     }
   };
 
-  signInWithToken = () => {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(jwtServiceConfig.accessToken, {
-          data: { access_token: this.getAccessToken() },
-        })
-        .then((response) => {
-          if (response.data.user) {
-            this.setSession(response.data.access_token);
-            resolve(response.data.user);
-          } else {
-            this.logout();
-            reject(new Error('Failed to login with token.'));
-          }
-        })
-        .catch(() => {
-          this.logout();
-          reject(new Error('Failed to login with token.'));
-        });
-    });
-  };
+  signInWithGithub = async () => {
+    const response = await axios.get(jwtServiceConfig.signInWithGithub);
+
+    if (response?.data?.authorization_url) {
+      return response?.data?.authorization_url;
+    } else {
+      throw new Error(response.data.error);
+    }
+  }
 
   updateUserData = (user) => {
     return axios.post(jwtServiceConfig.updateUser, { user });
