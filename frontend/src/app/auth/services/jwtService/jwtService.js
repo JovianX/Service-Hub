@@ -79,6 +79,12 @@ class JwtService extends FuseUtils.EventEmitter {
     }
   }
 
+  getTokenWithGithubCode = async data => {
+    await axios.get(jwtServiceConfig.getTokenWithGithubCode, {
+      params: data
+    });
+  }
+
   updateUserData = (user) => {
     return axios.post(jwtServiceConfig.updateUser, { user });
   };

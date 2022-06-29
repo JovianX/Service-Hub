@@ -7,6 +7,7 @@ const jwtServiceConfig = {
   forgotPassword: `${authApiPath}/forgot-password`,
   resetPassword: `${authApiPath}/reset-password`,
   signInWithGithub: `${authApiPath}/github/authorize`,
+  getTokenWithGithubCode: `${authApiPath}/github/callback`,
 };
 
 export default jwtServiceConfig;

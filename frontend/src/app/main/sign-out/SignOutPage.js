@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import JwtService from '../../auth/services/jwtService';
 
-function SignOutPage() {
+const SignOutPage = () => {
   useEffect(() => {
     setTimeout(() => {
       JwtService.logout();

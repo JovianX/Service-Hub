@@ -15,6 +15,7 @@ import history from '@history';
 import _ from '@lodash';
 
 import jwtService from '../../auth/services/jwtService';
+import {useEffect} from 'react';
 
 const schema = yup.object().shape({
   email: yup.string().email('You must enter a valid email').required('You must enter a email'),
@@ -29,7 +30,7 @@ const defaultValues = {
   password: '',
 };
 
-function SignInPage() {
+const SignInPage = () => {
   const { control, formState, handleSubmit, setError } = useForm({
     mode: 'onChange',
     defaultValues,
@@ -37,6 +38,26 @@ function SignInPage() {
   });
 
   const { isValid, dirtyFields, errors } = formState;
+
+  const loginWithCode = async () => {
+    const url = window.location.href;
+    const hasAuthCode = url.includes("?code=");
+
+    if (hasAuthCode) {
+      const newUrl = url.split("?code=");
+      window.history.pushState({}, null, newUrl[0]);
+
+      const requestData = {
+        code: newUrl[1]
+      };
+
+      await jwtService.getTokenWithGithubCode(requestData);
+    }
+  }
+
+  useEffect(() => {
+    loginWithCode();
+  }, []);
 
   const onSubmit = async ({ email, password }) => {
     try {
