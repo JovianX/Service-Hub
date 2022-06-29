@@ -3,9 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -18,9 +15,6 @@ import _ from '@lodash';
 
 import jwtService from '../../auth/services/jwtService';
 
-/**
- * Form Validation Schema
- */
 const schema = yup.object().shape({
   email: yup.string().email('You must enter a valid email').required('You must enter a email'),
   password: yup
@@ -32,7 +26,6 @@ const schema = yup.object().shape({
 const defaultValues = {
   email: '',
   password: '',
-  remember: true,
 };
 
 function SignInPage() {
@@ -114,17 +107,7 @@ function SignInPage() {
               )}
             />
 
-            <div className='flex flex-col sm:flex-row items-center justify-center sm:justify-between'>
-              <Controller
-                name='remember'
-                control={control}
-                render={({ field }) => (
-                  <FormControl>
-                    <FormControlLabel label='Remember me' control={<Checkbox size='small' {...field} />} />
-                  </FormControl>
-                )}
-              />
-
+            <div className='flex flex-col sm:flex-row items-center justify-end'>
               <Link className='text-md font-medium' to='/pages/auth/forgot-password'>
                 Forgot password?
               </Link>
