@@ -6,16 +6,17 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
-import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
+import FuseLoading from '@fuse/core/FuseLoading';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import history from '@history';
 import _ from '@lodash';
 
 import jwtService from '../../auth/services/jwtService';
-import {useEffect} from 'react';
 
 const schema = yup.object().shape({
   email: yup.string().email('You must enter a valid email').required('You must enter a email'),
@@ -31,6 +32,8 @@ const defaultValues = {
 };
 
 const SignInPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const { control, formState, handleSubmit, setError } = useForm({
     mode: 'onChange',
     defaultValues,
@@ -40,20 +43,32 @@ const SignInPage = () => {
   const { isValid, dirtyFields, errors } = formState;
 
   const loginWithCode = async () => {
-    const url = window.location.href;
-    const hasAuthCode = url.includes("?code=");
+    const url = new URL(window.location.href);
 
-    if (hasAuthCode) {
-      const newUrl = url.split("?code=");
+    const authCode = url.searchParams.get('code');
+    const state = url.searchParams.get('state');
+
+    if (authCode) {
+      setIsLoading(true);
+      const newUrl = url.href.split('?code=');
       window.history.pushState({}, null, newUrl[0]);
 
       const requestData = {
-        code: newUrl[1]
+        code: authCode,
+        state,
       };
 
-      await jwtService.getTokenWithGithubCode(requestData);
+      try {
+        await jwtService.getTokenWithGithubCode(requestData);
+        history.push('/');
+      } catch (errors) {
+        setError('email', {
+          type: 'manual',
+          message: errors?.response?.data?.detail,
+        });
+      }
     }
-  }
+  };
 
   useEffect(() => {
     loginWithCode();
@@ -73,10 +88,9 @@ const SignInPage = () => {
   };
 
   const onGithubSignIn = async () => {
+    setIsLoading(true);
     try {
       const url = await jwtService.signInWithGithub();
-
-      console.log('url', url)
 
       history.push(url);
     } catch (errors) {
@@ -84,7 +98,13 @@ const SignInPage = () => {
         type: 'manual',
         message: 'Failed to sign in with GitHub',
       });
+
+      setIsLoading(false);
     }
+  };
+
+  if (isLoading) {
+    return <FuseLoading />;
   }
 
   return (
@@ -144,17 +164,17 @@ const SignInPage = () => {
               )}
             />
 
-            <div className="flex items-center mt-32">
-              <div className="flex-auto mt-px border-t" />
-              <Typography className="mx-8" color="text.secondary">
+            <div className='flex items-center mt-32'>
+              <div className='flex-auto mt-px border-t' />
+              <Typography className='mx-8' color='text.secondary'>
                 Or continue with
               </Typography>
-              <div className="flex-auto mt-px border-t" />
+              <div className='flex-auto mt-px border-t' />
             </div>
 
-            <div className="flex items-center mt-32 space-x-16">
-              <Button variant="outlined" className="flex-auto" onClick={onGithubSignIn}>
-                <FuseSvgIcon size={20} color="action">
+            <div className='flex items-center mt-32 space-x-16'>
+              <Button variant='outlined' className='flex-auto' onClick={onGithubSignIn}>
+                <FuseSvgIcon size={20} color='action'>
                   feather:github
                 </FuseSvgIcon>
               </Button>
@@ -248,6 +268,6 @@ const SignInPage = () => {
       </Box>
     </div>
   );
-}
+};
 
 export default SignInPage;
