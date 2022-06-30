@@ -11,7 +11,7 @@ from fastapi_users.authentication import AuthenticationBackend
 from fastapi_users.authentication import BearerTransport
 from fastapi_users.authentication import JWTStrategy
 from fastapi_users.db import SQLAlchemyUserDatabase
-from fastapi_users.password import PasswordHelperProtocol
+from httpx_oauth.clients.github import GitHubOAuth2
 from httpx_oauth.clients.google import GoogleOAuth2
 
 from ..core.configuration import settings
@@ -23,6 +23,7 @@ from ..models.user import User
 from ..schemas.users import UserCreate
 
 
+github_client = GitHubOAuth2(settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET)
 google_client = GoogleOAuth2(settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET)
 bearer_transport = BearerTransport(tokenUrl='api/v1/auth/jwt/login')
 
@@ -70,6 +71,86 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         await self.on_after_register(created_user, request)
 
         return created_user
+
+    async def oauth_callback(
+        self,
+        oauth_name: str,
+        access_token: str,
+        account_id: str,
+        account_email: str,
+        expires_at: Optional[int] = None,
+        refresh_token: Optional[str] = None,
+        request: Optional[Request] = None,
+        *,
+        associate_by_email: bool = False
+    ) -> User:
+        """
+        Handle the callback after a successful OAuth authentication.
+
+        If the user already exists with this OAuth account, the token is updated.
+
+        If a user with the same e-mail already exists and `associate_by_email` is True,
+        the OAuth account is associated to this user.
+        Otherwise, the `UserNotExists` exception is raised.
+
+        If the user does not exist, it is created and the on_after_register handler
+        is triggered.
+
+        :param oauth_name: Name of the OAuth client.
+        :param access_token: Valid access token for the service provider.
+        :param account_id: models.ID of the user on the service provider.
+        :param account_email: E-mail of the user on the service provider.
+        :param expires_at: Optional timestamp at which the access token expires.
+        :param refresh_token: Optional refresh token to get a
+        fresh access token from the service provider.
+        :param request: Optional FastAPI request that
+        triggered the operation, defaults to None
+        :param associate_by_email: If True, any existing user with the same
+        e-mail address will be associated to this user. Defaults to False.
+        :return: A user.
+        """
+        oauth_account_dict = {
+            'oauth_name': oauth_name,
+            'access_token': access_token,
+            'account_id': account_id,
+            'account_email': account_email,
+            'expires_at': expires_at,
+            'refresh_token': refresh_token,
+        }
+
+        try:
+            user = await self.get_by_oauth_account(oauth_name, account_id)
+        except exceptions.UserNotExists:
+            try:
+                # Associate account
+                user = await self.get_by_email(account_email)
+                if not associate_by_email:
+                    raise exceptions.UserAlreadyExists()
+                user = await self.user_db.add_oauth_account(user, oauth_account_dict)
+            except exceptions.UserNotExists:
+                # Create account
+                password = self.password_helper.generate()
+                organization = await self.organizations.create()
+                user_dict = {
+                    'email': account_email,
+                    'hashed_password': self.password_helper.hash(password),
+                    'organization_id': organization.id
+                }
+                user = await self.user_db.create(user_dict)
+                user = await self.user_db.add_oauth_account(user, oauth_account_dict)
+                await self.on_after_register(user, request)
+        else:
+            # Update oauth
+            for existing_oauth_account in user.oauth_accounts:
+                if (
+                    existing_oauth_account.account_id == account_id
+                    and existing_oauth_account.oauth_name == oauth_name
+                ):
+                    user = await self.user_db.update_oauth_account(
+                        user, existing_oauth_account, oauth_account_dict
+                    )
+
+        return user
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         print(f'User {user.id} has registered.')

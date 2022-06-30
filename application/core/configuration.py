@@ -1,6 +1,5 @@
 from pydantic import BaseSettings
 from pydantic import DirectoryPath
-from pydantic import FilePath
 from pydantic import PostgresDsn
 
 
@@ -17,12 +16,16 @@ class Settings(BaseSettings):
     # OAuth authentication
     GOOGLE_CLIENT_ID: str = ''
     GOOGLE_CLIENT_SECRET: str = ''
+    GITHUB_CLIENT_ID: str = ''
+    GITHUB_CLIENT_SECRET: str = ''
 
     # Path to directory where stored all project's files.
     FILE_STORAGE_ROOT: DirectoryPath
 
     class Config:
         env_file = '.env'
+        secrets_dir = 'nothing-interesting'
+        case_sensitive = True
 
 
 settings = Settings()

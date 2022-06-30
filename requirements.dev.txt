@@ -5,5 +5,4 @@ docformatter
 isort
 pytest
 pytest-asyncio
-python-dotenv
 httpx
