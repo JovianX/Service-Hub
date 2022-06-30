@@ -3,24 +3,21 @@ import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
+import FuseLoading from '@fuse/core/FuseLoading';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import history from '@history';
 import _ from '@lodash';
 
 import jwtService from '../../auth/services/jwtService';
 
-/**
- * Form Validation Schema
- */
 const schema = yup.object().shape({
   email: yup.string().email('You must enter a valid email').required('You must enter a email'),
   password: yup
@@ -32,10 +29,11 @@ const schema = yup.object().shape({
 const defaultValues = {
   email: '',
   password: '',
-  remember: true,
 };
 
-function SignInPage() {
+const SignInPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const { control, formState, handleSubmit, setError } = useForm({
     mode: 'onChange',
     defaultValues,
@@ -44,9 +42,43 @@ function SignInPage() {
 
   const { isValid, dirtyFields, errors } = formState;
 
+  const loginWithCode = async () => {
+    const url = new URL(window.location.href);
+
+    const authCode = url.searchParams.get('code');
+    const state = url.searchParams.get('state');
+
+    if (authCode) {
+      setIsLoading(true);
+      const newUrl = url.href.split('?code=');
+      window.history.pushState({}, null, newUrl[0]);
+
+      const requestData = {
+        code: authCode,
+        state,
+      };
+
+      try {
+        await jwtService.getTokenWithGithubCode(requestData);
+        history.push('/');
+      } catch (errors) {
+        setError('email', {
+          type: 'manual',
+          message: errors?.response?.data?.detail,
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    loginWithCode();
+  }, []);
+
   const onSubmit = async ({ email, password }) => {
     try {
       await jwtService.signInWithEmailAndPassword(email, password);
+
+      history.push('/');
     } catch (errors) {
       setError('email', {
         type: 'manual',
@@ -54,6 +86,26 @@ function SignInPage() {
       });
     }
   };
+
+  const onGithubSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const url = await jwtService.signInWithGithub();
+
+      history.push(url);
+    } catch (errors) {
+      setError('email', {
+        type: 'manual',
+        message: 'Failed to sign in with GitHub',
+      });
+
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return <FuseLoading />;
+  }
 
   return (
     <div className='flex flex-col sm:flex-row items-center md:items-start sm:justify-center md:justify-start flex-1 min-w-0'>
@@ -112,20 +164,20 @@ function SignInPage() {
               )}
             />
 
-            <div className='flex flex-col sm:flex-row items-center justify-center sm:justify-between'>
-              <Controller
-                name='remember'
-                control={control}
-                render={({ field }) => (
-                  <FormControl>
-                    <FormControlLabel label='Remember me' control={<Checkbox size='small' {...field} />} />
-                  </FormControl>
-                )}
-              />
+            <div className='flex items-center mt-32'>
+              <div className='flex-auto mt-px border-t' />
+              <Typography className='mx-8' color='text.secondary'>
+                Or continue with
+              </Typography>
+              <div className='flex-auto mt-px border-t' />
+            </div>
 
-              <Link className='text-md font-medium' to='/pages/auth/forgot-password'>
-                Forgot password?
-              </Link>
+            <div className='flex items-center mt-32 space-x-16'>
+              <Button variant='outlined' className='flex-auto' onClick={onGithubSignIn}>
+                <FuseSvgIcon size={20} color='action'>
+                  feather:github
+                </FuseSvgIcon>
+              </Button>
             </div>
 
             <Button
@@ -139,32 +191,6 @@ function SignInPage() {
             >
               Sign in
             </Button>
-
-            <div className='flex items-center mt-32'>
-              <div className='flex-auto mt-px border-t' />
-              <Typography className='mx-8' color='text.secondary'>
-                Or continue with
-              </Typography>
-              <div className='flex-auto mt-px border-t' />
-            </div>
-
-            <div className='flex items-center mt-32 space-x-16'>
-              <Button variant='outlined' className='flex-auto'>
-                <FuseSvgIcon size={20} color='action'>
-                  feather:facebook
-                </FuseSvgIcon>
-              </Button>
-              <Button variant='outlined' className='flex-auto'>
-                <FuseSvgIcon size={20} color='action'>
-                  feather:twitter
-                </FuseSvgIcon>
-              </Button>
-              <Button variant='outlined' className='flex-auto'>
-                <FuseSvgIcon size={20} color='action'>
-                  feather:github
-                </FuseSvgIcon>
-              </Button>
-            </div>
           </form>
         </div>
       </Paper>
@@ -242,6 +268,6 @@ function SignInPage() {
       </Box>
     </div>
   );
-}
+};
 
 export default SignInPage;
