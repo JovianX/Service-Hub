@@ -47,13 +47,38 @@ class HelmManager:
 
     async def list_repositories_charts(self, organization: Organization):
         """
-        Updates cache of user repositories.
+        Returns lists of charts in all repositories.
         """
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 await helm_service.repository.update()
                 return await helm_service.search.repositories()
+
+    async def install_chart(
+        self,
+        organization: Organization,
+        context_name: str,
+        namespace: str,
+        release_name: str,
+        chart_name: str,
+        values: dict | None = None,
+        description: str | None = None
+    ) -> str:
+        """
+        Installs given chart.
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                return await helm_service.install.chart(
+                    context_name=context_name,
+                    namespace=namespace,
+                    release_name=release_name,
+                    chart_name=chart_name,
+                    values=values,
+                    description=description
+                )
 
     async def list_releases(self, organization: Organization, namespace: str = None) -> List[ReleaseListItemSchema]:
         """
@@ -124,7 +149,6 @@ class HelmManager:
         """
         Get release detailed information.
         """
-        details = {}
         kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)
         with kubernetes_configuration as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
@@ -173,3 +197,17 @@ class HelmManager:
             'manifests': [item for item in manifests_details if item is not None],
             'notes': notes
         }
+
+    async def uninstall_release(
+        self, organization: Organization, context_name: str, namespace: str, release_name: str
+    ) -> None:
+        """
+        Removes release.
+        """
+        kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)
+        with kubernetes_configuration as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                await helm_service.uninstall.release(
+                    context_name=context_name, namespace=namespace, release_name=release_name
+                )
