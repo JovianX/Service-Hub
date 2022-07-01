@@ -54,7 +54,7 @@ function NavbarStyle1Content(props) {
         <Navigation layout='vertical' />
 
         <div className='flex flex-0 items-center justify-center py-48 opacity-10'>
-          <img className='w-full max-w-64' src='assets/images/logo.png' alt='footer logo' />
+          <img className='w-full max-w-64' src='assets/images/logo-mini.png' alt='footer logo' />
         </div>
       </StyledContent>
     </Root>
