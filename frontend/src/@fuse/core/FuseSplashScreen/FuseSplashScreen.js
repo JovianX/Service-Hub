@@ -1,23 +1,23 @@
-import { memo } from 'react';
 import Box from '@mui/material/Box';
+import { memo } from 'react';
 
 function FuseSplashScreen() {
   return (
-    <div id="fuse-splash-screen">
-      <div className="logo">
-        <img width="128" src="assets/images/logo/logo.svg" alt="logo" />
+    <div id='fuse-splash-screen'>
+      <div className='logo'>
+        <img width='200' src='assets/images/logo.png' alt='logo' />
       </div>
       <Box
-        id="spinner"
+        id='spinner'
         sx={{
           '& > div': {
-            backgroundColor: 'palette.secondary.main',
+            backgroundColor: 'palette.secondary.light',
           },
         }}
       >
-        <div className="bounce1" />
-        <div className="bounce2" />
-        <div className="bounce3" />
+        <div className='bounce1' />
+        <div className='bounce2' />
+        <div className='bounce3' />
       </Box>
     </div>
   );
