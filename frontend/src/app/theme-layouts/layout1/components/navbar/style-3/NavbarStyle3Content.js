@@ -47,10 +47,7 @@ function isUrlInChildren(parent, url) {
         return true;
       }
     }
-    if (
-      parent.children[i].url === url ||
-      url.includes(parent.children[i].url)
-    ) {
+    if (parent.children[i].url === url || url.includes(parent.children[i].url)) {
       return true;
     }
   }
@@ -65,9 +62,7 @@ function NavbarStyle3Content(props) {
   const [panelOpen, setPanelOpen] = useState(false);
   const theme = useTheme();
   const dispatch = useDispatch();
-  const contrastTheme = useSelector(
-    selectContrastMainTheme(theme.palette.primary.main),
-  );
+  const contrastTheme = useSelector(selectContrastMainTheme(theme.palette.primary.main));
   const location = useLocation();
 
   useEffect(() => {
@@ -112,15 +107,8 @@ function NavbarStyle3Content(props) {
     <ClickAwayListener onClickAway={() => setPanelOpen(false)}>
       <Root className={clsx('flex flex-auto flex h-full', props.className)}>
         <ThemeProvider theme={contrastTheme}>
-          <div
-            id='fuse-navbar-side-panel'
-            className='flex shrink-0 flex-col items-center'
-          >
-            <img
-              className='w-44 my-32'
-              src='assets/images/logo/logo.svg'
-              alt='logo'
-            />
+          <div id='fuse-navbar-side-panel' className='flex shrink-0 flex-col items-center'>
+            <img className='w-44 my-32' src='assets/images/logo.png' alt='logo' />
 
             <FuseScrollbars
               className='flex flex-1 min-h-0 justify-center w-full overflow-y-auto overflow-x-hidden'

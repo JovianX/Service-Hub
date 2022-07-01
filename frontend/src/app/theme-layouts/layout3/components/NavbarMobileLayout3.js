@@ -15,16 +15,12 @@ const Root = styled('div')(({ theme }) => ({
 
   '& ::-webkit-scrollbar-thumb': {
     boxShadow: `inset 0 0 0 20px ${
-      theme.palette.mode === 'light'
-        ? 'rgba(0, 0, 0, 0.24)'
-        : 'rgba(255, 255, 255, 0.24)'
+      theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.24)' : 'rgba(255, 255, 255, 0.24)'
     }`,
   },
   '& ::-webkit-scrollbar-thumb:active': {
     boxShadow: `inset 0 0 0 20px ${
-      theme.palette.mode === 'light'
-        ? 'rgba(0, 0, 0, 0.37)'
-        : 'rgba(255, 255, 255, 0.37)'
+      theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.37)' : 'rgba(255, 255, 255, 0.37)'
     }`,
   },
 }));
@@ -41,9 +37,7 @@ const StyledContent = styled(FuseScrollbars)(({ theme }) => ({
 
 function NavbarMobileLayout3(props) {
   return (
-    <Root
-      className={clsx('flex flex-col h-full overflow-hidden', props.className)}
-    >
+    <Root className={clsx('flex flex-col h-full overflow-hidden', props.className)}>
       <div className='flex flex-row items-center shrink-0 h-48 md:h-72 px-20'>
         <div className='flex flex-1 mx-4'>
           <Logo />
@@ -61,11 +55,7 @@ function NavbarMobileLayout3(props) {
         <Navigation layout='vertical' />
 
         <div className='flex flex-0 items-center justify-center py-48 opacity-10'>
-          <img
-            className='w-full max-w-64'
-            src='assets/images/logo/logo.svg'
-            alt='footer logo'
-          />
+          <img className='w-full max-w-64' src='assets/images/logo.png' alt='footer logo' />
         </div>
       </StyledContent>
     </Root>
