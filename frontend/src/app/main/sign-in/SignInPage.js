@@ -164,6 +164,18 @@ const SignInPage = () => {
               )}
             />
 
+            <Button
+              variant='contained'
+              color='secondary'
+              className=' w-full mt-16'
+              aria-label='Sign in'
+              disabled={_.isEmpty(dirtyFields) || !isValid}
+              type='submit'
+              size='large'
+            >
+              Sign in
+            </Button>
+
             <div className='flex items-center mt-32'>
               <div className='flex-auto mt-px border-t' />
               <Typography className='mx-8' color='text.secondary'>
@@ -179,18 +191,6 @@ const SignInPage = () => {
                 </FuseSvgIcon>
               </Button>
             </div>
-
-            <Button
-              variant='contained'
-              color='secondary'
-              className=' w-full mt-16'
-              aria-label='Sign in'
-              disabled={_.isEmpty(dirtyFields) || !isValid}
-              type='submit'
-              size='large'
-            >
-              Sign in
-            </Button>
           </form>
         </div>
       </Paper>
