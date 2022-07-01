@@ -9,7 +9,7 @@ from fastapi import Depends
 from fastapi import status
 
 from application.crud.organizations import OrganizationDatabase
-from application.db.session import get_session
+from application.crud.organizations import get_organization_db
 from application.exceptions.common import CommonException
 from application.managers.kubernetes import K8sManager
 from application.models.organization import Organization
@@ -102,10 +102,6 @@ class OrganizationManager:
             )
 
         return KubernetesConfiguration(setting.dict(exclude_unset=True))
-
-
-async def get_organization_db(session=Depends(get_session)):
-    yield OrganizationDatabase(session)
 
 
 async def get_organization_manager(organization_db=Depends(get_organization_db)):
