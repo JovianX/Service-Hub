@@ -16,8 +16,40 @@ function AuthProvider({ children }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    jwtService.on('onLogin', (user) => {
-      success(user, 'Signed in');
+    const success = async (message) => {
+      if (message) {
+        dispatch(showMessage({ message }));
+      }
+
+      const userData = await jwtService.getUserData();
+
+      Promise.all([
+        dispatch(setUser(userData?.data)),
+        // You can receive data in here before app initialization
+      ]).then(() => {
+        setWaitAuthCheck(false);
+        setIsAuthenticated(true);
+      });
+    };
+
+    const pass = (message) => {
+      if (message) {
+        dispatch(showMessage({ message }));
+      }
+
+      setWaitAuthCheck(false);
+      setIsAuthenticated(false);
+    };
+
+    jwtService.on('onAutoLogin', () => {
+      dispatch(showMessage({ message: 'Signing in' }));
+      success();
+    });
+
+    jwtService.init();
+
+    jwtService.on('onLogin', () => {
+      success('Signed in');
     });
 
     jwtService.on('onLogout', () => {
@@ -35,31 +67,6 @@ function AuthProvider({ children }) {
     jwtService.on('onNoAccessToken', () => {
       pass();
     });
-
-    jwtService.init();
-
-    function success(user, message) {
-      if (message) {
-        dispatch(showMessage({ message }));
-      }
-
-      Promise.all([
-        dispatch(setUser(user)),
-        // You can receive data in here before app initialization
-      ]).then(() => {
-        setWaitAuthCheck(false);
-        setIsAuthenticated(true);
-      });
-    }
-
-    function pass(message) {
-      if (message) {
-        dispatch(showMessage({ message }));
-      }
-
-      setWaitAuthCheck(false);
-      setIsAuthenticated(false);
-    }
   }, [dispatch]);
 
   return waitAuthCheck ? (

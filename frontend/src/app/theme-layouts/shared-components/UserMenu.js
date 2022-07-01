@@ -6,12 +6,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
 
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import { selectUser } from 'app/store/userSlice';
 
 function UserMenu() {
-  // const user = useSelector(selectUser);
+  const user = useSelector(selectUser);
 
   const [userMenu, setUserMenu] = useState(null);
 
@@ -28,11 +30,11 @@ function UserMenu() {
       <Button className='min-h-40 min-w-40 px-0 md:px-16 py-0 md:py-6' onClick={userMenuClick} color='inherit'>
         <div className='hidden md:flex flex-col mx-4 items-end'>
           <Typography component='span' className='font-semibold flex'>
-            User Name
+            {user?.email || ''}
           </Typography>
-          <Typography className='text-11 font-medium capitalize' color='text.secondary'>
-            User Role
-          </Typography>
+          {/* <Typography className='text-11 font-medium capitalize' color='text.secondary'> */}
+          {/*  User Role */}
+          {/* </Typography> */}
         </div>
 
         <Avatar className='md:mx-4'>User Name</Avatar>
