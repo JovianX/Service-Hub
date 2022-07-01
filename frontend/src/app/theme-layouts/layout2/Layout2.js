@@ -10,7 +10,6 @@ import FuseSuspense from '@fuse/core/FuseSuspense';
 import AppContext from 'app/AppContext';
 import { selectFuseCurrentLayoutConfig } from 'app/store/fuse/settingsSlice';
 
-import FooterLayout2 from './components/FooterLayout2';
 import LeftSideLayout2 from './components/LeftSideLayout2';
 import NavbarWrapperLayout2 from './components/NavbarWrapperLayout2';
 import RightSideLayout2 from './components/RightSideLayout2';
@@ -64,7 +63,7 @@ function Layout2(props) {
             {props.children}
           </div>
 
-          {config.footer.display && <FooterLayout2 className={config.footer.style === 'fixed' && 'sticky bottom-0'} />}
+          {/* {config.footer.display && <FooterLayout2 className={config.footer.style === 'fixed' && 'sticky bottom-0'} />} */}
         </main>
       </div>
 
