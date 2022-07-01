@@ -11,7 +11,6 @@ import { selectFuseCurrentLayoutConfig, selectToolbarTheme } from 'app/store/fus
 
 import NavbarToggleButton from '../../shared-components/NavbarToggleButton';
 import NavigationSearch from '../../shared-components/NavigationSearch';
-import NavigationShortcuts from '../../shared-components/NavigationShortcuts';
 import UserMenu from '../../shared-components/UserMenu';
 
 function ToolbarLayout1(props) {
@@ -52,10 +51,6 @@ function ToolbarLayout1(props) {
                 </Hidden>
               </>
             )}
-
-            <Hidden lgDown>
-              <NavigationShortcuts />
-            </Hidden>
           </div>
 
           <div className='flex items-center px-8 h-full overflow-x-auto'>
