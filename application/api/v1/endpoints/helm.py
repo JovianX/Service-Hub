@@ -11,7 +11,9 @@ from application.managers.helm.schemas import ReleaseListItemSchema
 from application.managers.organizations.manager import OrganizationManager
 from application.managers.organizations.manager import get_organization_manager
 from application.models.user import User
-from application.schemas.helm import HelmRepositorySchema
+
+from ..schemas import AddHelmRepositoryBodySchema
+from ..schemas import InstallChartBodySchema
 
 
 router = APIRouter()
@@ -19,7 +21,7 @@ router = APIRouter()
 
 @router.post('/repository/add')
 async def add_repository(
-    data: HelmRepositorySchema,
+    data: AddHelmRepositoryBodySchema,
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
 ):
@@ -41,7 +43,7 @@ async def list_repository(
     helm_manager = HelmManager(organization_manager)
     repositories = await helm_manager.list_repositories(user.organization)
 
-    return {'data': repositories}
+    return repositories
 
 
 @router.get('/chart/list')
@@ -53,9 +55,30 @@ async def list_charts_in_repsitories(
     List all charts in all repositories.
     """
     helm_manager = HelmManager(organization_manager)
-    repositories = await helm_manager.list_repositories_charts(user.organization)
+    charts = await helm_manager.list_repositories_charts(user.organization)
 
-    return {'data': repositories}
+    return charts
+
+
+@router.post('/chart/install')
+async def install_chart(
+    data: InstallChartBodySchema,
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Install Helm chart.
+    """
+    helm_manager = HelmManager(organization_manager)
+    return await helm_manager.install_chart(
+        user.organization,
+        context_name=data.context_name,
+        namespace=data.namespace,
+        release_name=data.release_name,
+        chart_name=data.chart_name,
+        values=data.values,
+        description=data.description
+    )
 
 
 @router.get('/release/list', response_model=List[ReleaseListItemSchema])
@@ -91,3 +114,20 @@ async def release_details(
     )
 
     return details
+
+
+@router.delete('/release')
+async def delete_release(
+    context_name: str = Query(title='Name of context where uninstalling release is located'),
+    namespase: str = Query(title='Name of namespace where uninstalling release is located'),
+    release_name: str = Query(title='Name of relase to uninstall'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Removes previously installed chart.
+    """
+    helm_manager = HelmManager(organization_manager)
+    await helm_manager.uninstall_release(
+        user.organization, context_name=context_name, namespace=namespase, release_name=release_name
+    )

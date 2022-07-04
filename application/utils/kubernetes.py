@@ -9,6 +9,7 @@ from kubernetes.config.kube_config import ENV_KUBECONFIG_PATH_SEPARATOR
 from kubernetes.config.kube_config import KubeConfigMerger
 
 from application.core.configuration import settings
+from application.utils.temporary_file import yaml_temporary_file
 
 
 class KubernetesConfiguration:
@@ -26,20 +27,13 @@ class KubernetesConfiguration:
         self.configuration = configuration
 
     def __enter__(self):
-        self.file = self._temporary_file
+        self.file = yaml_temporary_file()
         yaml.dump(self.configuration, self.file, default_flow_style=False)
 
         return self.file.name
 
     def __exit__(self, type, value, traceback):
         self.file.close()
-
-    @property
-    def _temporary_file(self):
-        """
-        Constructs temporary file.
-        """
-        return tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', dir=settings.FILE_STORAGE_ROOT)
 
     @property
     def contexts(self) -> List[str]:
@@ -57,8 +51,8 @@ class KubernetesConfiguration:
             return incoming_configuration
 
         # kubectl and merger from Python Kubernetes client works with files only.
-        with self._temporary_file as current_conf_file:
-            with self._temporary_file as incoming_conf_file:
+        with yaml_temporary_file() as current_conf_file:
+            with yaml_temporary_file() as incoming_conf_file:
                 yaml.safe_dump(self.configuration, current_conf_file)
                 yaml.safe_dump(incoming_configuration, incoming_conf_file)
                 files_to_merge = ENV_KUBECONFIG_PATH_SEPARATOR.join([incoming_conf_file.name, current_conf_file.name])

@@ -1,9 +1,12 @@
+"""
+General project exceptions.
+"""
 from .base import ServiceHubException
 
 
 class CommonException(ServiceHubException):
     """
-    Common exception Service Hub exception.
+    Common Service Hub exception.
     """
     message: str
     status_code: int
