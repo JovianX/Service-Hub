@@ -13,8 +13,8 @@ class AddHelmRepositoryBodySchema(BaseModel):
     """
     Request body of add Helm repository endpoint.
     """
-    name: constr(min_length=3, strip_whitespace=True) = Field(description='Repository name.')
-    url: HttpUrl = Field(description='Repository URL.')
+    name: constr(min_length=3, strip_whitespace=True) = Field(description='Repository name.', example='nginx-stable')
+    url: HttpUrl = Field(description='Repository URL.', example='https://helm.nginx.com/stable')
 
 
 class InstallChartBodySchema(BaseModel):

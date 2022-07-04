@@ -3,6 +3,7 @@ Manager for helm business logic.
 """
 import asyncio
 from asyncio import create_task
+from collections.abc import Iterable
 from typing import List
 
 from application.constants.helm import ReleaseHealthStatuses
@@ -11,6 +12,7 @@ from application.managers.kubernetes import K8sManager
 from application.managers.organizations.manager import OrganizationManager
 from application.models.organization import Organization
 from application.services.helm.facade import HelmService
+from application.services.kubernetes.schemas import K8sEntitySchema
 from application.utils.helm import HelmArchive
 
 from .schemas import ReleaseDetails
@@ -85,8 +87,16 @@ class HelmManager:
         List releases in namespace if it is present otherwise in all namespaces
         using default context in kubernetes configuration.
         """
-        kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)
         items = []
+        kinds_to_fetch = (
+            K8sKinds.daemon_set,
+            K8sKinds.deployment,
+            K8sKinds.replica_set,
+            K8sKinds.replication_controller,
+            K8sKinds.service,
+            K8sKinds.stateful_set,
+        )
+        kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)
         with kubernetes_configuration as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
@@ -96,29 +106,10 @@ class HelmManager:
                         helm_service.list.releases(context_name, namespace),
                         self.list_repositories_charts(organization)
                     )
-
-                    async def get_entity_details(release_name, namespace):
-                        manifests = await helm_service.get.manifest(context_name, namespace, release_name)
-                        kind_to_check = (
-                            K8sKinds.daemon_set,
-                            K8sKinds.deployment,
-                            K8sKinds.replica_set,
-                            K8sKinds.replication_controller,
-                            K8sKinds.service,
-                            K8sKinds.stateful_set,
-                        )
-                        return await asyncio.gather(*[
-                            create_task(k8s_manager.get_details(
-                                context_name=context_name,
-                                namespace=manifest.metadata.namespace,
-                                kind=manifest.kind,
-                                name=manifest.metadata.name
-                            ))
-                            for manifest in manifests if manifest.kind in kind_to_check
-                        ])
-
                     releases_entities_details = await asyncio.gather(*[
-                        create_task(get_entity_details(release.name, release.namespace))
+                        self._get_detailed_manifest(
+                            helm_service, k8s_manager, context_name, release.namespace, release.name, kinds_to_fetch
+                        )
                         for release in releases
                     ])
                     for release, entities_details in zip(releases, releases_entities_details):
@@ -143,6 +134,20 @@ class HelmManager:
 
         return items
 
+    async def releases_count(self, organization: Organization) -> int:
+        """
+        Returns count of releases for all available clusters in all namespaces.
+        """
+        kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)
+        with kubernetes_configuration as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                releases = await asyncio.gather(
+                    *[helm_service.list.releases(context_name) for context_name in kubernetes_configuration.contexts]
+                )
+
+        return sum([len(item) for item in releases])
+
     async def release_details(
         self, organization: Organization, context_name: str, namespace: str, release_name: str
     ) -> ReleaseDetails:
@@ -154,47 +159,29 @@ class HelmManager:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 k8s_manager = K8sManager(k8s_config_path)
-                user_supplied_values, computed_values, hooks, manifests, notes = await asyncio.gather(
+                user_supplied_values, computed_values, hooks, resources, notes = await asyncio.gather(
                     helm_service.get.user_supplied_values(
                         context_name=context_name, namespace=namespace, release_name=release_name
                     ),
                     helm_service.get.computed_values(
                         context_name=context_name, namespace=namespace, release_name=release_name
                     ),
-                    helm_service.get.hooks(
-                        context_name=context_name, namespace=namespace, release_name=release_name
+                    self._get_detailed_hooks(
+                        helm_service, k8s_manager, context_name, namespace, release_name
                     ),
-                    helm_service.get.manifest(
-                        context_name=context_name, namespace=namespace, release_name=release_name
+                    self._get_detailed_manifest(
+                        helm_service, k8s_manager, context_name, namespace, release_name
                     ),
                     helm_service.get.notes(
                         context_name=context_name, namespace=namespace, release_name=release_name
                     )
                 )
-                manifests_details = await asyncio.gather(*[
-                    create_task(k8s_manager.get_details(
-                        context_name=context_name,
-                        namespace=manifest.metadata.namespace,
-                        kind=manifest.kind,
-                        name=manifest.metadata.name
-                    ))
-                    for manifest in manifests
-                ])
-                hooks_details = await asyncio.gather(*[
-                    create_task(k8s_manager.get_details(
-                        context_name=context_name,
-                        namespace=hook.metadata.namespace,
-                        kind=hook.kind,
-                        name=hook.metadata.name
-                    ))
-                    for hook in hooks
-                ])
 
         return {
             'user_supplied_values': user_supplied_values,
             'computed_values': computed_values,
-            'hooks': [item for item in hooks_details if item is not None],
-            'manifests': [item for item in manifests_details if item is not None],
+            'hooks': hooks,
+            'manifests': resources,
             'notes': notes
         }
 
@@ -211,3 +198,61 @@ class HelmManager:
                 await helm_service.uninstall.release(
                     context_name=context_name, namespace=namespace, release_name=release_name
                 )
+
+    async def _get_detailed_manifest(
+        self,
+        helm_service: HelmService,
+        k8s_manager: K8sManager,
+        context_name: str,
+        namespace: str,
+        release_name: str,
+        kinds_to_fetch: Iterable[K8sKinds] = None
+    ) -> List[K8sEntitySchema]:
+        """
+        Returns list of Helm manifest entities extended with details from
+        Kubernetes.
+        """
+        resources = await helm_service.get.manifest(context_name, namespace, release_name)
+        if not kinds_to_fetch:
+            # No limit was given. Fetching all entities.
+            kinds_to_fetch = K8sKinds
+        resources_details = await asyncio.gather(*[
+            create_task(k8s_manager.get_details(
+                context_name=context_name,
+                namespace=namespace,
+                kind=resource.kind,
+                name=resource.metadata.name
+            ))
+            for resource in resources if resource.kind in kinds_to_fetch
+        ])
+
+        return [item for item in resources_details if item is not None]
+
+    async def _get_detailed_hooks(
+        self,
+        helm_service: HelmService,
+        k8s_manager: K8sManager,
+        context_name: str,
+        namespace: str,
+        release_name: str,
+        kinds_to_fetch: Iterable[K8sKinds] = None
+    ) -> List[K8sEntitySchema]:
+        """
+        Returns list of Helm hooks manifest entities extended with details from
+        Kubernetes.
+        """
+        resources = await helm_service.get.hooks(context_name, namespace, release_name)
+        if not kinds_to_fetch:
+            # No limit was given. Fetching all entities.
+            kinds_to_fetch = K8sKinds
+        resources_details = await asyncio.gather(*[
+            create_task(k8s_manager.get_details(
+                context_name=context_name,
+                namespace=namespace,
+                kind=resource.kind,
+                name=resource.metadata.name
+            ))
+            for resource in resources if resource.kind in kinds_to_fetch
+        ])
+
+        return [item for item in resources_details if item is not None]
