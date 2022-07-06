@@ -23,5 +23,9 @@ router.include_router(fastapi_users.get_verify_router(UserRead))
 google_router = fastapi_users.get_oauth_router(google_client, auth_backend, settings.SECRET)
 router.include_router(google_router, prefix='/google')
 
-github_router = fastapi_users.get_oauth_router(github_client, auth_backend, settings.SECRET, redirect_url='http://localhost:3000/sign-in')
+github_router = fastapi_users.get_oauth_router(
+    github_client,
+    auth_backend,
+    settings.SECRET,
+    redirect_url='http://localhost:3000/sign-in')
 router.include_router(github_router, prefix='/github')

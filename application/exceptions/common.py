@@ -7,6 +7,9 @@ from .base import ServiceHubException
 class CommonException(ServiceHubException):
     """
     Common Service Hub exception.
+
+    Message of this class and all classes that inherited from this will be
+    delivered to front-end with settled status code.
     """
     message: str
     status_code: int

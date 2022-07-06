@@ -2,6 +2,7 @@
 Classes responsible for interaction with services database entities.
 """
 from fastapi import Depends
+from sqlalchemy import delete
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,10 +27,17 @@ class ServiceDatabase(BaseDatabase):
 
         return result.unique().scalars().all()
 
-    async def delete_by_id(self, id: int | str) -> None:
-        deleted_row_count = await super().delete_by_id(id)
+    async def delete_organization_service(self, organization_id, service_id: int | str) -> None:
+        result = await self.session.execute(
+            delete(self.table).where(self.table.id == service_id, self.table.organization_id == organization_id)
+        )
+        await self.session.commit()
+
+        deleted_row_count = result.rowcount
         if deleted_row_count < 1:
-            raise ServiceDoesNotExistException(f'Failed to delete service. Service with ID: {id} does not exist.')
+            raise ServiceDoesNotExistException(
+                f'Failed to delete service. Service with ID: {service_id} does not exist.'
+            )
 
 
 async def get_service_db(session=Depends(get_session)):

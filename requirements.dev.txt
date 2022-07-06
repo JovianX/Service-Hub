@@ -4,4 +4,3 @@ autopep8
 isort
 pytest
 pytest-asyncio
-httpx
