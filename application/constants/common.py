@@ -17,3 +17,13 @@ class HTTPMethods(str, Enum):
     post = 'post'
     put = 'put'
     trace = 'trace'
+
+
+class CloudProviders(str, Enum):
+    """
+    Supported cloud providers.
+    """
+    aws = 'aws'
+    azure = 'azure'
+    gcp = 'gcp'
+    unrecognized = 'unrecognized'

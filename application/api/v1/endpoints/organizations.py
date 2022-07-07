@@ -9,14 +9,44 @@ from application.core.authentication import current_active_user
 from application.managers.organizations.manager import OrganizationManager
 from application.managers.organizations.manager import get_organization_manager
 from application.managers.organizations.settings_schemas import ROOT_SETTING_NAMES
-from application.managers.organizations.settings_schemas import ROOT_SETTING_SCHEMAS
 from application.models.user import User
+from application.schemas.kubernetes import KubernetesConfigurationSchema
+
+from ..schemas.organization import K8sConfigurationResponseSchema
 
 
 router = APIRouter()
 
 
-@router.delete('/settings/kubernetes-configuration/context')
+@router.post('/kubernetes-configuration', response_model=K8sConfigurationResponseSchema)
+async def upload_configuration(
+    incoming_configuration: KubernetesConfigurationSchema = Body(description='Kubernetes configuration'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Uploads(merges if exists) organization's Kubernetes configuration.
+    """
+    await organization_manager.update_kubernetes_configuration(user.organization, incoming_configuration.dict())
+    configuration = organization_manager.get_kubernetes_configuration(user.organization)
+
+    return {'configuration': configuration}
+
+
+@router.get('/kubernetes-configuration', response_model=K8sConfigurationResponseSchema)
+async def get_configuration(
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Returns current organization's Kubernetes configuration.
+    """
+    configuration = organization_manager.get_kubernetes_configuration(user.organization)
+
+    return {'configuration': configuration}
+
+
+@router.delete('/kubernetes-configuration/context')
 async def save_setting(
     context_name: str = Query(alias='context-name'),
     user: User = Depends(current_active_user),
@@ -40,10 +70,7 @@ async def save_setting(
     Sets specific organization setting.
     """
     organization = user.organization
-    if setting_name == 'kubernetes_configuration':
-        await organization_manager.update_kubernetes_configuration(organization, setting_value)
-    else:
-        await organization_manager.update_setting(organization, setting_name, setting_value)
+    await organization_manager.update_setting(organization, setting_name, setting_value)
 
 
 @router.get('/settings/{setting_name}')

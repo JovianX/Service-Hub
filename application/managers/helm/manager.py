@@ -91,7 +91,7 @@ class HelmManager:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 k8s_manager = K8sManager(k8s_config_path)
-                for context_name in kubernetes_configuration.contexts:
+                for context_name in kubernetes_configuration.context_names:
                     releases, charts = await asyncio.gather(
                         helm_service.list.releases(context_name, namespace),
                         self.list_repositories_charts(organization)
