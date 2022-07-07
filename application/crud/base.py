@@ -4,6 +4,7 @@ Classes responsible for interaction with organization database entities.
 from typing import Any
 from typing import Dict
 
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -43,6 +44,17 @@ class BaseDatabase:
     async def delete(self, instance) -> None:
         await self.session.delete(instance)
         await self.session.commit()
+
+    async def delete_by_id(self, id: int | str) -> None:
+        """
+        Deletes record by its ID. ID can be integer of string(UUID).
+        """
+        result = await self.session.execute(
+            delete(self.table).where(self.table.id == id)
+        )
+        await self.session.commit()
+
+        return result.rowcount
 
     async def save(self, instance):
         self.session.add(instance)

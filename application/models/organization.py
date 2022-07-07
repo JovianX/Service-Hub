@@ -14,3 +14,4 @@ class Organization(Base):
     settings = Column(JSON, nullable=False, default={})
     helm_home = Column(LargeBinary, nullable=True)
     members = relationship('User', back_populates='organization', lazy='joined')
+    services = relationship('Service', back_populates='organization', lazy='joined')

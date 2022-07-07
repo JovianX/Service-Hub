@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 from pydantic import Field
 
@@ -13,8 +11,8 @@ class K8sEntitySchema(BaseModel):
     api_version: str = Field(alias='apiVersion', description='API version')
     kind: str = Field(description='Type if entity')
     metadata: dict = Field(description='Entity metadata')
-    specification: Optional[dict] = Field(alias='spec', default={}, description='Entity technical specification')
-    status: Optional[dict] = Field(default={}, description='Entity status')
+    specification: dict | None = Field(alias='spec', default={}, description='Entity technical specification')
+    status: dict | None = Field(default={}, description='Entity status')
 
     class Config:
         allow_population_by_field_name = True

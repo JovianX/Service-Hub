@@ -2,10 +2,10 @@ import contextlib
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.core.authentication import get_user_db
-from application.core.authentication import get_user_manager
-from application.managers.organizations.manager import get_organization_db
+from application.crud.organizations import get_organization_db
+from application.crud.users import get_user_db
 from application.managers.organizations.manager import get_organization_manager
+from application.managers.users import get_user_manager
 from application.models.user import User
 from application.schemas.users import UserCreate
 

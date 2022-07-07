@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from application.db.base_class import Base
 from application.models.organization import *
+from application.models.service import *
 from application.models.user import *
 
 

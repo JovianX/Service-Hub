@@ -1,8 +1,8 @@
 import yaml
 
+from application.exceptions.helm import ReleaseAlreadyExistsException
 from application.exceptions.shell import NonZeroStatusException
 from application.utils.temporary_file import yaml_temporary_file
-from application.exceptions.helm import ReleaseAlreadyExistsException
 
 from .base import HelmBase
 

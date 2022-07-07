@@ -12,8 +12,8 @@ from application.managers.organizations.manager import OrganizationManager
 from application.managers.organizations.manager import get_organization_manager
 from application.models.user import User
 
-from ..schemas import AddHelmRepositoryBodySchema
-from ..schemas import InstallChartBodySchema
+from ..schemas.helm import AddHelmRepositoryBodySchema
+from ..schemas.helm import InstallChartBodySchema
 
 
 router = APIRouter()

@@ -1,5 +1,7 @@
-.PHONY: help setup setup_helm setup_kubectl migrate up down serve logs db_shell run format tests
+.ONESHELL:
+.PHONY: help setup setup_helm setup_kubectl migrate create_migration up down serve logs db_shell run format tests
 
+include .env
 export
 
 VE_DIRECTORY = .venv
@@ -8,7 +10,7 @@ DB_NAME = service_hub
 DB_USER = postgres_user
 
 help: ## Display this help.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+		@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 setup: ## Setup this project's python dependencies.
 	@test -d $(VE_DIRECTORY) || virtualenv $(VE_DIRECTORY) --python=$(PYTHON)
@@ -20,7 +22,7 @@ setup_helm: ## Install Helm CLI.
 	@test -d $(VE_DIRECTORY) || (echo 'Setup virtual environment first. You can do this by running `make setup`.' && exit 1)
 
 	@mkdir -p $(VE_DIRECTORY)/tmp/helm
-	@wget --output-document=$(VE_DIRECTORY)/tmp/helm.tar.gz https://get.helm.sh/helm-v3.9.0-linux-amd64.tar.gz
+	@wget --output-document=$(VE_DIRECTORY)/tmp/helm.tar.gz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
 	@tar --extract --gzip --directory=$(VE_DIRECTORY)/tmp/helm --file=$(VE_DIRECTORY)/tmp/helm.tar.gz
 	@mv $(VE_DIRECTORY)/tmp/helm/linux-amd64/helm $(VE_DIRECTORY)/bin/helm
 
@@ -30,11 +32,27 @@ setup_helm: ## Install Helm CLI.
 setup_kubectl: ## Install Kubernetes CLI.
 	@test -d $(VE_DIRECTORY) || (echo 'Setup virtual environment first. You can do this by running `make setup`.' && exit 1)
 
-	@wget --output-document=$(VE_DIRECTORY)/bin/kubectl https://dl.k8s.io/release/v1.24.1/bin/linux/amd64/kubectl
+	@wget --output-document=$(VE_DIRECTORY)/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 	@chmod +x $(VE_DIRECTORY)/bin/kubectl
 
 migrate: ## Apply all unapplied migrations.
-	. $(VE_DIRECTORY)/bin/activate; alembic upgrade head
+	@if [ -z `docker ps --quiet --no-trunc | grep --only-matching "$(shell docker-compose ps --quiet application)"` ]; then
+		. $(VE_DIRECTORY)/bin/activate; alembic upgrade head
+	else
+		docker-compose exec application alembic upgrade head
+	fi
+
+create_migration: ## Does revision of database and models and creates migration if needed. Usage example: `make create_migration message="Added ModelName model"`
+	@if [ -z "${message}" ]; then echo '`message` attribute is required' && exit 1; fi
+	@if [ -z `docker ps --quiet --no-trunc | grep --only-matching "$(shell docker-compose ps --quiet application)"` ]; then
+		. $(VE_DIRECTORY)/bin/activate; alembic revision --autogenerate --message="${message}"
+	else
+		docker-compose exec application alembic revision --autogenerate --message="${message}"
+		# Because of Docker usage, migration will be created with root
+		# ownership. Doing sneaky tricky black voodoo magic to change migration
+		# files ownership to current user
+		docker-compose exec application chown $(shell id -u):$(shell id -g) migrations/versions/*
+	fi
 
 up: ## Launch dockerized infrastructure.
 	docker-compose up --detach
@@ -49,20 +67,16 @@ logs: ## Show contaiters logs.
 	@docker-compose logs --follow || true
 
 db_shell: ## PostgreSQL shell
-	docker-compose exec postgres psql --user=$(DB_USER) --dbname=$(DB_NAME)
+	@docker-compose exec postgres apt-get update > /dev/null
+	@docker-compose exec postgres apt-get install less > /dev/null
+	@docker-compose exec --env PAGER="less -S" postgres psql --user=$(DB_USER) --dbname=$(DB_NAME)
 
 run: ## Launch local appserver.
-	. $(VE_DIRECTORY)/bin/activate; uvicorn --reload --reload-exclude=docker-data/* application.instance:instance
+	# . $(VE_DIRECTORY)/bin/activate; uvicorn --reload --reload-exclude=docker-data/* application.instance:instance
+	. $(VE_DIRECTORY)/bin/activate; uvicorn application.instance:instance
 
 format: ## Format source code.
 	@. $(VE_DIRECTORY)/bin/activate; autopep8 --in-place --recursive application migrations
-	@. $(VE_DIRECTORY)/bin/activate; docformatter \
-		--wrap-summaries=80 \
-		--wrap-descriptions=80 \
-		--pre-summary-newline \
-		--make-summary-multi-line \
-		--in-place --recursive \
-		application migrations
 	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports application migrations
 
 tests: ## Run all test.

@@ -3,11 +3,9 @@ Helm schemas.
 """
 from datetime import datetime
 from datetime import timezone
-from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import Field
-from pydantic import root_validator
 
 from application.constants.helm import ReleaseStatuses
 
@@ -22,8 +20,8 @@ class helm_datetime(datetime):
         """
         Parses date time that sends us helm.
 
-        Value example: '2022-06-01 12:46:15.24955073 +0000 UTC'
-                       '2022-06-07 16:13:40.907107 +0300 +0300'
+        Values example: '2022-06-01 12:46:15.24955073 +0000 UTC'
+                        '2022-06-07 16:13:40.907107 +0300 +0300'
         """
         # Reducing microseconds count to 6 by cutting redundant digits.
         # Helm returns time with 8 digits in microseconds Python supports only 6.
@@ -75,8 +73,8 @@ class ReleaseSchema(BaseModel):
 
 class ManifestMetaSchema(BaseModel):
     name: str = Field(description='Entity name')
-    namespace: Optional[str] = Field(description='Namespace to which belongs entity')
-    labels: Optional[dict] = Field(default={}, description='Custom defined labels in form key-value')
+    namespace: str | None = Field(description='Namespace to which belongs entity')
+    labels: dict | None = Field(default={}, description='Custom defined labels in form key-value')
 
 
 class ManifestSchema(BaseModel):
@@ -86,7 +84,7 @@ class ManifestSchema(BaseModel):
     api_version: str = Field(alias='apiVersion', description='API version')
     kind: str = Field(description='Type of entity')
     metadata: ManifestMetaSchema = Field(description='Entity metadata')
-    specification: Optional[dict] = Field(alias='spec', default={}, description='Entity technical specification')
+    specification: dict | None = Field(alias='spec', default={}, description='Entity technical specification')
 
     class Config:
         allow_population_by_field_name = True

@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import List
-from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import Field
@@ -33,7 +32,7 @@ class ReleaseListItemSchema(BaseModel):
     health_status: ReleaseHealthStatuses = Field(description='Release health status')
     entities_health_status: dict = Field(description='Release detailed description of release health condition')
     context_name: str = Field(description='Kubernetes configuration context name with which was accessed release')
-    available_chart: Optional[AvailableChart] = Field(description='Release chart update candidate')
+    available_chart: AvailableChart | None = Field(description='Release chart update candidate')
 
     @root_validator(pre=True)
     def extract_chart_version(cls, values: dict) -> dict:

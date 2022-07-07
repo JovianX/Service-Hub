@@ -1,7 +1,6 @@
 -r ./requirements.txt
 
 autopep8
-docformatter
 isort
 pytest
 pytest-asyncio

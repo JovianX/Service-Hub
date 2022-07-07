@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import List
 from typing import Literal
-from typing import Optional
 from typing import Union
 
 from pydantic import AnyHttpUrl
@@ -53,7 +52,7 @@ class KubernetesConfigurationSchema(BaseModel):
     clusters: List[KubernetesConfigurationClusterSchema] = Field(description='List of clusters.')
     contexts: List[KubernetesConfigurationContextSchema] = Field(description='List of contexts.')
     users: List[KubernetesConfigurationUserSchema] = Field(description='List of users.')
-    preferences: Optional[dict] = Field(description='Various settings.')
+    preferences: dict | None = Field(description='Various settings.')
 
     class Config:
         allow_population_by_field_name = True
@@ -64,7 +63,7 @@ class KubernetesConfigurationSchema(BaseModel):
 
 
 class SettingsSchema(BaseModel):
-    kubernetes_configuration: Optional[KubernetesConfigurationSchema] = Field(
+    kubernetes_configuration: KubernetesConfigurationSchema | None = Field(
         description='Kubernetes configuration to use during application management.'
     )
 
