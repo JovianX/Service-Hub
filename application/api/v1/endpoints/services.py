@@ -4,7 +4,10 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Path
 
+from application.constants.services import ServiceHealthStatuses
 from application.core.authentication import current_active_user
+from application.managers.organizations.manager import OrganizationManager
+from application.managers.organizations.manager import get_organization_manager
 from application.managers.services.manager import ServiceManager
 from application.managers.services.manager import get_service_manager
 from application.models.user import User
@@ -49,9 +52,23 @@ async def service_list(
 @router.delete('/{service_id}')
 async def delete_service(
     service_id: int = Path(title='The ID of the service to delete'),
+    user: User = Depends(current_active_user),
     service_manager: ServiceManager = Depends(get_service_manager)
 ):
     """
     Deletes service catalog item.
     """
-    await service_manager.delete_service(service_id)
+    await service_manager.delete_service(service_id, user.organization)
+
+
+@router.get('/{service_id}/check-health', response_model=ServiceHealthStatuses)
+async def check_service_health_status(
+    service_id: int = Path(title='The ID of the service to check heath'),
+    user: User = Depends(current_active_user),
+    service_manager: ServiceManager = Depends(get_service_manager),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Checks service health status.
+    """
+    return await service_manager.check_health(service_id, user.organization, organization_manager)

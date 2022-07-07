@@ -5,10 +5,13 @@ from fastapi import status
 from kubernetes_asyncio.client import AppsV1Api
 from kubernetes_asyncio.client import BatchV1Api
 from kubernetes_asyncio.client import CoreV1Api
+from kubernetes_asyncio.client import NetworkingV1Api
 from kubernetes_asyncio.client import PolicyV1beta1Api
 from kubernetes_asyncio.client import RbacAuthorizationV1Api
 from kubernetes_asyncio.client.exceptions import ApiException
 from kubernetes_asyncio.config import new_client_from_config
+
+from application.exceptions.kubernetes import ProxyRequestException
 
 from .schemas import K8sEntitySchema
 
@@ -88,6 +91,14 @@ class K8sClient:
         """
         return await self._get_details(
             AppsV1Api, 'read_namespaced_deployment', context_name, namespace=namespace, name=name
+        )
+
+    async def get_ingress_details(self, context_name: str, namespace: str, name: str) -> K8sEntitySchema:
+        """
+        Returns ingress details.
+        """
+        return await self._get_details(
+            NetworkingV1Api, 'read_namespaced_ingress', context_name, namespace=namespace, name=name
         )
 
     async def get_job_details(self, context_name: str, namespace: str, name: str) -> K8sEntitySchema:
@@ -188,3 +199,49 @@ class K8sClient:
         return await self._get_details(
             AppsV1Api, 'read_namespaced_stateful_set', context_name, namespace=namespace, name=name
         )
+
+    async def make_get_service_proxy_request(
+        self,
+        context_name: str,
+        namespace: str,
+        service_name: str,
+        path: str,
+        headers: dict | None = None,
+        timeout: int | None = None,
+    ):
+        """
+        Makes GET request to endpoint of application deployed in cloud.
+        """
+        if headers is None:
+            headers = {}
+        async with await new_client_from_config(self.configuration_file_path, context_name) as client:
+            api = CoreV1Api(client)
+            try:
+                return await api.connect_get_namespaced_service_proxy_with_path(
+                    namespace=namespace, name=service_name, path=path, _request_timeout=timeout, _headers=headers
+                )
+            except ApiException as error:
+                raise ProxyRequestException(error.reason, error.status)
+
+    async def make_post_service_proxy_request(
+        self,
+        context_name: str,
+        namespace: str,
+        service_name: str,
+        path: str,
+        headers: dict | None = None,
+        timeout: int | None = None,
+    ):
+        """
+        Makes POST request to endpoint of application deployed in cloud.
+        """
+        if headers is None:
+            headers = {}
+        async with await new_client_from_config(self.configuration_file_path, context_name) as client:
+            api = CoreV1Api(client)
+            try:
+                return await api.connect_post_namespaced_service_proxy_with_path(
+                    namespace=namespace, name=service_name, path=path, _request_timeout=timeout, _headers=headers
+                )
+            except ApiException as error:
+                raise ProxyRequestException(error.reason, error.status)

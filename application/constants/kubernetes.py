@@ -14,6 +14,7 @@ class K8sKinds(str, Enum):
     cron_job = 'CronJob'
     daemon_set = 'DaemonSet'
     deployment = 'Deployment'
+    ingress = 'Ingress'
     job = 'Job'
     persistent_volume_claim = 'PersistentVolumeClaim'
     pod = 'Pod'

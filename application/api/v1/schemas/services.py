@@ -11,7 +11,8 @@ from pydantic import constr
 
 from application.constants.services import ServiceTypes
 from application.managers.services.schemas import HTTPEndpointHealthCheckSettingsSchema
-from application.managers.services.schemas import KubernetesResourceHealthCheckSettingsSchema
+from application.managers.services.schemas import KubernetesIngressHealthCheckSettingsSchema
+from application.managers.services.schemas import KubernetesServiceHealthCheckSettingsSchema
 
 
 class CreateServiceBodyBaseSchema(BaseModel):
@@ -22,16 +23,24 @@ class CreateServiceBodyBaseSchema(BaseModel):
     description: str | None = Field(description='Description of service name', default='')
 
 
-class CreateKubernetesResourceServiceBodySchema(CreateServiceBodyBaseSchema):
+class CreateKubernetesIngressServiceBodySchema(CreateServiceBodyBaseSchema):
     """
-    Kubernetes resouce service create request body.
+    Kubernetes ingress resouce service create request body.
     """
-    health_check_settings: KubernetesResourceHealthCheckSettingsSchema = Field(
+    health_check_settings: KubernetesIngressHealthCheckSettingsSchema = Field(
         description='Settings for service health check.'
     )
-    type: Literal[ServiceTypes.kubernetes_ingress] | Literal[ServiceTypes.kubernetes_service] = Field(
-        description='Type of service'
+    type: Literal[ServiceTypes.kubernetes_ingress] = Field(description='Type of service')
+
+
+class CreateKubernetesServiceServiceBodySchema(CreateServiceBodyBaseSchema):
+    """
+    Kubernetes service resouce service create request body.
+    """
+    health_check_settings: KubernetesServiceHealthCheckSettingsSchema = Field(
+        description='Settings for service health check.'
     )
+    type: Literal[ServiceTypes.kubernetes_service] = Field(description='Type of service')
 
 
 class CreateHTTPEndpointServiceBodySchema(CreateServiceBodyBaseSchema):
@@ -44,10 +53,10 @@ class CreateHTTPEndpointServiceBodySchema(CreateServiceBodyBaseSchema):
     type: Literal[ServiceTypes.http_endpoint] = Field(description='Type of service')
 
 
-CreateServiceBodySchema = Annotated[
-    CreateHTTPEndpointServiceBodySchema | CreateKubernetesResourceServiceBodySchema,
-    Field(discriminator='type')
-]
+CreateServiceBodySchema = Annotated[CreateHTTPEndpointServiceBodySchema |
+                                    CreateKubernetesIngressServiceBodySchema |
+                                    CreateKubernetesServiceServiceBodySchema,
+                                    Field(discriminator='type')]
 
 
 class CreatorSchema(BaseModel):

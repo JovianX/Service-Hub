@@ -8,3 +8,11 @@ class ServiceTypes(str, Enum):
     http_endpoint = 'http_endpoint'
     kubernetes_ingress = 'kubernetes_ingress'
     kubernetes_service = 'kubernetes_service'
+
+
+class ServiceHealthStatuses(str, Enum):
+    """
+    Operability status of service from service catalog.
+    """
+    healthy = 'healthy'
+    unhealthy = 'unhealthy'

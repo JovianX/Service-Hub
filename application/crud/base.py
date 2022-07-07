@@ -5,7 +5,10 @@ from typing import Any
 from typing import Dict
 
 from sqlalchemy import delete
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from application.exceptions.db import RecordNotFoundException
 
 
 class BaseDatabase:
@@ -31,6 +34,21 @@ class BaseDatabase:
         await self.session.refresh(instance)
 
         return instance
+
+    async def get_by_id(self, id: int | str):
+        """
+        Returns returns record which ID matches given.
+        """
+        result = await self.session.execute(
+            select(self.table).where(self.table.id == id)
+        )
+        record = result.unique().scalars().first()
+        if record is None:
+            raise RecordNotFoundException(
+                self.table, f'{self.table.__name__} with ID: "{id}" does not exist.'
+            )
+
+        return record
 
     async def update(self, instance, update_dict: Dict[str, Any]):
         for key, value in update_dict.items():
