@@ -54,7 +54,9 @@ class CreateHTTPEndpointServiceBodySchema(CreateServiceBodyBaseSchema):
 
 
 CreateServiceBodySchema = Annotated[CreateHTTPEndpointServiceBodySchema |
-                                    CreateKubernetesIngressServiceBodySchema | CreateKubernetesServiceServiceBodySchema, Field(discriminator='type')]
+                                    CreateKubernetesIngressServiceBodySchema |
+                                    CreateKubernetesServiceServiceBodySchema,
+                                    Field(discriminator='type')]
 
 
 class CreatorSchema(BaseModel):
