@@ -11,6 +11,7 @@ import yaml
 from kubernetes.config.kube_config import ENV_KUBECONFIG_PATH_SEPARATOR
 from kubernetes.config.kube_config import KubeConfigMerger
 
+from application.constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
 from application.constants.common import CloudProviders
 from application.schemas.kubernetes import KubernetesConfigurationSchema
 from application.utils.temporary_file import yaml_temporary_file
@@ -103,13 +104,13 @@ class KubernetesConfiguration:
                 region = self._get_aws_region(context_name)
             elif self._is_azure(context_name):
                 cloud_provider = CloudProviders.azure
-                region = None
+                region = self._get_azure_region(context_name)
             elif self._is_gcp(context_name):
                 cloud_provider = CloudProviders.gcp
                 region = self._get_gcp_region(context_name)
             else:
                 cloud_provider = CloudProviders.unrecognized
-                region = None
+                region = UNRECOGNIZED_CLOUD_PROVIDER_REGION
             self.metadata['contexts'][context_name] = {
                 'cloud_provider': cloud_provider,
                 'region': region
@@ -146,7 +147,12 @@ class KubernetesConfiguration:
         """
         Returns true if context's cluster belongs to MS Azure cloud provider.
         """
-        return False
+        context = self.contexts[context_name]
+        cluster_name = context['cluster']
+        cluster = self.clusters[cluster_name]
+        server = cluster['server']
+
+        return '.azmk8s.io' in server
 
     def _is_gcp(self, context_name: str) -> bool:
         """
@@ -176,13 +182,24 @@ class KubernetesConfiguration:
         if match:
             return match.group()
 
-        return
+        return UNRECOGNIZED_CLOUD_PROVIDER_REGION
 
     def _get_azure_region(self, context_name: str) -> str | None:
         """
         Returns region from context's cluster configuration.
         """
-        raise NotImplementedError()
+        context = self.contexts[context_name]
+        cluster_name = context['cluster']
+        cluster = self.clusters[cluster_name]
+        server = cluster['server']
+
+        # Sevice pattern: http://{cluster name}-{resource name}-{cluster-id}.{???}.{region}.azmk8s.io:{port}
+        match = re.search(r'\.[a-z0-9]+\.azmk8s\.io', server)
+        if match:
+            region, *_ = match.group().strip('.').split('.')
+            return region
+
+        return UNRECOGNIZED_CLOUD_PROVIDER_REGION
 
     def _get_gcp_region(self, context_name: str) -> str | None:
         """
@@ -198,4 +215,4 @@ class KubernetesConfiguration:
         if match:
             return match.group()
 
-        return
+        return UNRECOGNIZED_CLOUD_PROVIDER_REGION

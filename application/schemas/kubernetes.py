@@ -29,7 +29,7 @@ class KubernetesConfigurationClusterSchema(BaseModel):
 
 class KubernetesConfigurationContextDefenitionSchema(BaseModel):
     cluster: str = Field(description='Cluste name.')
-    namespace: str = Field(description='Namespace name')
+    namespace: str | None = Field(description='Namespace name')
     user: str = Field(description='User name')
 
 
@@ -38,12 +38,8 @@ class KubernetesConfigurationContextSchema(BaseModel):
     name: str = Field(description='Name of context entity.')
 
 
-class KubernetesConfigurationUserDefenitionSchema(BaseModel):
-    token: str = Field(description='User access token.')
-
-
 class KubernetesConfigurationUserSchema(BaseModel):
-    user: KubernetesConfigurationUserDefenitionSchema = Field(description='User defenition.')
+    user: dict = Field(description='User authentication and authorization details.')
     name: str = Field(description='Name of user entity.')
 
 
