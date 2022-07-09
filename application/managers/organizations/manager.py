@@ -54,16 +54,17 @@ class OrganizationManager:
         """
         Saves new of does merge with existing Kubernetes configuration.
         """
-        # Validating incoming configuration.
-        SettingsSchema.parse_obj({'kubernetes_configuration': incoming_configuration})
-
-        current_settings = instance.settings
-        kubernetes_configuration = incoming_configuration
-        if current_settings.get('kubernetes_configuration'):
-            configuration = KubernetesConfiguration(current_settings['kubernetes_configuration'])
-            kubernetes_configuration = configuration.merge(incoming_configuration)
-
-        await self.update_setting(instance, 'kubernetes_configuration', kubernetes_configuration)
+        kubernetes_configuration = instance.kubernetes_configuration
+        configuration = KubernetesConfiguration(
+            kubernetes_configuration['configuration'],
+            kubernetes_configuration['metadata']
+        )
+        configuration.update(incoming_configuration)
+        instance.kubernetes_configuration = {
+            'configuration': configuration.configuration,
+            'metadata': configuration.metadata
+        }
+        await self.db.save(instance)
 
     async def update_setting(self, instance: Organization, setting_name: str, setting_value: Any):
         """
@@ -94,14 +95,14 @@ class OrganizationManager:
         return getattr(settings, setting_name)
 
     def get_kubernetes_configuration(self, instance: Organization) -> KubernetesConfiguration:
-        setting = self.get_setting(instance, 'kubernetes_configuration')
-        if not setting:
+        configuration = instance.kubernetes_configuration
+        if not configuration['configuration']:
             raise CommonException(
                 'Organization does not have uploaded Kubernetes configuration.',
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
             )
 
-        return KubernetesConfiguration(setting.dict(exclude_unset=True))
+        return KubernetesConfiguration(configuration=configuration['configuration'], metadata=configuration['metadata'])
 
 
 async def get_organization_manager(organization_db=Depends(get_organization_db)):

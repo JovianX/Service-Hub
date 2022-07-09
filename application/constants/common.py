@@ -4,6 +4,9 @@ Common project constants.
 from enum import Enum
 
 
+UNRECOGNIZED_CLOUD_PROVIDER_REGION = 'unrecognized'
+
+
 class HTTPMethods(str, Enum):
     """
     HTTP methods.
@@ -17,3 +20,13 @@ class HTTPMethods(str, Enum):
     post = 'post'
     put = 'put'
     trace = 'trace'
+
+
+class CloudProviders(str, Enum):
+    """
+    Supported cloud providers.
+    """
+    aws = 'aws'
+    azure = 'azure'
+    gcp = 'gcp'
+    unrecognized = 'unrecognized'
