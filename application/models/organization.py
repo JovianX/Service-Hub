@@ -16,3 +16,4 @@ class Organization(Base):
     helm_home = Column(LargeBinary, nullable=True)
     members = relationship('User', back_populates='organization', lazy='joined')
     services = relationship('Service', back_populates='organization', lazy='joined')
+    rules = relationship('Rule', back_populates='organization', lazy='joined')

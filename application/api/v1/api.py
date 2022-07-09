@@ -5,6 +5,7 @@ from .endpoints import dashboard
 from .endpoints import helm
 from .endpoints import kubernetes
 from .endpoints import organizations
+from .endpoints import rules
 from .endpoints import services
 from .endpoints import users
 
@@ -21,6 +22,8 @@ router.include_router(helm.router, prefix='/helm', tags=['helm'])
 router.include_router(kubernetes.router, prefix='/kubernetes', tags=['kubernetes'])
 
 router.include_router(organizations.router, prefix='/organization', tags=['organizations'])
+
+router.include_router(rules.router, prefix='/rule', tags=['rules'])
 
 router.include_router(services.router, prefix='/service', tags=['services'])
 
