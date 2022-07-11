@@ -76,23 +76,3 @@ async def delete_rule(
     """
     organization = user.organization
     return await rule_manager.delete_organization_rule(organization=organization, rule_id=rule_id)
-
-
-
-action_settings = {
-    'type': 'audit',  # ['audit' | 'apply' | 'webhook']
-}
-
-
-
-# Nginx release values:
-# persistence:
-#   enabled: true
-#   storageClass: "default"
-
-
-# Rule 2 value
-# persistence:
-#   enabled: true
-#   storageClass: "gp2"
-
