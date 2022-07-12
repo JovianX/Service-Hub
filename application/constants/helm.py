@@ -1,10 +1,10 @@
 """
 Helm constants.
 """
-from enum import Enum
+from .base_enum import StrEnum
 
 
-class ReleaseStatuses(str, Enum):
+class ReleaseStatuses(StrEnum):
     """
     Helm release statuses.
     """
@@ -19,7 +19,7 @@ class ReleaseStatuses(str, Enum):
     pending_rollback = 'pending-rollback'
 
 
-class ReleaseHealthStatuses(str, Enum):
+class ReleaseHealthStatuses(StrEnum):
     """
     Helm release operability statuses.
     """

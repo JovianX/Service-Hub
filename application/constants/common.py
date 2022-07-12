@@ -1,24 +1,10 @@
 """
 Common project constants.
 """
-from enum import Enum
-from enum import EnumMeta
+from .base_enum import StrEnum
 
 
 UNRECOGNIZED_CLOUD_PROVIDER_REGION = 'unrecognized'
-
-
-class MetaEnum(EnumMeta):
-    def __contains__(cls, item):
-        try:
-            cls(item)
-        except ValueError:
-            return False
-        return True
-
-
-class StrEnum(str, Enum, metaclass=MetaEnum):
-    pass
 
 
 class HTTPMethods(StrEnum):

@@ -23,7 +23,16 @@ class HelmGet(HelmBase):
         Full description: https://helm.sh/docs/helm/helm_get_values/
         """
         command = self._formup_command('values', release_name, kube_context=context_name, namespace=namespace)
-        output = await self._run_command(command)
+        try:
+            output = await self._run_command(command)
+        except NonZeroStatusException as error:
+            release_not_found_error_message = 'Error: release: not found'
+            error_message = error.stderr_message.strip()
+            if error_message == release_not_found_error_message:
+                raise ReleaseNotFoundException(
+                    f'Failed to get release user supplied values. Release "{release_name}" does not exist in namespace '
+                    f'"{namespace}".'
+                )
 
         return yaml.safe_load(output)
 
@@ -34,7 +43,17 @@ class HelmGet(HelmBase):
         Full description: https://helm.sh/docs/helm/helm_get_values/
         """
         command = self._formup_command('values', release_name, '--all', kube_context=context_name, namespace=namespace)
-        output = await self._run_command(command)
+        try:
+            output = await self._run_command(command)
+        except NonZeroStatusException as error:
+            release_not_found_error_message = 'Error: release: not found'
+            error_message = error.stderr_message.strip()
+            if error_message == release_not_found_error_message:
+                raise ReleaseNotFoundException(
+                    f'Failed to get release computed values. Release "{release_name}" does not exist in namespace '
+                    f'"{namespace}".'
+                )
+        output = output.strip('COMPUTED VALUES:\n')
 
         return yaml.safe_load(output)
 

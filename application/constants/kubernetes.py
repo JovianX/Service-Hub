@@ -1,10 +1,10 @@
 """
 Constants related to Kubernetes.
 """
-from enum import Enum
+from .base_enum import StrEnum
 
 
-class K8sKinds(str, Enum):
+class K8sKinds(StrEnum):
     """
     Kubernetes entities kinds.
     """
