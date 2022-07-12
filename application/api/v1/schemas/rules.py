@@ -6,6 +6,7 @@ from pydantic import Field
 from pydantic import conlist
 
 from application.managers.rules.schemas import RuleConditionSchema
+from application.managers.rules.schemas import RuleActionSettingsSchema
 
 from .common import OrganizationResponseSchema
 from .common import UserResponseSchema
@@ -21,7 +22,7 @@ class RuleCreateBodySchema(BaseModel):
     name: str = Field(description='Short description of rule')
     description: str | None = Field(description='Long description of rule', default='')
     condition_settings: Conditions = Field(description='Rule condition settings')
-    action_settings: dict = Field(description='Rule action settings')
+    action_settings: RuleActionSettingsSchema = Field(description='Rule action settings')
     enabled: bool | None = Field(description='Shows rule activated or not', default=False)
 
 

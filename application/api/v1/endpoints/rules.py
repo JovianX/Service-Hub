@@ -5,7 +5,9 @@ from fastapi import Path
 from fastapi import Query
 from pydantic import conlist
 
+from application.constants.rules import RuleAuditResult
 from application.core.authentication import current_active_user
+from application.managers.helm.manager import HelmManager
 from application.managers.organizations.manager import OrganizationManager
 from application.managers.organizations.manager import get_organization_manager
 from application.managers.rules.manager import RuleManager
@@ -97,7 +99,7 @@ async def delete_rule(
     return await rule_manager.delete_organization_rule(organization=organization, rule_id=rule_id)
 
 
-@router.get('/validate')
+@router.get('/validate', response_model=RuleAuditResult)
 async def validate_rules(
     context_name: str = Query(alias='context-name', description='Name of context'),
     namespace: str = Query(description='Name space where release is located'),
@@ -111,10 +113,15 @@ async def validate_rules(
     """
     organization = user.organization
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(organization)
+    helm_manager = HelmManager(organization_manager)
+    computed_values = await helm_manager.computed_values(
+        organization=organization, context_name=context_name, namespace=namespace, release_name=release_name
+    )
     return await rule_manager.validate(
         organization=organization,
         k8s_configuration=kubernetes_configuration,
         context_name=context_name,
         namespace=namespace,
-        release_name=release_name
+        release_name=release_name,
+        computed_values=computed_values
     )

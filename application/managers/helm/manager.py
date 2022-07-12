@@ -234,6 +234,22 @@ class HelmManager:
             'details': health_details
         }
 
+    async def computed_values(
+        self, organization: Organization, context_name: str, namespace: str, release_name: str
+    ) -> dict:
+        """
+        Returns release computed values.
+        """
+        kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)
+        with kubernetes_configuration as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                computed_values = await helm_service.get.computed_values(
+                    context_name=context_name, namespace=namespace, release_name=release_name
+                )
+
+        return computed_values
+
     async def uninstall_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str
     ) -> None:

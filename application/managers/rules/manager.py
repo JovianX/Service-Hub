@@ -3,8 +3,8 @@ Rules bussines logic.
 """
 from fastapi import Depends
 from fastapi import status
-from application.constants.rules import RuleAttribute
 
+from application.constants.rules import RuleAttribute
 from application.crud.rules import RuleDatabase
 from application.crud.rules import get_rule_db
 from application.exceptions.common import CommonException
@@ -14,6 +14,7 @@ from application.models.rule import Rule
 from application.models.user import User
 from application.utils.kubernetes import KubernetesConfiguration
 
+from .actions.manager import ActionManager
 from .conditions import Condition
 
 
@@ -107,7 +108,8 @@ class RuleManager:
         k8s_configuration: KubernetesConfiguration,
         context_name: str,
         namespace: str,
-        release_name: str
+        release_name: str,
+        computed_values: dict
     ):
         """
         Validates rules agains release.
@@ -120,11 +122,15 @@ class RuleManager:
             RuleAttribute.cluster_region: k8s_configuration.get_region(context_name)
         }
         rules = await self.db.list_by_organization_available(organization.id)
+
         matched_rules = []
         for rule in rules:
             conditoins = [Condition(item, values) for item in rule.condition_settings]
             if all(conditoins):
                 matched_rules.append(rule)
+
+        action_manager = ActionManager([rule.action_settings for rule in matched_rules])
+        return action_manager.execute_audit(computed_values)
 
 
 async def get_rule_manager(organization_db=Depends(get_rule_db)):
