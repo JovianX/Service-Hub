@@ -3,6 +3,7 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy import Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -18,8 +19,9 @@ class Rule(Base):
     order = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False, default='')
-    condition_settings = Column(JSON, nullable=False, default={})
+    condition_settings = Column(JSON, nullable=False, default=[])
     action_settings = Column(JSON, nullable=False, default={})
+    enabled = Column(Boolean, nullable=False, default=False)
     creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
     creator = relationship('User', back_populates='created_rules', lazy='joined')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
