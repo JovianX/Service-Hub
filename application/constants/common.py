@@ -2,12 +2,26 @@
 Common project constants.
 """
 from enum import Enum
+from enum import EnumMeta
 
 
 UNRECOGNIZED_CLOUD_PROVIDER_REGION = 'unrecognized'
 
 
-class HTTPMethods(str, Enum):
+class MetaEnum(EnumMeta):
+    def __contains__(cls, item):
+        try:
+            cls(item)
+        except ValueError:
+            return False
+        return True
+
+
+class StrEnum(str, Enum, metaclass=MetaEnum):
+    pass
+
+
+class HTTPMethods(StrEnum):
     """
     HTTP methods.
     """
@@ -22,7 +36,7 @@ class HTTPMethods(str, Enum):
     trace = 'trace'
 
 
-class CloudProviders(str, Enum):
+class CloudProviders(StrEnum):
     """
     Supported cloud providers.
     """

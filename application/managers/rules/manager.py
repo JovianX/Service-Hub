@@ -3,6 +3,7 @@ Rules bussines logic.
 """
 from fastapi import Depends
 from fastapi import status
+from application.constants.rules import RuleAttribute
 
 from application.crud.rules import RuleDatabase
 from application.crud.rules import get_rule_db
@@ -11,6 +12,9 @@ from application.exceptions.rule import RuleDoesNotExistException
 from application.models.organization import Organization
 from application.models.rule import Rule
 from application.models.user import User
+from application.utils.kubernetes import KubernetesConfiguration
+
+from .conditions import Condition
 
 
 class RuleManager:
@@ -24,15 +28,18 @@ class RuleManager:
     async def create_organization_rule(
         self,
         creator: User,
-        order: int,
         name: str,
         condition_settings: dict,
         action_settings: dict,
+        order: int | None = None,
         description: str | None = None
     ) -> Rule:
         """
         Creates instanse of rule.
         """
+        if order is None:
+            rules = await self.organization_rules(organization=creator.organization)
+            order = len(rules) + 1
         if description is None:
             description = ''
         rule = {
@@ -80,12 +87,44 @@ class RuleManager:
 
         return reordered_rules
 
+    async def update_organization_rule(self, organization: Organization, rule_id: int, rule_data: dict) -> None:
+        """
+        Deletes rule that belongs to organization.
+        """
+        await self.db.update_organization_rule_by_id(organization.id, rule_id, rule_data)
+        return await self.db.get_organization_rule_by_id(organization.id, rule_id)
+
     async def delete_organization_rule(self, organization: Organization, rule_id: int) -> None:
         """
         Deletes rule that belongs to organization.
         """
         await self.db.delete_organization_rule(organization.id, rule_id)
         return await self.reorder_rules(organization)
+
+    async def validate(
+        self,
+        organization: Organization,
+        k8s_configuration: KubernetesConfiguration,
+        context_name: str,
+        namespace: str,
+        release_name: str
+    ):
+        """
+        Validates rules agains release.
+        """
+        values = {
+            RuleAttribute.context_name: context_name,
+            RuleAttribute.namespace: namespace,
+            RuleAttribute.release_name: release_name,
+            RuleAttribute.cloud_provider: k8s_configuration.get_cloud_provider(context_name),
+            RuleAttribute.cluster_region: k8s_configuration.get_region(context_name)
+        }
+        rules = await self.db.list_by_organization_available(organization.id)
+        matched_rules = []
+        for rule in rules:
+            conditoins = [Condition(item, values) for item in rule.condition_settings]
+            if all(conditoins):
+                matched_rules.append(rule)
 
 
 async def get_rule_manager(organization_db=Depends(get_rule_db)):
