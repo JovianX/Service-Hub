@@ -17,6 +17,7 @@ from application.models.user import User
 from ..schemas.rules import RuleCreateBodySchema
 from ..schemas.rules import RuleResponseSchema
 from ..schemas.rules import RuleUpdateBodySchema
+from ..schemas.rules import ReleaseAuditResultResponceBodySchema
 
 
 router = APIRouter()
@@ -37,7 +38,8 @@ async def create_rule(
         name=rule_data['name'],
         condition_settings=rule_data['condition_settings'],
         action_settings=rule_data['action_settings'],
-        description=rule_data['description']
+        description=rule_data['description'],
+        enabled=rule_data['enabled'],
     )
 
     return created_rule
@@ -99,7 +101,7 @@ async def delete_rule(
     return await rule_manager.delete_organization_rule(organization=organization, rule_id=rule_id)
 
 
-@router.get('/validate', response_model=RuleAuditResult)
+@router.get('/release-audit', response_model=ReleaseAuditResultResponceBodySchema)
 async def validate_rules(
     context_name: str = Query(alias='context-name', description='Name of context'),
     namespace: str = Query(description='Name space where release is located'),

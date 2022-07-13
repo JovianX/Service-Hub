@@ -42,16 +42,14 @@ class RuleAuditActionSchema(BaseModel, extra=Extra.forbid):
     Rule audit action description.
     """
     type: Literal[RuleActions.audit] = Field(description='Type of action')
-    values_to_audit: dict = Field(description='Values that must be checked')
+    values: dict = Field(description='Values that must be checked')
 
 
-class RuleApplyActionSchema(BaseModel, extra=Extra.forbid):
+class RuleApplyActionSchema(RuleAuditActionSchema):
     """
     Rule apply action description.
     """
     type: Literal[RuleActions.apply] = Field(description='Type of action')
-    condition_values: dict = Field(description='Values that must be checked')
-    values_to_apply: dict = Field(description='Values that must be applied')
 
 
 class RuleActionSettingsSchema(BaseModel, extra=Extra.forbid):
