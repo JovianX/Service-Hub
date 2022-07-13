@@ -11,6 +11,7 @@ from kubernetes_asyncio.client import RbacAuthorizationV1Api
 from kubernetes_asyncio.client.exceptions import ApiException
 from kubernetes_asyncio.config import new_client_from_config
 
+from application.constants.kubernetes import K8sKinds
 from application.exceptions.kubernetes import ProxyRequestException
 
 from .schemas import K8sEntitySchema
@@ -245,3 +246,23 @@ class K8sClient:
                 )
             except ApiException as error:
                 raise ProxyRequestException(error.reason, error.status)
+
+    async def list_namespaces(self, context_name: str) -> list[K8sEntitySchema]:
+        """
+        Returns list of all namespaces in cluster.
+        """
+        async with await new_client_from_config(self.configuration_file_path, context_name) as client:
+            api = CoreV1Api(client)
+            response = await api.list_namespace()
+
+        namespaces = []
+        for item in response.items:
+            namespace = item.to_dict()
+            # For some reason when requesting any item list through Python
+            # client in response absent at least `apiVersion` and `kind`
+            # attributes. This breaks schema validation. Setting them manually.
+            namespace['apiVersion'] = 'v1'
+            namespace['kind'] = K8sKinds.namespace
+            namespaces.append(K8sEntitySchema.parse_obj(namespace))
+
+        return namespaces
