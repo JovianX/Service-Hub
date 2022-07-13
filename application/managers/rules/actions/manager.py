@@ -21,14 +21,31 @@ class ActionManager:
             validated_settings = RuleActionSettingsSchema.parse_obj(settings)
             self.action_settings.setdefault(validated_settings.type, []).append(validated_settings)
 
-    def execute_audit(self, computed_values: dict) -> RuleAuditResult:
+    def execute_audit(self, computed_values: dict) -> dict:
         """
         Execute audit rule action.
         """
         audit_settings = self.action_settings.get(RuleActions.audit, [])
-        merged_values = merge({}, *[settings.values_to_audit for settings in audit_settings])
+        merged_values = merge({}, *[settings.values for settings in audit_settings])
         patched_computed_values = merge({}, computed_values, merged_values)
-        if not DeepDiff(computed_values, patched_computed_values):
-            return RuleAuditResult.compliant
-
-        return RuleAuditResult.violating
+        difference = DeepDiff(computed_values, patched_computed_values)
+        if not difference:
+            return {
+                'status': RuleAuditResult.compliant,
+                'difference': {
+                    'absent_values': [],
+                    'different_values': {}
+                }
+            }
+        else:
+            difference_data = difference.to_dict()
+            return {
+                'status': RuleAuditResult.violating,
+                'difference': {
+                    'absent_values': difference_data.get('dictionary_item_added', []),
+                    'different_values': {
+                        path: {'expected': changes['old_value'], 'actual': changes['new_value']}
+                        for path, changes in difference_data.get('values_changed', {}).items()
+                    }
+                }
+            }

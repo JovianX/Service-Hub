@@ -33,7 +33,8 @@ class RuleManager:
         condition_settings: dict,
         action_settings: dict,
         order: int | None = None,
-        description: str | None = None
+        description: str | None = None,
+        enabled: bool | None = None
     ) -> Rule:
         """
         Creates instanse of rule.
@@ -43,6 +44,8 @@ class RuleManager:
             order = len(rules) + 1
         if description is None:
             description = ''
+        if enabled is None:
+            enabled = False
         rule = {
             'order': order,
             'name': name,
@@ -51,6 +54,7 @@ class RuleManager:
             'action_settings': action_settings,
             'creator_id': str(creator.id),
             'organization_id': creator.organization.id,
+            'enabled': enabled
         }
         return await self.db.create(rule)
 
@@ -110,7 +114,7 @@ class RuleManager:
         namespace: str,
         release_name: str,
         computed_values: dict
-    ):
+    ) -> dict:
         """
         Validates rules agains release.
         """

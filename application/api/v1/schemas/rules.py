@@ -1,12 +1,15 @@
 """
 Rules API schemas.
 """
+from typing import Any
+
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import conlist
 
-from application.managers.rules.schemas import RuleConditionSchema
+from application.constants.rules import RuleAuditResult
 from application.managers.rules.schemas import RuleActionSettingsSchema
+from application.managers.rules.schemas import RuleConditionSchema
 
 from .common import OrganizationResponseSchema
 from .common import UserResponseSchema
@@ -53,3 +56,32 @@ class RuleResponseSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ReleaseAuditResultDifferentValuesSchama(BaseModel):
+    """
+    Values difference during release auditing.
+    """
+    expected: Any = Field(description='Expected value')
+    actual: Any = Field(description='Actual value')
+
+
+class ReleaseAuditResultDifferenceSchama(BaseModel):
+    """
+    Difference between actual release values and expected during release
+    auditing by rules.
+    """
+    absent_values: list[str] = Field(description='List of paths to values that is absent in release values')
+    different_values: dict[str, ReleaseAuditResultDifferentValuesSchama] = Field(
+        description='Paths and values that was expected and what was got'
+    )
+
+
+class ReleaseAuditResultResponceBodySchema(BaseModel):
+    """
+    Result response of release validation by rules.
+    """
+    status: RuleAuditResult = Field(description='Release audit result')
+    difference: ReleaseAuditResultDifferenceSchama = Field(
+        description='Difference between actual and expected results'
+    )
