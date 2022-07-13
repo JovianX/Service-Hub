@@ -42,6 +42,7 @@ class JwtService extends FuseUtils.EventEmitter {
 
     if (this.isAuthTokenValid(access_token)) {
       this.setSession(access_token);
+
       this.emit('onAutoLogin', true);
     } else {
       this.setSession(null);
@@ -51,6 +52,10 @@ class JwtService extends FuseUtils.EventEmitter {
 
   createUser = async (data) => {
     await axios.post(jwtServiceConfig.signUp, data);
+  };
+
+  getUserData = async () => {
+    return await axios.get(jwtServiceConfig.userMe);
   };
 
   signInWithEmailAndPassword = async (email, password) => {
@@ -63,7 +68,7 @@ class JwtService extends FuseUtils.EventEmitter {
     if (response?.data?.access_token) {
       this.setSession(response.data.access_token);
 
-      this.emit('onLogin', response.data);
+      this.emit('onLogin');
     } else {
       throw new Error(response.data.error);
     }
@@ -86,7 +91,7 @@ class JwtService extends FuseUtils.EventEmitter {
     if (response?.data?.access_token) {
       this.setSession(response.data.access_token);
 
-      this.emit('onLogin', response.data);
+      this.emit('onLogin');
     } else {
       throw new Error(response.data.error);
     }

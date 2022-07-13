@@ -10,21 +10,17 @@ import FuseSuspense from '@fuse/core/FuseSuspense';
 import AppContext from 'app/AppContext';
 import { selectFuseCurrentLayoutConfig } from 'app/store/fuse/settingsSlice';
 
-import SettingsPanel from '../shared-components/SettingsPanel';
-
-import FooterLayout3 from './components/FooterLayout3';
 import LeftSideLayout3 from './components/LeftSideLayout3';
 import NavbarWrapperLayout3 from './components/NavbarWrapperLayout3';
 import RightSideLayout3 from './components/RightSideLayout3';
 import ToolbarLayout3 from './components/ToolbarLayout3';
 
-const Root = styled('div')(({ theme, config }) => ({
+const Root = styled('div')(({ config }) => ({
   ...(config.mode === 'boxed' && {
     clipPath: 'inset(0)',
     maxWidth: `${config.containerWidth}px`,
     margin: '0 auto',
-    boxShadow:
-      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
   }),
   ...(config.mode === 'container' && {
     '& .container': {
@@ -44,16 +40,9 @@ function Layout3(props) {
       {config.leftSidePanel.display && <LeftSideLayout3 />}
 
       <div className='flex flex-col flex-auto min-w-0'>
-        <main
-          id='fuse-main'
-          className='flex flex-col flex-auto min-h-full min-w-0 relative'
-        >
+        <main id='fuse-main' className='flex flex-col flex-auto min-h-full min-w-0 relative'>
           {config.navbar.display && (
-            <NavbarWrapperLayout3
-              className={clsx(
-                config.navbar.style === 'fixed' && 'sticky top-0 z-50',
-              )}
-            />
+            <NavbarWrapperLayout3 className={clsx(config.navbar.style === 'fixed' && 'sticky top-0 z-50')} />
           )}
 
           {config.toolbar.display && (
@@ -65,10 +54,6 @@ function Layout3(props) {
             />
           )}
 
-          <div className='sticky top-0 z-99'>
-            <SettingsPanel />
-          </div>
-
           <div className='flex flex-col flex-auto min-h-0 relative z-10'>
             <FuseDialog />
 
@@ -77,11 +62,7 @@ function Layout3(props) {
             {props.children}
           </div>
 
-          {config.footer.display && (
-            <FooterLayout3
-              className={config.footer.style === 'fixed' && 'sticky bottom-0'}
-            />
-          )}
+          {/* {config.footer.display && <FooterLayout3 className={config.footer.style === 'fixed' && 'sticky bottom-0'} />} */}
         </main>
       </div>
 

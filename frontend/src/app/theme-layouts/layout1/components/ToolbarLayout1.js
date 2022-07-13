@@ -7,20 +7,10 @@ import { memo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { selectFuseNavbar } from 'app/store/fuse/navbarSlice';
-import {
-  selectFuseCurrentLayoutConfig,
-  selectToolbarTheme,
-} from 'app/store/fuse/settingsSlice';
+import { selectFuseCurrentLayoutConfig, selectToolbarTheme } from 'app/store/fuse/settingsSlice';
 
-import AdjustFontSize from '../../shared-components/AdjustFontSize';
-import ChatPanelToggleButton from '../../shared-components/chatPanel/ChatPanelToggleButton';
-import FullScreenToggle from '../../shared-components/FullScreenToggle';
-import LanguageSwitcher from '../../shared-components/LanguageSwitcher';
 import NavbarToggleButton from '../../shared-components/NavbarToggleButton';
 import NavigationSearch from '../../shared-components/NavigationSearch';
-import NavigationShortcuts from '../../shared-components/NavigationShortcuts';
-import NotificationPanelToggleButton from '../../shared-components/notificationPanel/NotificationPanelToggleButton';
-import QuickPanelToggleButton from '../../shared-components/quickPanel/QuickPanelToggleButton';
 import UserMenu from '../../shared-components/UserMenu';
 
 function ToolbarLayout1(props) {
@@ -47,8 +37,7 @@ function ToolbarLayout1(props) {
             {config.navbar.display && config.navbar.position === 'left' && (
               <>
                 <Hidden lgDown>
-                  {(config.navbar.style === 'style-3' ||
-                    config.navbar.style === 'style-3-dense') && (
+                  {(config.navbar.style === 'style-3' || config.navbar.style === 'style-3-dense') && (
                     <NavbarToggleButton className='w-40 h-40 p-0 mx-0' />
                   )}
 
@@ -62,39 +51,17 @@ function ToolbarLayout1(props) {
                 </Hidden>
               </>
             )}
-
-            <Hidden lgDown>
-              <NavigationShortcuts />
-            </Hidden>
           </div>
 
           <div className='flex items-center px-8 h-full overflow-x-auto'>
-            <LanguageSwitcher />
-
-            <AdjustFontSize />
-
-            <FullScreenToggle />
-
             <NavigationSearch />
-
-            <Hidden lgUp>
-              <ChatPanelToggleButton />
-            </Hidden>
-
-            <QuickPanelToggleButton />
-
-            <NotificationPanelToggleButton />
 
             <UserMenu />
           </div>
 
           {config.navbar.display && config.navbar.position === 'right' && (
             <>
-              <Hidden lgDown>
-                {!navbar.open && (
-                  <NavbarToggleButton className='w-40 h-40 p-0 mx-0' />
-                )}
-              </Hidden>
+              <Hidden lgDown>{!navbar.open && <NavbarToggleButton className='w-40 h-40 p-0 mx-0' />}</Hidden>
 
               <Hidden lgUp>
                 <NavbarToggleButton className='w-40 h-40 p-0 mx-0 sm:mx-8' />
