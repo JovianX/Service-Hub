@@ -16,6 +16,7 @@ class K8sKinds(str, Enum):
     deployment = 'Deployment'
     ingress = 'Ingress'
     job = 'Job'
+    namespace = 'Namespace'
     persistent_volume_claim = 'PersistentVolumeClaim'
     pod = 'Pod'
     pod_security_policy = 'PodSecurityPolicy'

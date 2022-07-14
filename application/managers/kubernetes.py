@@ -20,6 +20,12 @@ class K8sManager:
         self.client = K8sClient(configuration_path)
         self.cli = KubectlCLI(configuration_path)
 
+    async def list_namespaces(self, context_name: str) -> list[K8sEntitySchema]:
+        """
+        Returns list of namespaces available for given context name.
+        """
+        return await self.client.list_namespaces(context_name=context_name)
+
     async def get_details(self, context_name: str, namespace: str, kind: K8sKinds, name: str) -> K8sEntitySchema | None:
         """
         Returns entity details.
