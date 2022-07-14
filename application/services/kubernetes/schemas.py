@@ -46,4 +46,3 @@ class K8sEntitySchema(BaseModel):
             if not (ready_replicas and total_replicas):
                 return False
             return ready_replicas == total_replicas
-        return False

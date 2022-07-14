@@ -82,7 +82,7 @@ class HelmManager:
                     description=description
                 )
 
-    async def list_releases(self, organization: Organization, namespace: str = None) -> List[ReleaseListItemSchema]:
+    async def list_releases(self, organization: Organization, namespace: str | None = None) -> list[dict]:
         """
         List releases in namespace if it is present otherwise in all namespaces
         using default context in kubernetes configuration.
@@ -126,8 +126,8 @@ class HelmManager:
                             entity_is_healthy = entity.is_healthy
                             entity_name = entity.metadata['name']
                             if entity_is_healthy is not None:
-                                item['entities_health_status'].setdefault(
-                                    entity.kind, {})[entity_name] = entity_is_healthy
+                                kind_health_statuses = item['entities_health_status'].setdefault(entity.kind, {})
+                                kind_health_statuses[entity_name] = entity_is_healthy
                                 if not entity_is_healthy:
                                     item['health_status'] = ReleaseHealthStatuses.unhealthy
                         items.append(item)
