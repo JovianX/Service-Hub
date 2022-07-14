@@ -20,11 +20,20 @@ class K8sManager:
         self.client = K8sClient(configuration_path)
         self.cli = KubectlCLI(configuration_path)
 
-    async def list_namespaces(self, context_name: str) -> list[K8sEntitySchema]:
+    async def list(self, context_name: str, kind: K8sKinds) -> list[K8sEntitySchema]:
         """
-        Returns list of namespaces available for given context name.
+        Returns list of Kubernetes entities.
         """
-        return await self.client.list_namespaces(context_name=context_name)
+        if kind == K8sKinds.ingress:
+            return await self.client.list_ingress(context_name=context_name)
+        elif kind == K8sKinds.namespace:
+            return await self.client.list_namespaces(context_name=context_name)
+        elif kind == K8sKinds.service:
+            return await self.client.list_services(context_name=context_name)
+        else:
+            raise ValueError(
+                f'Failed to fetch list of Kubernetes entities. Unhandled Kubernetes entity kind: "{kind}".'
+            )
 
     async def get_details(self, context_name: str, namespace: str, kind: K8sKinds, name: str) -> K8sEntitySchema | None:
         """
@@ -75,7 +84,7 @@ class K8sManager:
         elif kind == K8sKinds.stateful_set:
             return await self.client.get_stateful_set_details(context_name=context_name, namespace=namespace, name=name)
         else:
-            raise ValueError(f'Unhandled Kubernetes entity kind: "{kind}".')
+            raise ValueError(f'Failed to fetch Kubernetes entity details. Unhandled Kubernetes entity kind: "{kind}".')
 
     async def make_service_proxy_request(
         self, context_name: str, namespace: str, service_name: str, method: HTTPMethods, path: str,
