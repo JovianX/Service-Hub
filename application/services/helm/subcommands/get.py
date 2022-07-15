@@ -22,7 +22,9 @@ class HelmGet(HelmBase):
 
         Full description: https://helm.sh/docs/helm/helm_get_values/
         """
-        command = self._formup_command('values', release_name, kube_context=context_name, namespace=namespace)
+        command = self._formup_command(
+            'values', release_name, kube_context=context_name, namespace=namespace, output='yaml'
+        )
         output = await self._run_command(command)
 
         return yaml.safe_load(output)
@@ -33,7 +35,9 @@ class HelmGet(HelmBase):
 
         Full description: https://helm.sh/docs/helm/helm_get_values/
         """
-        command = self._formup_command('values', release_name, '--all', kube_context=context_name, namespace=namespace)
+        command = self._formup_command(
+            'values', release_name, '--all', kube_context=context_name, namespace=namespace, output='yaml'
+        )
         output = await self._run_command(command)
 
         return yaml.safe_load(output)
@@ -47,14 +51,10 @@ class HelmGet(HelmBase):
         command = self._formup_command('hooks', release_name, kube_context=context_name, namespace=namespace)
         try:
             output = await self._run_command(command)
-        except NonZeroStatusException as error:
-            release_not_found_error_message = 'Error: release: not found'
-            error_message = error.stderr_message.strip()
-            if error_message == release_not_found_error_message:
-                raise ReleaseNotFoundException(
-                    f'Failed to get release hooks. Release "{release_name}" does not exist in namespace '
-                    f'"{namespace}".'
-                )
+        except ReleaseNotFoundException:
+            raise ReleaseNotFoundException(
+                f'Failed to get release hooks. Release "{release_name}" does not exist in namespace "{namespace}".'
+            )
         parsed_manifests = [yaml.safe_load(item) for item in output.split('---\n') if item]
         manifests = []
         for parsed_manifest in parsed_manifests:
@@ -76,14 +76,10 @@ class HelmGet(HelmBase):
         command = self._formup_command('manifest', release_name, kube_context=context_name, namespace=namespace)
         try:
             output = await self._run_command(command)
-        except NonZeroStatusException as error:
-            release_not_found_error_message = 'Error: release: not found'
-            error_message = error.stderr_message.strip()
-            if error_message == release_not_found_error_message:
-                raise ReleaseNotFoundException(
-                    f'Failed to get release manifest. Release "{release_name}" does not exist in namespace '
-                    f'"{namespace}".'
-                )
+        except ReleaseNotFoundException:
+            raise ReleaseNotFoundException(
+                f'Failed to get release manifest. Release "{release_name}" does not exist in namespace  "{namespace}".'
+            )
         parsed_manifests = [yaml.safe_load(item) for item in output.split('---\n') if item]
         manifests = []
         for parsed_manifest in parsed_manifests:
@@ -102,7 +98,16 @@ class HelmGet(HelmBase):
 
         Full description: https://helm.sh/docs/helm/helm_get_notes/
         """
-        command = self._formup_command('manifest', release_name, kube_context=context_name, namespace=namespace)
+        command = self._formup_command('notes', release_name, kube_context=context_name, namespace=namespace)
         output = await self._run_command(command)
 
         return output
+
+    async def _run_command(self, command: str) -> str:
+        try:
+            return await super()._run_command(command)
+        except NonZeroStatusException as error:
+            release_not_found_error_message = 'Error: release: not found'
+            error_message = error.stderr_message.strip()
+            if error_message == release_not_found_error_message:
+                raise ReleaseNotFoundException('Failed to find release.')
