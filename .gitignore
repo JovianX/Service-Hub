@@ -5,3 +5,4 @@ __pycache__
 # Project resources
 .venv
 /.idea
+./frontend/.idea
