@@ -14,6 +14,8 @@ import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import withRouter from '@fuse/core/withRouter';
 import { getReleasesList, selectIsReleasesLoading, selectReleases } from 'app/store/releasesListSlice';
 
+import { getTimeFormat } from '../../uitls';
+
 import { getSelectItemsFromArray, getUniqueKeysFromReleasesData } from './utils';
 
 const ReleasesTable = () => {
@@ -154,7 +156,7 @@ const ReleasesTable = () => {
                 <TableCell align='right'>{row.context_name}</TableCell>
                 <TableCell align='right'>{row.chart}</TableCell>
                 <TableCell align='right'>{row.application_version}</TableCell>
-                <TableCell align='right'>{row.updated}</TableCell>
+                <TableCell align='right'>{getTimeFormat(row.updated)}</TableCell>
                 <TableCell align='right'>{row.revision}</TableCell>
                 <TableCell align='right'>-</TableCell>
               </TableRow>
