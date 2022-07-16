@@ -28,7 +28,14 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const dashboardData = useSelector(selectCounts);
 
-  const { releases, repositories, charts, contexts, unhealthy, services } = dashboardData;
+  const {
+    releases,
+    repositories,
+    charts,
+    contexts,
+    unhealthy,
+    services,
+  } = dashboardData;
 
   useEffect(() => {
     dispatch(getReleasesCount());
