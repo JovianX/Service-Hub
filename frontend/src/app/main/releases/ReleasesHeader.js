@@ -11,7 +11,7 @@ const ReleasesHeader = () => {
         delay={300}
         className='text-24 md:text-32 font-extrabold tracking-tight'
       >
-        Releases
+        Helm Releases
       </Typography>
     </div>
   );

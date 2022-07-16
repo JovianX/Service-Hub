@@ -89,41 +89,41 @@ const ReleasesTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
+      <div className='flex p-10'>
+        <FormControl className='flex w-full sm:w-200 mr-10' variant='outlined'>
+          <InputLabel id='category-select-label'>Namespaces</InputLabel>
+          <Select
+            labelId='namespace-select-label'
+            id='namespace-select'
+            label='Namespaces'
+            value={selectedNamespace}
+            onChange={handleSelectedNamespace}
+          >
+            <MenuItem value='all'>
+              <em> All </em>
+            </MenuItem>
+            {renderMenuItems(namespaces)}
+          </Select>
+        </FormControl>
+
+        <FormControl className='flex w-full sm:w-200' variant='outlined'>
+          <InputLabel id='category-select-label'>Clusters</InputLabel>
+          <Select
+            labelId='cluster-select-label'
+            id='cluster-select'
+            label='Clusters'
+            value={selectedCluster}
+            onChange={handleSelectedCluster}
+          >
+            <MenuItem value='all'>
+              <em> All </em>
+            </MenuItem>
+            {renderMenuItems(clusters)}
+          </Select>
+        </FormControl>
+      </div>
+
       <FuseScrollbars className='grow overflow-x-auto'>
-        <div className='flex p-10'>
-          <FormControl className='flex w-full sm:w-136' variant='outlined'>
-            <InputLabel id='category-select-label'>Namespaces</InputLabel>
-            <Select
-              labelId='namespace-select-label'
-              id='namespace-select'
-              label='Namespaces'
-              value={selectedNamespace}
-              onChange={handleSelectedNamespace}
-            >
-              <MenuItem value='all'>
-                <em> All </em>
-              </MenuItem>
-              {renderMenuItems(namespaces)}
-            </Select>
-          </FormControl>
-
-          <FormControl className='flex w-full sm:w-136' variant='outlined'>
-            <InputLabel id='category-select-label'>Clusters</InputLabel>
-            <Select
-              labelId='cluster-select-label'
-              id='cluster-select'
-              label='Clusters'
-              value={selectedCluster}
-              onChange={handleSelectedCluster}
-            >
-              <MenuItem value='all'>
-                <em> All </em>
-              </MenuItem>
-              {renderMenuItems(clusters)}
-            </Select>
-          </FormControl>
-        </div>
-
         <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
           <TableHead>
             <TableRow>
