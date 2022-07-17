@@ -1,4 +1,5 @@
-import { InputLabel, Select } from '@mui/material';
+import { Backdrop, Button, Fade, InputLabel, Modal, Select } from '@mui/material';
+import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Table from '@mui/material/Table';
@@ -6,17 +7,31 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import withRouter from '@fuse/core/withRouter';
-import { getReleasesList, selectIsReleasesLoading, selectReleases } from 'app/store/releasesListSlice';
+import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesListSlice';
 
-import { getTimeFormat } from '../../uitls';
+import { checkTrimString, getTimeFormat } from '../../uitls';
 
 import { getSelectItemsFromArray, getUniqueKeysFromReleasesData } from './utils';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const ReleasesTable = () => {
   const [namespaces, setNamespaces] = useState([]);
@@ -25,6 +40,10 @@ const ReleasesTable = () => {
 
   const [selectedNamespace, setSelectedNamespace] = useState('all');
   const [selectedCluster, setSelectedCluster] = useState('all');
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [releaseToDelete, setReleaseToDelete] = useState(null);
 
   const dispatch = useDispatch();
   const releasesData = useSelector(selectReleases);
@@ -35,7 +54,7 @@ const ReleasesTable = () => {
   }, [releasesData]);
 
   useEffect(() => {
-    dispatch(getReleasesList());
+    dispatch(getReleases());
   }, [dispatch]);
 
   useEffect(() => {
@@ -79,6 +98,34 @@ const ReleasesTable = () => {
         {namespace.text}
       </MenuItem>
     ));
+  };
+
+  const toggleDeleteModalOpen = () => {
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+  };
+
+  const handleDeleteRelease = ({ namespace, context_name, name }) => {
+    setReleaseToDelete({
+      namespace,
+      context_name,
+      name,
+    });
+
+    toggleDeleteModalOpen();
+  };
+
+  const handleDeleteCancel = () => {
+    toggleDeleteModalOpen();
+    setReleaseToDelete(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    await dispatch(deleteRelease(releaseToDelete));
+    toggleDeleteModalOpen();
+
+    setReleaseToDelete(null);
+
+    await dispatch(getReleases());
   };
 
   if (isLoading) {
@@ -152,18 +199,55 @@ const ReleasesTable = () => {
                 <TableCell align='right'>{row.status}</TableCell>
                 <TableCell align='right'>{row.health_status}</TableCell>
                 <TableCell align='right'>-</TableCell>
-                <TableCell align='right'>{row.namespace}</TableCell>
-                <TableCell align='right'>{row.context_name}</TableCell>
+                <TableCell align='right'>{checkTrimString(row.namespace, 50, 15)}</TableCell>
+                <TableCell align='right'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
                 <TableCell align='right'>{row.chart}</TableCell>
                 <TableCell align='right'>{row.application_version}</TableCell>
                 <TableCell align='right'>{getTimeFormat(row.updated)}</TableCell>
                 <TableCell align='right'>{row.revision}</TableCell>
-                <TableCell align='right'>-</TableCell>
+                <TableCell align='right'>
+                  <Button variant='contained' color='error' onClick={() => handleDeleteRelease(row)}>
+                    <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </FuseScrollbars>
+
+      <Modal
+        aria-labelledby='transition-modal-title'
+        aria-describedby='transition-modal-description'
+        open={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={isDeleteModalOpen}>
+          <Box sx={style}>
+            <Typography id='transition-modal-title' variant='h6' component='h2'>
+              Delete release {releaseToDelete?.name}
+            </Typography>
+            <Typography id='transition-modal-description' sx={{ mt: 2 }}>
+              Are you sure you want to proceed?
+            </Typography>
+
+            <div className='flex justify-center mt-20'>
+              <Button onClick={handleDeleteCancel} variant='contained' color='secondary' className='mr-10'>
+                Cancel
+              </Button>
+
+              <Button onClick={handleDeleteConfirm} variant='contained' color='error'>
+                Delete
+              </Button>
+            </div>
+          </Box>
+        </Fade>
+      </Modal>
     </div>
   );
 };
