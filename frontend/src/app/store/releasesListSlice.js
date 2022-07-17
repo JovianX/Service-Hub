@@ -1,15 +1,24 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 
-export const getReleasesList = createAsyncThunk('releases/getReleasesList', async () => {
+import { getReleasesList, deleteRelease as deleteReleaseAPI } from '../api';
+
+export const getReleases = createAsyncThunk('releases/getReleasesList', async () => {
   try {
-    const response = await axios.get('/api/v1/helm/release/list');
+    const response = await getReleasesList();
 
     const data = await response.data;
 
     return data;
   } catch (e) {
     return [];
+  }
+});
+
+export const deleteRelease = createAsyncThunk('releases/deleteRelease', async ({ context_name, namespace, name }) => {
+  try {
+    await deleteReleaseAPI(context_name, namespace, name);
+  } catch (e) {
+    // handle error state
   }
 });
 
@@ -21,14 +30,14 @@ const releasesSlice = createSlice({
   },
   reducers: {},
   extraReducers: {
-    [getReleasesList.fulfilled]: (state, { payload }) => ({
+    [getReleases.fulfilled]: (state, { payload }) => ({
       releases: payload,
       isLoading: false,
     }),
-    [getReleasesList.pending]: () => ({
+    [getReleases.pending]: () => ({
       isLoading: true,
     }),
-    [getReleasesList.rejected]: () => ({
+    [getReleases.rejected]: () => ({
       isLoading: false,
     }),
   },
