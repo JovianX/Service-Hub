@@ -5,7 +5,6 @@ from fastapi import Path
 from fastapi import Query
 from pydantic import conlist
 
-from application.constants.rules import RuleAuditResult
 from application.core.authentication import current_active_user
 from application.managers.helm.manager import HelmManager
 from application.managers.organizations.manager import OrganizationManager
@@ -14,10 +13,11 @@ from application.managers.rules.manager import RuleManager
 from application.managers.rules.manager import get_rule_manager
 from application.models.user import User
 
+from ..schemas.rules import ReleaseAuditResultResponceBodySchema
 from ..schemas.rules import RuleCreateBodySchema
 from ..schemas.rules import RuleResponseSchema
 from ..schemas.rules import RuleUpdateBodySchema
-from ..schemas.rules import ReleaseAuditResultResponceBodySchema
+from ..schemas.rules import ValuesToApplyResultResponceBodySchema
 
 
 router = APIRouter()
@@ -102,16 +102,16 @@ async def delete_rule(
 
 
 @router.get('/release-audit', response_model=ReleaseAuditResultResponceBodySchema)
-async def validate_rules(
+async def audit_release(
     context_name: str = Query(alias='context-name', description='Name of context'),
     namespace: str = Query(description='Name space where release is located'),
-    release_name: str = Query(alias='release-name', description='Name of release against which validate rule'),
+    release_name: str = Query(alias='release-name', description='Name of release against which validate rules'),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager),
     rule_manager: RuleManager = Depends(get_rule_manager)
 ):
     """
-    Validates rules for specific release.
+    Audits release by rules.
     """
     organization = user.organization
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(organization)
@@ -120,6 +120,34 @@ async def validate_rules(
         organization=organization, context_name=context_name, namespace=namespace, release_name=release_name
     )
     return await rule_manager.validate(
+        organization=organization,
+        k8s_configuration=kubernetes_configuration,
+        context_name=context_name,
+        namespace=namespace,
+        release_name=release_name,
+        computed_values=computed_values
+    )
+
+
+@router.get('/values-to-apply', response_model=ValuesToApplyResultResponceBodySchema)
+async def values_to_apply(
+    context_name: str = Query(alias='context-name', description='Name of context'),
+    namespace: str = Query(description='Name space where release is located'),
+    release_name: str = Query(alias='release-name', description='Name of release against which check rules'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager),
+    rule_manager: RuleManager = Depends(get_rule_manager)
+):
+    """
+    Values that can be updated during release values update.
+    """
+    organization = user.organization
+    kubernetes_configuration = organization_manager.get_kubernetes_configuration(organization)
+    helm_manager = HelmManager(organization_manager)
+    computed_values = await helm_manager.computed_values(
+        organization=organization, context_name=context_name, namespace=namespace, release_name=release_name
+    )
+    return await rule_manager.show_values_to_apply(
         organization=organization,
         k8s_configuration=kubernetes_configuration,
         context_name=context_name,

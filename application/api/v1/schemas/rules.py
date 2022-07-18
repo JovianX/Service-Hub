@@ -85,3 +85,13 @@ class ReleaseAuditResultResponceBodySchema(BaseModel):
     difference: ReleaseAuditResultDifferenceSchama = Field(
         description='Difference between actual and expected results'
     )
+
+
+class ValuesToApplyResultResponceBodySchema(BaseModel):
+    """
+    Response that contais description of values that can be updated in release.
+    """
+    values: dict = Field(description='Merged values of all rules')
+    difference: ReleaseAuditResultDifferenceSchama = Field(
+        description='Difference between actual and expected results'
+    )

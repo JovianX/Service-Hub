@@ -4,6 +4,7 @@ Rules bussines logic.
 from fastapi import Depends
 from fastapi import status
 
+from application.constants.rules import RuleActions
 from application.constants.rules import RuleAttribute
 from application.crud.rules import RuleDatabase
 from application.crud.rules import get_rule_db
@@ -62,13 +63,13 @@ class RuleManager:
         """
         List all organization rules.
         """
-        return await self.db.list_by_organization(organization.id)
+        return await self.db.list(organization_id=organization.id)
 
     async def reorder_rules(self, organization: Organization, id_list: list[int] | None = None) -> list[Rule]:
         """
         Reorders rules according to list of rule IDs.
         """
-        rules = await self.db.list_by_organization(organization.id)
+        rules = await self.db.list(organization_id=organization.id)
         rules_mapping = {rule.id: rule for rule in rules}
         if id_list is None:
             id_list = [rule.id for rule in rules]
@@ -125,16 +126,51 @@ class RuleManager:
             RuleAttribute.cloud_provider: k8s_configuration.get_cloud_provider(context_name),
             RuleAttribute.cluster_region: k8s_configuration.get_region(context_name)
         }
-        rules = await self.db.list_by_organization_available(organization.id)
+        rules = await self.db.list(organization_id=organization.id, action_type=RuleActions.audit)
 
+        filtered_rules = self._filter_rules(rules, values)
+
+        action_manager = ActionManager([rule.action_settings for rule in filtered_rules])
+        return action_manager.execute_audit(computed_values)
+
+    async def show_values_to_apply(
+        self,
+        organization: Organization,
+        k8s_configuration: KubernetesConfiguration,
+        context_name: str,
+        namespace: str,
+        release_name: str,
+        computed_values: dict
+    ) -> dict:
+        """
+        Returns values with which release values should be updated during manual
+        execution of apply rules.
+        """
+        values = {
+            RuleAttribute.context_name: context_name,
+            RuleAttribute.namespace: namespace,
+            RuleAttribute.release_name: release_name,
+            RuleAttribute.cloud_provider: k8s_configuration.get_cloud_provider(context_name),
+            RuleAttribute.cluster_region: k8s_configuration.get_region(context_name)
+        }
+        rules = await self.db.list(organization_id=organization.id, action_type=RuleActions.apply)
+
+        filtered_rules = self._filter_rules(rules, values)
+
+        action_manager = ActionManager([rule.action_settings for rule in filtered_rules])
+        return action_manager.values_to_apply(computed_values)
+
+    def _filter_rules(self, rules: list[Rule], values: dict[RuleAttribute, str]) -> list[Rule]:
+        """
+        Filters out rules conditions of which do not match.
+        """
         matched_rules = []
         for rule in rules:
             conditoins = [Condition(item, values) for item in rule.condition_settings]
             if all(conditoins):
                 matched_rules.append(rule)
 
-        action_manager = ActionManager([rule.action_settings for rule in matched_rules])
-        return action_manager.execute_audit(computed_values)
+        return matched_rules
 
 
 async def get_rule_manager(organization_db=Depends(get_rule_db)):
