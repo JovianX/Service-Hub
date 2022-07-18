@@ -1,6 +1,8 @@
 """
 Dashboard endpoints.
 """
+import asyncio
+
 from fastapi import APIRouter
 from fastapi import Depends
 
@@ -78,8 +80,18 @@ async def get_unhealthy_releases_count(
     unhealthy_releases_count = 0
     helm_manager = HelmManager(organization_manager)
     releases = await helm_manager.list_releases(user.organization)
-    for release in releases:
-        if release['health_status'] == ReleaseHealthStatuses.unhealthy:
+
+    health_statuses = await asyncio.gather(*[
+        helm_manager.release_health_status(
+            user.organization,
+            release['context_name'],
+            release['namespace'],
+            release['name']
+        )
+        for release in releases
+    ])
+    for status in health_statuses:
+        if status['status'] == ReleaseHealthStatuses.unhealthy:
             unhealthy_releases_count += 1
 
     return unhealthy_releases_count

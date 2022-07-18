@@ -110,5 +110,4 @@ class TestHelm:
         release = response_data[0]
         assert release['name'] == 'release-name-1'
         assert release['updated'] == 1654087575.24955
-        assert release['health_status'] == ReleaseHealthStatuses.healthy
         assert release['cluster'] == 'some-context'
