@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from application.constants.rules import RuleActions
 from application.db.session import get_session
 from application.exceptions.rule import RuleDoesNotExistException
 from application.models.rule import Rule
@@ -32,25 +33,25 @@ class RuleDatabase(BaseDatabase):
 
         return result.unique().scalars().first()
 
-    async def list_by_organization(self, organization_id: int) -> None:
+    async def list(
+        self,
+        organization_id: int = None,
+        enabled: bool = None,
+        action_type: RuleActions = None
+    ) -> list[Rule]:
         """
-        Returns ordered by `order` list of rules that belongs to organization.
+        Returns ordered by `order` list of rules.
         """
-        result = await self.session.execute(
-            select(self.table).where(self.table.organization_id == organization_id).order_by(self.table.order)
-        )
+        query = select(self.table)
+        if organization_id is not None:
+            query = query.where(self.table.organization_id == organization_id)
+        if enabled is not None:
+            query = query.where(self.table.enabled == enabled)
+        if action_type is not None:
+            query = query.where(self.table.action_settings['type'].as_string() == action_type)
+        query = query.order_by(self.table.order)
 
-        return result.unique().scalars().all()
-
-    async def list_by_organization_available(self, organization_id: int) -> list[Rule]:
-        """
-        Returns ordered by `order` list of rules that belongs to organization and available.
-        """
-        result = await self.session.execute(
-            select(self.table)
-            .where(self.table.organization_id == organization_id, self.table.enabled)
-            .order_by(self.table.order)
-        )
+        result = await self.session.execute(query)
 
         return result.unique().scalars().all()
 
