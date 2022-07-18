@@ -86,6 +86,18 @@ class KubernetesConfiguration:
 
         return [context['name'] for context in self.configuration['contexts']]
 
+    def get_cloud_provider(self, context_name: str) -> CloudProviders:
+        """
+        Returns cloud provider of cluster related with given context.
+        """
+        return self.metadata['contexts'][context_name]['cloud_provider']
+
+    def get_region(self, context_name: str) -> str:
+        """
+        Returns region where located cluster, related with given context.
+        """
+        return self.metadata['contexts'][context_name]['region']
+
     def update(self, incoming_configuration: dict) -> dict:
         """
         Updates existing configuration.

@@ -1,7 +1,7 @@
-from enum import Enum
+from .base_enum import StrEnum
 
 
-class ServiceTypes(str, Enum):
+class ServiceTypes(StrEnum):
     """
     Types of services in Service catalog.
     """
@@ -10,7 +10,7 @@ class ServiceTypes(str, Enum):
     kubernetes_service = 'kubernetes_service'
 
 
-class ServiceHealthStatuses(str, Enum):
+class ServiceHealthStatuses(StrEnum):
     """
     Operability status of service from service catalog.
     """

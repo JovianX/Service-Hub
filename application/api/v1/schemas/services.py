@@ -3,7 +3,6 @@ Request and response schemas for API v1.
 """
 from typing import Annotated
 from typing import Literal
-from uuid import UUID
 
 from pydantic import BaseModel
 from pydantic import Field
@@ -13,6 +12,9 @@ from application.constants.services import ServiceTypes
 from application.managers.services.schemas import HTTPEndpointHealthCheckSettingsSchema
 from application.managers.services.schemas import KubernetesIngressHealthCheckSettingsSchema
 from application.managers.services.schemas import KubernetesServiceHealthCheckSettingsSchema
+
+from .common import OrganizationResponseSchema
+from .common import UserResponseSchema
 
 
 class CreateServiceBodyBaseSchema(BaseModel):
@@ -59,30 +61,6 @@ CreateServiceBodySchema = Annotated[CreateHTTPEndpointServiceBodySchema |
                                     Field(discriminator='type')]
 
 
-class CreatorSchema(BaseModel):
-    """
-    User that have created service.
-    """
-    id: UUID = Field(description='User ID')
-    email: str = Field(description='User email')
-    is_active: bool = Field(description='Is user currently active')
-    is_verified: bool = Field(description='Was user email verified')
-
-    class Config:
-        orm_mode = True
-
-
-class OrganizationSchema(BaseModel):
-    """
-    The organization that owns the service.
-    """
-    id: int = Field(description='Organization ID')
-    title: str = Field(description='Organization title')
-
-    class Config:
-        orm_mode = True
-
-
 class ServiceSchema(BaseModel):
     """
     Service schema.
@@ -92,8 +70,8 @@ class ServiceSchema(BaseModel):
     description: str | None = Field(description='Service description')
     health_check_settings: dict = Field(description='Setting related to service heath cheking')
     type: ServiceTypes = Field(description='Type of the service')
-    creator: CreatorSchema = Field(description='User that have created this this service')
-    organization: OrganizationSchema = Field(description='Organization which own this service')
+    creator: UserResponseSchema = Field(description='User that have created this this service')
+    organization: OrganizationResponseSchema = Field(description='Organization which own this service')
 
     class Config:
         orm_mode = True

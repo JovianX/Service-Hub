@@ -37,8 +37,8 @@ class K8sConfigurationResponseSchema(BaseModel):
             cloud_provider = None
             for context_name, context in configuration.contexts.items():
                 if context['cluster'] == cluster_name:
-                    region = configuration.metadata['contexts'][context_name]['region']
-                    cloud_provider = configuration.metadata['contexts'][context_name]['cloud_provider']
+                    region = configuration.get_region(context_name)
+                    cloud_provider = configuration.get_cloud_provider(context_name)
             clusters.append({
                 'name': cluster_name,
                 'region': region,

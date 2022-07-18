@@ -1,13 +1,13 @@
 """
 Common project constants.
 """
-from enum import Enum
+from .base_enum import StrEnum
 
 
 UNRECOGNIZED_CLOUD_PROVIDER_REGION = 'unrecognized'
 
 
-class HTTPMethods(str, Enum):
+class HTTPMethods(StrEnum):
     """
     HTTP methods.
     """
@@ -22,7 +22,7 @@ class HTTPMethods(str, Enum):
     trace = 'trace'
 
 
-class CloudProviders(str, Enum):
+class CloudProviders(StrEnum):
     """
     Supported cloud providers.
     """

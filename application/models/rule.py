@@ -3,22 +3,26 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy import Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from application.db.base_class import Base
 
 
-class Service(Base):
+class Rule(Base):
     """
-    Service item from service catalog.
+    Rule that represents condition and action that must be executed if condition
+    is true.
     """
     id = Column(Integer, primary_key=True, index=True)
+    order = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False, default='')
-    health_check_settings = Column(JSON, nullable=False, default={})
-    type = Column(String, nullable=False)
+    condition_settings = Column(JSON, nullable=False, default=[])
+    action_settings = Column(JSON, nullable=False, default={})
+    enabled = Column(Boolean, nullable=False, default=False)
     creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
-    creator = relationship('User', back_populates='created_services', lazy='joined')
+    creator = relationship('User', back_populates='created_rules', lazy='joined')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
-    organization = relationship('Organization', back_populates='services', lazy='joined')
+    organization = relationship('Organization', back_populates='rules', lazy='joined')
