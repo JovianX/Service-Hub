@@ -6,6 +6,7 @@ from datetime import timezone
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import root_validator
 
 from application.constants.helm import ReleaseStatuses
 
@@ -53,11 +54,11 @@ class ReleaseSchema(BaseModel):
         allow_population_by_field_name = True
 
     @property
-    def chart_name(self) -> str:
+    def application_name(self) -> str:
         """
         Extracted Helm chart name.
         """
-        *splited_name, chart_version = self.chart.split('-')
+        *splited_name, _ = self.chart.split('-')
 
         return '-'.join(splited_name)
 
@@ -66,7 +67,7 @@ class ReleaseSchema(BaseModel):
         """
         Extracted Helm chart name.
         """
-        *splited_name, chart_version = self.chart.split('-')
+        *_, chart_version = self.chart.split('-')
 
         return chart_version
 
@@ -98,28 +99,30 @@ class ChartSchema(BaseModel):
     description: str = Field(description='Chart description')
     name: str = Field(description='Chart name')
     version: str = Field(description='Chart version')
+    repository_name: str = Field(description='Name of repository where chart is stored')
+    application_name: str = Field(description='Name of chart application')
 
     class Config:
         allow_population_by_field_name = True
 
-    @property
-    def repository_name(self) -> str:
+    @root_validator(pre=True, skip_on_failure=True)
+    def parse_chart_name(cls, values: dict) -> dict:
         """
-        Repository name where chart stored.
+        Extracts repository and application name from chart name.
         """
-        repository_name, chart_name = self.name.split('/')
+        name = values.get('name')
+        if not name:
+            raise ValueError(f'No chart name provided.')
+        repository_name, application_name = name.split('/')
+        if not repository_name:
+            raise ValueError(f'Failed to extract repository name from chart name: "{name}".')
+        if not application_name:
+            raise ValueError(f'Failed to extract application name from chart name: "{name}".')
+        values['repository_name'] = repository_name
+        values['application_name'] = application_name
 
-        return repository_name
-
-    @property
-    def chart_name(self) -> str:
-        """
-        Chart name.
-        """
-        repository_name, chart_name = self.name.split('/')
-
-        return chart_name
+        return values
 
     def dict(self, *args, **kwargs):
-        kwargs['by_alias'] = True
+        kwargs['by_alias'] = False
         return super().dict(*args, **kwargs)
