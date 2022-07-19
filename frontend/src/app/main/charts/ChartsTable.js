@@ -10,7 +10,7 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import { getChartList, selectIsChartsLoading, selectCharts } from 'app/store/chartsSlice';
 
-import { getSelectItemsFromArray, getUniqueKeysFromReleasesData } from '../../uitls';
+import { getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ChartsFilters from './ChartsFilters';
 
@@ -33,7 +33,7 @@ const ChartsTable = () => {
 
   useEffect(() => {
     if (chartData?.length) {
-      const uniqueRepositories = getUniqueKeysFromReleasesData(chartData, 'repository_name');
+      const uniqueRepositories = getUniqueKeysFromTableData(chartData, 'repository_name');
 
       const namespacesSelectOptions = getSelectItemsFromArray(uniqueRepositories);
 

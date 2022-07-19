@@ -15,10 +15,9 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import withRouter from '@fuse/core/withRouter';
 import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
 
-import { checkTrimString, getTimeFormat } from '../../uitls';
+import { checkTrimString, getTimeFormat, getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ReleasesFilters from './ReleasesFilters';
-import { getSelectItemsFromArray, getUniqueKeysFromReleasesData } from './utils';
 
 const style = {
   position: 'absolute',
@@ -58,8 +57,8 @@ const ReleasesTable = () => {
 
   useEffect(() => {
     if (releasesData?.length) {
-      const uniqueNamespaces = getUniqueKeysFromReleasesData(releasesData, 'namespace');
-      const uniqueClusters = getUniqueKeysFromReleasesData(releasesData, 'context_name');
+      const uniqueNamespaces = getUniqueKeysFromTableData(releasesData, 'namespace');
+      const uniqueClusters = getUniqueKeysFromTableData(releasesData, 'context_name');
 
       const namespacesSelectOptions = getSelectItemsFromArray(uniqueNamespaces);
       const clustersSelectOptions = getSelectItemsFromArray(uniqueClusters);
