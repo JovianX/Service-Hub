@@ -20,10 +20,18 @@ const navigationConfig = [
   {
     id: 'releases-component',
     title: 'Releases',
-    translate: 'RELESASES',
+    translate: 'RELEASES',
     type: 'item',
     icon: 'developer_board',
     url: 'releases',
+  },
+  {
+    id: 'charts-component',
+    title: 'Releases',
+    translate: 'CHARTS',
+    type: 'item',
+    icon: 'developer_board',
+    url: 'charts',
   },
 ];
 
