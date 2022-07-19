@@ -15,7 +15,7 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import withRouter from '@fuse/core/withRouter';
-import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesListSlice';
+import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
 
 import { checkTrimString, getTimeFormat } from '../../uitls';
 

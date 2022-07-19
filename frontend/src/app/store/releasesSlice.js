@@ -34,10 +34,12 @@ const releasesSlice = createSlice({
       releases: payload,
       isLoading: false,
     }),
-    [getReleases.pending]: () => ({
+    [getReleases.pending]: (state) => ({
+      ...state,
       isLoading: true,
     }),
-    [getReleases.rejected]: () => ({
+    [getReleases.rejected]: (state) => ({
+      ...state,
       isLoading: false,
     }),
   },
