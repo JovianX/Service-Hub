@@ -10,14 +10,18 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import { getChartList, selectIsChartsLoading, selectCharts } from 'app/store/chartsSlice';
 
+import { getSelectItemsFromArray, getUniqueKeysFromReleasesData } from '../../uitls';
+
+import ChartsFilters from './ChartsFilters';
+
 const ChartsTable = () => {
   const [charts, setCharts] = useState([]);
+  const [repositories, setRepositories] = useState([]);
+  const [selectedRepository, setSelectedRepository] = useState('all');
 
   const dispatch = useDispatch();
   const chartData = useSelector(selectCharts);
   const isLoading = useSelector(selectIsChartsLoading);
-
-  console.log('chartData', chartData);
 
   useEffect(() => {
     setCharts(chartData);
@@ -26,6 +30,30 @@ const ChartsTable = () => {
   useEffect(() => {
     dispatch(getChartList());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (chartData?.length) {
+      const uniqueRepositories = getUniqueKeysFromReleasesData(chartData, 'repository_name');
+
+      const namespacesSelectOptions = getSelectItemsFromArray(uniqueRepositories);
+
+      setRepositories(namespacesSelectOptions);
+    }
+  }, [chartData]);
+
+  useEffect(() => {
+    let filteredCharts = chartData;
+
+    if (selectedRepository !== 'all') {
+      filteredCharts = filteredCharts.filter((el) => el.repository_name === selectedRepository);
+    }
+
+    setCharts(filteredCharts);
+  }, [selectedRepository]);
+
+  const handleSelectedRepository = (event) => {
+    setSelectedRepository(event.target.value);
+  };
 
   if (isLoading) {
     return (
@@ -37,6 +65,12 @@ const ChartsTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
+      <ChartsFilters
+        repositories={repositories}
+        selectedRepository={selectedRepository}
+        setSelectedRepository={handleSelectedRepository}
+      />
+
       <FuseScrollbars className='grow overflow-x-auto'>
         <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
           <TableHead>
