@@ -1,7 +1,5 @@
-import { Backdrop, Button, Fade, InputLabel, Modal, Select } from '@mui/material';
+import { Backdrop, Button, Fade, Modal } from '@mui/material';
 import Box from '@mui/material/Box';
-import FormControl from '@mui/material/FormControl';
-import MenuItem from '@mui/material/MenuItem';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -19,6 +17,7 @@ import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } f
 
 import { checkTrimString, getTimeFormat } from '../../uitls';
 
+import ReleasesFilters from './ReleasesFilters';
 import { getSelectItemsFromArray, getUniqueKeysFromReleasesData } from './utils';
 
 const style = {
@@ -92,14 +91,6 @@ const ReleasesTable = () => {
     setSelectedCluster(event.target.value);
   };
 
-  const renderMenuItems = (items) => {
-    return items.map((namespace) => (
-      <MenuItem value={namespace.value} key={namespace.value}>
-        {namespace.text}
-      </MenuItem>
-    ));
-  };
-
   const toggleDeleteModalOpen = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
@@ -138,39 +129,14 @@ const ReleasesTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
-      <div className='flex p-10'>
-        <FormControl className='flex w-full sm:w-200 mr-10' variant='outlined'>
-          <InputLabel id='category-select-label'>Namespaces</InputLabel>
-          <Select
-            labelId='namespace-select-label'
-            id='namespace-select'
-            label='Namespaces'
-            value={selectedNamespace}
-            onChange={handleSelectedNamespace}
-          >
-            <MenuItem value='all'>
-              <em> All </em>
-            </MenuItem>
-            {renderMenuItems(namespaces)}
-          </Select>
-        </FormControl>
-
-        <FormControl className='flex w-full sm:w-200' variant='outlined'>
-          <InputLabel id='category-select-label'>Clusters</InputLabel>
-          <Select
-            labelId='cluster-select-label'
-            id='cluster-select'
-            label='Clusters'
-            value={selectedCluster}
-            onChange={handleSelectedCluster}
-          >
-            <MenuItem value='all'>
-              <em> All </em>
-            </MenuItem>
-            {renderMenuItems(clusters)}
-          </Select>
-        </FormControl>
-      </div>
+      <ReleasesFilters
+        selectedNamespace={selectedNamespace}
+        setSelectedNamespace={handleSelectedNamespace}
+        namespaces={namespaces}
+        selectedCluster={selectedCluster}
+        setSelectedCluster={handleSelectedCluster}
+        clusters={clusters}
+      />
 
       <FuseScrollbars className='grow overflow-x-auto'>
         <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
