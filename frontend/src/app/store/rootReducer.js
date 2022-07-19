@@ -5,6 +5,7 @@ import dashboard from './dashboardSlice';
 import fuse from './fuse';
 import i18n from './i18nSlice';
 import releases from './releasesSlice';
+import services from './servicesSlice';
 import user from './userSlice';
 
 const createReducer = (asyncReducers) => (state, action) => {
@@ -15,6 +16,7 @@ const createReducer = (asyncReducers) => (state, action) => {
     dashboard,
     releases,
     charts,
+    services,
     ...asyncReducers,
   });
 

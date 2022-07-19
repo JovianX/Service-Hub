@@ -18,6 +18,14 @@ const navigationConfig = [
     url: 'dashboard',
   },
   {
+    id: 'services-component',
+    title: 'Services',
+    translate: 'SERVICES',
+    type: 'item',
+    icon: 'developer_board',
+    url: 'services',
+  },
+  {
     id: 'releases-component',
     title: 'Releases',
     translate: 'RELEASES',
