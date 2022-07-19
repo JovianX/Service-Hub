@@ -1,5 +1,7 @@
-export const getUniqueKeysFromReleasesData = (data, key) => {
-  const values = data?.map((el) => el[key]);
+import _ from '@lodash';
+
+export const getUniqueKeysFromTableData = (data, key) => {
+  const values = data?.map((el) => _.get(el, key)).filter(Boolean);
 
   const uniqueItems = new Set(values);
 
