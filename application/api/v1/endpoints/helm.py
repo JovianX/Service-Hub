@@ -10,6 +10,7 @@ from application.managers.organizations.manager import get_organization_manager
 from application.models.user import User
 
 from ..schemas.helm import AddHelmRepositoryBodySchema
+from ..schemas.helm import ChartListItemSchema
 from ..schemas.helm import InstallChartBodySchema
 from ..schemas.helm import ReleaseHealthStatusResponseBodySchema
 from ..schemas.helm import ReleaseListItemSchema
@@ -54,7 +55,7 @@ async def list_repository(
 ################################################################################
 
 
-@router.get('/chart/list')
+@router.get('/chart/list', response_model=list[ChartListItemSchema])
 async def list_charts_in_repsitories(
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)

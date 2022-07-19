@@ -83,3 +83,18 @@ class ReleaseListItemSchema(BaseModel):
         json_encoders = {
             datetime: lambda v: v.timestamp()
         }
+
+
+class ChartListItemSchema(BaseModel):
+    """
+    Chart list item schema.
+    """
+    application_version: str = Field(description='Version of application deployed by chart')
+    description: str = Field(description='Chart description')
+    name: str = Field(description='Chart name')
+    version: str = Field(description='Chart version')
+    repository_name: str = Field(description='Repository name')
+    application_name: str = Field(description='Name chart application')
+
+    class Config:
+        orm_mode = True

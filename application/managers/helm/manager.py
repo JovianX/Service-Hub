@@ -97,7 +97,7 @@ class HelmManager:
                         item = release.dict()
                         item['available_chart'] = next(
                             ({'chart_name': chart.name, 'chart_version': chart.version}
-                             for chart in charts if chart.chart_name == release.chart_name),
+                             for chart in charts if chart.application_name == release.application_name),
                             None
                         )
                         item['context_name'] = context_name
