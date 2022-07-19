@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { getChartList as getChartListAPI } from '../api';
 
-export const getChartList = createAsyncThunk('releases/getReleasesList', async () => {
+export const getChartList = createAsyncThunk('charts/getChartList', async () => {
   try {
     const response = await getChartListAPI();
 
@@ -26,15 +26,18 @@ const chartsSlice = createSlice({
       charts: payload,
       isLoading: false,
     }),
-    [getChartList.pending]: () => ({
+    [getChartList.pending]: (state) => ({
+      ...state,
       isLoading: true,
     }),
-    [getChartList.rejected]: () => ({
+    [getChartList.rejected]: (state) => ({
+      ...state,
       isLoading: false,
     }),
   },
 });
 
 export const selectCharts = ({ charts }) => charts.charts;
+export const selectIsChartsLoading = ({ charts }) => charts.isLoading;
 
 export default chartsSlice.reducer;
