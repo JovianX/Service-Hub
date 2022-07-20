@@ -17,3 +17,4 @@ class Organization(Base):
     members = relationship('User', back_populates='organization', lazy='joined')
     services = relationship('Service', back_populates='organization', lazy='joined')
     rules = relationship('Rule', back_populates='organization', lazy='joined')
+    templates = relationship('Template', back_populates='organization', lazy='joined')

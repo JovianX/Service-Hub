@@ -14,10 +14,10 @@ from application.managers.rules.manager import RuleManager
 from application.managers.rules.manager import get_rule_manager
 from application.models.user import User
 
+from ..schemas.rules import ReleaseAuditResultResponceBodySchema
 from ..schemas.rules import RuleCreateBodySchema
 from ..schemas.rules import RuleResponseSchema
 from ..schemas.rules import RuleUpdateBodySchema
-from ..schemas.rules import ReleaseAuditResultResponceBodySchema
 
 
 router = APIRouter()
@@ -67,7 +67,7 @@ async def update_rule(
     rule_manager: RuleManager = Depends(get_rule_manager)
 ):
     """
-    Reorders rules order according to id position in ID list.
+    Updates rule's attributes.
     """
     return await rule_manager.update_organization_rule(
         user.organization,

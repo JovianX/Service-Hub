@@ -1,4 +1,6 @@
-from typing import List
+"""
+Organization related API schemas.
+"""
 
 from pydantic import BaseModel
 
@@ -25,9 +27,9 @@ class K8sConfigurationResponseSchema(BaseModel):
     """
     Payload of Kubernetes configuration response.
     """
-    clusters: List[K8sClusterResponseSchema]
-    contexts: List[K8sContextResponseSchema]
-    users: List[K8sUserResponseSchema]
+    clusters: list[K8sClusterResponseSchema]
+    contexts: list[K8sContextResponseSchema]
+    users: list[K8sUserResponseSchema]
     current_context: str
 
     def __init__(self, configuration: KubernetesConfiguration):

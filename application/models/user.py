@@ -21,3 +21,5 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     organization = relationship('Organization', back_populates='members', lazy='joined')
     created_services = relationship('Service', back_populates='creator', lazy='joined')
     created_rules = relationship('Rule', back_populates='creator', lazy='joined')
+    created_templates = relationship('Template', back_populates='creator', lazy='joined')
+    created_template_revisions = relationship('ManifestRevision', back_populates='creator', lazy='joined')
