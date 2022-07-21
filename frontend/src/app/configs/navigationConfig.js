@@ -41,6 +41,14 @@ const navigationConfig = [
     icon: 'heroicons-outline:presentation-chart-line',
     url: 'charts',
   },
+  {
+    id: 'repositories-component',
+    title: 'Repositories',
+    translate: 'REPOSITORIES',
+    type: 'item',
+    icon: 'heroicons-outline:archive',
+    url: 'repositories',
+  },
 ];
 
 export default navigationConfig;
