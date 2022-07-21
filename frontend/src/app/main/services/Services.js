@@ -4,7 +4,7 @@ import TableHeader from 'app/shared-components/TableHeader';
 
 import ServicesTable from './ServicesTable';
 
-const Charts = () => {
+const Services = () => {
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
 
   return (
@@ -16,4 +16,4 @@ const Charts = () => {
   );
 };
 
-export default Charts;
+export default Services;
