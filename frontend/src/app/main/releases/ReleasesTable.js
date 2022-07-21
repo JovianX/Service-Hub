@@ -158,19 +158,17 @@ const ReleasesTable = () => {
           <TableBody>
             {releases?.map((row) => (
               <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell component='th' scope='row'>
-                  {row.name}
-                </TableCell>
-                <TableCell align='right'>{row.status}</TableCell>
-                <TableCell align='right'>{row.health_status}</TableCell>
-                <TableCell align='right'>-</TableCell>
-                <TableCell align='right'>{checkTrimString(row.namespace, 50, 15)}</TableCell>
-                <TableCell align='right'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
-                <TableCell align='right'>{row.chart}</TableCell>
-                <TableCell align='right'>{row.application_version}</TableCell>
-                <TableCell align='right'>{getTimeFormat(row.updated)}</TableCell>
-                <TableCell align='right'>{row.revision}</TableCell>
-                <TableCell align='right'>
+                <TableCell align='left'>{row.name}</TableCell>
+                <TableCell align='left'>{row.status}</TableCell>
+                <TableCell align='left'>{row.health_status}</TableCell>
+                <TableCell align='left'>-</TableCell>
+                <TableCell align='left'>{checkTrimString(row.namespace, 50, 15)}</TableCell>
+                <TableCell align='left'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
+                <TableCell align='left'>{row.chart}</TableCell>
+                <TableCell align='left'>{row.application_version}</TableCell>
+                <TableCell align='left'>{getTimeFormat(row.updated)}</TableCell>
+                <TableCell align='left'>{row.revision}</TableCell>
+                <TableCell align='left'>
                   <Button variant='contained' color='error' onClick={() => handleDeleteRelease(row)}>
                     <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                   </Button>

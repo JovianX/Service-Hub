@@ -43,9 +43,7 @@ const RepositoriesTable = () => {
           <TableBody>
             {repositoryData?.map((row) => (
               <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell component='th' scope='row'>
-                  {row.name}
-                </TableCell>
+                <TableCell align='left'>{row.name}</TableCell>
                 <TableCell align='left'>{row.url}</TableCell>
               </TableRow>
             ))}

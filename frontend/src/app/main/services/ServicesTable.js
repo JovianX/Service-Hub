@@ -107,14 +107,14 @@ const ServicesTable = () => {
           <TableBody>
             {services?.map((row) => (
               <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell component='th'>{row.name}</TableCell>
-                <TableCell component='th'>-</TableCell>
-                <TableCell component='th'>{row.type}</TableCell>
-                <TableCell component='th'>{row?.organization?.title}</TableCell>
-                <TableCell component='th'>{row?.creator?.id}</TableCell>
-                <TableCell component='th'>{row?.health_check_settings?.context_name}</TableCell>
-                <TableCell component='th'>{row?.health_check_settings?.namespace}</TableCell>
-                <TableCell component='th'>Details</TableCell>
+                <TableCell align='left'>{row.name}</TableCell>
+                <TableCell align='left'>-</TableCell>
+                <TableCell align='left'>{row.type}</TableCell>
+                <TableCell align='left'>{row?.organization?.title}</TableCell>
+                <TableCell align='left'>{row?.creator?.id}</TableCell>
+                <TableCell align='left'>{row?.health_check_settings?.context_name}</TableCell>
+                <TableCell align='left'>{row?.health_check_settings?.namespace}</TableCell>
+                <TableCell align='left'>Details</TableCell>
               </TableRow>
             ))}
           </TableBody>

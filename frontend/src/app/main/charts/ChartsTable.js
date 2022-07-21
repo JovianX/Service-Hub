@@ -88,15 +88,13 @@ const ChartsTable = () => {
           <TableBody>
             {charts?.map((row) => (
               <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell component='th' scope='row'>
-                  {row.name}
-                </TableCell>
-                <TableCell align='right'>{row.version}</TableCell>
-                <TableCell align='right'>{row.application_name}</TableCell>
-                <TableCell align='right'>{row.application_version}</TableCell>
-                <TableCell align='right'>{row.repository_name}</TableCell>
-                <TableCell align='right'>{row.description}</TableCell>
-                <TableCell align='right'>-</TableCell>
+                <TableCell align='left'>{row.name}</TableCell>
+                <TableCell align='left'>{row.version}</TableCell>
+                <TableCell align='left'>{row.application_name}</TableCell>
+                <TableCell align='left'>{row.application_version}</TableCell>
+                <TableCell align='left'>{row.repository_name}</TableCell>
+                <TableCell align='left'>{row.description}</TableCell>
+                <TableCell align='left'>-</TableCell>
               </TableRow>
             ))}
           </TableBody>
