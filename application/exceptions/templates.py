@@ -8,7 +8,7 @@ from .common import CommonException
 
 class InvalidTemplateException(CommonException):
     """
-    Raised when error was found in template manifest.
+    Raised when error was found in template YAML.
     """
     message: str
 

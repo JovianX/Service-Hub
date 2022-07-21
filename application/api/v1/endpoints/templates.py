@@ -20,17 +20,17 @@ router = APIRouter()
 
 
 @router.post('/', response_model=TemplateResponseBodySchema)
-async def create_template(
+async def create_template_revision(
     template: TemplateCreateBodySchema = Body(description='Template create data'),
     user: User = Depends(current_active_user),
     template_manager: TemplateManager = Depends(get_template_manager)
 ):
     """
-    Create new template.
+    Create new template revision.
     """
     created_template = await template_manager.create_template(
         creator=user,
-        raw_manifest=template.manifest,
+        raw_template=template.yaml,
         description=template.description,
         enabled=template.enabled
     )
@@ -44,7 +44,7 @@ async def list_organization_templates(
     template_manager: TemplateManager = Depends(get_template_manager)
 ):
     """
-    Returns organization's rules.
+    Returns organization's templates.
     """
     return await template_manager.list_templates(organization=user.organization)
 

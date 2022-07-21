@@ -18,7 +18,7 @@ from sqlalchemy.sql import func
 from application.db.base_class import Base
 
 
-class Template(Base):
+class TemplateRevision(Base):
     """
     Template that represents solution components.
     """
@@ -26,35 +26,17 @@ class Template(Base):
     created_at = Column(DateTime, server_default=func.now())
     name = Column(String, nullable=False)
     description = Column(String, nullable=False, default='')
+    revision = Column(Integer, nullable=False, default=1)
+    yaml = Column(Text, nullable=False)
+    template = Column(JSON, nullable=False, default={})
     enabled = Column(Boolean, nullable=False, default=False)
+    default = Column(Boolean, nullable=False, default=False)
     creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
     creator = relationship('User', back_populates='created_templates', lazy='joined')
-    default_revision_id = Column(Integer, ForeignKey('manifest_revision.id', use_alter=True), nullable=True)
-    default_revision = relationship('ManifestRevision', lazy='joined')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
     organization = relationship('Organization', back_populates='templates', lazy='joined')
-    revisions = relationship('ManifestRevision', back_populates='template', lazy='joined')
 
     __table_args__ = (
-        UniqueConstraint('organization_id', 'name', name='_organization_name_uc'),
-    )
-
-
-class ManifestRevision(Base):
-    """
-    Template template manifest revision.
-    """
-    id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, server_default=func.now())
-    revision = Column(Integer, nullable=False, default=1)
-    raw_manifest = Column(Text, nullable=False)
-    manifest = Column(JSON, nullable=False, default={})
-    comment = Column(String, nullable=False, default='')
-    template_id = Column(Integer, ForeignKey('template.id'), nullable=False)
-    template = relationship('Template', back_populates='revisions', lazy='joined')
-    creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
-    creator = relationship('User', back_populates='created_template_revisions', lazy='joined')
-
-    __table_args__ = (
+        UniqueConstraint('organization_id', 'name', 'revision', name='_organization_name_uc'),
         CheckConstraint('revision > 0', name='_revision_greater_than_zero_c'),
     )

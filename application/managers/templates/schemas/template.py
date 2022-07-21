@@ -13,7 +13,7 @@ from application.constants.templates import InputTypes
 
 class Chart(BaseModel):
     """
-    Manifest chart schema.
+    Chart schema.
     """
     name: constr(min_length=1, strip_whitespace=True) = Field(description='Helm release name', example='vault')
     chart: constr(min_length=1, strip_whitespace=True) = Field(
@@ -43,13 +43,13 @@ class Input(BaseModel):
     )
 
 
-class TemplateManifestSchema(BaseModel):
+class TemplateSchema(BaseModel):
     """
-    Template manifest schema.
+    Template schema.
     """
     name: constr(min_length=1, strip_whitespace=True) = Field(
         description='Name of application which describes this template',
         example='My Application'
     )
     charts: conlist(Chart, min_items=1) = Field(description='Charts that should be deployed by this template')
-    imputs: conlist(Input, min_items=1) = Field(description='Input that should be provided by user.')
+    inputs: conlist(Input, min_items=1) = Field(description='Input that should be provided by user.')
