@@ -9,7 +9,7 @@ const Repositories = () => {
 
   return (
     <FusePageCarded
-      header={<TableHeader title='Services Catalog' />}
+      header={<TableHeader title='Repositories' />}
       content={<RepositoriesTable />}
       scroll={isMobile ? 'normal' : 'content'}
     />
