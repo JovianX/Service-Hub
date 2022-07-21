@@ -9,7 +9,7 @@ import ChartsConfig from '../main/charts/ChartsConfig';
 import DashboardConfig from '../main/dashboard/DashboardConfig';
 import ExampleConfig from '../main/example/ExampleConfig';
 import ReleasesConfig from '../main/releases/ReleasesConfig';
-import ServicesConfig from '../main/Services/ServicesConfig';
+import ServicesConfig from '../main/services/ServicesConfig';
 import SignInConfig from '../main/sign-in/SignInConfig';
 import SignOutConfig from '../main/sign-out/SignOutConfig';
 import SignUpConfig from '../main/sign-up/SignUpConfig';

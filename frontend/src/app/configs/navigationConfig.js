@@ -19,7 +19,7 @@ const navigationConfig = [
   },
   {
     id: 'services-component',
-    title: 'Services',
+    title: 'services',
     translate: 'SERVICES',
     type: 'item',
     icon: 'developer_board',
