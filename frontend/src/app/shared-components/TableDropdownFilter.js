@@ -2,7 +2,7 @@ import { InputLabel, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 
-const TableDropdownFilter = ({ dropdownItems, selectedValue, handleSelectedValueChange, label }) => {
+const TableDropdownFilter = ({ dropdownItems, selectedValue, handleSelectedValueChange, label, className }) => {
   const renderMenuItems = (items) => {
     return items.map((namespace) => (
       <MenuItem value={namespace.value} key={namespace.value}>
@@ -12,7 +12,7 @@ const TableDropdownFilter = ({ dropdownItems, selectedValue, handleSelectedValue
   };
 
   return (
-    <FormControl className='flex w-full sm:w-200' variant='outlined'>
+    <FormControl className={`flex w-full sm:w-200 ${className}`} variant='outlined'>
       <InputLabel id='category-select-label'>{label}</InputLabel>
       <Select
         labelId='cluster-select-label'

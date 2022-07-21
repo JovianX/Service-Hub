@@ -21,6 +21,7 @@ const ServicesFilters = ({
         label='Clusters'
         handleSelectedValueChange={setSelectedCluster}
         selectedValue={selectedCluster}
+        className='ml-12'
       />
     </div>
   );
