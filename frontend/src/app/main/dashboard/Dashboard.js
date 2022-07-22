@@ -59,7 +59,7 @@ const Dashboard = () => {
           </Typography>
 
           <motion.div
-            className='grid p-12 pt-16 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-24 w-full min-w-0 p-24'
+            className='grid pt-16 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-24 w-full min-w-0 p-24'
             variants={container}
             initial='hidden'
             animate='show'
@@ -91,12 +91,12 @@ const Dashboard = () => {
           </Typography>
 
           <motion.div
-            className='grid p-12 pt-16 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-24 w-full min-w-0 p-24'
+            className='grid pt-16 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-24 w-full min-w-0 p-24'
             variants={container}
             initial='hidden'
             animate='show'
           >
-            <motion.div variants={item} className='h-[108px]'>
+            <motion.div variants={item}>
               <SummaryWidget dataKey='Services' dataValue={services} />
             </motion.div>
             <motion.div variants={item}>
