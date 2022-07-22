@@ -12,6 +12,7 @@ const Repositories = () => {
       header={<TableHeader title='Repositories' />}
       content={<RepositoriesTable />}
       scroll={isMobile ? 'normal' : 'content'}
+      className='px-24'
     />
   );
 };

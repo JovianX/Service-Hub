@@ -12,6 +12,7 @@ const Charts = () => {
       header={<TableHeader title='Helm Charts' />}
       content={<ChartsTable />}
       scroll={isMobile ? 'normal' : 'content'}
+      className='px-24'
     />
   );
 };

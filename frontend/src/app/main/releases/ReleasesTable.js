@@ -1,8 +1,10 @@
 import { Backdrop, Button, Fade, Modal } from '@mui/material';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
@@ -135,50 +137,54 @@ const ReleasesTable = () => {
         selectedCluster={selectedCluster}
         setSelectedCluster={handleSelectedCluster}
         clusters={clusters}
-        className='p-24'
+        className='p-12'
       />
 
-      <FuseScrollbars className='grow overflow-x-auto'>
-        <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
-          <TableHead>
-            <TableRow>
-              <TableCell>Release Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Health</TableCell>
-              <TableCell>Rules</TableCell>
-              <TableCell>Namespace</TableCell>
-              <TableCell>Cluster</TableCell>
-              <TableCell>Chart</TableCell>
-              <TableCell>App Version</TableCell>
-              <TableCell>Updated</TableCell>
-              <TableCell>Revision</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
+      <Paper className='h-full mx-12 rounded'>
+        <FuseScrollbars className='grow overflow-x-auto'>
+          <TableContainer>
+            <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Release Name</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Health</TableCell>
+                  <TableCell>Rules</TableCell>
+                  <TableCell>Namespace</TableCell>
+                  <TableCell>Cluster</TableCell>
+                  <TableCell>Chart</TableCell>
+                  <TableCell>App Version</TableCell>
+                  <TableCell>Updated</TableCell>
+                  <TableCell>Revision</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
 
-          <TableBody>
-            {releases?.map((row) => (
-              <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align='left'>{row.name}</TableCell>
-                <TableCell align='left'>{row.status}</TableCell>
-                <TableCell align='left'>{row.health_status}</TableCell>
-                <TableCell align='left'>-</TableCell>
-                <TableCell align='left'>{checkTrimString(row.namespace, 50, 15)}</TableCell>
-                <TableCell align='left'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
-                <TableCell align='left'>{row.chart}</TableCell>
-                <TableCell align='left'>{row.application_version}</TableCell>
-                <TableCell align='left'>{getTimeFormat(row.updated)}</TableCell>
-                <TableCell align='left'>{row.revision}</TableCell>
-                <TableCell align='left'>
-                  <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
-                    <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </FuseScrollbars>
+              <TableBody>
+                {releases?.map((row) => (
+                  <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell align='left'>{row.name}</TableCell>
+                    <TableCell align='left'>{row.status}</TableCell>
+                    <TableCell align='left'>{row.health_status}</TableCell>
+                    <TableCell align='left'>-</TableCell>
+                    <TableCell align='left'>{checkTrimString(row.namespace, 50, 15)}</TableCell>
+                    <TableCell align='left'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
+                    <TableCell align='left'>{row.chart}</TableCell>
+                    <TableCell align='left'>{row.application_version}</TableCell>
+                    <TableCell align='left'>{getTimeFormat(row.updated)}</TableCell>
+                    <TableCell align='left'>{row.revision}</TableCell>
+                    <TableCell align='left'>
+                      <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
+                        <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </FuseScrollbars>
+      </Paper>
 
       <Modal
         aria-labelledby='transition-modal-title'

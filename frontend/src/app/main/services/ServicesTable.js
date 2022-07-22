@@ -1,6 +1,8 @@
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from 'react';
@@ -90,37 +92,41 @@ const ServicesTable = () => {
         className='p-12'
       />
 
-      <FuseScrollbars className='grow overflow-x-auto '>
-        <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
-          <TableHead>
-            <TableRow>
-              <TableCell>Service</TableCell>
-              <TableCell>Health</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Owner</TableCell>
-              <TableCell>Creator</TableCell>
-              <TableCell>Context Name</TableCell>
-              <TableCell>Namespace</TableCell>
-              <TableCell />
-            </TableRow>
-          </TableHead>
+      <Paper className='h-full mx-12 rounded'>
+        <FuseScrollbars className='grow overflow-x-auto'>
+          <TableContainer>
+            <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Service</TableCell>
+                  <TableCell>Health</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Owner</TableCell>
+                  <TableCell>Creator</TableCell>
+                  <TableCell>Context Name</TableCell>
+                  <TableCell>Namespace</TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableHead>
 
-          <TableBody>
-            {services?.map((row) => (
-              <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align='left'>{row.name}</TableCell>
-                <TableCell align='left'>-</TableCell>
-                <TableCell align='left'>{row.type}</TableCell>
-                <TableCell align='left'>{row?.organization?.title}</TableCell>
-                <TableCell align='left'>{row?.creator?.id}</TableCell>
-                <TableCell align='left'>{row?.health_check_settings?.context_name}</TableCell>
-                <TableCell align='left'>{row?.health_check_settings?.namespace}</TableCell>
-                <TableCell align='left'>Details</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </FuseScrollbars>
+              <TableBody>
+                {services?.map((row) => (
+                  <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell align='left'>{row.name}</TableCell>
+                    <TableCell align='left'>-</TableCell>
+                    <TableCell align='left'>{row.type}</TableCell>
+                    <TableCell align='left'>{row?.organization?.title}</TableCell>
+                    <TableCell align='left'>{row?.creator?.id}</TableCell>
+                    <TableCell align='left'>{row?.health_check_settings?.context_name}</TableCell>
+                    <TableCell align='left'>{row?.health_check_settings?.namespace}</TableCell>
+                    <TableCell align='left'>Details</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </FuseScrollbars>
+      </Paper>
     </div>
   );
 };

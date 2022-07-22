@@ -1,6 +1,8 @@
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useEffect } from 'react';
@@ -31,25 +33,29 @@ const RepositoriesTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
-      <FuseScrollbars className='grow overflow-x-auto'>
-        <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>URL</TableCell>
-            </TableRow>
-          </TableHead>
+      <Paper className='h-full mx-12 rounded mt-12'>
+        <FuseScrollbars className='grow overflow-x-auto'>
+          <TableContainer>
+            <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>URL</TableCell>
+                </TableRow>
+              </TableHead>
 
-          <TableBody>
-            {repositoryData?.map((row) => (
-              <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align='left'>{row.name}</TableCell>
-                <TableCell align='left'>{row.url}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </FuseScrollbars>
+              <TableBody>
+                {repositoryData?.map((row) => (
+                  <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell align='left'>{row.name}</TableCell>
+                    <TableCell align='left'>{row.url}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </FuseScrollbars>
+      </Paper>
     </div>
   );
 };

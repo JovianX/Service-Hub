@@ -1,6 +1,8 @@
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from 'react';
@@ -71,35 +73,39 @@ const ChartsTable = () => {
         setSelectedRepository={handleSelectedRepository}
       />
 
-      <FuseScrollbars className='grow overflow-x-auto'>
-        <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Chart Version</TableCell>
-              <TableCell>App Name</TableCell>
-              <TableCell>App Version</TableCell>
-              <TableCell>Repository Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
+      <Paper className='h-full mx-12 rounded'>
+        <FuseScrollbars className='grow overflow-x-auto'>
+          <TableContainer>
+            <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Chart Version</TableCell>
+                  <TableCell>App Name</TableCell>
+                  <TableCell>App Version</TableCell>
+                  <TableCell>Repository Name</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
 
-          <TableBody>
-            {charts?.map((row) => (
-              <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell align='left'>{row.name}</TableCell>
-                <TableCell align='left'>{row.version}</TableCell>
-                <TableCell align='left'>{row.application_name}</TableCell>
-                <TableCell align='left'>{row.application_version}</TableCell>
-                <TableCell align='left'>{row.repository_name}</TableCell>
-                <TableCell align='left'>{row.description}</TableCell>
-                <TableCell align='left'>-</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </FuseScrollbars>
+              <TableBody>
+                {charts?.map((row) => (
+                  <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell align='left'>{row.name}</TableCell>
+                    <TableCell align='left'>{row.version}</TableCell>
+                    <TableCell align='left'>{row.application_name}</TableCell>
+                    <TableCell align='left'>{row.application_version}</TableCell>
+                    <TableCell align='left'>{row.repository_name}</TableCell>
+                    <TableCell align='left'>{row.description}</TableCell>
+                    <TableCell align='left'>-</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </FuseScrollbars>
+      </Paper>
     </div>
   );
 };

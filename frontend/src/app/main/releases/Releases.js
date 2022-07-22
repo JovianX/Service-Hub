@@ -12,6 +12,7 @@ const Releases = () => {
       header={<TableHeader title='Helm Releases' />}
       content={<ReleasesTable />}
       scroll={isMobile ? 'normal' : 'content'}
+      className='px-24'
     />
   );
 };
