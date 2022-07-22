@@ -169,7 +169,7 @@ const ReleasesTable = () => {
                 <TableCell align='left'>{getTimeFormat(row.updated)}</TableCell>
                 <TableCell align='left'>{row.revision}</TableCell>
                 <TableCell align='left'>
-                  <Button variant='contained' color='error' onClick={() => handleDeleteRelease(row)}>
+                  <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
                     <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                   </Button>
                 </TableCell>
