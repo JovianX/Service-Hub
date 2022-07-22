@@ -19,6 +19,21 @@ class TemplateDatabase(BaseDatabase):
     session: AsyncSession
     table: TemplateRevision = TemplateRevision
 
+    async def get_last_revision(self, organization_id: int, name: str) -> TemplateRevision | None:
+        """
+        Returns lase template revision.
+        """
+        templates = await self.list(organization_id=organization_id, name=name)
+        if not templates:
+            return
+
+        return templates[-1]
+
+    async def list(self, **parameters) -> list:
+        query = select(self.table).order_by(self.table.revision)
+
+        return await super().list(query, **parameters)
+
     async def make_default(self, template_id: int, organization_id: int):
         """
         Makes one of templates default.
@@ -32,17 +47,6 @@ class TemplateDatabase(BaseDatabase):
         await self.session.commit()
 
         return template
-
-    async def get_last_revision(self, organization_id: int, name: str) -> TemplateRevision | None:
-        """
-        Returns lase template revision.
-        """
-        query = select(self.table).order_by(self.table.revision)
-        templates = await self.list(query, organization_id=organization_id, name=name)
-        if not templates:
-            return
-
-        return templates[-1]
 
 
 async def get_template_db(session=Depends(get_session)):

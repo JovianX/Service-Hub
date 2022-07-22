@@ -66,8 +66,8 @@ async def update_template(
     )
 
 
-@router.patch('/{template_id}/make-default', response_model=TemplateResponseBodySchema)
-async def make_default_template(
+@router.post('/{template_id}/make-default', response_model=TemplateResponseBodySchema)
+async def make_template_default(
     template_id: int = Path(title='The ID of the template to make default'),
     user: User = Depends(current_active_user),
     template_manager: TemplateManager = Depends(get_template_manager)

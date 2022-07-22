@@ -5,9 +5,10 @@ Revision ID: a30521cd80ca
 Revises: 9f942894508f
 Create Date: 2022-07-22 12:17:22.610048
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
+
 
 # revision identifiers, used by Alembic.
 revision = 'a30521cd80ca'
