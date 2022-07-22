@@ -53,7 +53,7 @@ const Dashboard = () => {
             initial={{ x: -20 }}
             animate={{ x: 0, transition: { delay: 0.2 } }}
             delay={300}
-            className='text-24 md:text-32 font-extrabold tracking-tight p-12'
+            className='text-24 md:text-32 font-extrabold tracking-tight p-12 pl-24'
           >
             Helm
           </Typography>
@@ -85,7 +85,7 @@ const Dashboard = () => {
             initial={{ x: -20 }}
             animate={{ x: 0, transition: { delay: 0.2 } }}
             delay={300}
-            className='text-24 md:text-32 font-extrabold tracking-tight p-12'
+            className='text-24 md:text-32 font-extrabold tracking-tight p-12 pl-24'
           >
             Kubernetes
           </Typography>

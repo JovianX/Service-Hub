@@ -37,7 +37,9 @@ function UserMenu() {
           {/* </Typography> */}
         </div>
 
-        <Avatar className='md:mx-4'>User Name</Avatar>
+        <Avatar src='assets/images/avatars/user-default.png' className='md:mx-4'>
+          User Name
+        </Avatar>
       </Button>
 
       <Popover
