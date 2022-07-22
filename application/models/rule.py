@@ -23,6 +23,6 @@ class Rule(Base):
     action_settings = Column(JSON, nullable=False, default={})
     enabled = Column(Boolean, nullable=False, default=False)
     creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
-    creator = relationship('User', back_populates='created_rules', lazy='joined')
+    creator = relationship('User', back_populates='created_rules', lazy='selectin')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
-    organization = relationship('Organization', back_populates='rules', lazy='joined')
+    organization = relationship('Organization', back_populates='rules', lazy='selectin')
