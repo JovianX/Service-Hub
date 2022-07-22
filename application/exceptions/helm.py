@@ -30,3 +30,15 @@ class ReleaseNotFoundException(CommonException):
     def __init__(self, message: str):
         self.message = message
         super().__init__(self.message, self.status_code)
+
+
+class RepositoryNotFoundException(CommonException):
+    """
+    Raised when was attempt interacting with non existing repository.
+    """
+    message: str
+    status_code: int = status.HTTP_404_NOT_FOUND
+
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message, self.status_code)
