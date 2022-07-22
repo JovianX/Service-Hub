@@ -9,4 +9,6 @@
 
 @import 'prism.css';
 
+@import 'custom.css';
+
 @tailwind components;

@@ -12,7 +12,7 @@ const TableDropdownFilter = ({ dropdownItems, selectedValue, handleSelectedValue
   };
 
   return (
-    <FormControl className={`flex w-full sm:w-200 ${className}`} variant='outlined'>
+    <FormControl className={`dropdown-filter flex w-full sm:w-200 ${className}`} variant='outlined'>
       <InputLabel id='category-select-label'>{label}</InputLabel>
       <Select
         labelId='cluster-select-label'
