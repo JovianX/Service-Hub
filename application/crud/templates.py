@@ -28,8 +28,8 @@ class TemplateDatabase(BaseDatabase):
             update(self.table).where(self.table.organization_id == organization_id).values(default=False)
         )
         template.default = True
-        self.save(template)
-        self.session.commit()
+        await self.save(template)
+        await self.session.commit()
 
         return template
 

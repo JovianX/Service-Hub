@@ -27,14 +27,13 @@ class TemplateRevision(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False, default='')
     revision = Column(Integer, nullable=False, default=1)
-    yaml = Column(Text, nullable=False)
-    template = Column(JSON, nullable=False, default={})
+    template = Column(Text, nullable=False)
     enabled = Column(Boolean, nullable=False, default=False)
     default = Column(Boolean, nullable=False, default=False)
     creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
-    creator = relationship('User', back_populates='created_templates', lazy='joined')
+    creator = relationship('User', back_populates='created_templates', lazy='selectin')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
-    organization = relationship('Organization', back_populates='templates', lazy='joined')
+    organization = relationship('Organization', back_populates='templates', lazy='selectin')
 
     __table_args__ = (
         UniqueConstraint('organization_id', 'name', 'revision', name='_organization_name_uc'),

@@ -58,7 +58,7 @@ class BaseDatabase:
         Returns returns single record. If record not found or found more then
         one, error is raised.
         """
-        records = self.list(query, **parameters)
+        records = await self.list(query, **parameters)
         if not records:
             raise RecordNotFoundException(
                 self.table,

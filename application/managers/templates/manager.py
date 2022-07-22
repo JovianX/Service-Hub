@@ -2,6 +2,7 @@
 Templates bussines logic.
 """
 import logging
+import re
 import tempfile
 from pathlib import Path
 
@@ -31,17 +32,11 @@ logger = logging.getLogger(__name__)
 class TemplateManager:
     """
     Template managment logic.
-
-
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=False, default='')
-    revision = Column(Integer, nullable=False, default=1)
-    yaml = Column(Text, nullable=False)
-    template = Column(JSON, nullable=False, default={})
-    enabled = Column(Boolean, nullable=False, default=False)
-    creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
-    organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
     """
+    START_DELIMITER = re.compile(r'''(?<!['"])\{\{''')
+    END_DELIMITER = re.compile(r'''\}\}(?!['"])''')
+    START_DELIMITER_REPLACEMENT = '"{{{'
+    END_DELIMITER_REPLACEMENT = '}}}"'
 
     def __init__(self, db: TemplateDatabase) -> None:
         self.db = db
@@ -49,7 +44,7 @@ class TemplateManager:
     async def create_template(
         self,
         creator: User,
-        raw_template: str,
+        template: str,
         description: str | None = None,
         enabled: bool | None = None,
     ) -> TemplateRevision:
@@ -63,24 +58,28 @@ class TemplateManager:
         revision_number = 1
         default = False
 
-        template = self.load_template(raw_template)
-        last_revision = await self.get_last_revision(creator.organization.id, template.name)
+        parsed_template = self.load_template(template)
+        last_revision = await self.get_last_revision(creator.organization, parsed_template.name)
         if last_revision:
             # Revision of existing template.
+            if last_revision.template == template:
+                raise CommonException(
+                    'Uploaded template is identical with last uploaded.',
+                    status_code=status.HTTP_409_CONFLICT
+                )
             revision_number += last_revision.revision
         else:
             # First template upload.
             default = True
 
         template_data = {
-            'name': template.name,
+            'name': parsed_template.name,
             'description': description,
             'revision': revision_number,
-            'yaml': raw_template,
-            'template': template.dict(exclude_unset=True),
+            'template': template,
             'enabled': enabled,
             'default': default,
-            'creator_id': creator.id,
+            'creator_id': str(creator.id),
             'organization_id': creator.organization.id
         }
         template_revision = await self.db.create(template_data)
@@ -103,6 +102,12 @@ class TemplateManager:
         """
         Makes template default.
         """
+        template: TemplateRevision = await self.db.get(id=template_id, organization_id=organization.id)
+        if not template.enabled:
+            raise CommonException(
+                f'Disabled template can not be set as default.',
+                status_code=status.HTTP_403_FORBIDDEN
+            )
         return await self.db.make_default(template_id, organization.id)
 
     async def update_template(
@@ -114,6 +119,13 @@ class TemplateManager:
         """
         Updates template instance.
         """
+        if 'enabled' in template_data:
+            template: TemplateRevision = await self.db.get(id=template_id, organization_id=organization.id)
+            if template.default and not template_data['enabled']:
+                raise CommonException(
+                    f'Default template can not be disabled.',
+                    status_code=status.HTTP_403_FORBIDDEN
+                )
         await self.db.update(template_data, id=template_id, organization_id=organization.id)
         return await self.db.get(id=template_id, organization_id=organization.id)
 
@@ -121,6 +133,12 @@ class TemplateManager:
         """
         Deletes template that belongs to organization.
         """
+        template: TemplateRevision = await self.db.get(id=template_id, organization_id=organization.id)
+        if template.default:
+            raise CommonException(
+                f'Default template can not be deleted.',
+                status_code=status.HTTP_403_FORBIDDEN
+            )
         await self.db.delete(id=template_id, organization_id=organization.id)
 
     async def _extract_template(self, archive: bytes) -> dict:
@@ -164,7 +182,7 @@ class TemplateManager:
         Validates template definition.
         """
         try:
-            TemplateSchema.parse_obj(template)
+            return TemplateSchema.parse_obj(template)
         except ValidationError as error:
             raise InvalidTemplateException(f'Template is invalid.\n{display_errors(error.errors())}')
 
@@ -172,6 +190,8 @@ class TemplateManager:
         """
         Parses raw template YAML and validates it.
         """
+        raw_template = self.START_DELIMITER.sub(self.START_DELIMITER_REPLACEMENT, raw_template)
+        raw_template = self.END_DELIMITER.sub(self.END_DELIMITER_REPLACEMENT, raw_template)
         parsed_template_data = yaml.safe_load(raw_template)
 
         return self.validate_template(parsed_template_data)

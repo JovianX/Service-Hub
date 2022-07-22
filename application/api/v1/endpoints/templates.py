@@ -30,7 +30,7 @@ async def create_template_revision(
     """
     created_template = await template_manager.create_template(
         creator=user,
-        raw_template=template.yaml,
+        template=template.template,
         description=template.description,
         enabled=template.enabled
     )
@@ -66,7 +66,7 @@ async def update_template(
     )
 
 
-@router.patch('/{template_id}', response_model=TemplateResponseBodySchema)
+@router.patch('/{template_id}/make-default', response_model=TemplateResponseBodySchema)
 async def make_default_template(
     template_id: int = Path(title='The ID of the template to make default'),
     user: User = Depends(current_active_user),
