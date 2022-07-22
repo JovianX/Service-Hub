@@ -87,9 +87,10 @@ const ServicesTable = () => {
         selectedCluster={selectedCluster}
         setSelectedCluster={handleSelectedCluster}
         clusters={clusters}
+        className='p-12'
       />
 
-      <FuseScrollbars className='grow overflow-x-auto'>
+      <FuseScrollbars className='grow overflow-x-auto '>
         <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
           <TableHead>
             <TableRow>

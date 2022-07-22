@@ -135,6 +135,7 @@ const ReleasesTable = () => {
         selectedCluster={selectedCluster}
         setSelectedCluster={handleSelectedCluster}
         clusters={clusters}
+        className='p-24'
       />
 
       <FuseScrollbars className='grow overflow-x-auto'>

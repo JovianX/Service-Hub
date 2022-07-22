@@ -12,6 +12,7 @@ const Services = () => {
       header={<TableHeader title='Services Catalog' />}
       content={<ServicesTable />}
       scroll={isMobile ? 'normal' : 'content'}
+      className='px-24'
     />
   );
 };

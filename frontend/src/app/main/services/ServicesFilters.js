@@ -7,9 +7,10 @@ const ServicesFilters = ({
   selectedCluster,
   setSelectedCluster,
   clusters,
+  className,
 }) => {
   return (
-    <div className='flex p-10'>
+    <div className={`flex ${className}`}>
       <TableDropdownFilter
         dropdownItems={namespaces}
         label='Namespaces'
