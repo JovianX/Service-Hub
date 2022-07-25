@@ -21,6 +21,15 @@ const SummaryWidget = ({ dataKey, dataValue, textColor = 'text-blue-500' }) => {
           <Spinner />
         ) : (
           <>
+            <div className='flex justify-start items-center w-full'>
+              <Typography
+                className='px-16 text-md font-medium tracking-tight leading-6 truncate'
+                color='text.secondary'
+              >
+                {dataKey}
+              </Typography>
+            </div>
+
             <Typography
               className={`text-7xl sm:text-8xl text-center font-bold tracking-tight leading-none ${textColor}`}
             >
