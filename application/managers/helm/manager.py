@@ -43,6 +43,15 @@ class HelmManager:
 
                 return await helm_service.repository.list()
 
+    async def delete_repository(self, organization: Organization, name: str) -> None:
+        """
+        Removes Helm repository.
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                await helm_service.repository.remove(name)
+
     async def list_repositories_charts(self, organization: Organization):
         """
         Returns lists of charts in all repositories.
