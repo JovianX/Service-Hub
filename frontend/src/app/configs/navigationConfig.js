@@ -49,6 +49,14 @@ const navigationConfig = [
     icon: 'heroicons-outline:archive',
     url: 'repositories',
   },
+  {
+    id: 'clusters-component',
+    title: 'Clusters',
+    translate: 'CLUSTERS',
+    type: 'item',
+    icon: 'heroicons-outline:collection',
+    url: 'clusters',
+  },
 ];
 
 export default navigationConfig;
