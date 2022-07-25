@@ -1,6 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 import charts from './chartsSlice';
+import clusters from './clustersSlice';
 import dashboard from './dashboardSlice';
 import fuse from './fuse';
 import i18n from './i18nSlice';
@@ -19,6 +20,7 @@ const createReducer = (asyncReducers) => (state, action) => {
     charts,
     services,
     repositories,
+    clusters,
     ...asyncReducers,
   });
 
