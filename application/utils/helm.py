@@ -38,7 +38,11 @@ class HelmArchive:
         it into organization database record.
         """
         if self.helm_home.exists():
-            await run(f'tar --gzip --create --directory={self.helm_home} --exclude=cache --file={self.helm_home_archive} .')
+            await run(
+                f'tar --gzip --create --directory={self.helm_home} --exclude=cache --file={self.helm_home_archive} .'
+            )
             with open(self.helm_home_archive, mode='rb') as file:
-                self.organization.helm_home = file.read()
-            await self.organization_manager.db.save(self.organization)
+                archive_data = file.read()
+            if self.organization.helm_home != archive_data:
+                self.organization.helm_home = archive_data
+                await self.organization_manager.db.save(self.organization)
