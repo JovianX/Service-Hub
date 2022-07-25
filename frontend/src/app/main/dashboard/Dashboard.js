@@ -47,7 +47,7 @@ const Dashboard = () => {
   const renderContent = () => {
     return (
       <div>
-        <div>
+        <div className='max-w-[1400px] m-auto'>
           <Typography
             component={motion.span}
             initial={{ x: -20 }}
@@ -79,7 +79,7 @@ const Dashboard = () => {
           </motion.div>
         </div>
 
-        <div className='mt-36'>
+        <div className='mt-36 max-w-[1400px] m-auto'>
           <Typography
             component={motion.span}
             initial={{ x: -20 }}
