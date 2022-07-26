@@ -59,7 +59,7 @@ class TemplateSchema(BaseModel):
         example='My Application'
     )
     charts: conlist(Chart, min_items=1) = Field(description='Charts that should be deployed by this template')
-    inputs: conlist(Input, min_items=1) = Field(description='Input that should be provided by user.')
+    inputs: list[Input] | None = Field(description='Input that should be provided by user.')
 
     @root_validator(skip_on_failure=True)
     def ensure_chart_names_unique(cls, values: dict) -> dict:
@@ -70,6 +70,19 @@ class TemplateSchema(BaseModel):
         chart_names = [chart.name for chart in charts]
         duplicate_names = [name for name, count in Counter(chart_names).items() if count > 1]
         if duplicate_names:
-            raise InvalidTemplateException(f'Template charts have dublicate names')
+            raise InvalidTemplateException(f'Template charts have dublicate name(s): {", ".join(duplicate_names)}')
+
+        return values
+
+    @root_validator(skip_on_failure=True)
+    def ensure_input_names_unique(cls, values: dict) -> dict:
+        """
+        Ensures that all inputs have unique names.
+        """
+        inputs = values.get('inputs', [])
+        input_names = [input.name for input in inputs]
+        duplicate_names = [name for name, count in Counter(input_names).items() if count > 1]
+        if duplicate_names:
+            raise InvalidTemplateException(f'Template inputs have dublicate name(s): {", ".join(duplicate_names)}')
 
         return values

@@ -5,6 +5,10 @@ from datetime import datetime
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import root_validator
+from pydantic.utils import GetterDict
+
+from application.utils.template import parse_template
 
 from .common import OrganizationResponseSchema
 from .common import UserResponseSchema
@@ -31,6 +35,7 @@ class TemplateResponseBodySchema(BaseModel):
     enabled: bool = Field(description='Is this template active')
     default: bool = Field(description='Is this template used as default')
     template: str = Field(description='Original template YAML')
+    parsed_template: dict = Field(description='Parsed template YAML')
     creator: UserResponseSchema = Field(description='User that have created this template')
     organization: OrganizationResponseSchema = Field(description='Organization that owns the template')
 
@@ -39,6 +44,16 @@ class TemplateResponseBodySchema(BaseModel):
         json_encoders = {
             datetime: lambda v: v.timestamp()
         }
+
+    @root_validator(pre=True)
+    def append_parsed_template(cls, values: GetterDict) -> dict:
+        """
+        Appends parsed original template YAML.
+        """
+        values = dict(values)
+        values['parsed_template'] = parse_template(values['template'])
+
+        return values
 
 
 class TemplateUpdateBodySchema(BaseModel):

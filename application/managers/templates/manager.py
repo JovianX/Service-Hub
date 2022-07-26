@@ -22,6 +22,7 @@ from application.models.organization import Organization
 from application.models.template import TemplateRevision
 from application.models.user import User
 from application.utils.shell import run
+from application.utils.template import parse_template
 
 from .schemas.template import TemplateSchema
 
@@ -33,10 +34,6 @@ class TemplateManager:
     """
     Template managment logic.
     """
-    START_DELIMITER = re.compile(r'''(?<!['"])\{\{''')
-    END_DELIMITER = re.compile(r'''\}\}(?!['"])''')
-    START_DELIMITER_REPLACEMENT = '"{{{'
-    END_DELIMITER_REPLACEMENT = '}}}"'
 
     def __init__(self, db: TemplateDatabase) -> None:
         self.db = db
@@ -190,9 +187,7 @@ class TemplateManager:
         """
         Parses raw template YAML and validates it.
         """
-        raw_template = self.START_DELIMITER.sub(self.START_DELIMITER_REPLACEMENT, raw_template)
-        raw_template = self.END_DELIMITER.sub(self.END_DELIMITER_REPLACEMENT, raw_template)
-        parsed_template_data = yaml.safe_load(raw_template)
+        parsed_template_data = parse_template(raw_template)
 
         return self.validate_template(parsed_template_data)
 
