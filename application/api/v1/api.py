@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from .endpoints import applications
 from .endpoints import authorization
 from .endpoints import dashboard
 from .endpoints import helm
@@ -13,6 +14,8 @@ from .endpoints import users
 
 router = APIRouter()
 
+
+router.include_router(applications.router, prefix='/application', tags=['application'])
 
 router.include_router(authorization.router, prefix='/auth', tags=['auth'])
 

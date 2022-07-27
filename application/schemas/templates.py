@@ -23,7 +23,7 @@ class Chart(BaseModel):
         description='Helm chart name',
         example='roboll/vault-secret-manager'
     )
-    version: constr(min_length=1, strip_whitespace=True) = Field(
+    version: constr(min_length=1, strip_whitespace=True) | None = Field(
         description='Helm chart version',
         example='1.24.1'
     )
@@ -59,7 +59,7 @@ class TemplateSchema(BaseModel):
         example='My Application'
     )
     charts: conlist(Chart, min_items=1) = Field(description='Charts that should be deployed by this template')
-    inputs: list[Input] | None = Field(description='Input that should be provided by user.')
+    inputs: list[Input] | None = Field(description='Input that should be provided by user.', default=[])
 
     @root_validator(skip_on_failure=True)
     def ensure_chart_names_unique(cls, values: dict) -> dict:

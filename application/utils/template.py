@@ -3,7 +3,13 @@ Templates related helpers.
 """
 import re
 
+import pystache
 import yaml
+from pydantic import ValidationError
+from pydantic.error_wrappers import display_errors
+
+from application.exceptions.templates import InvalidTemplateException
+from application.schemas.templates import TemplateSchema
 
 
 START_DELIMITER = re.compile(r'''(?<!['"])\{\{''')
@@ -36,3 +42,29 @@ def parse_template(raw_template) -> dict:
     raw_template = make_template_yaml_safe(raw_template)
 
     return yaml.safe_load(raw_template)
+
+
+def validate_template(template: dict) -> None:
+    """
+    Validates template definition.
+    """
+    try:
+        return TemplateSchema.parse_obj(template)
+    except ValidationError as error:
+        raise InvalidTemplateException(f'Template is invalid.\n{display_errors(error.errors())}')
+
+
+def load_template(raw_template: str) -> TemplateSchema:
+    """
+    Parses raw template YAML and validates it.
+    """
+    parsed_template_data = parse_template(raw_template)
+
+    return validate_template(parsed_template_data)
+
+
+def render_template(template: str, inputs: dict) -> str:
+    """
+    Renders template with provided context.
+    """
+    return pystache.render(template, inputs=inputs)

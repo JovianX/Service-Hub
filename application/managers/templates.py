@@ -2,29 +2,25 @@
 Templates bussines logic.
 """
 import logging
-import re
 import tempfile
 from pathlib import Path
 
 import yaml
 from fastapi import Depends
 from fastapi import status
-from pydantic import ValidationError
-from pydantic.error_wrappers import display_errors
 
 from application.core.configuration import settings
 from application.crud.templates import TemplateDatabase
 from application.crud.templates import get_template_db
 from application.exceptions.common import CommonException
 from application.exceptions.shell import NonZeroStatusException
-from application.exceptions.templates import InvalidTemplateException
 from application.models.organization import Organization
 from application.models.template import TemplateRevision
 from application.models.user import User
+from application.schemas.templates import TemplateSchema
 from application.utils.shell import run
-from application.utils.template import parse_template
-
-from .schemas.template import TemplateSchema
+from application.utils.template import load_template
+from application.utils.template import render_template
 
 
 logger = logging.getLogger(__name__)
@@ -55,7 +51,7 @@ class TemplateManager:
         revision_number = 1
         default = False
 
-        parsed_template = self.load_template(template)
+        parsed_template = load_template(template)
         last_revision = await self.get_last_revision(creator.organization, parsed_template.name)
         if last_revision:
             # Revision of existing template.
@@ -88,6 +84,12 @@ class TemplateManager:
         Gets template record.
         """
         return await self.db.get_last_revision(organization_id=organization.id, name=name)
+
+    async def get_organization_template(self, template_id: int, organization: Organization) -> TemplateRevision:
+        """
+        Returns template that belongs to organization.
+        """
+        return await self.db.get(id=template_id, organization_id=organization.id)
 
     async def list_templates(self, organization: Organization) -> list[TemplateRevision]:
         """
@@ -138,6 +140,25 @@ class TemplateManager:
             )
         await self.db.delete(id=template_id, organization_id=organization.id)
 
+    def validate_inputs(self, template: TemplateRevision, inputs: dict) -> None:
+        """
+        Returns `True` if provided inputs valid otherwise returns `False`.
+        """
+        template_schema = load_template(template.template)
+        input_specifications = {item.name: item for item in template_schema.inputs}
+        absent_inputs = input_specifications.keys() - inputs.keys()
+        if absent_inputs:
+            raise CommonException(
+                f'Absent template input(s): {", ".join(absent_inputs)}',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        extra_inputs = inputs.keys() - input_specifications.keys()
+        if extra_inputs:
+            raise CommonException(
+                f'Unexpected extra template input(s): {", ".join(extra_inputs)}',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
     async def _extract_template(self, archive: bytes) -> dict:
         """
         Extracts template from template archive.
@@ -173,23 +194,6 @@ class TemplateManager:
                 template = yaml.safe_load(template_file)
 
         return template
-
-    def validate_template(self, template: dict) -> None:
-        """
-        Validates template definition.
-        """
-        try:
-            return TemplateSchema.parse_obj(template)
-        except ValidationError as error:
-            raise InvalidTemplateException(f'Template is invalid.\n{display_errors(error.errors())}')
-
-    def load_template(self, raw_template: str) -> TemplateSchema:
-        """
-        Parses raw template YAML and validates it.
-        """
-        parsed_template_data = parse_template(raw_template)
-
-        return self.validate_template(parsed_template_data)
 
 
 async def get_template_manager(db=Depends(get_template_db)):
