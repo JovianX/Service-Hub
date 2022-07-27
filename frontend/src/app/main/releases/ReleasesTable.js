@@ -1,5 +1,4 @@
-import { Backdrop, Button, Fade, Modal } from '@mui/material';
-import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,7 +6,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,23 +13,12 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import withRouter from '@fuse/core/withRouter';
+import DialogModal from 'app/shared-components/DialogModal';
 import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
 
 import { checkTrimString, getTimeFormat, getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ReleasesFilters from './ReleasesFilters';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
 
 const ReleasesTable = () => {
   const [namespaces, setNamespaces] = useState([]);
@@ -186,38 +173,17 @@ const ReleasesTable = () => {
         </FuseScrollbars>
       </Paper>
 
-      <Modal
-        aria-labelledby='transition-modal-title'
-        aria-describedby='transition-modal-description'
-        open={isDeleteModalOpen}
+      <DialogModal
+        isOpen={isDeleteModalOpen}
         onClose={handleDeleteCancel}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={isDeleteModalOpen}>
-          <Box sx={style}>
-            <Typography id='transition-modal-title' variant='h6' component='h2'>
-              Delete release {releaseToDelete?.name}
-            </Typography>
-            <Typography id='transition-modal-description' sx={{ mt: 2 }}>
-              Are you sure you want to proceed?
-            </Typography>
-
-            <div className='flex justify-center mt-20'>
-              <Button onClick={handleDeleteCancel} variant='contained' color='secondary' className='mr-10'>
-                Cancel
-              </Button>
-
-              <Button onClick={handleDeleteConfirm} variant='contained' color='error'>
-                Delete
-              </Button>
-            </div>
-          </Box>
-        </Fade>
-      </Modal>
+        title={`Delete release ${releaseToDelete?.name}`}
+        text='Are you sure you want to proceed?'
+        onCancel={handleDeleteCancel}
+        cancelText='Cancel'
+        onConfirm={handleDeleteConfirm}
+        confirmText='Delete'
+        fullWidth
+      />
     </div>
   );
 };
