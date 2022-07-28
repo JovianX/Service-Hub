@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     # Path to directory where stored all project's files.
     FILE_STORAGE_ROOT: DirectoryPath
 
+    # Misc
+    HELM_HOME_ARCHIVE_SIZE_LIMIT: int | float = 300 * 1024  # 300KiB in bytes
+
     class Config:
         env_file = '.env'
         secrets_dir = 'nothing-interesting'

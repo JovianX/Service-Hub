@@ -1,12 +1,16 @@
 """
 Different helm utilities.
 """
+import logging
 from pathlib import Path
 
 from application.core.configuration import settings
 from application.managers.organizations.manager import OrganizationManager
 from application.models.organization import Organization
 from application.utils.shell import run
+
+
+logger = logging.getLogger(__name__)
 
 
 class HelmArchive:
@@ -24,7 +28,7 @@ class HelmArchive:
         self.helm_home_archive = organization_directory / 'archive.tar.gz'
 
     async def __aenter__(self):
-        if self.archive:
+        if self.archive and not self.helm_home.is_dir():
             self.helm_home.mkdir(parents=True, exist_ok=True)
             with open(self.helm_home_archive, mode='wb') as file:
                 file.write(self.archive)
@@ -46,3 +50,11 @@ class HelmArchive:
             if self.organization.helm_home != archive_data:
                 self.organization.helm_home = archive_data
                 await self.organization_manager.db.save(self.organization)
+            archive_size = self.helm_home_archive.stat().st_size
+            archive_size_limit = settings.HELM_HOME_ARCHIVE_SIZE_LIMIT
+            if archive_size >= archive_size_limit:
+                logger.warning(
+                    f'Exceeded limit of Helm home archive of organization '
+                    f'"{self.organization.title}"(ID={self.organization.id}). '
+                    f'Limit({archive_size_limit} bytes) < Archive size({archive_size} bytes)'
+                )
