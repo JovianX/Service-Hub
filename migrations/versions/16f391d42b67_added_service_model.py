@@ -1,9 +1,9 @@
-"""Added Service model
+"""
+Added Service model
 
 Revision ID: 16f391d42b67
 Revises: 003aa70bf346
 Create Date: 2022-07-01 19:36:10.109403
-
 """
 import sqlalchemy as sa
 from alembic import op

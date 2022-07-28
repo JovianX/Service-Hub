@@ -48,7 +48,7 @@ class RuleDatabase(BaseDatabase):
         """
         result = await self.session.execute(
             select(self.table)
-            .where(self.table.organization_id == organization_id, self.table.enabled == True)
+            .where(self.table.organization_id == organization_id, self.table.enabled)
             .order_by(self.table.order)
         )
 

@@ -1,5 +1,5 @@
 """
-Request and response schemas for API v1.
+Helm related API schemas.
 """
 from datetime import datetime
 

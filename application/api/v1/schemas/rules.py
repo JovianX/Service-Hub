@@ -51,8 +51,8 @@ class RuleResponseSchema(BaseModel):
     condition_settings: Conditions = Field(description='Rule condition settings')
     action_settings: dict = Field(description='Rule action settings')
     enabled: bool = Field(description='Shows rule activated or not')
-    creator: UserResponseSchema = Field(description='User that have created this this service')
-    organization: OrganizationResponseSchema = Field(description='Organization which own this service')
+    creator: UserResponseSchema = Field(description='User that have created this rule')
+    organization: OrganizationResponseSchema = Field(description='Organization which owns this rule')
 
     class Config:
         orm_mode = True

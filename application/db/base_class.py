@@ -1,7 +1,11 @@
+import re
 from typing import Any
 
 from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy.ext.declarative import declared_attr
+
+
+camel_case_pattern = re.compile(r'(?<!^)(?=[A-Z])')
 
 
 @as_declarative()
@@ -12,6 +16,7 @@ class Base:
     @declared_attr
     def __tablename__(cls) -> str:
         """
-        Generate __tablename__ automatically.
+        Generate __tablename__ automatically. Converts class camel case to snake
+        case.
         """
-        return cls.__name__.lower()
+        return camel_case_pattern.sub('_', cls.__name__).lower()
