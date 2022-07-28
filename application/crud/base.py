@@ -62,7 +62,7 @@ class BaseDatabase:
         if not records:
             raise RecordNotFoundException(
                 self.table,
-                f'Failed to get record of {self.table.__name__}. No correspond record to {parameters} parameters.'
+                f'Failed to get record of {self.table.__name__}. No correspond record with {parameters} parameters.'
             )
         if len(records) > 1:
             raise DuplicatesFoundException(
