@@ -22,3 +22,4 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     created_services = relationship('Service', back_populates='creator', lazy='selectin')
     created_rules = relationship('Rule', back_populates='creator', lazy='selectin')
     created_templates = relationship('TemplateRevision', back_populates='creator', lazy='selectin')
+    created_applications = relationship('Application', back_populates='creator', lazy='selectin')

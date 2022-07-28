@@ -14,7 +14,7 @@ from .base import BaseDatabase
 
 class TemplateDatabase(BaseDatabase):
     """
-    CRUD operation for models.Template instances.
+    CRUD operation for models.TemplateRevision instances.
     """
     session: AsyncSession
     table: TemplateRevision = TemplateRevision
@@ -29,7 +29,7 @@ class TemplateDatabase(BaseDatabase):
 
         return templates[-1]
 
-    async def list(self, **parameters) -> list:
+    async def list(self, query=None, **parameters) -> list:
         query = select(self.table).order_by(self.table.revision)
 
         return await super().list(query, **parameters)

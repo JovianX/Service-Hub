@@ -84,8 +84,10 @@ async def install_chart(
         namespace=data.namespace,
         release_name=data.release_name,
         chart_name=data.chart_name,
+        version=data.version,
         values=data.values,
-        description=data.description
+        description=data.description,
+        dry_run=data.dry_run
     )
 
 

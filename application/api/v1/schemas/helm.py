@@ -31,8 +31,10 @@ class InstallChartBodySchema(BaseModel):
     namespace: K8sSubdomainNameString = Field(description='Name of namespace in which chart should be installed')
     release_name: K8sSubdomainNameString = Field(description='Name of release')
     chart_name: str = Field(description='Name of chart to install')
-    values: dict = Field(description='Values with which Helm chart template should be rendered')
+    values: list[dict] = Field(description='Values with which Helm chart template should be rendered')
+    version: str | None = Field(description='Specific chart version to install')
     description: str | None = Field(description='Description of release')
+    dry_run: bool | None = Field(description='If `True` chart installation will be simulated', default=False)
 
 
 class ReleaseHealthStatusResponseBodySchema(BaseModel):

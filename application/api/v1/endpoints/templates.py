@@ -7,9 +7,10 @@ from fastapi import Depends
 from fastapi import Path
 
 from application.core.authentication import current_active_user
-from application.managers.templates.manager import TemplateManager
-from application.managers.templates.manager import get_template_manager
+from application.managers.templates import TemplateManager
+from application.managers.templates import get_template_manager
 from application.models.user import User
+from application.utils.template import render_template
 
 from ..schemas.templates import TemplateCreateBodySchema
 from ..schemas.templates import TemplateResponseBodySchema
@@ -47,6 +48,22 @@ async def list_organization_templates(
     Returns organization's templates.
     """
     return await template_manager.list_templates(organization=user.organization)
+
+
+@router.post('/{template_id}/render', response_model=str)
+async def render_template(
+    template_id: int = Path(title='The ID of the template to render'),
+    inputs: dict = Body(description='User inputs with which render template'),
+    user: User = Depends(current_active_user),
+    template_manager: TemplateManager = Depends(get_template_manager)
+):
+    """
+    Returns template manifest.
+    """
+    template = await template_manager.get_organization_template(template_id=template_id, organization=user.organization)
+    template_manager.validate_inputs(template, inputs)
+
+    return render_template(template.template, inputs=inputs)
 
 
 @router.patch('/{template_id}', response_model=TemplateResponseBodySchema)

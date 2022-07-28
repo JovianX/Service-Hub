@@ -1,7 +1,6 @@
 """
 Template model
 """
-from sqlalchemy import JSON
 from sqlalchemy import Boolean
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
@@ -34,6 +33,7 @@ class TemplateRevision(Base):
     creator = relationship('User', back_populates='created_templates', lazy='selectin')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
     organization = relationship('Organization', back_populates='templates', lazy='selectin')
+    applications = relationship('Application', back_populates='template', lazy='selectin')
 
     __table_args__ = (
         UniqueConstraint('organization_id', 'name', 'revision', name='_organization_name_uc'),
