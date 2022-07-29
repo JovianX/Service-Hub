@@ -46,7 +46,7 @@ async def get_configuration(
     return {'configuration': configuration}
 
 
-@router.delete('/kubernetes-configuration/context')
+@router.delete('/kubernetes-configuration/context', response_model=K8sConfigurationResponseSchema)
 async def save_setting(
     context_name: str = Query(alias='context-name'),
     user: User = Depends(current_active_user),
@@ -57,6 +57,9 @@ async def save_setting(
     """
     organization = user.organization
     await organization_manager.delete_context(organization, context_name)
+    configuration = organization_manager.get_kubernetes_configuration(user.organization)
+
+    return {'configuration': configuration}
 
 
 @router.post('/settings/{setting_name}')
