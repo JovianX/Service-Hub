@@ -1,5 +1,5 @@
-export const checkTrimString = (string, limit, chunkSize) => {
-  if (string.length && string.length > limit) {
+export const checkTrimString = (string = '', limit = 50, chunkSize = 15) => {
+  if (string?.length > limit) {
     return `${string.slice(0, chunkSize)}...${string.slice(-chunkSize)}`;
   }
 
