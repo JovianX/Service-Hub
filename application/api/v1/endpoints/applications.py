@@ -16,6 +16,7 @@ from application.models.user import User
 from ..schemas.applications import ApplicationInstallResponseSchema
 from ..schemas.applications import ApplicationResponseSchema
 from ..schemas.applications import InstallRequestBodySchema
+from ..schemas.applications import UpdateRequestSchema
 
 
 router = APIRouter()
@@ -46,6 +47,21 @@ async def install_application(
     )
 
 
+@router.post('/{application_id}/update')
+async def update_application(
+    application_id: int = Path(title='The ID of the application to update'),
+    body: UpdateRequestSchema = Body(description="Application release's update parameters"),
+    user: User = Depends(current_active_user),
+    application_manager: ApplicationManager = Depends(get_application_manager),
+):
+    """
+    Updates application's values of Helm releases.
+    """
+    application = await application_manager.get_organization_application(application_id, user.organization)
+
+    return await application_manager.update(application, user.organization, body.values, body.dry_run)
+
+
 @router.delete('/{application_id}')
 async def uninstall_application(
     application_id: int = Path(title='The ID of the application to terminate'),
@@ -55,7 +71,8 @@ async def uninstall_application(
     """
     Uninstalls application.
     """
-    await application_manager.terminate(application_id, user.organization)
+    application = await application_manager.get_organization_application(application_id, user.organization)
+    await application_manager.terminate(application, user.organization)
 
 
 @router.get('/list', response_model=list[ApplicationResponseSchema])

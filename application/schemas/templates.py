@@ -39,13 +39,13 @@ class Input(BaseModel):
     """
     type: InputTypes = Field(description='Type of input on form', example=InputTypes.string)
     name: constr(min_length=1, strip_whitespace=True) = Field(
-        description='Name of Helm value that will contain value of input',
+        description='Name of value that will be used in template',
         example='username'
     )
     lable: constr(min_length=1, strip_whitespace=True) | None = Field(
         description='User friendly name of input', example='User Name'
     )
-    default: Any | None = Field(
+    default: str | int | float | bool | None = Field(
         description='Default value of input if it was not provided by user', example='root'
     )
 
@@ -86,3 +86,17 @@ class TemplateSchema(BaseModel):
             raise InvalidTemplateException(f'Template inputs have dublicate name(s): {", ".join(duplicate_names)}')
 
         return values
+
+    @property
+    def chart_mapping(self) -> dict[str, Chart]:
+        """
+        Mapping of chart release name and chart itself.
+        """
+        return {chart.name: chart for chart in self.charts}
+
+    @property
+    def inputs_mapping(self) -> dict[str, input]:
+        """
+        Mapping of input placeholder name and input itself.
+        """
+        return {item.name: item for item in self.inputs}

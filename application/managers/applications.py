@@ -4,10 +4,12 @@ Applications management.
 import logging
 
 from fastapi import Depends
+from fastapi import status
 
 from application.constants.applications import ApplicationStatuses
 from application.crud.applications import ApplicationDatabase
 from application.crud.applications import get_application_db
+from application.exceptions.common import CommonException
 from application.exceptions.helm import HelmException
 from application.managers.helm.manager import HelmManager
 from application.managers.organizations.manager import get_organization_manager
@@ -95,11 +97,38 @@ class ApplicationManager:
             'results': results
         }
 
-    async def terminate(self, application_id: int, organization: Organization) -> None:
+    async def update(
+        self, application: Application, organization: Organization, values: dict[str, dict], dry_run: bool = False
+    ) -> None:
+        """
+        Updates application release's values.
+        """
+        manifest = load_template(application.manifest)
+        superfluous_releases = values.keys() - manifest.chart_mapping.keys()
+        if superfluous_releases:
+            raise CommonException(
+                f'Application update failed. Found superfluous releases that absent in application manifes: '
+                f'{", ".join(superfluous_releases)}',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        results = {}
+        for release_name, release_values in values.items():
+            results[release_name] = await self.helm_manager.update_release(
+                organization=organization,
+                context_name=application.context_name,
+                namespace=application.namespace,
+                release_name=release_name,
+                chart_name=manifest.chart_mapping[release_name].chart,
+                values=[release_values],
+                dry_run=dry_run
+            )
+
+        return results
+
+    async def terminate(self, application: Application, organization: Organization) -> None:
         """
         Terminates application. Removes all resources related with application.
         """
-        application = await self.db.get(id=application_id, organization_id=organization.id)
         manifest_schema = load_template(application.manifest)
         for chart in manifest_schema.charts:
             try:
@@ -115,11 +144,17 @@ class ApplicationManager:
                     f'<Organization: id={application.organization.id}> <Template: id={application.template.id}>'
                 )
                 pass
-        await self.db.delete(id=application_id)
+        await self.db.delete(id=application.id)
+
+    async def get_organization_application(self, application_id: int, organization: Organization) -> Application:
+        """
+        Returns organization's application record.
+        """
+        return await self.db.get(id=application_id, organization_id=organization.id)
 
     async def list_applications(self, organization: Organization) -> list[Application]:
         """
-        Returns list of organization's application.
+        Returns list of organization's application records.
         """
         return await self.db.list(organization_id=organization.id)
 

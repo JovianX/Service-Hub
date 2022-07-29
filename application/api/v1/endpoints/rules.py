@@ -116,7 +116,7 @@ async def audit_release(
     organization = user.organization
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(organization)
     helm_manager = HelmManager(organization_manager)
-    computed_values = await helm_manager.computed_values(
+    computed_values = await helm_manager.get_computed_values(
         organization=organization, context_name=context_name, namespace=namespace, release_name=release_name
     )
     return await rule_manager.validate(
