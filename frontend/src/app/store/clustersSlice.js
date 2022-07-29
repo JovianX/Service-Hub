@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import _ from '@lodash';
 
-import { getClusterList as getClusterListAPI } from '../api';
+import { getClusterList as getClusterListAPI, deleteContext as deleteContextAPI } from '../api';
 
 export const getClustersList = createAsyncThunk('clusters/getClustersList', async () => {
   try {
@@ -36,6 +36,14 @@ export const getClustersList = createAsyncThunk('clusters/getClustersList', asyn
       clusters: [],
       defaultContext: null,
     };
+  }
+});
+
+export const deleteContext = createAsyncThunk('clusters/deleteContext', async (contextName) => {
+  try {
+    await deleteContextAPI(contextName);
+  } catch (e) {
+    // handle error state
   }
 });
 
