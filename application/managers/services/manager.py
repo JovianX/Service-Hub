@@ -72,6 +72,15 @@ class ServiceManager:
 
         return services
 
+    async def update_service(self, service_id: int, organization: Organization, data: dict) -> Service:
+        """
+        Updates service instance.
+        """
+        service = await self.db.get_organization_service(service_id, organization.id)
+        await self.db.update(service, data)
+
+        return service
+
     async def delete_service(self, service_id: int, organization: Organization) -> None:
         """
         Deletes service.
