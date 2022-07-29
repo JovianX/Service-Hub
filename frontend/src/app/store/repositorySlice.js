@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getRepositoryList as getRepositoryListAPI } from '../api';
+import { getRepositoryList as getRepositoryListAPI, deleteRepository as deleteRepositoryAPI } from '../api';
 
 export const getRepositoryList = createAsyncThunk('repositories/getRepositoryList', async () => {
   try {
@@ -11,6 +11,14 @@ export const getRepositoryList = createAsyncThunk('repositories/getRepositoryLis
     return data;
   } catch (e) {
     return [];
+  }
+});
+
+export const deleteRepository = createAsyncThunk('repositories/deleteRepository', async (repository) => {
+  try {
+    await deleteRepositoryAPI(repository);
+  } catch (e) {
+    // add error handling
   }
 });
 
