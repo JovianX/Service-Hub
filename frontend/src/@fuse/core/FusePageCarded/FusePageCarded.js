@@ -1,9 +1,11 @@
-import FuseScrollbars from '@fuse/core/FuseScrollbars';
+import GlobalStyles from '@mui/material/GlobalStyles';
 import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import * as PropTypes from 'prop-types';
 import { forwardRef, memo, useImperativeHandle, useRef } from 'react';
-import GlobalStyles from '@mui/material/GlobalStyles';
+
+import FuseScrollbars from '@fuse/core/FuseScrollbars';
+
 import FusePageCardedHeader from './FusePageCardedHeader';
 import FusePageCardedSidebar from './FusePageCardedSidebar';
 
@@ -198,11 +200,7 @@ const FusePageCarded = forwardRef((props, ref) => {
         })}
       />
       <Root
-        className={clsx(
-          'FusePageCarded-root',
-          `FusePageCarded-scroll-${props.scroll}`,
-          props.className
-        )}
+        className={clsx('FusePageCarded-root', `FusePageCarded-scroll-${props.scroll}`, props.className)}
         ref={rootRef}
         scroll={props.scroll}
         leftsidebarwidth={props.leftSidebarWidth}
@@ -210,11 +208,11 @@ const FusePageCarded = forwardRef((props, ref) => {
       >
         {props.header && <FusePageCardedHeader header={props.header} />}
 
-        <div className="flex flex-auto flex-col container z-10 h-full shadow-1 rounded-t-16 relative overflow-hidden">
-          <div className="FusePageCarded-wrapper">
+        <div className='flex flex-auto flex-col z-10 h-full shadow-1 rounded-t-16 relative overflow-hidden mx-10'>
+          <div className='FusePageCarded-wrapper'>
             {props.leftSidebarContent && (
               <FusePageCardedSidebar
-                position="left"
+                position='left'
                 content={props.leftSidebarContent}
                 variant={props.leftSidebarVariant || 'permanent'}
                 ref={leftSidebarRef}
@@ -223,17 +221,12 @@ const FusePageCarded = forwardRef((props, ref) => {
                 onClose={props.leftSidebarOnClose}
               />
             )}
-            <FuseScrollbars
-              className="FusePageCarded-contentWrapper"
-              enable={props.scroll === 'content'}
-            >
-              {props.content && (
-                <div className={clsx('FusePageCarded-content')}>{props.content}</div>
-              )}
+            <FuseScrollbars className='FusePageCarded-contentWrapper' enable={props.scroll === 'content'}>
+              {props.content && <div className={clsx('FusePageCarded-content')}>{props.content}</div>}
             </FuseScrollbars>
             {props.rightSidebarContent && (
               <FusePageCardedSidebar
-                position="right"
+                position='right'
                 content={props.rightSidebarContent}
                 variant={props.rightSidebarVariant || 'permanent'}
                 ref={rightSidebarRef}

@@ -1,9 +1,9 @@
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 
-const ReleasesHeader = () => {
+const TableHeader = ({ title }) => {
   return (
-    <div className='flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32'>
+    <div className='flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24'>
       <Typography
         component={motion.span}
         initial={{ x: -20 }}
@@ -11,10 +11,10 @@ const ReleasesHeader = () => {
         delay={300}
         className='text-24 md:text-32 font-extrabold tracking-tight'
       >
-        Releases
+        {title}
       </Typography>
     </div>
   );
 };
 
-export default ReleasesHeader;
+export default TableHeader;

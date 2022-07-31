@@ -13,6 +13,7 @@ from application.crud.organizations import get_organization_db
 from application.exceptions.common import CommonException
 from application.managers.kubernetes import K8sManager
 from application.models.organization import Organization
+from application.schemas.kubernetes import KubernetesConfigurationSchema
 from application.utils.kubernetes import KubernetesConfiguration
 
 from .settings_schemas import ROOT_SETTING_SCHEMAS
@@ -39,17 +40,6 @@ class OrganizationManager:
             'title': title
         })
 
-    async def delete_context(self, instance: Organization, context_name: str) -> None:
-        """
-        Delete context from Kubernetes configuration with helm of kubectl.
-        """
-        with self.get_kubernetes_configuration(instance) as k8s_configuration_path:
-            k8s_manager = K8sManager(k8s_configuration_path)
-            await k8s_manager.delete_context(context_name)
-            with open(k8s_configuration_path) as k8s_configuration_file:
-                configuratoin = yaml.safe_load(k8s_configuration_file)
-        await self.update_setting(instance, 'kubernetes_configuration', configuratoin)
-
     async def update_kubernetes_configuration(self, instance: Organization, incoming_configuration: dict):
         """
         Saves new of does merge with existing Kubernetes configuration.
@@ -64,6 +54,19 @@ class OrganizationManager:
             'configuration': configuration.configuration,
             'metadata': configuration.metadata
         }
+        await self.db.save(instance)
+
+    async def delete_context(self, instance: Organization, context_name: str) -> None:
+        """
+        Deletes context from Kubernetes configuration with helm of kubectl.
+        """
+        with self.get_kubernetes_configuration(instance) as k8s_configuration_path:
+            k8s_manager = K8sManager(k8s_configuration_path)
+            await k8s_manager.delete_context(context_name)
+            with open(k8s_configuration_path) as k8s_configuration_file:
+                configuration = KubernetesConfigurationSchema.parse_obj(yaml.safe_load(k8s_configuration_file))
+
+        instance.kubernetes_configuration['configuration'] = configuration.dict()
         await self.db.save(instance)
 
     async def update_setting(self, instance: Organization, setting_name: str, setting_value: Any):

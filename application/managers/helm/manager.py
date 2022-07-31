@@ -43,6 +43,15 @@ class HelmManager:
 
                 return await helm_service.repository.list()
 
+    async def delete_repository(self, organization: Organization, name: str) -> None:
+        """
+        Removes Helm repository.
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                await helm_service.repository.remove(name)
+
     async def list_repositories_charts(self, organization: Organization):
         """
         Returns lists of charts in all repositories.
@@ -99,7 +108,7 @@ class HelmManager:
                         item = release.dict()
                         item['available_chart'] = next(
                             ({'chart_name': chart.name, 'chart_version': chart.version}
-                             for chart in charts if chart.chart_name == release.chart_name),
+                             for chart in charts if chart.application_name == release.application_name),
                             None
                         )
                         item['context_name'] = context_name

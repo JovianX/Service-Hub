@@ -1,0 +1,8 @@
+.dropdown-filter label {
+    background: white;
+}
+
+.spinner-container #spinner {
+    margin: 0;
+    height: 100%;
+}

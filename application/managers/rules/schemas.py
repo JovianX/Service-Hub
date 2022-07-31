@@ -24,7 +24,7 @@ class RuleConditionSchema(BaseModel, extra=Extra.forbid):
     value: str = Field(description='Value with which to compare')
 
     @root_validator(skip_on_failure=True)
-    def validate_attribure(cls, values):
+    def validate_attribure(cls, values: dict) -> dict:
         """
         Validates values if attribute is have some values limitations.
         """

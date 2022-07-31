@@ -18,6 +18,8 @@ import _ from '@lodash';
 
 import jwtService from '../../auth/services/jwtService';
 
+import { getErrorMessage } from './utils';
+
 const schema = yup.object().shape({
   email: yup.string().email('You must enter a valid email').required('You must enter a email'),
   password: yup
@@ -79,10 +81,10 @@ const SignInPage = () => {
       await jwtService.signInWithEmailAndPassword(email, password);
 
       history.push('/');
-    } catch (errors) {
+    } catch (error) {
       setError('email', {
         type: 'manual',
-        message: errors?.response?.data?.detail,
+        message: getErrorMessage(error),
       });
     }
   };

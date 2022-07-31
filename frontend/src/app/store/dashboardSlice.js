@@ -1,11 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 
-const DASHBOARD_API_PATH = '/api/v1/dashboard/';
+import {
+  getReleaseCount as getReleasesCountAPI,
+  getRepositoryCount as getRepositoriesCountAPI,
+  getChartCount as getChartsCountAPI,
+  getContextCount as getContextsCountAPI,
+  getUnhealthyCount as getUnhealthyCountAPI,
+  getServiceCount as getServicesCountAPI,
+} from '../api';
 
 export const getReleasesCount = createAsyncThunk('dashboard/getReleasesCount', async () => {
   try {
-    const response = await axios.get(`${DASHBOARD_API_PATH}release-count`);
+    const response = await getReleasesCountAPI();
     const data = await response.data;
 
     return data;
@@ -16,7 +22,7 @@ export const getReleasesCount = createAsyncThunk('dashboard/getReleasesCount', a
 
 export const getRepositoriesCount = createAsyncThunk('dashboard/getRepositoriesCount', async () => {
   try {
-    const response = await axios.get(`${DASHBOARD_API_PATH}repository-count`);
+    const response = await getRepositoriesCountAPI();
     const data = await response.data;
 
     return data;
@@ -27,7 +33,7 @@ export const getRepositoriesCount = createAsyncThunk('dashboard/getRepositoriesC
 
 export const getChartsCount = createAsyncThunk('dashboard/getChartsCount', async () => {
   try {
-    const response = await axios.get(`${DASHBOARD_API_PATH}chart-count`);
+    const response = await getChartsCountAPI();
     const data = await response.data;
 
     return data;
@@ -38,7 +44,7 @@ export const getChartsCount = createAsyncThunk('dashboard/getChartsCount', async
 
 export const getContextsCount = createAsyncThunk('dashboard/getContextsCount', async () => {
   try {
-    const response = await axios.get(`${DASHBOARD_API_PATH}context-count`);
+    const response = await getContextsCountAPI();
     const data = await response.data;
 
     return data;
@@ -49,7 +55,7 @@ export const getContextsCount = createAsyncThunk('dashboard/getContextsCount', a
 
 export const getUnhealthyCount = createAsyncThunk('dashboard/getUnhealthyCount', async () => {
   try {
-    const response = await axios.get(`${DASHBOARD_API_PATH}unhealthy-count`);
+    const response = await getUnhealthyCountAPI();
     const data = await response.data;
 
     return data;
@@ -60,7 +66,7 @@ export const getUnhealthyCount = createAsyncThunk('dashboard/getUnhealthyCount',
 
 export const getServicesCount = createAsyncThunk('dashboard/getServicesCount', async () => {
   try {
-    const response = await axios.get(`${DASHBOARD_API_PATH}services-count`);
+    const response = await getServicesCountAPI();
     const data = await response.data;
 
     return data;

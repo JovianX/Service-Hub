@@ -10,6 +10,7 @@ from application.managers.organizations.manager import get_organization_manager
 from application.models.user import User
 
 from ..schemas.helm import AddHelmRepositoryBodySchema
+from ..schemas.helm import ChartListItemSchema
 from ..schemas.helm import InstallChartBodySchema
 from ..schemas.helm import ReleaseHealthStatusResponseBodySchema
 from ..schemas.helm import ReleaseListItemSchema
@@ -49,12 +50,25 @@ async def list_repository(
     return repositories
 
 
+@router.delete('/repository/{repository_name}')
+async def delete_repository(
+    repository_name: str = Path(description='Name of Helm repository to delete', example='nginx-stable'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Removes Helm repository.
+    """
+    helm_manager = HelmManager(organization_manager)
+    await helm_manager.delete_repository(user.organization, repository_name)
+
+
 ################################################################################
 # Charts
 ################################################################################
 
 
-@router.get('/chart/list')
+@router.get('/chart/list', response_model=list[ChartListItemSchema])
 async def list_charts_in_repsitories(
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)

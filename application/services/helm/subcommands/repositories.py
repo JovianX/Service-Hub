@@ -3,6 +3,7 @@ from typing import List
 import yaml
 
 from application.exceptions.shell import NonZeroStatusException
+from application.exceptions.helm import RepositoryNotFoundException
 
 from .base import HelmBase
 
@@ -41,7 +42,7 @@ class HelmRepository(HelmBase):
 
         return yaml.safe_load(output)
 
-    async def update(self):
+    async def update(self) -> None:
         """
         Updates repository cache.
 
@@ -55,4 +56,21 @@ class HelmRepository(HelmBase):
             error_message = error.stderr_message.strip()
             if error_message == no_repository_message:
                 return
+            raise
+
+    async def remove(self, repository_name: str) -> None:
+        """
+        Removes helm repository.
+
+        Full description: https://helm.sh/docs/helm/helm_repo_remove/
+        """
+        command = self._formup_command('remove', repository_name)
+        try:
+            await self._run_command(command)
+        except NonZeroStatusException as error:
+            repository_not_found_message = f'Error: no repo named "{repository_name}" found'
+            no_repositories_message = 'Error: no repositories configured'
+            error_message = error.stderr_message.strip()
+            if error_message in (repository_not_found_message, no_repositories_message):
+                raise RepositoryNotFoundException(f'Repository "{repository_name}" does not exist.')
             raise
