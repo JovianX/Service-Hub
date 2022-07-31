@@ -1,9 +1,9 @@
-"""Added  field to Rule model.
+"""
+Added field to Rule model.
 
 Revision ID: 9f942894508f
 Revises: 8f71135a4d68
 Create Date: 2022-07-11 11:58:39.711020
-
 """
 import sqlalchemy as sa
 from alembic import op

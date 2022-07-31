@@ -67,7 +67,7 @@ async def update_rule(
     rule_manager: RuleManager = Depends(get_rule_manager)
 ):
     """
-    Reorders rules order according to id position in ID list.
+    Updates rule's attributes.
     """
     return await rule_manager.update_organization_rule(
         user.organization,

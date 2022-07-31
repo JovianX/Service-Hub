@@ -1,9 +1,9 @@
-"""Added Rule model.
+"""
+Added Rule model.
 
 Revision ID: 8f71135a4d68
 Revises: a096e9d47a19
 Create Date: 2022-07-09 15:03:06.620573
-
 """
 import sqlalchemy as sa
 from alembic import op

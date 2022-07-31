@@ -3,6 +3,11 @@ version: '3.9'
 services:
   postgres:
     image: postgres:14.4
+    # command: [
+    #   'postgres',
+    #   '-c', 'log_statement=all',
+    #   '-c', 'log_duration=true'
+    # ]
     environment:
       - POSTGRES_USER=postgres_user
       - POSTGRES_PASSWORD=super_secret_password

@@ -54,6 +54,9 @@ create_migration: ## Does revision of database and models and creates migration 
 		docker-compose exec application chown $(shell id -u):$(shell id -g) migrations/versions/*
 	fi
 
+build: ## Build all Docker images.
+	docker-compose build
+
 up: ## Launch dockerized infrastructure.
 	docker-compose up --detach
 

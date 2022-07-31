@@ -63,28 +63,30 @@ class HelmManager:
                 return await helm_service.search.repositories()
 
     async def install_chart(
-        self,
-        organization: Organization,
-        context_name: str,
-        namespace: str,
-        release_name: str,
-        chart_name: str,
-        values: dict | None = None,
-        description: str | None = None
+        self, organization: Organization, context_name: str, namespace: str, release_name: str, chart_name: str,
+        values: list[dict] | None = None, version: str | None = None, description: str | None = None,
+        dry_run: bool = False
     ) -> str:
         """
         Installs given chart.
         """
+        debug = False
+        if dry_run:
+            debug = True
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                await helm_service.repository.update()
                 return await helm_service.install.chart(
                     context_name=context_name,
                     namespace=namespace,
                     release_name=release_name,
                     chart_name=chart_name,
+                    version=version,
                     values=values,
-                    description=description
+                    description=description,
+                    debug=debug,
+                    dry_run=dry_run
                 )
 
     async def list_releases(self, organization: Organization, namespace: str | None = None) -> list[dict]:

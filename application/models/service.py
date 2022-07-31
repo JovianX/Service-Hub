@@ -19,6 +19,6 @@ class Service(Base):
     health_check_settings = Column(JSON, nullable=False, default={})
     type = Column(String, nullable=False)
     creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
-    creator = relationship('User', back_populates='created_services', lazy='joined')
+    creator = relationship('User', back_populates='created_services', lazy='selectin')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
-    organization = relationship('Organization', back_populates='services', lazy='joined')
+    organization = relationship('Organization', back_populates='services', lazy='selectin')

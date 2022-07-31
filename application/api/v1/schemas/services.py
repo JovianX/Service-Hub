@@ -1,5 +1,5 @@
 """
-Request and response schemas for API v1.
+Serivce catalog related API schemas.
 """
 from typing import Annotated
 from typing import Literal
@@ -143,7 +143,7 @@ class ServiceResponseSchema(BaseModel):
     description: str | None = Field(description='Service description')
     health_check_settings: dict = Field(description='Setting related to service heath cheking')
     type: ServiceTypes = Field(description='Type of the service')
-    creator: UserResponseSchema = Field(description='User that have created this this service')
+    creator: UserResponseSchema = Field(description='User that have created this service')
     organization: OrganizationResponseSchema = Field(description='Organization which own this service')
 
     class Config:

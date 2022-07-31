@@ -96,12 +96,7 @@ class ServiceManager:
         """
         Checks service health status.
         """
-        service_record: Service = await self.db.get_by_id(service_id)
-        if service_record.organization_id != organization.id:
-            # Attempt to access to service that doesn't belongs to user's organization.
-            raise ServiceDoesNotExistException(
-                f'No service found with ID: "{service_id}" in service catalog of "{organization.title}" organization.'
-            )
+        service_record: Service = await self.db.get(id=service_id, organization_id=organization.id)
         settings = service_record.health_check_settings
         if service_record.type == ServiceTypes.kubernetes_ingress:
             context_name = settings['context_name']
