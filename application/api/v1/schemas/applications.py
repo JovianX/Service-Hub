@@ -26,17 +26,6 @@ class InstallRequestBodySchema(BaseModel):
     )
 
 
-class UpdateRequestSchema(BaseModel):
-    """
-    Body of request for update release values.
-    """
-    values: dict[str, dict] = Field(description='Mapping of release names and relase values to update')
-    dry_run: bool | None = Field(
-        description="If `True` application's releases updating will be simulated",
-        default=False
-    )
-
-
 class UpgradeRequestSchema(BaseModel):
     """
     Body of request for upgrade application manifest.

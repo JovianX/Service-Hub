@@ -37,6 +37,17 @@ class InstallChartBodySchema(BaseModel):
     dry_run: bool | None = Field(description='If `True` chart installation will be simulated', default=False)
 
 
+class ReleaseUpdateRequestSchema(BaseModel):
+    """
+    Body of request for update release values.
+    """
+    context_name: str = Field(description='Name of context where updating release is located')
+    namespase: str = Field(description='Name of namespace where updating release is located')
+    chart_name: str = Field(description='Name of the chart to use during update')
+    values: list[dict] = Field(description='Mapping of release names and relase values to update')
+    dry_run: bool | None = Field(description='If `True` release updating will be simulated', default=False)
+
+
 class ReleaseHealthStatusResponseBodySchema(BaseModel):
     """
     Response body of release entities health status endpoint.

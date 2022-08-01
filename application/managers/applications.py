@@ -98,34 +98,6 @@ class ApplicationManager:
             'results': results
         }
 
-    async def update(
-        self, application: Application, values: dict[str, dict], dry_run: bool = False
-    ) -> None:
-        """
-        Updates application release's values.
-        """
-        manifest = load_template(application.manifest)
-        superfluous_releases = values.keys() - manifest.chart_mapping.keys()
-        if superfluous_releases:
-            raise CommonException(
-                f'Application update failed. Found superfluous releases that absent in application manifes: '
-                f'{", ".join(superfluous_releases)}',
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
-        results = {}
-        for release_name, release_values in values.items():
-            results[release_name] = await self.helm_manager.update_release(
-                organization=application.organization,
-                context_name=application.context_name,
-                namespace=application.namespace,
-                release_name=release_name,
-                chart_name=manifest.chart_mapping[release_name].chart,
-                values=[release_values],
-                dry_run=dry_run
-            )
-
-        return results
-
     async def upgrade(self, application: Application, template: TemplateRevision, dry_run: bool = False) -> None:
         """
         Upgrades application manifest to given template.
