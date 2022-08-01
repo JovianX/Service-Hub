@@ -16,9 +16,10 @@ import { selectUser } from 'app/store/userSlice';
 import themeLayouts from 'app/theme-layouts/themeLayouts';
 
 import { AuthProvider } from './auth/AuthContext';
+import { ABSOLUTE_API_HOST } from './constants/API';
 import withAppProviders from './withAppProviders';
 
-axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.baseURL = ABSOLUTE_API_HOST;
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
