@@ -37,6 +37,17 @@ class UpdateRequestSchema(BaseModel):
     )
 
 
+class UpgradeRequestSchema(BaseModel):
+    """
+    Body of request for upgrade application manifest.
+    """
+    template_id: int = Field(description='Identifier of template to which upgrade manifest')
+    dry_run: bool | None = Field(
+        description="If `True` application's releases updating will be simulated",
+        default=False
+    )
+
+
 class ApplicationTemplateSchema(BaseModel):
     """
     Application template response body schema.
@@ -87,3 +98,12 @@ class ApplicationInstallResponseSchema(BaseModel):
     """
     application: ApplicationResponseSchema | None = Field(description='Application database record')
     results: dict[str, dict] = Field(description='Application installation result for each release')
+
+
+class ApplicationUpgradeResponseSchema(BaseModel):
+    """
+    Response body of application upgrade.
+    """
+    installed_releases: dict[str, dict] = Field(description='Mapping of installed release name and Helm output')
+    updated_releases: dict[str, dict] = Field(description='Mapping of updated release name and Helm output')
+    uninstalled_releases: list[str] = Field(description='List of removed releases')

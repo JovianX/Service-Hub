@@ -282,16 +282,23 @@ class HelmManager:
                 )
 
     async def uninstall_release(
-        self, organization: Organization, context_name: str, namespace: str, release_name: str
+        self, organization: Organization, context_name: str, namespace: str, release_name: str, dry_run: bool = False
     ) -> None:
         """
         Removes release.
         """
+        debug = False
+        if dry_run:
+            debug = True
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 await helm_service.uninstall.release(
-                    context_name=context_name, namespace=namespace, release_name=release_name
+                    context_name=context_name,
+                    namespace=namespace,
+                    release_name=release_name,
+                    debug=debug,
+                    dry_run=dry_run
                 )
 
     ############################################################################

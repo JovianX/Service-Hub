@@ -9,7 +9,9 @@ from application.utils.temporary_file import yaml_temporary_file
 from .base import HelmBase
 
 
-RELEASE_NOT_FOUND_MESSAGE_PATTERN = re.compile(r'Error: UPGRADE FAILED: "(?P<release_name>.*)" has no deployed releases')
+RELEASE_NOT_FOUND_MESSAGE_PATTERN = re.compile(
+    r'Error: UPGRADE FAILED: "(?P<release_name>.*)" has no deployed releases'
+)
 COMMON_ERROR_MESSAGE_PATTERN = re.compile(r'Error: UPGRADE FAILED: (?P<error_message>.*)')
 
 
@@ -29,7 +31,7 @@ class HelmUpgrade(HelmBase):
 
         Full description: https://helm.sh/docs/helm/helm_upgrade/
         """
-        args = [release_name, chart]
+        args = [release_name, chart, '--reuse-values']
         if debug:
             args.append('--debug')
         if dry_run:

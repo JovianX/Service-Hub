@@ -18,13 +18,21 @@ class HelmUninstall(HelmBase):
 
     subcommand = 'uninstall'
 
-    async def release(self, context_name: str, namespace: str, release_name: str) -> None:
+    async def release(
+        self, context_name: str, namespace: str, release_name: str, debug: bool = False, dry_run: bool = False
+    ) -> None:
         """
         Removes installed release.
 
         Full description: https://helm.sh/docs/helm/helm_uninstall/
         """
-        command = self._formup_command(release_name, kube_context=context_name, namespace=namespace)
+        args = [release_name]
+        if debug:
+            args.append('--debug')
+        if dry_run:
+            args.append('--dry-run')
+
+        command = self._formup_command(*args, kube_context=context_name, namespace=namespace)
         try:
             await self._run_command(command)
         except NonZeroStatusException as error:
