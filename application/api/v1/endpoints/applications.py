@@ -18,6 +18,7 @@ from ..schemas.applications import ApplicationResponseSchema
 from ..schemas.applications import ApplicationUpgradeResponseSchema
 from ..schemas.applications import InstallRequestBodySchema
 from ..schemas.applications import UpgradeRequestSchema
+from ..schemas.applications import UserInputUpdateRequestSchema
 
 
 router = APIRouter()
@@ -37,7 +38,6 @@ async def install_application(
         template_id=body.template_id,
         organization=user.organization
     )
-    template_manager.validate_inputs(template, body.inputs)
     return await application_manager.install(
         context_name=body.context_name,
         namespace=body.namespace,
@@ -66,6 +66,21 @@ async def upgrade_application(
     application = await application_manager.get_organization_application(application_id, user.organization)
 
     return await application_manager.upgrade(application, template, body.dry_run)
+
+
+@router.post('/{application_id}/user-inputs', response_model=dict)
+async def update_user_inputs(
+    application_id: int = Path(title='The ID of the application'),
+    body: UserInputUpdateRequestSchema = Body(description='User inputs'),
+    user: User = Depends(current_active_user),
+    application_manager: ApplicationManager = Depends(get_application_manager),
+):
+    """
+    Rerenders template with new user inputs.
+    """
+    application = await application_manager.get_organization_application(application_id, user.organization)
+
+    return await application_manager.update_user_inputs(application, body.inputs, body.dry_run)
 
 
 @router.delete('/{application_id}')

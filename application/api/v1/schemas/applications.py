@@ -2,6 +2,7 @@
 Applications related API schemas.
 """
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel
 from pydantic import Field
@@ -17,7 +18,7 @@ class InstallRequestBodySchema(BaseModel):
     Body of request for application installation from specific template.
     """
     template_id: int = Field(description='Identifier of template from which application should be installed')
-    inputs: dict = Field(description='Inputs provided by user')
+    inputs: dict[str, Any] = Field(description='Inputs provided by user')
     context_name: str = Field(description='Kubernetes configuration context name')
     namespace: str = Field(description='Name of namespace where to install application')
     dry_run: bool | None = Field(
@@ -31,6 +32,17 @@ class UpgradeRequestSchema(BaseModel):
     Body of request for upgrade application manifest.
     """
     template_id: int = Field(description='Identifier of template to which upgrade manifest')
+    dry_run: bool | None = Field(
+        description="If `True` application's releases updating will be simulated",
+        default=False
+    )
+
+
+class UserInputUpdateRequestSchema(BaseModel):
+    """
+    Body of request for change user inputs.
+    """
+    inputs: dict[str, Any] = Field(description='New user inputs')
     dry_run: bool | None = Field(
         description="If `True` application's releases updating will be simulated",
         default=False

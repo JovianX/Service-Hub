@@ -48,6 +48,7 @@ class Input(BaseModel):
     default: str | int | float | bool | None = Field(
         description='Default value of input if it was not provided by user', example='root'
     )
+    immutable: bool | None = Field(description='If `True`, value cannot be changed', default=False)
 
 
 class TemplateSchema(BaseModel):
@@ -95,7 +96,7 @@ class TemplateSchema(BaseModel):
         return {chart.name: chart for chart in self.charts}
 
     @property
-    def inputs_mapping(self) -> dict[str, input]:
+    def inputs_mapping(self) -> dict[str, Input]:
         """
         Mapping of input placeholder name and input itself.
         """

@@ -11,6 +11,7 @@ from application.crud.applications import ApplicationDatabase
 from application.crud.applications import get_application_db
 from application.exceptions.common import CommonException
 from application.exceptions.helm import HelmException
+from application.exceptions.templates import InvalidUserInputsException
 from application.managers.helm.manager import HelmManager
 from application.managers.organizations.manager import get_organization_manager
 from application.models.application import Application
@@ -19,6 +20,7 @@ from application.models.template import TemplateRevision
 from application.models.user import User
 from application.utils.template import load_template
 from application.utils.template import render_template
+from application.utils.template import validate_inputs
 
 
 logger = logging.getLogger(__name__)
@@ -40,6 +42,7 @@ class ApplicationManager:
         """
         Installs application from provided manifest.
         """
+        validate_inputs(template.template, inputs)
         manifest = render_template(template.template, inputs=inputs)
         manifest_schema = load_template(manifest)
 
@@ -182,6 +185,7 @@ class ApplicationManager:
 
         if not dry_run:
             application.manifest = rendered_template
+            application.template = template
             await self.db.save(application)
 
         return {
@@ -189,6 +193,57 @@ class ApplicationManager:
             'updated_releases': update_results,
             'uninstalled_releases': list(releases_to_remove)
         }
+
+    async def update_user_inputs(self, application: Application, inputs: dict, dry_run: bool = False) -> dict:
+        """
+        Updates user inputs.
+
+        Renders application's template with new user inputs and updates all releases.
+        """
+        old_template_schema = load_template(application.manifest)
+        # User inputs validation.
+        validate_inputs(application.manifest, inputs)
+        if inputs.keys() != application.user_inputs.keys():
+            raise InvalidUserInputsException('List of current and new inputs are not equal.')
+        immutable_inputs = [name for name, input in old_template_schema.inputs_mapping.items() if input.immutable]
+        violating_inputs = []
+        for input_name in immutable_inputs:
+            if inputs[input_name] != application.inputs[input_name]:
+                violating_inputs.append(input_name)
+        if violating_inputs:
+            raise InvalidUserInputsException(
+                f'Next inputs are immutable and cannot be changed: {", ".join(violating_inputs)}.'
+            )
+
+        new_manifes = render_template(application.template.template, inputs)
+        new_template_schema = load_template(new_manifes)
+
+        # Ensuring that charts critical parts of chart specification wasn't changed.
+        absent_release_names = old_template_schema.chart_mapping.keys() - new_template_schema.chart_mapping.keys()
+        if absent_release_names:
+            CommonException(
+                f'Failed to update user inputs. Unable to find charts with release names '
+                f'{", ".join(absent_release_names)} in manifest rendered with new user inputs.',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        update_results = {}
+        for release_name, chart in new_template_schema.chart_mapping.items():
+            update_results[release_name] = await self.helm_manager.update_release(
+                organization=application.organization,
+                context_name=application.context_name,
+                namespace=application.namespace,
+                release_name=release_name,
+                chart_name=chart.chart,
+                values=chart.values,
+                dry_run=dry_run
+            )
+
+        if not dry_run:
+            application.manifest = new_manifes
+            await self.db.save(application)
+
+        return update_results
 
     async def terminate(self, application: Application) -> None:
         """

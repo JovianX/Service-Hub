@@ -140,25 +140,6 @@ class TemplateManager:
             )
         await self.db.delete(id=template_id, organization_id=organization.id)
 
-    def validate_inputs(self, template: TemplateRevision, inputs: dict) -> None:
-        """
-        Returns `True` if provided inputs valid otherwise returns `False`.
-        """
-        template_schema = load_template(template.template)
-        input_specifications = {item.name: item for item in template_schema.inputs}
-        absent_inputs = input_specifications.keys() - inputs.keys()
-        if absent_inputs:
-            raise CommonException(
-                f'Absent template input(s): {", ".join(absent_inputs)}',
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
-        extra_inputs = inputs.keys() - input_specifications.keys()
-        if extra_inputs:
-            raise CommonException(
-                f'Unexpected extra template input(s): {", ".join(extra_inputs)}',
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
-
     async def _extract_template(self, archive: bytes) -> dict:
         """
         Extracts template from template archive.
