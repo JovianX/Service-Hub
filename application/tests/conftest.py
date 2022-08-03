@@ -15,8 +15,6 @@ from application.instance import instance
 from application.utils.user import create_user
 from application.utils.user import delete_user
 
-from .fixtures.cluster_configuration import cluster_configuration
-
 
 engine = get_engine(settings.TEST_DATABASE_URL)
 session_maker = get_session_maker(engine)

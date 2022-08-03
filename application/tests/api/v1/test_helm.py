@@ -13,7 +13,7 @@ from application.services.helm.schemas import ManifestMetaSchema
 from application.services.helm.schemas import ManifestSchema
 from application.services.helm.schemas import ReleaseSchema
 from application.services.kubernetes.schemas import K8sEntitySchema
-from application.tests.fixtures.cluster_configuration import cluster_configuration
+from application.tests.fixtures.cluster_configuration import unknown_configuration
 from application.tests.fixtures.k8s_deployment import kubernetes_deployment_details_fixture
 from application.utils.kubernetes import KubernetesConfiguration
 
@@ -24,7 +24,7 @@ class TestHelm:
     async def test_empty_repository_list(self, client: AsyncClient, current_user: User) -> None:
         with mock.patch('application.services.helm.subcommands.base.run', autospec=True) as shell_call:
             with mock.patch('application.managers.organizations.manager.OrganizationManager.get_kubernetes_configuration') as organization_manager:
-                organization_manager.return_value = KubernetesConfiguration({})
+                organization_manager.return_value = KubernetesConfiguration(unknown_configuration)
                 shell_call.side_effect = Mock(
                     side_effect=NonZeroStatusException(
                         command='helm repo list --output=yaml',
@@ -37,8 +37,7 @@ class TestHelm:
 
         assert 200 == response.status_code, 'Expected status 200.'
         response_data = response.json()
-        assert 'data' in response_data
-        assert len(response_data['data']) == 0
+        assert len(response_data) == 0
 
     @pytest.mark.asyncio
     async def test_add_repository(self, client: AsyncClient, current_user: User) -> None:
@@ -48,7 +47,7 @@ class TestHelm:
         }
         with mock.patch('application.services.helm.subcommands.base.run', autospec=True) as shell_call:
             with mock.patch('application.managers.organizations.manager.OrganizationManager.get_kubernetes_configuration') as organization_manager:
-                organization_manager.return_value = KubernetesConfiguration({})
+                organization_manager.return_value = KubernetesConfiguration(unknown_configuration)
                 shell_call.return_value = '"mina" has been added to your repositories\n'
                 response = await client.post('/helm/repository/add', json=data)
 
@@ -58,15 +57,14 @@ class TestHelm:
     async def test_repository_list(self, client: AsyncClient, current_user: User) -> None:
         with mock.patch('application.services.helm.subcommands.base.run', autospec=True) as shell_call:
             with mock.patch('application.managers.organizations.manager.OrganizationManager.get_kubernetes_configuration') as organization_manager:
-                organization_manager.return_value = KubernetesConfiguration({})
+                organization_manager.return_value = KubernetesConfiguration(unknown_configuration)
                 shell_call.return_value = '- name: mina\n  url: https://coda-charts.storage.googleapis.com\n'
                 response = await client.get('/helm/repository/list')
 
         assert 200 == response.status_code, 'Expected status 200.'
         response_data = response.json()
-        assert 'data' in response_data
-        assert len(response_data['data']) == 1
-        repository = response_data['data'][0]
+        assert len(response_data) == 1
+        repository = response_data[0]
         assert 'name' in repository
         assert 'url' in repository
         assert repository['name'] == 'mina'
@@ -75,12 +73,11 @@ class TestHelm:
 
     @pytest.mark.asyncio
     async def test_release_list(self, client: AsyncClient, current_user: User) -> None:
-        current_user.organization.settings = {'kubernetes_configuration': cluster_configuration}
         with mock.patch('application.managers.organizations.manager.OrganizationManager.get_kubernetes_configuration') as organization_manager:
             with mock.patch('application.services.helm.subcommands.list.HelmList.releases', autospec=True) as releases:
                 with mock.patch('application.services.helm.subcommands.get.HelmGet.manifest') as manifest:
                     with mock.patch('application.managers.kubernetes.K8sManager.get_details') as details:
-                        organization_manager.return_value = KubernetesConfiguration(cluster_configuration)
+                        organization_manager.return_value = KubernetesConfiguration(unknown_configuration)
                         releases.return_value = [
                             ReleaseSchema(
                                 application_version='1.0',
@@ -110,4 +107,4 @@ class TestHelm:
         release = response_data[0]
         assert release['name'] == 'release-name-1'
         assert release['updated'] == 1654087575.24955
-        assert release['cluster'] == 'some-context'
+        assert release['context_name'] == 'some-context'
