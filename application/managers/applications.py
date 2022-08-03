@@ -105,13 +105,20 @@ class ApplicationManager:
         """
         Upgrades application manifest to given template.
         """
-        rendered_template = render_template(template.template, application.user_inputs)
+        # Extending of user inputs with defaults from new template.
+        new_template_schema = load_template(template.template)
+        input_defaults = {
+            input.name: input.default for input in new_template_schema.inputs if 'default' in input.__fields_set__
+        }
+        user_inputs = {**input_defaults, **application.user_inputs}
+
+        rendered_template = render_template(template.template, user_inputs)
         new_template_schema = load_template(rendered_template)
         old_template_schema = load_template(application.manifest)
 
         charts_to_install = new_template_schema.chart_mapping.keys() - old_template_schema.chart_mapping.keys()
         releases_to_remove = old_template_schema.chart_mapping.keys() - new_template_schema.chart_mapping.keys()
-        common_releases = old_template_schema.chart_mapping.keys() & new_template_schema.chart_mapping.keys()
+        releases_to_update = old_template_schema.chart_mapping.keys() & new_template_schema.chart_mapping.keys()
 
         install_results = {}
         installed_charts = []
@@ -153,7 +160,7 @@ class ApplicationManager:
                 raise
 
         update_results = {}
-        for release_name in common_releases:
+        for release_name in releases_to_update:
             chart = new_template_schema.chart_mapping[release_name]
             update_results[release_name] = await self.helm_manager.update_release(
                 organization=application.organization,
@@ -186,6 +193,7 @@ class ApplicationManager:
         if not dry_run:
             application.manifest = rendered_template
             application.template = template
+            application.user_inputs = user_inputs
             await self.db.save(application)
 
         return {
@@ -208,7 +216,7 @@ class ApplicationManager:
         immutable_inputs = [name for name, input in old_template_schema.inputs_mapping.items() if input.immutable]
         violating_inputs = []
         for input_name in immutable_inputs:
-            if inputs[input_name] != application.inputs[input_name]:
+            if inputs[input_name] != application.user_inputs[input_name]:
                 violating_inputs.append(input_name)
         if violating_inputs:
             raise InvalidUserInputsException(

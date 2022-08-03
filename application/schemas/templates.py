@@ -2,12 +2,12 @@
 Templates schemas.
 """
 from collections import Counter
-from typing import Any
 
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import conlist
 from pydantic import constr
+from pydantic import Extra
 from pydantic import root_validator
 
 from application.constants.templates import InputTypes
@@ -32,6 +32,9 @@ class Chart(BaseModel):
                     'a higher priority.',
     )
 
+    class Config:
+        extra = Extra.forbid
+
 
 class Input(BaseModel):
     """
@@ -42,13 +45,16 @@ class Input(BaseModel):
         description='Name of value that will be used in template',
         example='username'
     )
-    lable: constr(min_length=1, strip_whitespace=True) | None = Field(
+    label: constr(min_length=1, strip_whitespace=True) | None = Field(
         description='User friendly name of input', example='User Name'
     )
     default: str | int | float | bool | None = Field(
         description='Default value of input if it was not provided by user', example='root'
     )
     immutable: bool | None = Field(description='If `True`, value cannot be changed', default=False)
+
+    class Config:
+        extra = Extra.forbid
 
 
 class TemplateSchema(BaseModel):
@@ -61,6 +67,9 @@ class TemplateSchema(BaseModel):
     )
     charts: conlist(Chart, min_items=1) = Field(description='Charts that should be deployed by this template')
     inputs: list[Input] | None = Field(description='Input that should be provided by user.', default=[])
+
+    class Config:
+        extra = Extra.forbid
 
     @root_validator(skip_on_failure=True)
     def ensure_chart_names_unique(cls, values: dict) -> dict:
