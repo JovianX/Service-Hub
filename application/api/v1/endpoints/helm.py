@@ -11,6 +11,7 @@ from managers.organizations.manager import get_organization_manager
 from models.user import User
 
 from ..schemas.helm import AddHelmRepositoryBodySchema
+from ..schemas.helm import ChartDumpResponseSchema
 from ..schemas.helm import ChartListItemSchema
 from ..schemas.helm import InstallChartBodySchema
 from ..schemas.helm import ReleaseHealthStatusResponseBodySchema
@@ -239,6 +240,21 @@ async def release_notes(
     )
 
     return notes
+
+
+@router.get('/release/{release_name}/dump-chart', response_model=ChartDumpResponseSchema)
+async def create_release_chart(
+    release_name: str = Path(description='Name of target release'),
+    context_name: str = Query(title='Name of context where release located'),
+    namespase: str = Query(title='Name of namespace where release located'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Creates chart for release.
+    """
+    helm_manager = HelmManager(organization_manager)
+    return await helm_manager.get_release_chart(user.organization, context_name, namespase, release_name)
 
 
 @router.patch('/release/{release_name}', response_model=dict)
