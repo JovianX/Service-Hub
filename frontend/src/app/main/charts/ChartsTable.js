@@ -20,6 +20,7 @@ const ChartsTable = () => {
   const [charts, setCharts] = useState([]);
   const [repositories, setRepositories] = useState([]);
   const [selectedRepository, setSelectedRepository] = useState('all');
+  const [searchText, setSearchText] = useState('');
 
   const dispatch = useDispatch();
   const chartData = useSelector(selectCharts);
@@ -50,11 +51,26 @@ const ChartsTable = () => {
       filteredCharts = filteredCharts.filter((el) => el.repository_name === selectedRepository);
     }
 
+    if (searchText !== '') {
+      filteredCharts = filteredCharts.filter(({ name, application_name, repository_name, description }) => {
+        return (
+          name.includes(searchText) ||
+          application_name.includes(searchText) ||
+          repository_name.includes(searchText) ||
+          description.includes(searchText)
+        );
+      });
+    }
+
     setCharts(filteredCharts);
-  }, [selectedRepository]);
+  }, [selectedRepository, searchText]);
 
   const handleSelectedRepository = (event) => {
     setSelectedRepository(event.target.value);
+  };
+
+  const handleSearchText = (event) => {
+    setSearchText(event.target.value);
   };
 
   if (isLoading) {
@@ -71,6 +87,8 @@ const ChartsTable = () => {
         repositories={repositories}
         selectedRepository={selectedRepository}
         setSelectedRepository={handleSelectedRepository}
+        searchText={searchText}
+        handleSearchText={handleSearchText}
       />
 
       <Paper className='h-full mx-12 rounded'>
