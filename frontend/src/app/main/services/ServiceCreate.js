@@ -11,7 +11,7 @@ const ServiceCreate = () => {
 
   return (
     <FusePageCarded
-      header={<TableHeader title='Services Create' />}
+      header={<TableHeader title='Create New Service' />}
       content={<ServiceCreateForm />}
       scroll={isMobile ? 'normal' : 'content'}
       className='px-24'
