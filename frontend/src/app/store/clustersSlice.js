@@ -4,36 +4,37 @@ import _ from '@lodash';
 
 import { getClusterList as getClusterListAPI, deleteContext as deleteContextAPI } from '../api';
 
-export const getClustersList = createAsyncThunk('clusters/getClustersList', async () => {
+export const getContextList = createAsyncThunk('clusters/getContextList', async () => {
   try {
     const response = await getClusterListAPI();
 
     const data = await response.data;
 
     if (data) {
-      const clusters = data?.clusters;
+      const contexts = data?.contexts;
 
-      _.forEach(clusters, (cluster) => {
-        const context = _.find(data?.contexts, ['cluster', cluster.name]);
+      _.forEach(contexts, (context) => {
+        const cluster = _.find(data?.clusters, ['name', context.cluster]);
 
-        if (context) {
-          cluster.contextName = context.name;
+        if (cluster) {
+          context.cloud_provider = cluster.cloud_provider;
+          context.region = cluster.region;
         }
       });
 
       return {
-        clusters,
+        contexts,
         defaultContext: data?.current_context || null,
       };
     }
 
     return {
-      clusters: [],
+      contexts: [],
       defaultContext: null,
     };
   } catch (e) {
     return {
-      clusters: [],
+      contexts: [],
       defaultContext: null,
     };
   }
@@ -51,29 +52,29 @@ const clustersSlice = createSlice({
   name: 'clusters/clustersList',
   initialState: {
     isLoading: false,
-    clusters: [],
+    contexts: [],
     defaultContext: null,
   },
   reducers: {},
   extraReducers: {
-    [getClustersList.fulfilled]: (state, { payload }) => ({
-      clusters: payload.clusters,
+    [getContextList.fulfilled]: (state, { payload }) => ({
+      contexts: payload.contexts,
       defaultContext: payload.defaultContext,
       isLoading: false,
     }),
-    [getClustersList.pending]: (state) => ({
+    [getContextList.pending]: (state) => ({
       ...state,
       isLoading: true,
     }),
-    [getClustersList.rejected]: (state) => ({
+    [getContextList.rejected]: (state) => ({
       ...state,
       isLoading: false,
     }),
   },
 });
 
-export const selectClusters = ({ clusters }) => clusters.clusters;
-export const selectIsClustersLoading = ({ clusters }) => clusters.isLoading;
+export const selectContexts = ({ clusters }) => clusters.contexts;
+export const selectIsContextsLoading = ({ clusters }) => clusters.isLoading;
 export const selectDefaultContext = ({ clusters }) => clusters.defaultContext;
 
 export default clustersSlice.reducer;
