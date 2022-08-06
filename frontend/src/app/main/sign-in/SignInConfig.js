@@ -1,4 +1,5 @@
 import authRoles from '../../auth/authRoles';
+import { PATHS } from '../../constants/paths';
 
 import SignInPage from './SignInPage';
 
@@ -17,7 +18,7 @@ const SignInConfig = {
   auth: authRoles.onlyGuest,
   routes: [
     {
-      path: 'sign-in',
+      path: PATHS.SIGN_IN,
       element: <SignInPage />,
     },
   ],
