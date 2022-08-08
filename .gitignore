@@ -6,3 +6,5 @@ __pycache__
 .venv
 /.idea
 ./frontend/.idea
+
+.DS_Store
