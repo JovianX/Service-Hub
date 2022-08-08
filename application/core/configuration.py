@@ -27,7 +27,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = '.env'
-        secrets_dir = 'nothing-interesting'
+        secrets_dir = 'credentials'
         case_sensitive = True
 
 
