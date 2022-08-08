@@ -15,7 +15,7 @@ help: ## Display this help.
 setup: ## Setup this project's python dependencies.
 	@test -d $(VE_DIRECTORY) || virtualenv $(VE_DIRECTORY) --python=$(PYTHON)
 	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade pip
-	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade --requirement requirements.dev.txt
+	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade --requirement=application/requirements.dev.txt
 	@mkdir -p $(VE_DIRECTORY)/tmp/storage
 
 setup_helm: ## Install Helm CLI.
