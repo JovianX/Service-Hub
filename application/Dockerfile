@@ -1,10 +1,10 @@
-FROM python:3.10
+FROM python:3.10-slim
 ARG HELM_VERSION
 ARG KUBECTL_VERSION
 
 # Install project dependencies.
 WORKDIR /code
-COPY ./application/requirements.txt /code/requirements.txt
+COPY requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 # Install Helm CLI.

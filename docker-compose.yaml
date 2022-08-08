@@ -1,6 +1,28 @@
 version: '3.9'
 
 services:
+  application:
+    build:
+      context: application
+      dockerfile: Dockerfile
+      args:
+        HELM_VERSION: ${HELM_VERSION}
+        KUBECTL_VERSION: ${KUBECTL_VERSION}
+    volumes:
+      - .:/code
+    networks:
+      - service-network
+    ports:
+      - '8000:8000'
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
+      TEST_DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
+      FILE_STORAGE_ROOT: /tmp
+    depends_on:
+      - postgres
+
+
+  ###
   postgres:
     image: postgres:14.4
     # command: [
@@ -17,26 +39,7 @@ services:
     volumes:
       - ./docker-data/postgres-data:/var/lib/postgresql/data
     networks:
-      - service-network
-  application:
-    build:
-      context: .
-      dockerfile: application/Dockerfile
-      args:
-        HELM_VERSION: ${HELM_VERSION}
-        KUBECTL_VERSION: ${KUBECTL_VERSION}
-    volumes:
-      - .:/code
-    networks:
-      - service-network
-    ports:
-      - '8000:8000'
-    environment:
-      DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
-      TEST_DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
-      FILE_STORAGE_ROOT: /tmp
-    depends_on:
-      - postgres
+      - service-network      
 networks:
   service-network:
     name: service-network
