@@ -22,7 +22,7 @@ class TemplateRevision(Base):
     Template that represents solution components.
     """
     id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False, default='')
     revision = Column(Integer, nullable=False, default=1)

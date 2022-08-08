@@ -3,9 +3,13 @@ from unittest import TestCase
 import pytest
 from httpx import AsyncClient
 
+from application.constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
+from application.constants.common import CloudProviders
 from application.models.user import User
-from application.tests.fixtures.cluster_configuration import cluster_configuration
-from application.tests.fixtures.cluster_configuration import cluster_configuration_2
+from application.tests.fixtures.cluster_configuration import aws_configuration
+from application.tests.fixtures.cluster_configuration import azure_configuration
+from application.tests.fixtures.cluster_configuration import gcp_configuration
+from application.tests.fixtures.cluster_configuration import unknown_configuration
 
 
 class TestOrganization:
@@ -13,46 +17,44 @@ class TestOrganization:
     @pytest.mark.asyncio
     async def test_kubernetes_cofiguration(self, client: AsyncClient, current_user: User) -> None:
         test_case = TestCase()
-        # Testing first configuration upload.
-        response = await client.post('/organization/settings/kubernetes_configuration', json=cluster_configuration)
+        # Testing upload of different cloud providers configurations.
+        response = await client.post('/organization/kubernetes-configuration', json=aws_configuration)
         assert 200 == response.status_code, 'Expected status 200.'
-        response = await client.get('/organization/settings/kubernetes_configuration')
+        response = await client.post('/organization/kubernetes-configuration', json=azure_configuration)
         assert 200 == response.status_code, 'Expected status 200.'
-        response_data = response.json()
-        test_case.assertDictEqual(response_data, cluster_configuration)
+        response = await client.post('/organization/kubernetes-configuration', json=gcp_configuration)
+        assert 200 == response.status_code, 'Expected status 200.'
+        response = await client.post('/organization/kubernetes-configuration', json=unknown_configuration)
+        assert 200 == response.status_code, 'Expected status 200.'
 
-        # Testing second configuration upload.
-        response = await client.post('/organization/settings/kubernetes_configuration', json=cluster_configuration_2)
-        assert 200 == response.status_code, 'Expected status 200.'
-        response = await client.get('/organization/settings/kubernetes_configuration')
+        response = await client.get('/organization/kubernetes-configuration')
         assert 200 == response.status_code, 'Expected status 200.'
         response_data = response.json()
-        assert 'current-context' in response_data
-        assert response_data['current-context'] == 'other-context'
-        for node_name in ('clusters', 'contexts', 'users'):
-            assert isinstance(response_data.get(node_name), list)
-            test_case.assertCountEqual(
-                response_data[node_name],
-                cluster_configuration[node_name] + cluster_configuration_2[node_name]
-            )
+        assert response_data['current_context'] == unknown_configuration['current-context']
+        unknown, gcp, azure, aws = response_data['clusters']
+        assert unknown['cloud_provider'] == CloudProviders.unrecognized
+        assert unknown['region'] == UNRECOGNIZED_CLOUD_PROVIDER_REGION
+        assert gcp['cloud_provider'] == CloudProviders.gcp
+        assert gcp['region'] == 'us-central1-a'
+        assert azure['cloud_provider'] == CloudProviders.azure
+        assert azure['region'] == 'eastus'
+        assert aws['cloud_provider'] == CloudProviders.aws
+        assert aws['region'] == 'us-east-2'
 
         # Testing deletion of non existing context.
         response = await client.delete(
-            '/organization/settings/kubernetes-configuration/context',
+            '/organization/kubernetes-configuration/context',
             params={'context-name': 'non-existing-context'}
         )
         assert 404 == response.status_code, 'Expected status 404.'
 
         # Testing deletion of context.
         response = await client.delete(
-            '/organization/settings/kubernetes-configuration/context',
-            params={'context-name': 'other-context'}
+            '/organization/kubernetes-configuration/context',
+            params={'context-name': unknown_configuration['current-context']}
         )
         assert 200 == response.status_code, 'Expected status 200.'
-        response = await client.get('/organization/settings/kubernetes_configuration')
+        response = await client.get('/organization/kubernetes-configuration')
         assert 200 == response.status_code, 'Expected status 200.'
         response_data = response.json()
-        test_case.assertCountEqual(
-            response_data['contexts'],
-            cluster_configuration['contexts']
-        )
+        assert len(response_data['contexts']) == 3

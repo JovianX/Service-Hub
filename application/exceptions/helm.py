@@ -73,3 +73,15 @@ class ChartInstallException(HelmException):
     def __init__(self, message: str):
         self.message = message
         super().__init__(self.message, self.status_code)
+
+
+class ReleaseUpdateException(HelmException):
+    """
+    Raised when release update was unsuccessful.
+    """
+    message: str
+    status_code: int = status.HTTP_503_SERVICE_UNAVAILABLE
+
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message, self.status_code)

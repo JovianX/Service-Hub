@@ -1,9 +1,9 @@
 """
 Added Application model.
 
-Revision ID: 0f2048662cbf
-Revises: a30521cd80ca
-Create Date: 2022-07-26 16:47:49.683652
+Revision ID: 3dfe60487a48
+Revises: 3e3db8879742
+Create Date: 2022-07-28 16:37:43.237502
 """
 import sqlalchemy as sa
 from alembic import op
@@ -11,8 +11,8 @@ from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
-revision = '0f2048662cbf'
-down_revision = 'a30521cd80ca'
+revision = '3dfe60487a48'
+down_revision = '3e3db8879742'
 branch_labels = None
 depends_on = None
 
@@ -21,11 +21,14 @@ def upgrade() -> None:
     op.create_table(
         'application',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+        sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('description', sa.String(), nullable=False),
         sa.Column('manifest', sa.Text(), nullable=False),
         sa.Column('status', sa.String(), nullable=False),
+        sa.Column('context_name', sa.String(), nullable=False),
+        sa.Column('namespace', sa.String(), nullable=False),
+        sa.Column('user_inputs', sa.JSON(), nullable=False),
         sa.Column('template_id', sa.Integer(), nullable=False),
         sa.Column('creator_id', postgresql.UUID(), nullable=False),
         sa.Column('organization_id', sa.Integer(), nullable=False),
