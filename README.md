@@ -6,7 +6,7 @@
   ____) | |  __/ | |     \ V /  | | | (__  |  __/   | |  | | | |_| | | |_) |
  |_____/   \___| |_|      \_/   |_|  \___|  \___|   |_|  |_|  \__,_| |_.__/ 
  
-    Build X-as-a-Service with Kubernetes and Helm
+    Create X-as-a-Service with Kubernetes and Helm
 ```
 
 ## Service Hub for Kubernetes
