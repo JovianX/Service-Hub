@@ -4,9 +4,9 @@ Rule action manager.
 from deepdiff import DeepDiff
 from mergedeep import merge
 
-from application.constants.rules import RuleActions
-from application.constants.rules import RuleAuditResult
-from application.managers.rules.schemas import RuleActionSettingsSchema
+from constants.rules import RuleActions
+from constants.rules import RuleAuditResult
+from managers.rules.schemas import RuleActionSettingsSchema
 
 
 class ActionManager:

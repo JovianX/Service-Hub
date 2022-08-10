@@ -5,8 +5,8 @@ from sqlalchemy import LargeBinary
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
-from application.db.base_class import Base
-from application.db.fields import MutableJSON
+from db.base_class import Base
+from db.fields import MutableJSON
 
 
 class Organization(Base):

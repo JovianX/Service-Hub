@@ -9,10 +9,10 @@ from pydantic import Field
 from pydantic import constr
 from pydantic import root_validator
 
-from application.constants.services import ServiceTypes
-from application.managers.services.schemas import HTTPEndpointHealthCheckSettingsSchema
-from application.managers.services.schemas import KubernetesIngressHealthCheckSettingsSchema
-from application.managers.services.schemas import KubernetesServiceHealthCheckSettingsSchema
+from constants.services import ServiceTypes
+from managers.services.schemas import HTTPEndpointHealthCheckSettingsSchema
+from managers.services.schemas import KubernetesIngressHealthCheckSettingsSchema
+from managers.services.schemas import KubernetesServiceHealthCheckSettingsSchema
 
 from .common import OrganizationResponseSchema
 from .common import UserResponseSchema

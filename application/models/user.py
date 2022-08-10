@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy.orm import relationship
 
-from ..db.base_class import Base
+from db.base_class import Base
 
 
 class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):

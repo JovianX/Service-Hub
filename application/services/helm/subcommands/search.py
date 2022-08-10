@@ -2,7 +2,7 @@ from typing import List
 
 import yaml
 
-from application.exceptions.shell import NonZeroStatusException
+from exceptions.shell import NonZeroStatusException
 
 from ..schemas import ChartSchema
 from .base import HelmBase

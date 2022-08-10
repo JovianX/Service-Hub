@@ -9,18 +9,18 @@ import yaml
 from fastapi import Depends
 from fastapi import status
 
-from application.core.configuration import settings
-from application.crud.templates import TemplateDatabase
-from application.crud.templates import get_template_db
-from application.exceptions.common import CommonException
-from application.exceptions.shell import NonZeroStatusException
-from application.models.organization import Organization
-from application.models.template import TemplateRevision
-from application.models.user import User
-from application.schemas.templates import TemplateSchema
-from application.utils.shell import run
-from application.utils.template import load_template
-from application.utils.template import render_template
+from core.configuration import settings
+from crud.templates import TemplateDatabase
+from crud.templates import get_template_db
+from exceptions.common import CommonException
+from exceptions.shell import NonZeroStatusException
+from models.organization import Organization
+from models.template import TemplateRevision
+from models.user import User
+from schemas.templates import TemplateSchema
+from utils.shell import run
+from utils.template import load_template
+from utils.template import render_template
 
 
 logger = logging.getLogger(__name__)

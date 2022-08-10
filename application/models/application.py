@@ -11,8 +11,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from application.db.base_class import Base
-from application.db.fields import MutableJSON
+from db.base_class import Base
+from db.fields import MutableJSON
 
 
 class Application(Base):

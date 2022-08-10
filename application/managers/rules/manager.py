@@ -4,16 +4,16 @@ Rules bussines logic.
 from fastapi import Depends
 from fastapi import status
 
-from application.constants.rules import RuleActions
-from application.constants.rules import RuleAttribute
-from application.crud.rules import RuleDatabase
-from application.crud.rules import get_rule_db
-from application.exceptions.common import CommonException
-from application.exceptions.rule import RuleDoesNotExistException
-from application.models.organization import Organization
-from application.models.rule import Rule
-from application.models.user import User
-from application.utils.kubernetes import KubernetesConfiguration
+from constants.rules import RuleActions
+from constants.rules import RuleAttribute
+from crud.rules import RuleDatabase
+from crud.rules import get_rule_db
+from exceptions.common import CommonException
+from exceptions.rule import RuleDoesNotExistException
+from models.organization import Organization
+from models.rule import Rule
+from models.user import User
+from utils.kubernetes import KubernetesConfiguration
 
 from .actions.manager import ActionManager
 from .conditions import Condition

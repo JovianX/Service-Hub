@@ -5,14 +5,14 @@ import asyncio
 from asyncio import create_task
 from collections.abc import Iterable
 
-from application.constants.helm import ReleaseHealthStatuses
-from application.constants.kubernetes import K8sKinds
-from application.managers.kubernetes import K8sManager
-from application.managers.organizations.manager import OrganizationManager
-from application.models.organization import Organization
-from application.services.helm.facade import HelmService
-from application.services.kubernetes.schemas import K8sEntitySchema
-from application.utils.helm import HelmArchive
+from constants.helm import ReleaseHealthStatuses
+from constants.kubernetes import K8sKinds
+from managers.kubernetes import K8sManager
+from managers.organizations.manager import OrganizationManager
+from models.organization import Organization
+from services.helm.facade import HelmService
+from services.kubernetes.schemas import K8sEntitySchema
+from utils.helm import HelmArchive
 
 
 class HelmManager:

@@ -1,7 +1,7 @@
 from fastapi import status
 
-from application.exceptions.common import CommonException
-from application.exceptions.shell import NonZeroStatusException
+from exceptions.common import CommonException
+from exceptions.shell import NonZeroStatusException
 
 from .base import KubectlBase
 

@@ -6,21 +6,21 @@ import logging
 from fastapi import Depends
 from fastapi import status
 
-from application.constants.applications import ApplicationStatuses
-from application.crud.applications import ApplicationDatabase
-from application.crud.applications import get_application_db
-from application.exceptions.common import CommonException
-from application.exceptions.helm import HelmException
-from application.exceptions.templates import InvalidUserInputsException
-from application.managers.helm.manager import HelmManager
-from application.managers.organizations.manager import get_organization_manager
-from application.models.application import Application
-from application.models.organization import Organization
-from application.models.template import TemplateRevision
-from application.models.user import User
-from application.utils.template import load_template
-from application.utils.template import render_template
-from application.utils.template import validate_inputs
+from constants.applications import ApplicationStatuses
+from crud.applications import ApplicationDatabase
+from crud.applications import get_application_db
+from exceptions.common import CommonException
+from exceptions.helm import HelmException
+from exceptions.templates import InvalidUserInputsException
+from managers.helm.manager import HelmManager
+from managers.organizations.manager import get_organization_manager
+from models.application import Application
+from models.organization import Organization
+from models.template import TemplateRevision
+from models.user import User
+from utils.template import load_template
+from utils.template import render_template
+from utils.template import validate_inputs
 
 
 logger = logging.getLogger(__name__)

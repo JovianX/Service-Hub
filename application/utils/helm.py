@@ -4,10 +4,10 @@ Different helm utilities.
 import logging
 from pathlib import Path
 
-from application.core.configuration import settings
-from application.managers.organizations.manager import OrganizationManager
-from application.models.organization import Organization
-from application.utils.shell import run
+from core.configuration import settings
+from managers.organizations.manager import OrganizationManager
+from models.organization import Organization
+from utils.shell import run
 
 
 logger = logging.getLogger(__name__)

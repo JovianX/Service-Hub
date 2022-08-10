@@ -8,7 +8,7 @@ from pydantic import Field
 from pydantic import root_validator
 from pydantic.utils import GetterDict
 
-from application.utils.template import parse_template
+from utils.template import parse_template
 
 from .common import OrganizationResponseSchema
 from .common import UserResponseSchema

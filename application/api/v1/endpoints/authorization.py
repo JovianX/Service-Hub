@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
-from application.core.authentication import auth_backend
-from application.core.authentication import fastapi_users
-from application.core.authentication import github_client
-from application.core.authentication import google_client
-from application.core.configuration import settings
-from application.schemas.users import UserCreate
-from application.schemas.users import UserRead
+from core.authentication import auth_backend
+from core.authentication import fastapi_users
+from core.authentication import github_client
+from core.authentication import google_client
+from core.configuration import settings
+from schemas.users import UserCreate
+from schemas.users import UserRead
 
 
 router = APIRouter()

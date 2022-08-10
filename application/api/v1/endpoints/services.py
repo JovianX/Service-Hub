@@ -5,13 +5,13 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
-from application.constants.services import ServiceHealthStatuses
-from application.core.authentication import current_active_user
-from application.managers.organizations.manager import OrganizationManager
-from application.managers.organizations.manager import get_organization_manager
-from application.managers.services.manager import ServiceManager
-from application.managers.services.manager import get_service_manager
-from application.models.user import User
+from constants.services import ServiceHealthStatuses
+from core.authentication import current_active_user
+from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
+from managers.services.manager import ServiceManager
+from managers.services.manager import get_service_manager
+from models.user import User
 
 from ..schemas.services import CreateServiceBodySchema
 from ..schemas.services import ServiceResponseSchema

@@ -18,6 +18,4 @@ RUN tar -zxvf /tmp/${HELM_TARBALL} -C /tmp \
 ADD https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl /usr/local/bin/kubectl
 RUN chmod +x /usr/local/bin/kubectl
 
-COPY . /code
-
-CMD ["uvicorn", "application.instance:instance", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "instance:instance", "--host", "0.0.0.0", "--port", "8000"]

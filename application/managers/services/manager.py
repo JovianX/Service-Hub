@@ -11,18 +11,18 @@ from fastapi import Depends
 from httpx import AsyncClient
 from httpx import TransportError
 
-from application.constants.kubernetes import K8sKinds
-from application.constants.services import ServiceHealthStatuses
-from application.constants.services import ServiceTypes
-from application.crud.services import ServiceDatabase
-from application.crud.services import get_service_db
-from application.exceptions.common import CommonException
-from application.exceptions.service import ServiceDoesNotExistException
-from application.managers.kubernetes import K8sManager
-from application.managers.organizations.manager import OrganizationManager
-from application.models.organization import Organization
-from application.models.service import Service
-from application.models.user import User
+from constants.kubernetes import K8sKinds
+from constants.services import ServiceHealthStatuses
+from constants.services import ServiceTypes
+from crud.services import ServiceDatabase
+from crud.services import get_service_db
+from exceptions.common import CommonException
+from exceptions.service import ServiceDoesNotExistException
+from managers.kubernetes import K8sManager
+from managers.organizations.manager import OrganizationManager
+from models.organization import Organization
+from models.service import Service
+from models.user import User
 
 from .schemas import HTTPEndpointHealthCheckSettingsSchema
 from .schemas import KubernetesIngressHealthCheckSettingsSchema

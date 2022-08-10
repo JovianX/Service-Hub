@@ -10,8 +10,8 @@ from pydantic import constr
 from pydantic import Extra
 from pydantic import root_validator
 
-from application.constants.templates import InputTypes
-from application.exceptions.templates import InvalidTemplateException
+from constants.templates import InputTypes
+from exceptions.templates import InvalidTemplateException
 
 
 class Chart(BaseModel):

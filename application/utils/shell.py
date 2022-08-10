@@ -2,7 +2,7 @@ import asyncio
 import os
 from typing import Dict
 
-from ..exceptions.shell import NonZeroStatusException
+from exceptions.shell import NonZeroStatusException
 
 
 async def run(command: str, environment: Dict[str, str] = {}, raise_exception: bool = True):

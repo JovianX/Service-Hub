@@ -7,7 +7,7 @@ from typing import Any
 from pydantic import BaseModel
 from pydantic import Field
 
-from application.constants.applications import ApplicationStatuses
+from constants.applications import ApplicationStatuses
 
 from .common import OrganizationResponseSchema
 from .common import UserResponseSchema
