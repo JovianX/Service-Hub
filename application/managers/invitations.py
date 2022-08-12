@@ -118,6 +118,7 @@ class InvitationManager:
             f'To to join organization\'s team click following link: {link}'
         )
         invitation.email_sent_at = datetime.now()
+        invitation.status = InvitationStatuses.used
         await self.db.save(invitation)
 
 
