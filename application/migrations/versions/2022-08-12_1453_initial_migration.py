@@ -1,15 +1,16 @@
 """
 Initial migration.
 
-Revision ID: 79e732acfc4d
-Create Date: 2022-08-08 21:17:54.208884
+Revision ID: e6b3278e8d3c
+Create Date: 2022-08-12 14:53:18.667344
 """
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
+
 # revision identifiers, used by Alembic.
-revision = '79e732acfc4d'
+revision = 'e6b3278e8d3c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -87,7 +88,7 @@ def upgrade() -> None:
     op.create_table(
         'template_revision',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+        sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('description', sa.String(), nullable=False),
         sa.Column('revision', sa.Integer(), nullable=False),
@@ -106,11 +107,14 @@ def upgrade() -> None:
     op.create_table(
         'application',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+        sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('description', sa.String(), nullable=False),
         sa.Column('manifest', sa.Text(), nullable=False),
         sa.Column('status', sa.String(), nullable=False),
+        sa.Column('context_name', sa.String(), nullable=False),
+        sa.Column('namespace', sa.String(), nullable=False),
+        sa.Column('user_inputs', sa.JSON(), nullable=False),
         sa.Column('template_id', sa.Integer(), nullable=False),
         sa.Column('creator_id', postgresql.UUID(), nullable=False),
         sa.Column('organization_id', sa.Integer(), nullable=False),
