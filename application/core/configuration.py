@@ -4,6 +4,13 @@ from pydantic import PostgresDsn
 
 
 class Settings(BaseSettings):
+    # E-mail settings.
+    EMAIL_SENDER: str = ''
+    EMAIL_SMTP_HOST: str = ''
+    EMAIL_SMTP_PORT: int | None = None
+    EMAIL_SMTP_LOGIN: str = ''
+    EMAIL_SMTP_PASSWORD: str = ''
+
     DATABASE_URL: PostgresDsn
     TEST_DATABASE_URL: PostgresDsn
 
