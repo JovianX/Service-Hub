@@ -2,8 +2,8 @@ from typing import List
 
 import yaml
 
-from application.exceptions.helm import ReleaseNotFoundException
-from application.exceptions.shell import NonZeroStatusException
+from exceptions.helm import ReleaseNotFoundException
+from exceptions.shell import NonZeroStatusException
 
 from ..schemas import ManifestSchema
 from .base import HelmBase

@@ -4,7 +4,7 @@ Organization related API schemas.
 
 from pydantic import BaseModel
 
-from application.utils.kubernetes import KubernetesConfiguration
+from utils.kubernetes import KubernetesConfiguration
 
 
 class K8sClusterResponseSchema(BaseModel):

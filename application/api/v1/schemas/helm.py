@@ -9,10 +9,10 @@ from pydantic import HttpUrl
 from pydantic import constr
 from pydantic import root_validator
 
-from application.constants.helm import ReleaseHealthStatuses
-from application.constants.helm import ReleaseStatuses
-from application.constants.kubernetes import K8sKinds
-from application.schemas.common_types import K8sSubdomainNameString
+from constants.helm import ReleaseHealthStatuses
+from constants.helm import ReleaseStatuses
+from constants.kubernetes import K8sKinds
+from schemas.common_types import K8sSubdomainNameString
 
 
 class AddHelmRepositoryBodySchema(BaseModel):

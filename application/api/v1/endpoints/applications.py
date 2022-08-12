@@ -6,12 +6,12 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
-from application.core.authentication import current_active_user
-from application.managers.applications import ApplicationManager
-from application.managers.applications import get_application_manager
-from application.managers.templates import TemplateManager
-from application.managers.templates import get_template_manager
-from application.models.user import User
+from core.authentication import current_active_user
+from managers.applications import ApplicationManager
+from managers.applications import get_application_manager
+from managers.templates import TemplateManager
+from managers.templates import get_template_manager
+from models.user import User
 
 from ..schemas.applications import ApplicationInstallResponseSchema
 from ..schemas.applications import ApplicationResponseSchema

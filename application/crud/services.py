@@ -7,9 +7,9 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.db.session import get_session
-from application.exceptions.service import ServiceDoesNotExistException
-from application.models.service import Service
+from db.session import get_session
+from exceptions.service import ServiceDoesNotExistException
+from models.service import Service
 
 from .base import BaseDatabase
 

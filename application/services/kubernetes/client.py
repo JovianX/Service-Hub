@@ -13,8 +13,8 @@ from kubernetes_asyncio.client import RbacAuthorizationV1Api
 from kubernetes_asyncio.client.exceptions import ApiException
 from kubernetes_asyncio.config import new_client_from_config
 
-from application.constants.kubernetes import K8sKinds
-from application.exceptions.kubernetes import ProxyRequestException
+from constants.kubernetes import K8sKinds
+from exceptions.kubernetes import ProxyRequestException
 
 from .schemas import K8sEntitySchema
 

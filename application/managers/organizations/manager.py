@@ -8,13 +8,13 @@ from faker import Faker
 from fastapi import Depends
 from fastapi import status
 
-from application.crud.organizations import OrganizationDatabase
-from application.crud.organizations import get_organization_db
-from application.exceptions.common import CommonException
-from application.managers.kubernetes import K8sManager
-from application.models.organization import Organization
-from application.schemas.kubernetes import KubernetesConfigurationSchema
-from application.utils.kubernetes import KubernetesConfiguration
+from crud.organizations import OrganizationDatabase
+from crud.organizations import get_organization_db
+from exceptions.common import CommonException
+from managers.kubernetes import K8sManager
+from models.organization import Organization
+from schemas.kubernetes import KubernetesConfigurationSchema
+from utils.kubernetes import KubernetesConfiguration
 
 from .settings_schemas import ROOT_SETTING_SCHEMAS
 from .settings_schemas import SettingsSchema

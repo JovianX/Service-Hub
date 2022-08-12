@@ -11,10 +11,10 @@ import yaml
 from kubernetes.config.kube_config import ENV_KUBECONFIG_PATH_SEPARATOR
 from kubernetes.config.kube_config import KubeConfigMerger
 
-from application.constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
-from application.constants.common import CloudProviders
-from application.schemas.kubernetes import KubernetesConfigurationSchema
-from application.utils.temporary_file import yaml_temporary_file
+from constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
+from constants.common import CloudProviders
+from schemas.kubernetes import KubernetesConfigurationSchema
+from utils.temporary_file import yaml_temporary_file
 
 
 class KubernetesConfiguration:

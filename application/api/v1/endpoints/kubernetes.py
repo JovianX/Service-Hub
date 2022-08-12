@@ -2,12 +2,12 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Query
 
-from application.constants.kubernetes import K8sKinds
-from application.core.authentication import current_active_user
-from application.managers.kubernetes import K8sManager
-from application.managers.organizations.manager import OrganizationManager
-from application.managers.organizations.manager import get_organization_manager
-from application.models.user import User
+from constants.kubernetes import K8sKinds
+from core.authentication import current_active_user
+from managers.kubernetes import K8sManager
+from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
+from models.user import User
 
 
 router = APIRouter()

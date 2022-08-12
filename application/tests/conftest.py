@@ -5,15 +5,15 @@ import asyncpg
 import pytest_asyncio
 from httpx import AsyncClient
 
-from application.core.authentication import current_active_user
-from application.core.configuration import settings
-from application.db.base_class import Base
-from application.db.session import get_engine
-from application.db.session import get_session
-from application.db.session import get_session_maker
-from application.instance import instance
-from application.utils.user import create_user
-from application.utils.user import delete_user
+from core.authentication import current_active_user
+from core.configuration import settings
+from db.base_class import Base
+from db.session import get_engine
+from db.session import get_session
+from db.session import get_session_maker
+from instance import instance
+from utils.user import create_user
+from utils.user import delete_user
 
 
 engine = get_engine(settings.TEST_DATABASE_URL)

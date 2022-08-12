@@ -9,9 +9,9 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.exceptions.db import DuplicatesFoundException
-from application.exceptions.db import RecordNotFoundException
-from application.exceptions.db import UnknownModelAttributeException
+from exceptions.db import DuplicatesFoundException
+from exceptions.db import RecordNotFoundException
+from exceptions.db import UnknownModelAttributeException
 
 
 class BaseDatabase:

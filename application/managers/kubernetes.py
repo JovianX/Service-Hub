@@ -1,12 +1,12 @@
 """
 Kubernetes manager related functionality.
 """
-from application.constants.common import HTTPMethods
-from application.constants.kubernetes import K8sKinds
-from application.exceptions.kubernetes import ProxyRequestException
-from application.services.kubernetes.cli.facade import KubectlCLI
-from application.services.kubernetes.client import K8sClient
-from application.services.kubernetes.schemas import K8sEntitySchema
+from constants.common import HTTPMethods
+from constants.kubernetes import K8sKinds
+from exceptions.kubernetes import ProxyRequestException
+from services.kubernetes.cli.facade import KubectlCLI
+from services.kubernetes.client import K8sClient
+from services.kubernetes.schemas import K8sEntitySchema
 
 
 class K8sManager:

@@ -4,18 +4,17 @@ from unittest.mock import Mock
 import pytest
 from httpx import AsyncClient
 
-from application.constants.helm import ReleaseHealthStatuses
-from application.constants.helm import ReleaseStatuses
-from application.constants.kubernetes import K8sKinds
-from application.exceptions.shell import NonZeroStatusException
-from application.models.user import User
-from application.services.helm.schemas import ManifestMetaSchema
-from application.services.helm.schemas import ManifestSchema
-from application.services.helm.schemas import ReleaseSchema
-from application.services.kubernetes.schemas import K8sEntitySchema
-from application.tests.fixtures.cluster_configuration import unknown_configuration
-from application.tests.fixtures.k8s_deployment import kubernetes_deployment_details_fixture
-from application.utils.kubernetes import KubernetesConfiguration
+from constants.helm import ReleaseStatuses
+from constants.kubernetes import K8sKinds
+from exceptions.shell import NonZeroStatusException
+from models.user import User
+from services.helm.schemas import ManifestMetaSchema
+from services.helm.schemas import ManifestSchema
+from services.helm.schemas import ReleaseSchema
+from services.kubernetes.schemas import K8sEntitySchema
+from tests.fixtures.cluster_configuration import unknown_configuration
+from tests.fixtures.k8s_deployment import kubernetes_deployment_details_fixture
+from utils.kubernetes import KubernetesConfiguration
 
 
 class TestHelm:

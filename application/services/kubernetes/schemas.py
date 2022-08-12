@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from pydantic import Field
 
-from application.constants.kubernetes import K8sKinds
+from constants.kubernetes import K8sKinds
 
 
 class K8sEntitySchema(BaseModel):

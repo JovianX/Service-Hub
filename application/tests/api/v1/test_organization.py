@@ -3,13 +3,13 @@ from unittest import TestCase
 import pytest
 from httpx import AsyncClient
 
-from application.constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
-from application.constants.common import CloudProviders
-from application.models.user import User
-from application.tests.fixtures.cluster_configuration import aws_configuration
-from application.tests.fixtures.cluster_configuration import azure_configuration
-from application.tests.fixtures.cluster_configuration import gcp_configuration
-from application.tests.fixtures.cluster_configuration import unknown_configuration
+from constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
+from constants.common import CloudProviders
+from models.user import User
+from tests.fixtures.cluster_configuration import aws_configuration
+from tests.fixtures.cluster_configuration import azure_configuration
+from tests.fixtures.cluster_configuration import gcp_configuration
+from tests.fixtures.cluster_configuration import unknown_configuration
 
 
 class TestOrganization:

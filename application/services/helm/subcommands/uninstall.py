@@ -1,7 +1,7 @@
 import re
 
-from application.exceptions.helm import ReleaseNotFoundException
-from application.exceptions.shell import NonZeroStatusException
+from exceptions.helm import ReleaseNotFoundException
+from exceptions.shell import NonZeroStatusException
 
 from .base import HelmBase
 

@@ -4,11 +4,11 @@ from fastapi import Depends
 from fastapi import Path
 from fastapi import Query
 
-from application.core.authentication import current_active_user
-from application.managers.helm.manager import HelmManager
-from application.managers.organizations.manager import OrganizationManager
-from application.managers.organizations.manager import get_organization_manager
-from application.models.user import User
+from core.authentication import current_active_user
+from managers.helm.manager import HelmManager
+from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
+from models.user import User
 
 from ..schemas.helm import AddHelmRepositoryBodySchema
 from ..schemas.helm import ChartListItemSchema

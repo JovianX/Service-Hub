@@ -9,10 +9,10 @@ from pydantic import Extra
 from pydantic import Field
 from pydantic import root_validator
 
-from application.constants.common import CloudProviders
-from application.constants.rules import RuleActions
-from application.constants.rules import RuleAttribute
-from application.constants.rules import RuleComparisonStatements
+from constants.common import CloudProviders
+from constants.rules import RuleActions
+from constants.rules import RuleAttribute
+from constants.rules import RuleComparisonStatements
 
 
 class RuleConditionSchema(BaseModel, extra=Extra.forbid):

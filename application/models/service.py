@@ -6,7 +6,7 @@ from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from application.db.base_class import Base
+from db.base_class import Base
 
 
 class Service(Base):

@@ -10,12 +10,12 @@ from fastapi_users import UUIDIDMixin
 from fastapi_users import exceptions
 from fastapi_users.db import SQLAlchemyUserDatabase
 
-from application.core.configuration import settings
-from application.crud.users import get_user_db
-from application.managers.organizations.manager import OrganizationManager
-from application.managers.organizations.manager import get_organization_manager
-from application.models.user import User
-from application.schemas.users import UserCreate
+from core.configuration import settings
+from crud.users import get_user_db
+from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
+from models.user import User
+from schemas.users import UserCreate
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):

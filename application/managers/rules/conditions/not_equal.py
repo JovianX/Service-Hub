@@ -1,7 +1,7 @@
 """
 Condition to check for inequality.
 """
-from application.constants.rules import RuleComparisonStatements
+from constants.rules import RuleComparisonStatements
 
 from .base import Condition
 

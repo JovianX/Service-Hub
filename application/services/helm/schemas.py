@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import root_validator
 
-from application.constants.helm import ReleaseStatuses
+from constants.helm import ReleaseStatuses
 
 
 class helm_datetime(datetime):

@@ -6,12 +6,12 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
-from application.core.authentication import current_active_user
-from application.managers.templates import TemplateManager
-from application.managers.templates import get_template_manager
-from application.models.user import User
-from application.utils.template import render_template
-from application.utils.template import validate_inputs
+from core.authentication import current_active_user
+from managers.templates import TemplateManager
+from managers.templates import get_template_manager
+from models.user import User
+from utils.template import render_template
+from utils.template import validate_inputs
 
 from ..schemas.templates import TemplateCreateBodySchema
 from ..schemas.templates import TemplateResponseBodySchema

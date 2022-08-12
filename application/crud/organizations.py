@@ -4,8 +4,8 @@ Classes responsible for interaction with organization database entities.
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.db.session import get_session
-from application.models.organization import Organization
+from db.session import get_session
+from models.organization import Organization
 
 from .base import BaseDatabase
 

@@ -1,5 +1,5 @@
 .ONESHELL:
-.PHONY: help setup setup_helm setup_kubectl migrate create_migration up down serve logs db_shell run format tests
+.PHONY: help setup setup_helm setup_kubectl db_synchronization db_revision up down serve logs db_shell run format tests
 
 include .env
 export
@@ -15,7 +15,7 @@ help: ## Display this help.
 setup: ## Setup this project's python dependencies.
 	@test -d $(VE_DIRECTORY) || virtualenv $(VE_DIRECTORY) --python=$(PYTHON)
 	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade pip
-	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade --requirement requirements.dev.txt
+	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade --requirement=application/requirements.dev.txt
 	@mkdir -p $(VE_DIRECTORY)/tmp/storage
 
 setup_helm: ## Install Helm CLI.
@@ -35,17 +35,17 @@ setup_kubectl: ## Install Kubernetes CLI.
 	@wget --output-document=$(VE_DIRECTORY)/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 	@chmod +x $(VE_DIRECTORY)/bin/kubectl
 
-migrate: ## Apply all unapplied migrations.
+db_synchronization: ## Apply all unapplied migrations.
 	@if [ -z `docker ps --quiet --no-trunc | grep --only-matching "$(shell docker-compose ps --quiet application)"` ]; then
-		. $(VE_DIRECTORY)/bin/activate; alembic upgrade head
+		. $(VE_DIRECTORY)/bin/activate; cd application; alembic upgrade head
 	else
 		docker-compose exec application alembic upgrade head
 	fi
 
-create_migration: ## Does revision of database and models and creates migration if needed. Usage example: `make create_migration message="Added ModelName model"`
+db_revision: ## Does revision of database and models and creates migration if needed. Usage example: `make create_migration message="Added ModelName model"`
 	@if [ -z "${message}" ]; then echo '`message` attribute is required' && exit 1; fi
 	@if [ -z `docker ps --quiet --no-trunc | grep --only-matching "$(shell docker-compose ps --quiet application)"` ]; then
-		. $(VE_DIRECTORY)/bin/activate; alembic revision --autogenerate --message="${message}"
+		. $(VE_DIRECTORY)/bin/activate; cd application; alembic revision --autogenerate --message="${message}"
 	else
 		docker-compose exec application alembic revision --autogenerate --message="${message}"
 		# Because of Docker usage, migration will be created with root

@@ -7,9 +7,9 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import conlist
 
-from application.constants.rules import RuleAuditResult
-from application.managers.rules.schemas import RuleActionSettingsSchema
-from application.managers.rules.schemas import RuleConditionSchema
+from constants.rules import RuleAuditResult
+from managers.rules.schemas import RuleActionSettingsSchema
+from managers.rules.schemas import RuleConditionSchema
 
 from .common import OrganizationResponseSchema
 from .common import UserResponseSchema
