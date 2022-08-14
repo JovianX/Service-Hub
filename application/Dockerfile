@@ -17,5 +17,5 @@ RUN tar -zxvf /tmp/${HELM_TARBALL} -C /tmp \
 # Install Kubernetes CLI.
 ADD https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl /usr/local/bin/kubectl
 RUN chmod +x /usr/local/bin/kubectl
-
-CMD ["uvicorn", "instance:instance", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./start.sh", "--sync-db"]
+#CMD ["uvicorn", "instance:instance", "--host", "0.0.0.0", "--port", "8000"]
