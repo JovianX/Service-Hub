@@ -22,6 +22,17 @@ services:
     depends_on:
       - postgres
 
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    networks:
+      - service-network
+    ports:
+      - '3000:80'
+    depends_on:
+      - application
+
 
   ###
   postgres:
