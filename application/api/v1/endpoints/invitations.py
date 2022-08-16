@@ -8,7 +8,6 @@ from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
-from fastapi import Request
 
 from core.authentication import current_active_user
 from managers.invitations import InvitationManager
@@ -17,7 +16,10 @@ from managers.users import UserManager
 from managers.users import get_user_manager
 from models.user import User
 from schemas.users import UserCreate
+<<<<<<< HEAD
 from utils.email import send_email
+=======
+>>>>>>> 0869976 (User creation from invitation.)
 
 from ..schemas.invitations import CreateSchema
 from ..schemas.invitations import InvitationResponseSchema
@@ -31,7 +33,6 @@ router = APIRouter()
 
 @router.post('/', response_model=InvitationResponseSchema)
 async def create_invitation(
-    request: Request,
     data: CreateSchema = Body(description='Invitation data'),
     user: User = Depends(current_active_user),
     invitation_manager: InvitationManager = Depends(get_invitation_manager)
@@ -58,21 +59,6 @@ async def list_invitations(
     Lists organization's user invitations.
     """
     return await invitation_manager.list_invitations(user.organization)
-
-
-@router.post('/{invitation_id}')
-async def use_invitaion(
-    invitation_id: UUID = Path(title='The ID user invitation.'),
-    data: UseSchema = Body(description='User creation data'),
-    user: User = Depends(current_active_user),
-    invitation_manager: InvitationManager = Depends(get_invitation_manager)
-):
-    """
-    Creates new user that used invitation.
-    """
-    invitation_record = await invitation_manager.get_invitation(user.organization, invitation_id)
-    # TODO: !!!create user!!!
-    await invitation_manager.use(invitation_record)
 
 
 @router.delete('/{invitation_id}', response_model=list[InvitationResponseSchema])
