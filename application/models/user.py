@@ -23,4 +23,5 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     created_rules = relationship('Rule', back_populates='creator', lazy='selectin')
     created_templates = relationship('TemplateRevision', back_populates='creator', lazy='selectin')
     created_applications = relationship('Application', back_populates='creator', lazy='selectin')
-    created_invitations = relationship('UserInvitation', back_populates='creator', lazy='selectin')
+    # created_invitations = relationship('UserInvitation', back_populates='creator', lazy='selectin')
+    # invitation = relationship('UserInvitation', back_populates='created_user', lazy='selectin', uselist=False)

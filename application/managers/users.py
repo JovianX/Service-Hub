@@ -53,9 +53,9 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         )
         password = user_dict.pop('password')
         user_dict['hashed_password'] = self.password_helper.hash(password)
-
-        organization = await self.organizations.create()
-        user_dict['organization_id'] = organization.id
+        if not user_dict.get('organization_id'):
+            organization = await self.organizations.create()
+            user_dict['organization_id'] = organization.id
         created_user = await self.user_db.create(user_dict)
 
         await self.on_after_register(created_user, request)

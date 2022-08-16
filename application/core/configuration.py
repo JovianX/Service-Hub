@@ -1,3 +1,9 @@
+"""
+Project settings.
+"""
+
+import os
+
 from pydantic import BaseSettings
 from pydantic import DirectoryPath
 from pydantic import PostgresDsn
@@ -31,10 +37,11 @@ class Settings(BaseSettings):
 
     # Misc
     HELM_HOME_ARCHIVE_SIZE_LIMIT: int | float = 300 * 1024  # 300KiB in bytes
+    INVITATION_EMAIL_SENDING_BLOCK: int = 60  # In seconds.
 
     class Config:
-        env_file = '.env'
-        secrets_dir = 'credentials'
+        env_file = os.environ.get('ENV_FILE', '.env')
+        secrets_dir = os.environ.get('SECRETS_DIRECTORY', 'credentials')
         case_sensitive = True
 
 

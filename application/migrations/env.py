@@ -20,7 +20,7 @@ from models.user import *
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(os.environ.get('ENV_FILE', '../.env'))
 except ImportError:
     pass
 
