@@ -93,34 +93,6 @@ class InvitationManager:
         """
         Checks and marks invitation as used.
         """
-<<<<<<< HEAD
-        invitation.status = InvitationStatuses.used
-        invitation.created_user_id = user.id
-        await self.db.save(invitation)
-
-    async def send_email(self, invitation: UserInvitation) -> None:
-        """
-        Sends E-mail with link to join organization.
-        """
-        if invitation.email_sent_at:
-            now = datetime.now()
-            block_deadline = invitation.email_sent_at + timedelta(seconds=settings.INVITATION_EMAIL_SENDING_BLOCK)
-            if now < block_deadline:
-                raise CommonException(
-                    'Invitation email was recently sent. Try again in while.',
-                    status_code=status.HTTP_403_FORBIDDEN
-                )
-        # NOTE: Link should lead to FE page. Should be replaced to real when FE
-        #       will be deployed. Hardcoding for now.
-        link = f'http://localhost:8000/api/v1/invitation/{invitation.id}/use'
-        await send_email(
-            invitation.email,
-            f'You have been invited to join "{invitation.organization.title}" organization!',
-            f'To to join organization\'s team click following link: {link}'
-        )
-        invitation.email_sent_at = datetime.now()
-=======
->>>>>>> 0869976 (User creation from invitation.)
         invitation.status = InvitationStatuses.used
         invitation.created_user_id = user.id
         await self.db.save(invitation)

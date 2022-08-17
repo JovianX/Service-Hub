@@ -16,10 +16,7 @@ from managers.users import UserManager
 from managers.users import get_user_manager
 from models.user import User
 from schemas.users import UserCreate
-<<<<<<< HEAD
 from utils.email import send_email
-=======
->>>>>>> 0869976 (User creation from invitation.)
 
 from ..schemas.invitations import CreateSchema
 from ..schemas.invitations import InvitationResponseSchema
