@@ -37,16 +37,10 @@ class UserInvitation(Base):
     status = Column(String, nullable=False)
     expiration_period = Column(Integer, nullable=False)
     email_sent_at = Column(DateTime, nullable=True, default=None)
-    # created_user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=True)
-    # created_user = relationship('User', back_populates='invitation', lazy='selectin')
-    # creator_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=False)
-    # creator = relationship('User', back_populates='created_invitations', lazy='selectin')
     created_user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=True)
-    created_user = relationship(
-        'User', backref=backref('invitation', uselist=False, lazy='selectin'), foreign_keys=[created_user_id], lazy='selectin'
-    )
+    created_user = relationship('User', back_populates='invitation', lazy='selectin', foreign_keys=created_user_id)
     creator_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=False)
-    creator = relationship('User', backref='created_invitations', foreign_keys=[creator_id], lazy='selectin')
+    creator = relationship('User', back_populates='created_invitations', lazy='selectin', foreign_keys=creator_id)
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
     organization = relationship('Organization', back_populates='invitations', lazy='selectin')
 
