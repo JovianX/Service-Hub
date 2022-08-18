@@ -76,7 +76,7 @@ class OrganizationManager:
                 'Default context cannot be deleted.',
                 status_code=status.HTTP_403_FORBIDDEN
             )
-        with self.get_kubernetes_configuration(instance) as k8s_configuration_path:
+        with k8s_configuration as k8s_configuration_path:
             k8s_manager = K8sManager(k8s_configuration_path)
             await k8s_manager.delete_context(context_name)
             with open(k8s_configuration_path) as k8s_configuration_file:
