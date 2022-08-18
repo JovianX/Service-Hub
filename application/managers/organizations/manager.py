@@ -60,6 +60,22 @@ class OrganizationManager:
         """
         Deletes context from Kubernetes configuration with helm of kubectl.
         """
+        k8s_configuration = self.get_kubernetes_configuration(instance)
+        if context_name not in k8s_configuration.contexts:
+            raise CommonException(
+                f'Kubernetes configuration does not contain context "{context_name}".',
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+        if len(k8s_configuration.contexts) < 2:
+            raise CommonException(
+                'Last context cannot be deleted.',
+                status_code=status.HTTP_403_FORBIDDEN
+            )
+        if k8s_configuration.default_context == context_name:
+            raise CommonException(
+                'Default context cannot be deleted.',
+                status_code=status.HTTP_403_FORBIDDEN
+            )
         with self.get_kubernetes_configuration(instance) as k8s_configuration_path:
             k8s_manager = K8sManager(k8s_configuration_path)
             await k8s_manager.delete_context(context_name)
