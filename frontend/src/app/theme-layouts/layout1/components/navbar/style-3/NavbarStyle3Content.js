@@ -13,7 +13,7 @@ import { selectNavigation } from 'app/store/fuse/navigationSlice';
 import { selectContrastMainTheme } from 'app/store/fuse/settingsSlice';
 
 const Root = styled('div')(({ theme }) => ({
-  backgroundColor: theme.palette.primary.light,
+  backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
 }));
 
