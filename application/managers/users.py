@@ -2,18 +2,20 @@
 Functionality responsible for handling users business logic.
 """
 import uuid
+from typing import TYPE_CHECKING
 
 from fastapi import Depends
 from fastapi import Request
 from fastapi_users import BaseUserManager
 from fastapi_users import UUIDIDMixin
 from fastapi_users import exceptions
-from fastapi_users.db import SQLAlchemyUserDatabase
 
 from core.configuration import settings
+from crud.users import UserDatabase
 from crud.users import get_user_db
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
+from models.organization import Organization
 from models.user import User
 from schemas.users import UserCreate
 
@@ -22,7 +24,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = settings.SECRET
     verification_token_secret = settings.SECRET
 
-    def __init__(self, user_db: SQLAlchemyUserDatabase, organizations: OrganizationManager):
+    def __init__(self, user_db: UserDatabase, organizations: OrganizationManager):
         self.organizations = organizations
         super().__init__(user_db)
 
@@ -150,6 +152,12 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
     async def on_after_request_verify(self, user: User, token: str, request: Request | None = None):
         print(f'Verification requested for user {user.id}. Verification token: {token}')
+
+    async def organization_users(self, organization: Organization) -> list[User]:
+        """
+        Returns list of organization's users.
+        """
+        return await self.user_db.list(organization_id=organization.id)
 
 
 async def get_user_manager(user_db=Depends(get_user_db), organization_manager=Depends(get_organization_manager)):

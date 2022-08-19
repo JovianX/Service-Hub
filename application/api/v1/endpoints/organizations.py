@@ -9,9 +9,12 @@ from core.authentication import current_active_user
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
 from managers.organizations.settings_schemas import ROOT_SETTING_NAMES
+from managers.users import UserManager
+from managers.users import get_user_manager
 from models.user import User
 from schemas.kubernetes import KubernetesConfigurationSchema
 
+from ..schemas.common import UserResponseSchema
 from ..schemas.organization import K8sConfigurationResponseSchema
 
 
@@ -89,3 +92,14 @@ async def get_setting(
     setting_value = organization_manager.get_setting(organization, setting_name)
 
     return setting_value
+
+
+@router.get('/users', response_model=list[UserResponseSchema])
+async def get_setting(
+    user: User = Depends(current_active_user),
+    user_manager: UserManager = Depends(get_user_manager)
+):
+    """
+    Returns organization's user list.
+    """
+    return await user_manager.organization_users(user.organization)
