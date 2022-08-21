@@ -56,8 +56,7 @@ async def delete_configuration_context(
     Deletes context from organization's Kubernetes configuration.
     """
     organization = user.organization
-    await organization_manager.delete_context(organization, context_name)
-    configuration = organization_manager.get_kubernetes_configuration(user.organization)
+    configuration = await organization_manager.delete_context(organization, context_name)
 
     return {'configuration': configuration}
 
