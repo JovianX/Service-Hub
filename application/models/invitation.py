@@ -39,7 +39,7 @@ class UserInvitation(Base):
     email_sent_at = Column(DateTime, nullable=True, default=None)
     created_user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=True)
     created_user = relationship('User', back_populates='invitation', lazy='selectin', foreign_keys=created_user_id)
-    creator_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=False)
+    creator_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=True)
     creator = relationship('User', back_populates='created_invitations', lazy='selectin', foreign_keys=creator_id)
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
     organization = relationship('Organization', back_populates='invitations', lazy='selectin')
