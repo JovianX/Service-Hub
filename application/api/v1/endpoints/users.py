@@ -5,17 +5,16 @@ from fastapi import Depends
 from fastapi import Path
 
 from core.authentication import current_active_user
-from core.authentication import fastapi_users
 from managers.users import UserManager
 from managers.users import get_user_manager
 from models.user import User
-from schemas.users import UserRead
 from schemas.users import UserUpdate
 
 from ..schemas.common import UserResponseSchema
 
 
 router = APIRouter()
+
 
 @router.get('/list', response_model=list[UserResponseSchema])
 async def get_setting(
