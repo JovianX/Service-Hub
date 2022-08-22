@@ -12,6 +12,8 @@ from models.user import User
 from schemas.users import UserRead
 from schemas.users import UserUpdate
 
+from ..schemas.common import UserResponseSchema
+
 
 router = APIRouter()
 
@@ -42,6 +44,17 @@ async def activate_user(
     user_record = await user_manager.get(user_id)
     if not user_record.is_active and user_record.organization.id == user.organization.id:
         await user_manager.update(user_update=UserUpdate(is_active=True), user=user_record, safe=False)
+
+
+@router.get('/list', response_model=list[UserResponseSchema])
+async def get_setting(
+    user: User = Depends(current_active_user),
+    user_manager: UserManager = Depends(get_user_manager)
+):
+    """
+    Returns organization's user list.
+    """
+    return await user_manager.organization_users(user.organization)
 
 
 router.include_router(fastapi_users.get_users_router(UserRead, UserUpdate))
