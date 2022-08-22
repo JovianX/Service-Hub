@@ -57,8 +57,8 @@ async def activate_user(
 
 
 @router.delete('/{user_id}')
-async def activate_user(
-    user_id: UUID = Path(title='The ID of the user to activate'),
+async def delete_user(
+    user_id: UUID = Path(title='The ID of the user to delete'),
     user: User = Depends(current_active_user),
     user_manager: UserManager = Depends(get_user_manager)
 ):
