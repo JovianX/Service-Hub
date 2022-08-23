@@ -9,6 +9,7 @@ import releases from './releasesSlice';
 import repositories from './repositorySlice';
 import services from './servicesSlice';
 import user from './userSlice';
+import invites from './invitesSlice';
 
 const createReducer = (asyncReducers) => (state, action) => {
   const combinedReducer = combineReducers({
@@ -21,6 +22,7 @@ const createReducer = (asyncReducers) => (state, action) => {
     services,
     repositories,
     clusters,
+    invites,
     ...asyncReducers,
   });
 
