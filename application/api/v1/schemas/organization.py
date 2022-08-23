@@ -34,7 +34,7 @@ class K8sConfigurationResponseSchema(BaseModel):
 
     def __init__(self, configuration: KubernetesConfiguration):
         clusters = []
-        for cluster_name in configuration.clusters.keys():
+        for cluster_name in configuration.clusters:
             region = None
             cloud_provider = None
             for context_name, context in configuration.contexts.items():
@@ -51,6 +51,6 @@ class K8sConfigurationResponseSchema(BaseModel):
             for context_name, context in configuration.contexts.items()
         ]
         users = [{'name': user_name} for user_name in configuration.users.keys()]
-        current_context = configuration.configuration['current_context']
+        current_context = configuration.configuration.get('current_context', '')
 
         super().__init__(clusters=clusters, contexts=contexts, users=users, current_context=current_context)

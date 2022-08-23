@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from db.base_class import Base
 from models.application import *
+from models.invitation import *
 from models.organization import *
 from models.rule import *
 from models.service import *
@@ -19,7 +20,7 @@ from models.user import *
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(os.environ.get('ENV_FILE', '../.env'))
 except ImportError:
     pass
 

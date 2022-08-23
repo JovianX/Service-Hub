@@ -3,9 +3,8 @@ from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from exceptions.common import CommonException
-
 from api.v1.api import router as api_router
+from exceptions.common import CommonException
 
 
 try:
