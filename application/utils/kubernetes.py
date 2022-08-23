@@ -77,14 +77,14 @@ class KubernetesConfiguration:
         return {cluster['name']: cluster['user'] for cluster in self.configuration['users']}
 
     @property
-    def context_names(self) -> List[str]:
+    def default_context(self) -> str:
         """
-        List of context names.
+        Returns default context.
         """
         if not self.configuration:
-            return []
+            return
 
-        return [context['name'] for context in self.configuration['contexts']]
+        return self.configuration['current_context']
 
     def get_cloud_provider(self, context_name: str) -> CloudProviders:
         """

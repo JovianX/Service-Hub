@@ -30,7 +30,7 @@ class Application(Base):
     user_inputs = Column(MutableJSON, nullable=False, default={})
     template_id = Column(Integer, ForeignKey('template_revision.id'), nullable=False)
     template = relationship('TemplateRevision', back_populates='applications', lazy='selectin')
-    creator_id = Column(UUID, ForeignKey('user.id'), nullable=False)
+    creator_id = Column(UUID, ForeignKey('user.id'), nullable=True)
     creator = relationship('User', back_populates='created_applications', lazy='selectin')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
     organization = relationship('Organization', back_populates='applications', lazy='selectin')

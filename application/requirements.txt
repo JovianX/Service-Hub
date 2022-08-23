@@ -1,6 +1,8 @@
+aiosmtplib
 alembic
 asyncpg
 deepdiff
+email-validator
 Faker #  This dependency temporary must be in production requirements until Organization title change will be implemented.
 fastapi
 fastapi-users[sqlalchemy]

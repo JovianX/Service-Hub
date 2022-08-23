@@ -4,10 +4,10 @@ Templates schemas.
 from collections import Counter
 
 from pydantic import BaseModel
+from pydantic import Extra
 from pydantic import Field
 from pydantic import conlist
 from pydantic import constr
-from pydantic import Extra
 from pydantic import root_validator
 
 from constants.templates import InputTypes
