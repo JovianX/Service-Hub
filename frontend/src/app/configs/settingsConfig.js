@@ -15,21 +15,21 @@ const settingsConfig = {
           "white": "rgb(255, 255, 255)"
         },
         "primary": {
-          "light": "#C2C7F1",
-          "main": "#3543D0",
-          "dark": "#161EB3",
+          "light": "#BFC4E6",
+          "main": "#2A3BAB",
+          "dark": "#0F1980",
           "contrastDefaultColor": "light",
           "contrastText": "rgb(255,255,255)"
         },
         "secondary": {
-          "light": "#B3F1FE",
-          "main": "#00CFFD",
-          "dark": "#00B2FC",
+          "light": "#C2ECF0",
+          "main": "#33C1CD",
+          "dark": "#149EAE",
           "contrastText": "rgb(17, 24, 39)"
         },
         "background": {
           "paper": "#FFFFFF",
-          "default": "#F7FAFF"
+          "default": "#EDF0F6"
         },
         "error": {
           "light": "#ffcdd2",
@@ -44,32 +44,32 @@ const settingsConfig = {
     },
     "navbar": {
       "palette": {
-        "mode": "light",
+        "mode": "dark",
         "text": {
-          "primary": "rgb(17, 24, 39)",
-          "secondary": "rgb(107, 114, 128)",
-          "disabled": "rgb(149, 156, 169)"
+          "primary": "rgb(255,255,255)",
+          "secondary": "rgb(148, 163, 184)",
+          "disabled": "rgb(156, 163, 175)"
         },
         "common": {
           "black": "rgb(17, 24, 39)",
           "white": "rgb(255, 255, 255)"
         },
         "primary": {
-          "light": "#C2C7F1",
-          "main": "#3543D0",
-          "dark": "#161EB3",
+          "light": "#BFC4E6",
+          "main": "#2A3BAB",
+          "dark": "#0F1980",
           "contrastDefaultColor": "light",
           "contrastText": "rgb(255,255,255)"
         },
         "secondary": {
-          "light": "#B3F1FE",
-          "main": "#00CFFD",
-          "dark": "#00B2FC",
+          "light": "#C2ECF0",
+          "main": "#33C1CD",
+          "dark": "#149EAE",
           "contrastText": "rgb(17, 24, 39)"
         },
         "background": {
-          "paper": "#FFFFFF",
-          "default": "#F7FAFF"
+          "paper": "#361111",
+          "default": "#0e3e8b"
         },
         "error": {
           "light": "#ffcdd2",
@@ -98,21 +98,21 @@ const settingsConfig = {
           "white": "rgb(255, 255, 255)"
         },
         "primary": {
-          "light": "#C2C7F1",
-          "main": "#3543D0",
-          "dark": "#161EB3",
+          "light": "#BFC4E6",
+          "main": "#2A3BAB",
+          "dark": "#0F1980",
           "contrastDefaultColor": "light",
           "contrastText": "rgb(255,255,255)"
         },
         "secondary": {
-          "light": "#B3F1FE",
-          "main": "#00CFFD",
-          "dark": "#00B2FC",
+          "light": "#C2ECF0",
+          "main": "#33C1CD",
+          "dark": "#149EAE",
           "contrastText": "rgb(17, 24, 39)"
         },
         "background": {
           "paper": "#FFFFFF",
-          "default": "#F7FAFF"
+          "default": "#EDF0F6"
         },
         "error": {
           "light": "#ffcdd2",
@@ -138,21 +138,21 @@ const settingsConfig = {
           "white": "rgb(255, 255, 255)"
         },
         "primary": {
-          "light": "#C2C7F1",
-          "main": "#3543D0",
-          "dark": "#161EB3",
+          "light": "#BFC4E6",
+          "main": "#2A3BAB",
+          "dark": "#0F1980",
           "contrastDefaultColor": "light",
           "contrastText": "rgb(255,255,255)"
         },
         "secondary": {
-          "light": "#B3F1FE",
-          "main": "#00CFFD",
-          "dark": "#00B2FC",
+          "light": "#C2ECF0",
+          "main": "#33C1CD",
+          "dark": "#149EAE",
           "contrastText": "rgb(17, 24, 39)"
         },
         "background": {
           "paper": "#FFFFFF",
-          "default": "#F7FAFF"
+          "default": "#EDF0F6"
         },
         "error": {
           "light": "#ffcdd2",
@@ -182,10 +182,11 @@ const settingsConfig = {
       },
       "toolbar": {
         "display": true,
-        "style": "fixed"
+        "style": "fixed",
+        "position": "below"
       },
       "footer": {
-        "display": true,
+        "display": false,
         "style": "fixed"
       },
       "leftSidePanel": {
@@ -193,7 +194,8 @@ const settingsConfig = {
       },
       "rightSidePanel": {
         "display": true
-      }
+      },
+      "scroll": "content"
     }
   },
   "defaultAuth": [
