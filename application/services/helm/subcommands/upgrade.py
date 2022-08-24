@@ -12,6 +12,7 @@ from .base import HelmBase
 RELEASE_NOT_FOUND_MESSAGE_PATTERN = re.compile(
     r'Error: UPGRADE FAILED: "(?P<release_name>.*)" has no deployed releases'
 )
+CHART_NOT_FOUND_MESSAGE_PATTERN = re.compile(r'Error: failed to download "(?P<repository_name>.*)/(?P<chart_name>.*)"')
 COMMON_ERROR_MESSAGE_PATTERN = re.compile(r'Error: UPGRADE FAILED: (?P<error_message>.*)')
 
 
@@ -53,6 +54,14 @@ class HelmUpgrade(HelmBase):
                 absent_relase = match.groupdict()['release_name']
                 raise ReleaseUpdateException(
                     f'Failed to upgrade release. Release "{absent_relase}" not found in namespace "{namespace}".'
+                )
+            match = CHART_NOT_FOUND_MESSAGE_PATTERN.search(error_message)
+            if match:
+                chart_repository_name = match.groupdict()['repository_name']
+                chart_name = match.groupdict()['chart_name']
+                raise ReleaseUpdateException(
+                    f'Failed to upgrade release "{release_name}" in namespace "{namespace}". '
+                    f'Failed to find "{chart_repository_name}" repository or chart "{chart_name}" in it.'
                 )
             match = COMMON_ERROR_MESSAGE_PATTERN.search(error_message)
             if match:

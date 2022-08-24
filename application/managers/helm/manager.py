@@ -2,8 +2,12 @@
 Manager for helm business logic.
 """
 import asyncio
+import base64
+import shutil
 from asyncio import create_task
 from collections.abc import Iterable
+from uuid import uuid4
+
 
 from constants.helm import ReleaseHealthStatuses
 from constants.kubernetes import K8sKinds
@@ -12,7 +16,9 @@ from managers.organizations.manager import OrganizationManager
 from models.organization import Organization
 from services.helm.facade import HelmService
 from services.kubernetes.schemas import K8sEntitySchema
+from utils.achive import tar
 from utils.helm import HelmArchive
+from utils.paths import organization_home
 
 
 class HelmManager:
@@ -280,6 +286,28 @@ class HelmManager:
                     debug=debug,
                     dry_run=dry_run
                 )
+
+    async def get_release_chart(self, organization: Organization, context_name: str, namespace: str, release_name: str):
+        """
+        Creates chart for existing release.
+        """
+        destination = organization_home(organization) / 'dumped_charts' / str(uuid4())
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                chart_directory = await helm_service.release.create_chart(
+                    context_name,
+                    namespace,
+                    release_name,
+                    destination
+                )
+        archive = await tar(chart_directory)
+        shutil.rmtree(destination)
+
+        return {
+            'filename': f'{chart_directory.name}.tar.gz',
+            'archive': base64.b64encode(archive)
+        }
 
     async def uninstall_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str, dry_run: bool = False

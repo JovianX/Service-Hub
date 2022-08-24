@@ -1,6 +1,7 @@
 from .subcommands.get import HelmGet
 from .subcommands.install import HelmInstall
 from .subcommands.list import HelmList
+from .subcommands.release import HelmRelease
 from .subcommands.repositories import HelmRepository
 from .subcommands.search import HelmSearch
 from .subcommands.uninstall import HelmUninstall
@@ -21,6 +22,7 @@ class HelmService:
         self.get: HelmGet = HelmGet(kubernetes_configuration, helm_home)
         self.install: HelmInstall = HelmInstall(kubernetes_configuration, helm_home)
         self.list: HelmList = HelmList(kubernetes_configuration, helm_home)
+        self.release: HelmRelease = HelmRelease(kubernetes_configuration, helm_home)
         self.repository: HelmRepository = HelmRepository(kubernetes_configuration, helm_home)
         self.search: HelmSearch = HelmSearch(kubernetes_configuration, helm_home)
         self.uninstall: HelmUninstall = HelmUninstall(kubernetes_configuration, helm_home)

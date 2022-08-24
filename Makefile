@@ -29,6 +29,12 @@ setup_helm: ## Install Helm CLI.
 	@rm $(VE_DIRECTORY)/tmp/helm.tar.gz
 	@rm -rf $(VE_DIRECTORY)/tmp/helm
 
+	# Installing release plugin(https://github.com/JovianX/helm-release-plugin).
+	@helm plugin uninstall release > /dev/null
+	@helm plugin install https://github.com/JovianX/helm-release-plugin
+	# Checking that it is working.
+	@helm release
+
 setup_kubectl: ## Install Kubernetes CLI.
 	@test -d $(VE_DIRECTORY) || (echo 'Setup virtual environment first. You can do this by running `make setup`.' && exit 1)
 
@@ -55,7 +61,7 @@ db_revision: ## Does revision of database and models and creates migration if ne
 	fi
 
 build: ## Build all Docker images.
-	docker-compose build
+	docker-compose build --no-cache --force-rm
 
 up: ## Launch dockerized infrastructure.
 	docker-compose up --detach
@@ -75,8 +81,7 @@ db_shell: ## PostgreSQL shell
 	@docker-compose exec --env PAGER="less -S" postgres psql --user=$(DB_USER) --dbname=$(DB_NAME)
 
 run: ## Launch local appserver.
-	# . $(VE_DIRECTORY)/bin/activate; uvicorn --reload --reload-exclude=docker-data/* application.instance:instance
-	. $(VE_DIRECTORY)/bin/activate; uvicorn application.instance:instance
+	@. $(VE_DIRECTORY)/bin/activate; uvicorn --reload --reload-exclude=docker-data/* application.instance:instance
 
 format: ## Format source code.
 	@. $(VE_DIRECTORY)/bin/activate; autopep8 --in-place --recursive application

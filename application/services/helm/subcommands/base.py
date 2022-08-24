@@ -31,6 +31,7 @@ class HelmBase:
             'HELM_CACHE_HOME': self.home_directory / 'cache',
             'HELM_CONFIG_HOME': self.home_directory / 'config',
             'HELM_DATA_HOME': self.home_directory / 'data',
+            'HELM_PLUGINS': settings.HELM_PLUGINS_DIRECTORY,
             'KUBECONFIG': self.configuration
         }
 
@@ -47,8 +48,8 @@ class HelmBase:
 
         return f'{settings.HELM_EXECUTABLE} {self.subcommand} {positional_args} {key_value_args}'.strip()
 
-    async def _run_command(self, command: str) -> str:
+    async def _run_command(self, command: str, directory: str = None) -> str:
         """
         Executes helm CLI command.
         """
-        return await run(command=command, environment=self.environment)
+        return await run(command=command, environment=self.environment, directory=directory)

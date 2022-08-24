@@ -58,6 +58,11 @@ class ReleaseHealthStatusResponseBodySchema(BaseModel):
     )
 
 
+class ChartDumpResponseSchema(BaseModel):
+    filename: str = Field(description='Archive filename')
+    archive: bytes = Field(description='Archive content encoded in base64')
+
+
 class ReleaseListItemAvailableChart(BaseModel):
     """
     Information about chart that can be used for release upgrade.
