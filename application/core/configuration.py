@@ -4,6 +4,8 @@ Project settings.
 
 import os
 
+from pathlib import Path
+from pydantic import AnyHttpUrl
 from pydantic import BaseSettings
 from pydantic import DirectoryPath
 from pydantic import PostgresDsn
@@ -22,8 +24,12 @@ class Settings(BaseSettings):
 
     SECRET: str = 'SUW2kc5vw4XXASRmdefbUVWLQ0dRq8ylEdetifdKgzU'
 
-    # Path to Helm executable.
+    # Helm settings.
     HELM_EXECUTABLE: str = 'helm'
+    HELM_HOME_ARCHIVE_SIZE_LIMIT: int | float = 300 * 1024  # 300KiB in bytes
+    HELM_PLUGINS_DIRECTORY: DirectoryPath = Path.home()/'.local'/'share'/'helm'/'plugins'
+
+    # Kubernetes settings.
     KUBECTL_EXECUTABLE: str = 'kubectl'
 
     # OAuth authentication
@@ -38,6 +44,7 @@ class Settings(BaseSettings):
     # Misc
     HELM_HOME_ARCHIVE_SIZE_LIMIT: int | float = 300 * 1024  # 300KiB in bytes
     INVITATION_EMAIL_SENDING_BLOCK: int = 60  # In seconds.
+    UI_HOST: AnyHttpUrl = 'http://localhost:3000'
 
     class Config:
         env_file = os.environ.get('ENV_FILE', '.env')

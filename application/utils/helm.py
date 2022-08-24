@@ -9,6 +9,8 @@ from managers.organizations.manager import OrganizationManager
 from models.organization import Organization
 from utils.shell import run
 
+from .paths import organization_home
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +25,7 @@ class HelmArchive:
         self.organization_manager = organization_manager
         self.archive = organization.helm_home
 
-        organization_directory = Path(settings.FILE_STORAGE_ROOT) / str(organization.id)
+        organization_directory = organization_home(organization)
         self.helm_home = organization_directory / 'helm'
         self.helm_home_archive = organization_directory / 'archive.tar.gz'
 
