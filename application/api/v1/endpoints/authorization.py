@@ -27,5 +27,5 @@ github_router = fastapi_users.get_oauth_router(
     github_client,
     auth_backend,
     settings.SECRET,
-    redirect_url=f'{settings.FE_HOST}/sign-in')
+    redirect_url=f'{settings.UI_HOST}/sign-in')
 router.include_router(github_router, prefix='/github')
