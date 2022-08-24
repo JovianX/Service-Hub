@@ -61,6 +61,12 @@ class InvitationManager:
         """
         return await self.db.get(organization_id=organization.id, id=id)
 
+    async def get_invitation_by_id(self, id: str) -> UserInvitation:
+        """
+        Returns user invitation.
+        """
+        return await self.db.get(id=id)
+
     async def list_invitations(self, organization: Organization) -> list[UserInvitation]:
         """
         Returns list of organization's user invitations.
