@@ -13,7 +13,7 @@ import { selectNavigation } from 'app/store/fuse/navigationSlice';
 import { selectContrastMainTheme } from 'app/store/fuse/settingsSlice';
 
 const Root = styled('div')(({ theme }) => ({
-  backgroundColor: theme.palette.primary.light,
+  backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
 }));
 
@@ -108,7 +108,7 @@ function NavbarStyle3Content(props) {
       <Root className={clsx('flex flex-auto flex h-full', props.className)}>
         <ThemeProvider theme={contrastTheme}>
           <div id='fuse-navbar-side-panel' className='flex shrink-0 flex-col items-center'>
-            <img className='w-44 my-32' src='assets/images/logo-mini.png' alt='logo' />
+            <img className='w-44 my-32' src='assets/images/logo-mini-white.png' alt='logo' />
 
             <FuseScrollbars
               className='flex flex-1 min-h-0 justify-center w-full overflow-y-auto overflow-x-hidden'

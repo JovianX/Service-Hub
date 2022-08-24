@@ -8,7 +8,7 @@ class UserRead(schemas.BaseUser[uuid.UUID]):
 
 
 class UserCreate(schemas.BaseUserCreate):
-    pass
+    organization_id: int | None
 
 
 class UserUpdate(schemas.BaseUserUpdate):

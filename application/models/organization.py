@@ -20,3 +20,4 @@ class Organization(Base):
     rules = relationship('Rule', back_populates='organization', lazy='selectin')
     templates = relationship('TemplateRevision', back_populates='organization', lazy='selectin')
     applications = relationship('Application', back_populates='organization', lazy='selectin')
+    invitations = relationship('UserInvitation', back_populates='organization', lazy='selectin')
