@@ -13,7 +13,7 @@
 JovianX **Service Hub** is a DevOps tool to create on-demand services using Helm and Kubernetes.
 
 
-## Serivce tempalte example:
+### Serivce tempalte example:
 ```
 name: my-new-service
 charts:                                      # required
