@@ -4,6 +4,7 @@ Project settings.
 
 import os
 
+from pathlib import Path
 from pydantic import AnyHttpUrl
 from pydantic import BaseSettings
 from pydantic import DirectoryPath
@@ -23,8 +24,12 @@ class Settings(BaseSettings):
 
     SECRET: str = 'SUW2kc5vw4XXASRmdefbUVWLQ0dRq8ylEdetifdKgzU'
 
-    # Path to Helm executable.
+    # Helm settings.
     HELM_EXECUTABLE: str = 'helm'
+    HELM_HOME_ARCHIVE_SIZE_LIMIT: int | float = 300 * 1024  # 300KiB in bytes
+    HELM_PLUGINS_DIRECTORY: DirectoryPath = Path.home()/'.local'/'share'/'helm'/'plugins'
+
+    # Kubernetes settings.
     KUBECTL_EXECUTABLE: str = 'kubectl'
 
     # OAuth authentication

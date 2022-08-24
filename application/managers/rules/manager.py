@@ -154,10 +154,9 @@ class RuleManager:
             RuleAttribute.cluster_region: k8s_configuration.get_region(context_name)
         }
         rules = await self.db.list(organization_id=organization.id, action_type=RuleActions.apply)
-
         filtered_rules = self._filter_rules(rules, values)
-
         action_manager = ActionManager([rule.action_settings for rule in filtered_rules])
+
         return action_manager.values_to_apply(computed_values)
 
     def _filter_rules(self, rules: list[Rule], values: dict[RuleAttribute, str]) -> list[Rule]:
