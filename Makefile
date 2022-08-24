@@ -57,7 +57,7 @@ db_revision: ## Does revision of database and models and creates migration if ne
 		# Because of Docker usage, migration will be created with root
 		# ownership. Doing sneaky tricky black voodoo magic to change migration
 		# files ownership to current user
-		docker-compose exec application chown $(shell id -u):$(shell id -g) migrations/versions/*
+		cd application; docker-compose exec application chown $(shell id -u):$(shell id -g) migrations/versions/*
 	fi
 
 build: ## Build all Docker images.
@@ -84,8 +84,8 @@ run: ## Launch local appserver.
 	@. $(VE_DIRECTORY)/bin/activate; uvicorn --reload --reload-exclude=docker-data/* application.instance:instance
 
 format: ## Format source code.
-	@. $(VE_DIRECTORY)/bin/activate; autopep8 --in-place --recursive application migrations
-	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports application migrations
+	@. $(VE_DIRECTORY)/bin/activate; autopep8 --in-place --recursive application
+	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports application
 
 tests: ## Run all test.
 	@. $(VE_DIRECTORY)/bin/activate; pytest -v ./application/tests

@@ -27,4 +27,8 @@ RUN helm plugin install https://github.com/JovianX/helm-release-plugin
 ADD https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl /usr/local/bin/kubectl
 RUN chmod +x /usr/local/bin/kubectl
 
+
+# Copy the code to the Dockerimage
+COPY . /code
+
 CMD ["./start.sh", "--sync-db"]
