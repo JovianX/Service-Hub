@@ -16,6 +16,7 @@ from managers.users import UserManager
 from managers.users import get_user_manager
 from models.user import User
 from schemas.users import UserCreate
+from utils.email import send_email
 
 from ..schemas.invitations import CreateSchema
 from ..schemas.invitations import InvitationResponseSchema
@@ -76,14 +77,13 @@ async def delete_invitaion(
 async def use_invitaion(
     invitation_id: UUID = Path(title='The ID user invitation.'),
     data: UseSchema = Body(description='User creation data'),
-    user: User = Depends(current_active_user),
     invitation_manager: InvitationManager = Depends(get_invitation_manager),
     user_manager: UserManager = Depends(get_user_manager)
 ):
     """
     Creates new user that used invitation.
     """
-    invitation_record = await invitation_manager.get_invitation(user.organization, invitation_id)
+    invitation_record = await invitation_manager.get_invitation_by_id(invitation_id)
     invitation_manager.is_valid(invitation_record)
     new_user = UserCreate(
         email=invitation_record.email,
