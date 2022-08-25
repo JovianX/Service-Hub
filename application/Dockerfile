@@ -1,6 +1,6 @@
 FROM python:3.10-slim
-ARG HELM_VERSION
-ARG KUBECTL_VERSION
+ARG HELM_VERSION=v3.9.0
+ARG KUBECTL_VERSION=v1.24.1
 
 # Install system dependencies.
 RUN apt-get update \
