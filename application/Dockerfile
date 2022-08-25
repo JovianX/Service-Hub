@@ -15,7 +15,7 @@ COPY requirements.txt /code/requirements.txt
 RUN pip install --upgrade pip && pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 # Install Helm CLI.
-ENV HELM_TARBALL helm-$HELM_VERSION-linux-amd64.tar.gz
+ENV HELM_TARBALL helm-${HELM_VERSION}-linux-amd64.tar.gz
 ADD https://get.helm.sh/${HELM_TARBALL} /tmp
 RUN tar -zxvf /tmp/${HELM_TARBALL} -C /tmp \
     && mv /tmp/linux-amd64/helm /bin/helm \
@@ -24,7 +24,7 @@ RUN tar -zxvf /tmp/${HELM_TARBALL} -C /tmp \
 RUN helm plugin install https://github.com/JovianX/helm-release-plugin
 
 # Install Kubernetes CLI.
-ADD https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl /usr/local/bin/kubectl
+ADD https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl /usr/local/bin/kubectl
 RUN chmod +x /usr/local/bin/kubectl
 
 # Copy the code to the Dockerimage
