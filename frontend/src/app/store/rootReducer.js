@@ -9,12 +9,14 @@ import releases from './releasesSlice';
 import repositories from './repositorySlice';
 import services from './servicesSlice';
 import user from './userSlice';
+import users from './usersSlice'
 
 const createReducer = (asyncReducers) => (state, action) => {
   const combinedReducer = combineReducers({
     fuse,
     i18n,
     user,
+    users,
     dashboard,
     releases,
     charts,
