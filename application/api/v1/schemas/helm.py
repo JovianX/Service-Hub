@@ -6,6 +6,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import HttpUrl
+from pydantic import PositiveInt
 from pydantic import constr
 from pydantic import root_validator
 
@@ -46,6 +47,15 @@ class ReleaseUpdateRequestSchema(BaseModel):
     chart_name: str = Field(description='Name of the chart to use during update')
     values: list[dict] = Field(description='Mapping of release names and relase values to update')
     dry_run: bool | None = Field(description='If `True` release updating will be simulated', default=False)
+
+
+class SetReleaseTTLRequestSchema(BaseModel):
+    """
+    Body of request for update release values.
+    """
+    context_name: str = Field(description='Name of context where release is located')
+    namespase: str = Field(description='Name of namespace where release is located')
+    minutes: PositiveInt = Field(description='Release TTL in minutes', default=1)
 
 
 class ReleaseHealthStatusResponseBodySchema(BaseModel):
@@ -116,3 +126,15 @@ class ChartListItemSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ReleaseTTLResponseSchema(BaseModel):
+    """
+    Release TTL response body.
+    """
+    scheduled_time: datetime | None = Field(description='Release scheduled removal time')
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.timestamp()
+        }

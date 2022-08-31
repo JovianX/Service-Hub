@@ -16,7 +16,9 @@ from ..schemas.helm import ChartListItemSchema
 from ..schemas.helm import InstallChartBodySchema
 from ..schemas.helm import ReleaseHealthStatusResponseBodySchema
 from ..schemas.helm import ReleaseListItemSchema
+from ..schemas.helm import ReleaseTTLResponseSchema
 from ..schemas.helm import ReleaseUpdateRequestSchema
+from ..schemas.helm import SetReleaseTTLRequestSchema
 
 
 router = APIRouter()
@@ -292,5 +294,58 @@ async def delete_release(
     """
     helm_manager = HelmManager(organization_manager)
     await helm_manager.uninstall_release(
+        user.organization, context_name=context_name, namespace=namespase, release_name=release_name
+    )
+
+
+@router.post('/release/{release_name}/ttl')
+async def set_release_ttl(
+    release_name: str = Path(description='Name of relase to set TTL'),
+    data: SetReleaseTTLRequestSchema = Body(description='Release TTL data'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Sets release TTL(time to live).
+    """
+    helm_manager = HelmManager(organization_manager)
+    await helm_manager.set_release_ttl(
+        user.organization, context_name=data.context_name, namespace=data.namespase, release_name=release_name,
+        minutes=data.minutes
+    )
+
+
+@router.get('/release/{release_name}/ttl', response_model=ReleaseTTLResponseSchema)
+async def get_release_ttl(
+    release_name: str = Path(description='Name of relase to get TTL'),
+    context_name: str = Query(title='Name of context where release is located'),
+    namespase: str = Query(title='Name of namespace where release is located'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Returns date when release scheduled for removal.
+    """
+    helm_manager = HelmManager(organization_manager)
+    release_scheduled_removal_date = await helm_manager.read_release_ttl(
+        user.organization, context_name=context_name, namespace=namespase, release_name=release_name
+    )
+
+    return {'scheduled_time': release_scheduled_removal_date}
+
+
+@router.delete('/release/{release_name}/ttl')
+async def unset_release_ttl(
+    release_name: str = Path(description='Name of relase to remove TTL'),
+    context_name: str = Query(title='Name of context where release is located'),
+    namespase: str = Query(title='Name of namespace where release is located'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Removes release TTL.
+    """
+    helm_manager = HelmManager(organization_manager)
+    await helm_manager.delete_release_ttl(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
