@@ -48,11 +48,10 @@ export const sendInvite = createAsyncThunk('users/sendInvite', async (id) => {
 });
 
 const usersSlice = createSlice({
-  name: 'users/usersList',
+  name: 'users/usersActions',
   initialState: {
     isLoading: false,
     users: [],
-    createdUser: {},
   },
   reducers: {},
   extraReducers: {
@@ -69,17 +68,32 @@ const usersSlice = createSlice({
       isLoading: false,
     }),
     [addUser.fulfilled]: (state, { payload }) => ({
-      createdUser: payload,
+      users: [...state.users, payload],
+      isLoading: false,
+    }),
+    [addUser.pending]: (state, { payload }) => ({
+      ...state,
+      isLoading: true,
+    }),
+    [addUser.rejected]: (state, { payload }) => ({
+      ...state,
       isLoading: false,
     }),
     [deleteUser.fulfilled]: (state, { payload }) => ({
       users: payload,
       isLoading: false,
     }),
+    [deleteUser.pending]: (state, { payload }) => ({
+      ...state,
+      isLoading: true,
+    }),
+    [deleteUser.rejected]: (state, { payload }) => ({
+      ...state,
+      isLoading: false,
+    }),
   },
 });
 
-export const selectCreatedUser = ({ users }) => users?.createdUser;
 export const selectUsers = ({ users }) => users.users;
 export const selectIsUsersLoading = ({ users }) => users.isLoading;
 
