@@ -13,15 +13,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import DialogModal from 'app/shared-components/DialogModal';
-import { sendInvite, deleteUser, addUser, getUsersList, selectIsUsersLoading, selectUsers } from 'app/store/usersSlice';
+import {
+  sendInvite,
+  deleteUser,
+  addUser,
+  getUsersList,
+  selectIsUsersLoading,
+  selectUsers,
+  selectInfoMessage,
+} from 'app/store/usersSlice';
 
 const UsersTable = () => {
   const emailInputRef = useRef();
   const dispatch = useDispatch();
   const usersData = useSelector(selectUsers);
+  const infoMessage = useSelector(selectInfoMessage);
   const isLoading = useSelector(selectIsUsersLoading);
 
-  const [inviteInfoText, setInviteInfoText] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
@@ -39,12 +47,11 @@ const UsersTable = () => {
     dispatch(deleteUser(deleteId));
     setIsDeleteModalOpen(false);
   };
-
   const handleInvite = (id) => {
     dispatch(sendInvite(id));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmitCreate = (e) => {
     e.preventDefault();
     const user = { email: e.target.email.value, expiration_period: +e.target.expiration_period.value };
     dispatch(addUser({ user }));
@@ -64,9 +71,13 @@ const UsersTable = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className='m-12 flex justify-between items-center'>
-        <div>{inviteInfoText}</div>
-        <div className='flex items-center'>
+      <div className='min-h-[70px] m-12 flex justify-between items-center'>
+        {infoMessage?.status === 'success' ? (
+          <div className='py-[20px] ml-[20px] text-xl text-green-400'>{infoMessage?.text}</div>
+        ) : (
+          <div className='py-[20px] ml-[20px] text-xl text-red-400'>{infoMessage?.text}</div>
+        )}
+        <form onSubmit={handleSubmitCreate} className='flex justify-center items-center mr-[25px]'>
           <TextField inputRef={emailInputRef} name='email' type='email' required id='outlined-required' label='email' />
           <TextField
             className='ml-12'
@@ -79,8 +90,8 @@ const UsersTable = () => {
           <Button type='submit' className='ml-12' variant='outlined' color='primary'>
             Save
           </Button>
-        </div>
-      </form>
+        </form>
+      </div>
 
       <div className='w-full flex flex-col min-h-full'>
         <Paper className='h-full mx-12 rounded mt-12'>
@@ -125,7 +136,7 @@ const UsersTable = () => {
               </TableContainer>
             ) : (
               <div className='text-center p-[100px]'>
-                <h2 className='mb-[12px] text-6xl'>No users yet</h2>
+                <h2 className='mb-[12px] text-4xl'>No users yet</h2>
                 <p className='mb-[16px] text-2xl'>The list of users is empty. To add a user, fill out the form above</p>
                 <Button
                   className='ml-5 text-2xl px-[36px] py-[22px]'

@@ -42,8 +42,15 @@ export const deleteUser = createAsyncThunk('users/deleteUser', async (id) => {
 export const sendInvite = createAsyncThunk('users/sendInvite', async (id) => {
   try {
     await sendInviteAPI(id);
+    return {
+      text: 'Invitation sent successfully',
+      status: 'success',
+    };
   } catch (e) {
-    console.log(e);
+    return {
+      text: e.response.data.message,
+      status: 'error',
+    };
   }
 });
 
@@ -52,6 +59,10 @@ const usersSlice = createSlice({
   initialState: {
     isLoading: false,
     users: [],
+    infoMessage: {
+      text: ' ',
+      status: ' ',
+    },
   },
   reducers: {},
   extraReducers: {
@@ -91,9 +102,18 @@ const usersSlice = createSlice({
       ...state,
       isLoading: false,
     }),
+    [sendInvite.fulfilled]: (state, { payload }) => ({
+      ...state,
+      infoMessage: payload,
+    }),
+    [sendInvite.pending]: (state, { payload }) => ({
+      ...state,
+      infoMessage: {},
+    }),
   },
 });
 
+export const selectInfoMessage = ({ users }) => users.infoMessage;
 export const selectUsers = ({ users }) => users.users;
 export const selectIsUsersLoading = ({ users }) => users.isLoading;
 
