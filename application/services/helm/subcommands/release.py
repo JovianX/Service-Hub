@@ -117,10 +117,9 @@ class HelmRelease(HelmBase):
             namespace=namespace
         )
         try:
-            qq = await self._run_command(command)
+            await self._run_command(command)
         except NonZeroStatusException:
             logger.exception(
                 f'Failed to remove release TTL. Release: "{release_name}", namespace: "{namespace}"'
             )
             raise
-        return
