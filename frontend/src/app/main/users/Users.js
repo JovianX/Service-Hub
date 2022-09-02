@@ -9,7 +9,7 @@ const Users = () => {
 
   return (
     <FusePageCarded
-      header={<TableHeader title='Users Catalog' />}
+      header={<TableHeader title='Users' />}
       content={<UsersTable />}
       scroll={isMobile ? 'normal' : 'content'}
       className='px-24'

@@ -8,6 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import { useRef, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -86,7 +87,7 @@ const UsersTable = () => {
             type='email'
             required
             id='outlined-required'
-            label='email'
+            label='Email'
             size='small'
           />
           <TextField
@@ -95,8 +96,12 @@ const UsersTable = () => {
             type='number'
             required
             id='outlined-required'
-            label='Hours Valid'
+            label='Expires after'
             size='small'
+            sx={{ width: 130 }}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">hours</InputAdornment>,
+            }}
             defaultValue={48}
           />
           <Button type='submit' className='ml-12' variant='contained' color='primary' startIcon={<AddIcon />}>
@@ -132,7 +137,7 @@ const UsersTable = () => {
                           <Button onClick={() => handleDeleteConfirm(row.id)} variant='text' color='error'>
                             <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                           </Button>
-                          <Button className='ml-5' onClick={() => handleInvite(row.id)} variant='text' color='success'>
+                          <Button className='ml-5' onClick={() => handleInvite(row.id)} variant='text' >
                             Resend
                           </Button>
                         </TableCell>
