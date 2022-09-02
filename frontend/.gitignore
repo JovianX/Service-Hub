@@ -22,6 +22,7 @@
 /.vscode
 
 /src/styles/tailwind.css
+env_vars.js
 
 npm-debug.log*
 yarn-debug.log*
