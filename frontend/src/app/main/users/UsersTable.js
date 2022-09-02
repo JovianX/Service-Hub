@@ -1,3 +1,4 @@
+import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -12,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import DialogModal from 'app/shared-components/DialogModal';
 import {
   sendInvite,
@@ -73,22 +75,32 @@ const UsersTable = () => {
     <>
       <div className='min-h-[70px] m-12 flex justify-between items-center'>
         {infoMessage?.status === 'success' ? (
-          <div className='py-[20px] ml-[20px] text-xl text-green-400'>{infoMessage?.text}</div>
+          <div className='py-[20px] ml-[20px] text-l text-green-400'>{infoMessage?.text}</div>
         ) : (
-          <div className='py-[20px] ml-[20px] text-xl text-red-400'>{infoMessage?.text}</div>
+          <div className='py-[20px] ml-[20px] text-l text-red-400'>{infoMessage?.text}</div>
         )}
-        <form onSubmit={handleSubmitCreate} className='flex justify-center items-center mr-[25px]'>
-          <TextField inputRef={emailInputRef} name='email' type='email' required id='outlined-required' label='email' />
+        <form onSubmit={handleSubmitCreate} className='flex justify-center items-center mr-[16px]'>
+          <TextField
+            inputRef={emailInputRef}
+            name='email'
+            type='email'
+            required
+            id='outlined-required'
+            label='email'
+            size='small'
+          />
           <TextField
             className='ml-12'
             name='expiration_period'
             type='number'
             required
             id='outlined-required'
-            label='expiration period'
+            label='Hours Valid'
+            size='small'
+            defaultValue={48}
           />
-          <Button type='submit' className='ml-12' variant='outlined' color='primary'>
-            Save
+          <Button type='submit' className='ml-12' variant='contained' color='primary' startIcon={<AddIcon />}>
+            Invite
           </Button>
         </form>
       </div>
@@ -116,17 +128,12 @@ const UsersTable = () => {
                         <TableCell align='left'>{row.status}</TableCell>
                         <TableCell align='left'>{new Date(+row.created_at * 1000).toDateString()}</TableCell>
                         <TableCell align='left'>{row.expiration_period}</TableCell>
-                        <TableCell align='center'>
-                          <Button onClick={() => handleDeleteConfirm(row.id)} variant='outlined' color='error'>
-                            Delete
+                        <TableCell align='right'>
+                          <Button onClick={() => handleDeleteConfirm(row.id)} variant='text' color='error'>
+                            <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                           </Button>
-                          <Button
-                            className='ml-5'
-                            onClick={() => handleInvite(row.id)}
-                            variant='outlined'
-                            color='success'
-                          >
-                            Send invite
+                          <Button className='ml-5' onClick={() => handleInvite(row.id)} variant='text' color='success'>
+                            Resend
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -140,9 +147,10 @@ const UsersTable = () => {
                 <p className='mb-[16px] text-2xl'>The list of users is empty. To add a user, fill out the form above</p>
                 <Button
                   className='ml-5 text-2xl px-[36px] py-[22px]'
-                  variant='outlined'
+                  variant='contained'
                   color='primary'
                   onClick={() => emailInputRef.current?.focus()}
+                  startIcon={<AddIcon />}
                 >
                   Add user
                 </Button>

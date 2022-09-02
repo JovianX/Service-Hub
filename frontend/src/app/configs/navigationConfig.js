@@ -18,14 +18,6 @@ const navigationConfig = [
     url: 'dashboard',
   },
   {
-    id: 'users-component',
-    title: 'Users',
-    translate: 'USERS',
-    type: 'item',
-    icon: 'heroicons-outline:users',
-    url: 'users',
-  },
-  {
     id: 'services-component',
     title: 'services',
     translate: 'SERVICES',
@@ -64,6 +56,14 @@ const navigationConfig = [
     type: 'item',
     icon: 'heroicons-outline:collection',
     url: 'clusters',
+  },
+  {
+    id: 'users-component',
+    title: 'Users',
+    translate: 'USERS',
+    type: 'item',
+    icon: 'heroicons-outline:users',
+    url: 'users',
   },
 ];
 
