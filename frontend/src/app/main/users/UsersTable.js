@@ -10,17 +10,26 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { selectIsInvitationsLoading } from 'app/store/invitationsSlice';
-import { getUsersList, activateUser, deactivateUser, deleteUser, selectUsers } from 'app/store/usersSlice';
+import {
+  getUsersList,
+  activateUser,
+  deactivateUser,
+  deleteUser,
+  selectUsers,
+  selectIsUsersLoading,
+} from 'app/store/usersSlice';
 
 import UserDialogModal from './UserDialogModal';
 
 const InvitationsTable = () => {
   const dispatch = useDispatch();
   const usersData = useSelector(selectUsers);
-  const isLoading = useSelector(selectIsInvitationsLoading);
+  const isLoading = useSelector(selectIsUsersLoading);
+  const isTableLoading = useSelector(selectIsInvitationsLoading);
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openDeactivateModal, setOpenDeactivateModal] = useState(false);
@@ -41,6 +50,14 @@ const InvitationsTable = () => {
   }, [dispatch]);
 
   if (isLoading) {
+    return (
+      <div className='w-full flex justify-center'>
+        <FuseLoading />
+      </div>
+    );
+  }
+
+  if (isTableLoading) {
     return <></>;
   }
 

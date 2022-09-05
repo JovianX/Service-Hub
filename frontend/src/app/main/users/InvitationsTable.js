@@ -10,6 +10,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { Box } from '@mui/system';
 import { useRef, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,6 +28,14 @@ import {
 } from 'app/store/invitationsSlice';
 
 import UserDialogModal from './UserDialogModal';
+
+const dateFormat = {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+};
 
 const InvitationsTable = () => {
   const emailInputRef = useRef();
@@ -70,7 +79,7 @@ const InvitationsTable = () => {
         ) : (
           <div className='py-[20px] ml-[20px] text-l text-red-400'>{infoMessage?.text}</div>
         )}
-        <form onSubmit={handleSubmitCreate} className='flex justify-center items-center mr-[16px]'>
+        <form onSubmit={handleSubmitCreate} className='flex justify-center items-center'>
           <TextField
             inputRef={emailInputRef}
             name='email'
@@ -132,8 +141,16 @@ const InvitationsTable = () => {
                           <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                             <TableCell align='left'>{row.email}</TableCell>
                             <TableCell align='left'>{row.status}</TableCell>
-                            <TableCell align='left'>{new Date(+row.created_at * 1000).toDateString()}</TableCell>
-                            <TableCell align='left'>{row.expiration_period}</TableCell>
+                            <TableCell align='left'>
+                              {new Date(+row.created_at * 1000)
+                                .toLocaleString('en-us', dateFormat)
+                                .replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2')}
+                            </TableCell>
+                            <TableCell align='left'>
+                              {new Date(+row.created_at * 1000 + +row.expiration_period * 3600000)
+                                .toLocaleString('en-us', dateFormat)
+                                .replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2')}
+                            </TableCell>
                             <TableCell align='right'>
                               <div className='flex justify-end'>
                                 <div className='text-left w-[90px]'>
@@ -173,8 +190,10 @@ const InvitationsTable = () => {
                 </Table>
               </TableContainer>
             ) : (
-              <div className='text-center p-[20px]'>
-                <h2 className='mb-[12px] text-3xl'>No users yet</h2>
+              <Box className='text-center pb-[20px]'>
+                <Typography className='mb-[12px] text-3xl' component='h4'>
+                  No users yet
+                </Typography>
                 <p className='mb-[16px] text-xl'>The list of users is empty. To add a user, fill out the form above</p>
                 <Button
                   className='ml-5 px-[28px]'
@@ -185,7 +204,7 @@ const InvitationsTable = () => {
                 >
                   Add user
                 </Button>
-              </div>
+              </Box>
             )}
           </FuseScrollbars>
         </Paper>

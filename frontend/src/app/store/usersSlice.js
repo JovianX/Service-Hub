@@ -58,15 +58,12 @@ const usersSlice = createSlice({
   extraReducers: {
     [getUsersList.fulfilled]: (state, { payload }) => ({
       users: payload,
-      isLoading: false,
     }),
     [getUsersList.pending]: (state) => ({
       ...state,
-      isLoading: true,
     }),
     [getUsersList.rejected]: (state) => ({
       ...state,
-      isLoading: false,
     }),
     [deactivateUser.fulfilled]: (state, { payload }) => ({
       users: payload,
