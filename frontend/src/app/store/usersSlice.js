@@ -1,26 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
-  sendInvite as sendInviteAPI,
-  getUsersList as getUsersListAPI,
-  addUser as addUserAPI,
   deleteUser as deleteUserAPI,
+  getUsersList as getUsersListAPI,
+  activateUser as activateUserAPi,
+  deactivateUser as deactivateUserAPI,
 } from '../api';
 
 export const getUsersList = createAsyncThunk('users/getUsersList', async () => {
   try {
     const response = await getUsersListAPI();
-    const data = await response.data;
-    return data;
-  } catch (e) {
-    console.log(e);
-    return [];
-  }
-});
-
-export const addUser = createAsyncThunk('users/addUser', async ({ user }) => {
-  try {
-    const response = await addUserAPI(user);
     const data = await response.data;
     return data;
   } catch (e) {
@@ -39,18 +28,23 @@ export const deleteUser = createAsyncThunk('users/deleteUser', async (id) => {
   }
 });
 
-export const sendInvite = createAsyncThunk('users/sendInvite', async (id) => {
+export const activateUser = createAsyncThunk('users/activateUser', async (id) => {
   try {
-    await sendInviteAPI(id);
-    return {
-      text: 'Invitation sent successfully',
-      status: 'success',
-    };
+    const response = await activateUserAPi(id);
+    const data = await response.data;
+    return data;
   } catch (e) {
-    return {
-      text: e.response.data.message,
-      status: 'error',
-    };
+    console.log(e);
+  }
+});
+
+export const deactivateUser = createAsyncThunk('users/deactivateUser', async (id) => {
+  try {
+    const response = await deactivateUserAPI(id);
+    const data = await response.data;
+    return data;
+  } catch (e) {
+    console.log(e);
   }
 });
 
@@ -59,10 +53,6 @@ const usersSlice = createSlice({
   initialState: {
     isLoading: false,
     users: [],
-    infoMessage: {
-      text: ' ',
-      status: ' ',
-    },
   },
   reducers: {},
   extraReducers: {
@@ -78,42 +68,27 @@ const usersSlice = createSlice({
       ...state,
       isLoading: false,
     }),
-    [addUser.fulfilled]: (state, { payload }) => ({
-      users: [...state.users, payload],
-      isLoading: false,
-    }),
-    [addUser.pending]: (state, { payload }) => ({
-      ...state,
-      isLoading: true,
-    }),
-    [addUser.rejected]: (state, { payload }) => ({
-      ...state,
-      isLoading: false,
-    }),
-    [deleteUser.fulfilled]: (state, { payload }) => ({
+    [deactivateUser.fulfilled]: (state, { payload }) => ({
       users: payload,
       isLoading: false,
     }),
-    [deleteUser.pending]: (state, { payload }) => ({
+    [deactivateUser.pending]: (state, { payload }) => ({
       ...state,
       isLoading: true,
     }),
-    [deleteUser.rejected]: (state, { payload }) => ({
+    [deactivateUser.rejected]: (state, { payload }) => ({
       ...state,
       isLoading: false,
     }),
-    [sendInvite.fulfilled]: (state, { payload }) => ({
+    [activateUser.fulfilled]: (state, { payload }) => ({
       ...state,
-      infoMessage: payload,
     }),
-    [sendInvite.pending]: (state, { payload }) => ({
+    [deactivateUser.fulfilled]: (state, { payload }) => ({
       ...state,
-      infoMessage: {},
     }),
   },
 });
 
-export const selectInfoMessage = ({ users }) => users.infoMessage;
 export const selectUsers = ({ users }) => users.users;
 export const selectIsUsersLoading = ({ users }) => users.isLoading;
 
