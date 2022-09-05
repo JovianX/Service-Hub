@@ -9,18 +9,18 @@ from pydantic import HttpUrl
 from pydantic import constr
 from pydantic import root_validator
 
-from application.constants.helm import ReleaseHealthStatuses
-from application.constants.helm import ReleaseStatuses
-from application.constants.kubernetes import K8sKinds
-from application.schemas.common_types import K8sSubdomainNameString
+from constants.helm import ReleaseHealthStatuses
+from constants.helm import ReleaseStatuses
+from constants.kubernetes import K8sKinds
+from schemas.common_types import K8sSubdomainNameString
 
 
 class AddHelmRepositoryBodySchema(BaseModel):
     """
     Request body of add Helm repository endpoint.
     """
-    name: constr(min_length=3, strip_whitespace=True) = Field(description='Repository name.', example='nginx-stable')
-    url: HttpUrl = Field(description='Repository URL.', example='https://helm.nginx.com/stable')
+    name: constr(min_length=3, strip_whitespace=True) = Field(description='Repository name.', example='bitnami')
+    url: HttpUrl = Field(description='Repository URL.', example='https://charts.bitnami.com/bitnami')
 
 
 class InstallChartBodySchema(BaseModel):
@@ -37,6 +37,17 @@ class InstallChartBodySchema(BaseModel):
     dry_run: bool | None = Field(description='If `True` chart installation will be simulated', default=False)
 
 
+class ReleaseUpdateRequestSchema(BaseModel):
+    """
+    Body of request for update release values.
+    """
+    context_name: str = Field(description='Name of context where updating release is located')
+    namespase: str = Field(description='Name of namespace where updating release is located')
+    chart_name: str = Field(description='Name of the chart to use during update')
+    values: list[dict] = Field(description='Mapping of release names and relase values to update')
+    dry_run: bool | None = Field(description='If `True` release updating will be simulated', default=False)
+
+
 class ReleaseHealthStatusResponseBodySchema(BaseModel):
     """
     Response body of release entities health status endpoint.
@@ -45,6 +56,11 @@ class ReleaseHealthStatusResponseBodySchema(BaseModel):
     details: dict[K8sKinds, dict[str, bool]] = Field(
         description='Release detailed description of release entities health condition, grouped by `kind`'
     )
+
+
+class ChartDumpResponseSchema(BaseModel):
+    filename: str = Field(description='Archive filename')
+    archive: bytes = Field(description='Archive content encoded in base64')
 
 
 class ReleaseListItemAvailableChart(BaseModel):

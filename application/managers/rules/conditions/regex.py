@@ -3,7 +3,7 @@ Condition to check that string matches pattern.
 """
 import re
 
-from application.constants.rules import RuleComparisonStatements
+from constants.rules import RuleComparisonStatements
 
 from .base import Condition
 

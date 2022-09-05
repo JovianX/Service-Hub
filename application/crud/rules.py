@@ -7,10 +7,10 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.constants.rules import RuleActions
-from application.db.session import get_session
-from application.exceptions.rule import RuleDoesNotExistException
-from application.models.rule import Rule
+from constants.rules import RuleActions
+from db.session import get_session
+from exceptions.rule import RuleDoesNotExistException
+from models.rule import Rule
 
 from .base import BaseDatabase
 

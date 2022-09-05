@@ -1,3 +1,6 @@
+#Logs files
+*.log
+
 # Commonly Python ignored resources
 __pycache__
 *.pyc
@@ -6,3 +9,7 @@ __pycache__
 .venv
 /.idea
 ./frontend/.idea
+application/.env
+
+# Local desktop resoruces
+.DS_Store

@@ -8,18 +8,19 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from application.db.base_class import Base
-from application.models.application import *
-from application.models.organization import *
-from application.models.rule import *
-from application.models.service import *
-from application.models.template import *
-from application.models.user import *
+from db.base_class import Base
+from models.application import *
+from models.invitation import *
+from models.organization import *
+from models.rule import *
+from models.service import *
+from models.template import *
+from models.user import *
 
 
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(os.environ.get('ENV_FILE', '../.env'))
 except ImportError:
     pass
 

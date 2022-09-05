@@ -1,5 +1,5 @@
 .ONESHELL:
-.PHONY: help setup setup_helm setup_kubectl migrate create_migration up down serve logs db_shell run format tests
+.PHONY: help setup setup_helm setup_kubectl db_synchronization db_revision up down serve logs db_shell run format tests
 
 include .env
 export
@@ -15,7 +15,7 @@ help: ## Display this help.
 setup: ## Setup this project's python dependencies.
 	@test -d $(VE_DIRECTORY) || virtualenv $(VE_DIRECTORY) --python=$(PYTHON)
 	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade pip
-	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade --requirement requirements.dev.txt
+	@. $(VE_DIRECTORY)/bin/activate; pip install --upgrade --requirement=application/requirements.dev.txt
 	@mkdir -p $(VE_DIRECTORY)/tmp/storage
 
 setup_helm: ## Install Helm CLI.
@@ -29,33 +29,39 @@ setup_helm: ## Install Helm CLI.
 	@rm $(VE_DIRECTORY)/tmp/helm.tar.gz
 	@rm -rf $(VE_DIRECTORY)/tmp/helm
 
+	# Installing release plugin(https://github.com/JovianX/helm-release-plugin).
+	@helm plugin uninstall release > /dev/null
+	@helm plugin install https://github.com/JovianX/helm-release-plugin
+	# Checking that it is working.
+	@helm release
+
 setup_kubectl: ## Install Kubernetes CLI.
 	@test -d $(VE_DIRECTORY) || (echo 'Setup virtual environment first. You can do this by running `make setup`.' && exit 1)
 
 	@wget --output-document=$(VE_DIRECTORY)/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 	@chmod +x $(VE_DIRECTORY)/bin/kubectl
 
-migrate: ## Apply all unapplied migrations.
+db_synchronization: ## Apply all unapplied migrations.
 	@if [ -z `docker ps --quiet --no-trunc | grep --only-matching "$(shell docker-compose ps --quiet application)"` ]; then
-		. $(VE_DIRECTORY)/bin/activate; alembic upgrade head
+		. $(VE_DIRECTORY)/bin/activate; cd application; alembic upgrade head
 	else
 		docker-compose exec application alembic upgrade head
 	fi
 
-create_migration: ## Does revision of database and models and creates migration if needed. Usage example: `make create_migration message="Added ModelName model"`
+db_revision: ## Does revision of database and models and creates migration if needed. Usage example: `make create_migration message="Added ModelName model"`
 	@if [ -z "${message}" ]; then echo '`message` attribute is required' && exit 1; fi
 	@if [ -z `docker ps --quiet --no-trunc | grep --only-matching "$(shell docker-compose ps --quiet application)"` ]; then
-		. $(VE_DIRECTORY)/bin/activate; alembic revision --autogenerate --message="${message}"
+		. $(VE_DIRECTORY)/bin/activate; cd application; alembic revision --autogenerate --message="${message}"
 	else
 		docker-compose exec application alembic revision --autogenerate --message="${message}"
 		# Because of Docker usage, migration will be created with root
 		# ownership. Doing sneaky tricky black voodoo magic to change migration
 		# files ownership to current user
-		docker-compose exec application chown $(shell id -u):$(shell id -g) migrations/versions/*
+		cd application; docker-compose exec application chown $(shell id -u):$(shell id -g) migrations/versions/*
 	fi
 
 build: ## Build all Docker images.
-	docker-compose build
+	docker-compose build --no-cache --force-rm
 
 up: ## Launch dockerized infrastructure.
 	docker-compose up --detach
@@ -75,12 +81,11 @@ db_shell: ## PostgreSQL shell
 	@docker-compose exec --env PAGER="less -S" postgres psql --user=$(DB_USER) --dbname=$(DB_NAME)
 
 run: ## Launch local appserver.
-	# . $(VE_DIRECTORY)/bin/activate; uvicorn --reload --reload-exclude=docker-data/* application.instance:instance
-	. $(VE_DIRECTORY)/bin/activate; uvicorn application.instance:instance
+	@. $(VE_DIRECTORY)/bin/activate; uvicorn --reload --reload-exclude=docker-data/* application.instance:instance
 
 format: ## Format source code.
-	@. $(VE_DIRECTORY)/bin/activate; autopep8 --in-place --recursive application migrations
-	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports application migrations
+	@. $(VE_DIRECTORY)/bin/activate; autopep8 --in-place --recursive application
+	@. $(VE_DIRECTORY)/bin/activate; isort --force-single-line-imports application
 
 tests: ## Run all test.
 	@. $(VE_DIRECTORY)/bin/activate; pytest -v ./application/tests

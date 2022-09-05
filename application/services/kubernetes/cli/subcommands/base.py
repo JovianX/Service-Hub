@@ -1,7 +1,7 @@
 from typing import Dict
 
-from application.core.configuration import settings
-from application.utils.shell import run
+from core.configuration import settings
+from utils.shell import run
 
 
 class KubectlBase:

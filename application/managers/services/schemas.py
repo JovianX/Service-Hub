@@ -10,9 +10,9 @@ from pydantic import Extra
 from pydantic import Field
 from pydantic import HttpUrl
 
-from application.constants.common import HTTPMethods
-from application.constants.services import ServiceTypes
-from application.schemas.common_types import K8sSubdomainNameString
+from constants.common import HTTPMethods
+from constants.services import ServiceTypes
+from schemas.common_types import K8sSubdomainNameString
 
 
 class HealthCheckSettingsBaseSchema(BaseModel, extra=Extra.forbid):

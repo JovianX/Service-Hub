@@ -1,19 +1,22 @@
 from fastapi import APIRouter
+from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 from fastapi import Query
 
-from application.core.authentication import current_active_user
-from application.managers.helm.manager import HelmManager
-from application.managers.organizations.manager import OrganizationManager
-from application.managers.organizations.manager import get_organization_manager
-from application.models.user import User
+from core.authentication import current_active_user
+from managers.helm.manager import HelmManager
+from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
+from models.user import User
 
 from ..schemas.helm import AddHelmRepositoryBodySchema
+from ..schemas.helm import ChartDumpResponseSchema
 from ..schemas.helm import ChartListItemSchema
 from ..schemas.helm import InstallChartBodySchema
 from ..schemas.helm import ReleaseHealthStatusResponseBodySchema
 from ..schemas.helm import ReleaseListItemSchema
+from ..schemas.helm import ReleaseUpdateRequestSchema
 
 
 router = APIRouter()
@@ -237,6 +240,43 @@ async def release_notes(
     )
 
     return notes
+
+
+@router.get('/release/{release_name}/dump-chart', response_model=ChartDumpResponseSchema)
+async def create_release_chart(
+    release_name: str = Path(description='Name of target release'),
+    context_name: str = Query(title='Name of context where release located'),
+    namespase: str = Query(title='Name of namespace where release located'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Creates chart for release.
+    """
+    helm_manager = HelmManager(organization_manager)
+    return await helm_manager.get_release_chart(user.organization, context_name, namespase, release_name)
+
+
+@router.patch('/release/{release_name}', response_model=dict)
+async def update_release(
+    release_name: str = Path(description='Name of relase to get details'),
+    body: ReleaseUpdateRequestSchema = Body(description='Release update parameters'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Updates release's values.
+    """
+    helm_manager = HelmManager(organization_manager)
+    return await helm_manager.update_release(
+        organization=user.organization,
+        context_name=body.context_name,
+        namespace=body.namespase,
+        release_name=release_name,
+        chart_name=body.chart_name,
+        values=body.values,
+        dry_run=body.dry_run
+    )
 
 
 @router.delete('/release/{release_name}')

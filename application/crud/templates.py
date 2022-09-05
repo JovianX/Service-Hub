@@ -6,8 +6,8 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.db.session import get_session
-from application.models.template import TemplateRevision
+from db.session import get_session
+from models.template import TemplateRevision
 
 from .base import BaseDatabase
 

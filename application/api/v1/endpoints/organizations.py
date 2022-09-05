@@ -5,12 +5,12 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Query
 
-from application.core.authentication import current_active_user
-from application.managers.organizations.manager import OrganizationManager
-from application.managers.organizations.manager import get_organization_manager
-from application.managers.organizations.settings_schemas import ROOT_SETTING_NAMES
-from application.models.user import User
-from application.schemas.kubernetes import KubernetesConfigurationSchema
+from core.authentication import current_active_user
+from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
+from managers.organizations.settings_schemas import ROOT_SETTING_NAMES
+from models.user import User
+from schemas.kubernetes import KubernetesConfigurationSchema
 
 from ..schemas.organization import K8sConfigurationResponseSchema
 
@@ -47,7 +47,7 @@ async def get_configuration(
 
 
 @router.delete('/kubernetes-configuration/context', response_model=K8sConfigurationResponseSchema)
-async def save_setting(
+async def delete_configuration_context(
     context_name: str = Query(alias='context-name'),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
@@ -56,8 +56,7 @@ async def save_setting(
     Deletes context from organization's Kubernetes configuration.
     """
     organization = user.organization
-    await organization_manager.delete_context(organization, context_name)
-    configuration = organization_manager.get_kubernetes_configuration(user.organization)
+    configuration = await organization_manager.delete_context(organization, context_name)
 
     return {'configuration': configuration}
 

@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy.orm import relationship
 
-from ..db.base_class import Base
+from db.base_class import Base
 
 
 class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):
@@ -23,3 +23,10 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     created_rules = relationship('Rule', back_populates='creator', lazy='selectin')
     created_templates = relationship('TemplateRevision', back_populates='creator', lazy='selectin')
     created_applications = relationship('Application', back_populates='creator', lazy='selectin')
+    created_invitations = relationship(
+        'UserInvitation', back_populates='creator', lazy='selectin', foreign_keys='UserInvitation.creator_id'
+    )
+    invitation = relationship(
+        'UserInvitation', back_populates='created_user', lazy='selectin', uselist=False,
+        foreign_keys='UserInvitation.created_user_id'
+    )

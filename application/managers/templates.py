@@ -9,18 +9,18 @@ import yaml
 from fastapi import Depends
 from fastapi import status
 
-from application.core.configuration import settings
-from application.crud.templates import TemplateDatabase
-from application.crud.templates import get_template_db
-from application.exceptions.common import CommonException
-from application.exceptions.shell import NonZeroStatusException
-from application.models.organization import Organization
-from application.models.template import TemplateRevision
-from application.models.user import User
-from application.schemas.templates import TemplateSchema
-from application.utils.shell import run
-from application.utils.template import load_template
-from application.utils.template import render_template
+from core.configuration import settings
+from crud.templates import TemplateDatabase
+from crud.templates import get_template_db
+from exceptions.common import CommonException
+from exceptions.shell import NonZeroStatusException
+from models.organization import Organization
+from models.template import TemplateRevision
+from models.user import User
+from schemas.templates import TemplateSchema
+from utils.shell import run
+from utils.template import load_template
+from utils.template import render_template
 
 
 logger = logging.getLogger(__name__)
@@ -139,25 +139,6 @@ class TemplateManager:
                 status_code=status.HTTP_403_FORBIDDEN
             )
         await self.db.delete(id=template_id, organization_id=organization.id)
-
-    def validate_inputs(self, template: TemplateRevision, inputs: dict) -> None:
-        """
-        Returns `True` if provided inputs valid otherwise returns `False`.
-        """
-        template_schema = load_template(template.template)
-        input_specifications = {item.name: item for item in template_schema.inputs}
-        absent_inputs = input_specifications.keys() - inputs.keys()
-        if absent_inputs:
-            raise CommonException(
-                f'Absent template input(s): {", ".join(absent_inputs)}',
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
-        extra_inputs = inputs.keys() - input_specifications.keys()
-        if extra_inputs:
-            raise CommonException(
-                f'Unexpected extra template input(s): {", ".join(extra_inputs)}',
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
 
     async def _extract_template(self, archive: bytes) -> dict:
         """

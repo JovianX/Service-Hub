@@ -7,9 +7,9 @@ from fastapi_users.authentication import JWTStrategy
 from httpx_oauth.clients.github import GitHubOAuth2
 from httpx_oauth.clients.google import GoogleOAuth2
 
-from application.core.configuration import settings
-from application.managers.users import get_user_manager
-from application.models.user import User
+from core.configuration import settings
+from managers.users import get_user_manager
+from models.user import User
 
 
 github_client = GitHubOAuth2(settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET)

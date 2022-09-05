@@ -2,16 +2,16 @@
 Templates schemas.
 """
 from collections import Counter
-from typing import Any
 
 from pydantic import BaseModel
+from pydantic import Extra
 from pydantic import Field
 from pydantic import conlist
 from pydantic import constr
 from pydantic import root_validator
 
-from application.constants.templates import InputTypes
-from application.exceptions.templates import InvalidTemplateException
+from constants.templates import InputTypes
+from exceptions.templates import InvalidTemplateException
 
 
 class Chart(BaseModel):
@@ -32,6 +32,9 @@ class Chart(BaseModel):
                     'a higher priority.',
     )
 
+    class Config:
+        extra = Extra.forbid
+
 
 class Input(BaseModel):
     """
@@ -39,15 +42,19 @@ class Input(BaseModel):
     """
     type: InputTypes = Field(description='Type of input on form', example=InputTypes.string)
     name: constr(min_length=1, strip_whitespace=True) = Field(
-        description='Name of Helm value that will contain value of input',
+        description='Name of value that will be used in template',
         example='username'
     )
-    lable: constr(min_length=1, strip_whitespace=True) | None = Field(
+    label: constr(min_length=1, strip_whitespace=True) | None = Field(
         description='User friendly name of input', example='User Name'
     )
-    default: Any | None = Field(
+    default: str | int | float | bool | None = Field(
         description='Default value of input if it was not provided by user', example='root'
     )
+    immutable: bool | None = Field(description='If `True`, value cannot be changed', default=False)
+
+    class Config:
+        extra = Extra.forbid
 
 
 class TemplateSchema(BaseModel):
@@ -60,6 +67,9 @@ class TemplateSchema(BaseModel):
     )
     charts: conlist(Chart, min_items=1) = Field(description='Charts that should be deployed by this template')
     inputs: list[Input] | None = Field(description='Input that should be provided by user.', default=[])
+
+    class Config:
+        extra = Extra.forbid
 
     @root_validator(skip_on_failure=True)
     def ensure_chart_names_unique(cls, values: dict) -> dict:
@@ -86,3 +96,17 @@ class TemplateSchema(BaseModel):
             raise InvalidTemplateException(f'Template inputs have dublicate name(s): {", ".join(duplicate_names)}')
 
         return values
+
+    @property
+    def chart_mapping(self) -> dict[str, Chart]:
+        """
+        Mapping of chart release name and chart itself.
+        """
+        return {chart.name: chart for chart in self.charts}
+
+    @property
+    def inputs_mapping(self) -> dict[str, Input]:
+        """
+        Mapping of input placeholder name and input itself.
+        """
+        return {item.name: item for item in self.inputs}

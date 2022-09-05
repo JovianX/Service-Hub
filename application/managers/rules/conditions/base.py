@@ -1,9 +1,9 @@
 """
 Base condition class.
 """
-from application.constants.rules import RuleAttribute
-from application.constants.rules import RuleComparisonStatements
-from application.managers.rules.schemas import RuleConditionSchema
+from constants.rules import RuleAttribute
+from constants.rules import RuleComparisonStatements
+from managers.rules.schemas import RuleConditionSchema
 
 
 class Condition:

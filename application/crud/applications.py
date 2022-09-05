@@ -4,8 +4,8 @@ Classes responsible for interaction with application database entities.
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.db.session import get_session
-from application.models.application import Application
+from db.session import get_session
+from models.application import Application
 
 from .base import BaseDatabase
 

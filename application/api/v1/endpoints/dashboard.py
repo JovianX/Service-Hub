@@ -6,14 +6,14 @@ import asyncio
 from fastapi import APIRouter
 from fastapi import Depends
 
-from application.constants.helm import ReleaseHealthStatuses
-from application.core.authentication import current_active_user
-from application.managers.helm.manager import HelmManager
-from application.managers.organizations.manager import OrganizationManager
-from application.managers.organizations.manager import get_organization_manager
-from application.managers.services.manager import ServiceManager
-from application.managers.services.manager import get_service_manager
-from application.models.user import User
+from constants.helm import ReleaseHealthStatuses
+from core.authentication import current_active_user
+from managers.helm.manager import HelmManager
+from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
+from managers.services.manager import ServiceManager
+from managers.services.manager import get_service_manager
+from models.user import User
 
 
 router = APIRouter()

@@ -2,12 +2,12 @@ import re
 
 import yaml
 
-from application.exceptions.helm import ChartInstallException
-from application.exceptions.helm import ChartNotFoundException
-from application.exceptions.helm import ReleaseAlreadyExistsException
-from application.exceptions.helm import RepositoryNotFoundException
-from application.exceptions.shell import NonZeroStatusException
-from application.utils.temporary_file import yaml_temporary_file
+from exceptions.helm import ChartInstallException
+from exceptions.helm import ChartNotFoundException
+from exceptions.helm import ReleaseAlreadyExistsException
+from exceptions.helm import RepositoryNotFoundException
+from exceptions.shell import NonZeroStatusException
+from utils.temporary_file import yaml_temporary_file
 
 from .base import HelmBase
 
@@ -63,8 +63,8 @@ class HelmInstall(HelmBase):
             values_temporary_files.append(temporary_file)
             yaml.safe_dump(values_part, temporary_file)
             args.append(f'--values={temporary_file.name}')
-            command = self._formup_command(*args, **kwargs)
 
+        command = self._formup_command(*args, **kwargs)
         try:
             output = await self._run_command(command)
         except NonZeroStatusException as error:
@@ -95,8 +95,8 @@ class HelmInstall(HelmBase):
                 )
 
             raise
-
-        for file in values_temporary_files:
-            file.close()
+        finally:
+            for file in values_temporary_files:
+                file.close()
 
         return yaml.safe_load(output)

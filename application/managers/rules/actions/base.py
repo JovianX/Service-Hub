@@ -1,8 +1,8 @@
 """
 Rule base action class.
 """
-from application.constants.rules import RuleActions
-from application.managers.rules.schemas import RuleActionSettingsSchema
+from constants.rules import RuleActions
+from managers.rules.schemas import RuleActionSettingsSchema
 
 
 class Action:

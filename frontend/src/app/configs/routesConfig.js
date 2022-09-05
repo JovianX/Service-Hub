@@ -15,6 +15,7 @@ import ServicesConfig from '../main/services/ServicesConfig';
 import SignInConfig from '../main/sign-in/SignInConfig';
 import SignOutConfig from '../main/sign-out/SignOutConfig';
 import SignUpConfig from '../main/sign-up/SignUpConfig';
+import UsersConfig from '../main/users/UsersConfig';
 
 const routeConfigs = [
   ClustersConfig,
@@ -27,6 +28,7 @@ const routeConfigs = [
   SignOutConfig,
   SignInConfig,
   SignUpConfig,
+  UsersConfig,
 ];
 
 const routes = [

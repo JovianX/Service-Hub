@@ -9,9 +9,9 @@ from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from application.exceptions.db import DuplicatesFoundException
-from application.exceptions.db import RecordNotFoundException
-from application.exceptions.db import UnknownModelAttributeException
+from exceptions.db import DuplicatesFoundException
+from exceptions.db import RecordNotFoundException
+from exceptions.db import UnknownModelAttributeException
 
 
 class BaseDatabase:
@@ -62,7 +62,7 @@ class BaseDatabase:
         if not records:
             raise RecordNotFoundException(
                 self.table,
-                f'Failed to get record of {self.table.__name__}. No correspond record to {parameters} parameters.'
+                f'Failed to get record of {self.table.__name__}. No correspond record with {parameters} parameters.'
             )
         if len(records) > 1:
             raise DuplicatesFoundException(

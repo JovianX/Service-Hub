@@ -6,11 +6,12 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
-from application.core.authentication import current_active_user
-from application.managers.templates import TemplateManager
-from application.managers.templates import get_template_manager
-from application.models.user import User
-from application.utils.template import render_template
+from core.authentication import current_active_user
+from managers.templates import TemplateManager
+from managers.templates import get_template_manager
+from models.user import User
+from utils.template import render_template
+from utils.template import validate_inputs
 
 from ..schemas.templates import TemplateCreateBodySchema
 from ..schemas.templates import TemplateResponseBodySchema
@@ -61,7 +62,7 @@ async def render_template(
     Returns template manifest.
     """
     template = await template_manager.get_organization_template(template_id=template_id, organization=user.organization)
-    template_manager.validate_inputs(template, inputs)
+    validate_inputs(template.template, inputs)
 
     return render_template(template.template, inputs=inputs)
 

@@ -5,8 +5,8 @@ from sqlalchemy import LargeBinary
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
-from application.db.base_class import Base
-from application.db.fields import MutableJSON
+from db.base_class import Base
+from db.fields import MutableJSON
 
 
 class Organization(Base):
@@ -20,3 +20,4 @@ class Organization(Base):
     rules = relationship('Rule', back_populates='organization', lazy='selectin')
     templates = relationship('TemplateRevision', back_populates='organization', lazy='selectin')
     applications = relationship('Application', back_populates='organization', lazy='selectin')
+    invitations = relationship('UserInvitation', back_populates='organization', lazy='selectin')

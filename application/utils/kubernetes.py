@@ -11,10 +11,10 @@ import yaml
 from kubernetes.config.kube_config import ENV_KUBECONFIG_PATH_SEPARATOR
 from kubernetes.config.kube_config import KubeConfigMerger
 
-from application.constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
-from application.constants.common import CloudProviders
-from application.schemas.kubernetes import KubernetesConfigurationSchema
-from application.utils.temporary_file import yaml_temporary_file
+from constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
+from constants.common import CloudProviders
+from schemas.kubernetes import KubernetesConfigurationSchema
+from utils.temporary_file import yaml_temporary_file
 
 
 class KubernetesConfiguration:
@@ -77,14 +77,14 @@ class KubernetesConfiguration:
         return {cluster['name']: cluster['user'] for cluster in self.configuration['users']}
 
     @property
-    def context_names(self) -> List[str]:
+    def default_context(self) -> str:
         """
-        List of context names.
+        Returns default context.
         """
         if not self.configuration:
-            return []
+            return
 
-        return [context['name'] for context in self.configuration['contexts']]
+        return self.configuration['current_context']
 
     def get_cloud_provider(self, context_name: str) -> CloudProviders:
         """

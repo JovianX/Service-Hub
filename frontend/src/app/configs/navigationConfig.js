@@ -57,6 +57,14 @@ const navigationConfig = [
     icon: 'heroicons-outline:collection',
     url: 'clusters',
   },
+  {
+    id: 'users-component',
+    title: 'Users',
+    translate: 'USERS',
+    type: 'item',
+    icon: 'heroicons-outline:users',
+    url: 'users',
+  },
 ];
 
 export default navigationConfig;

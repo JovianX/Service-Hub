@@ -5,13 +5,13 @@ from fastapi import Path
 from fastapi import Query
 from pydantic import conlist
 
-from application.core.authentication import current_active_user
-from application.managers.helm.manager import HelmManager
-from application.managers.organizations.manager import OrganizationManager
-from application.managers.organizations.manager import get_organization_manager
-from application.managers.rules.manager import RuleManager
-from application.managers.rules.manager import get_rule_manager
-from application.models.user import User
+from core.authentication import current_active_user
+from managers.helm.manager import HelmManager
+from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
+from managers.rules.manager import RuleManager
+from managers.rules.manager import get_rule_manager
+from models.user import User
 
 from ..schemas.rules import ReleaseAuditResultResponceBodySchema
 from ..schemas.rules import RuleCreateBodySchema
@@ -116,7 +116,7 @@ async def audit_release(
     organization = user.organization
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(organization)
     helm_manager = HelmManager(organization_manager)
-    computed_values = await helm_manager.computed_values(
+    computed_values = await helm_manager.get_computed_values(
         organization=organization, context_name=context_name, namespace=namespace, release_name=release_name
     )
     return await rule_manager.validate(
@@ -144,7 +144,7 @@ async def values_to_apply(
     organization = user.organization
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(organization)
     helm_manager = HelmManager(organization_manager)
-    computed_values = await helm_manager.computed_values(
+    computed_values = await helm_manager.get_computed_values(
         organization=organization, context_name=context_name, namespace=namespace, release_name=release_name
     )
     return await rule_manager.show_values_to_apply(

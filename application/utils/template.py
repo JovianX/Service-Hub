@@ -8,8 +8,9 @@ import yaml
 from pydantic import ValidationError
 from pydantic.error_wrappers import display_errors
 
-from application.exceptions.templates import InvalidTemplateException
-from application.schemas.templates import TemplateSchema
+from exceptions.templates import InvalidTemplateException
+from exceptions.templates import InvalidUserInputsException
+from schemas.templates import TemplateSchema
 
 
 START_DELIMITER = re.compile(r'''(?<!['"])\{\{''')
@@ -68,3 +69,17 @@ def render_template(template: str, inputs: dict) -> str:
     Renders template with provided context.
     """
     return pystache.render(template, inputs=inputs)
+
+
+def validate_inputs(template: str, inputs: dict) -> None:
+    """
+    Ensures that provided inputs are correspond to specification in template.
+    """
+    template_schema = load_template(template)
+
+    absent_inputs = template_schema.inputs_mapping.keys() - inputs.keys()
+    if absent_inputs:
+        raise InvalidUserInputsException(f'Absent template input(s): {", ".join(absent_inputs)}')
+    extra_inputs = inputs.keys() - template_schema.inputs_mapping.keys()
+    if extra_inputs:
+        raise InvalidUserInputsException(f'Unexpected extra template input(s): {", ".join(extra_inputs)}')

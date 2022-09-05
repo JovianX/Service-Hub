@@ -2,8 +2,8 @@ from typing import List
 
 import yaml
 
-from application.exceptions.shell import NonZeroStatusException
-from application.exceptions.helm import RepositoryNotFoundException
+from exceptions.helm import RepositoryNotFoundException
+from exceptions.shell import NonZeroStatusException
 
 from .base import HelmBase
 
