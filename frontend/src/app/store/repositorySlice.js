@@ -1,15 +1,28 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getRepositoryList as getRepositoryListAPI, deleteRepository as deleteRepositoryAPI } from '../api';
+import {
+  getRepositoryList as getRepositoryListAPI,
+  createRepository as createRepositoryAPI,
+  deleteRepository as deleteRepositoryAPI,
+} from '../api';
 
 export const getRepositoryList = createAsyncThunk('repositories/getRepositoryList', async () => {
   try {
     const response = await getRepositoryListAPI();
-
     const data = await response.data;
-
     return data;
   } catch (e) {
+    return [];
+  }
+});
+
+export const createRepository = createAsyncThunk('repositories/createRepository', async ({ repository }) => {
+  try {
+    const response = await createRepositoryAPI(repository);
+    const data = await response.data;
+    return data;
+  } catch (e) {
+    console.log(e);
     return [];
   }
 });
@@ -39,6 +52,18 @@ const repositoriesSlice = createSlice({
       isLoading: true,
     }),
     [getRepositoryList.rejected]: (state) => ({
+      ...state,
+      isLoading: false,
+    }),
+    [createRepository.fulfilled]: (state, { payload }) => ({
+      repositories: [...state.repositories, payload],
+      isLoading: false,
+    }),
+    [createRepository.pending]: (state, { payload }) => ({
+      ...state,
+      isLoading: true,
+    }),
+    [createRepository.rejected]: (state, { payload }) => ({
       ...state,
       isLoading: false,
     }),

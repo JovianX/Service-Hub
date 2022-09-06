@@ -1,3 +1,4 @@
+import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -20,6 +21,8 @@ import {
   selectRepositories,
 } from 'app/store/repositorySlice';
 
+import CreateRepositoryDialog from './CreateRepositoryDialog';
+
 const RepositoriesTable = () => {
   const dispatch = useDispatch();
   const repositoryData = useSelector(selectRepositories);
@@ -30,8 +33,8 @@ const RepositoriesTable = () => {
   }, [dispatch]);
 
   const [repositoryToDelete, setRepositoryToDelete] = useState(null);
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const toggleDeleteModalOpen = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -39,7 +42,6 @@ const RepositoriesTable = () => {
 
   const handleDeleteRepository = (repository) => {
     setRepositoryToDelete(repository);
-
     toggleDeleteModalOpen();
   };
 
@@ -51,9 +53,7 @@ const RepositoriesTable = () => {
   const handleDeleteConfirm = async () => {
     await dispatch(deleteRepository(repositoryToDelete));
     toggleDeleteModalOpen();
-
     setRepositoryToDelete(null);
-
     await dispatch(getRepositoryList());
   };
 
@@ -67,6 +67,17 @@ const RepositoriesTable = () => {
 
   return (
     <>
+      <div className='m-12 flex justify-end items-center'>
+        <Button
+          onClick={() => setIsCreateModalOpen(!isCreateModalOpen)}
+          variant='contained'
+          color='primary'
+          startIcon={<AddIcon />}
+        >
+          Create new repository
+        </Button>
+        {isCreateModalOpen && <CreateRepositoryDialog options={{ isCreateModalOpen: true }} />}
+      </div>
       <div className='w-full flex flex-col min-h-full'>
         <Paper className='h-full mx-12 rounded mt-12'>
           <FuseScrollbars className='grow overflow-x-auto'>
@@ -86,7 +97,7 @@ const RepositoriesTable = () => {
                       <TableCell align='left'>{row.name}</TableCell>
                       <TableCell align='left'>{row.url}</TableCell>
                       <TableCell align='right'>
-                        <Button onClick={() => handleDeleteRepository(row.name)} variant='outlined' color='error'>
+                        <Button onClick={() => handleDeleteRepository(row.name)} variant='text' color='error'>
                           <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                         </Button>
                       </TableCell>
