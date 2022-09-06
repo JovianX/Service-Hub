@@ -5,17 +5,19 @@ import clusters from './clustersSlice';
 import dashboard from './dashboardSlice';
 import fuse from './fuse';
 import i18n from './i18nSlice';
+import invitations from './invitationsSlice';
 import releases from './releasesSlice';
 import repositories from './repositorySlice';
 import services from './servicesSlice';
 import user from './userSlice';
-import users from './usersSlice'
+import users from './usersSlice';
 
 const createReducer = (asyncReducers) => (state, action) => {
   const combinedReducer = combineReducers({
     fuse,
     i18n,
     user,
+    invitations,
     users,
     dashboard,
     releases,
