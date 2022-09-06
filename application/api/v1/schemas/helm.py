@@ -43,8 +43,10 @@ class ReleaseUpdateRequestSchema(BaseModel):
     """
     context_name: str = Field(description='Name of context where updating release is located')
     namespase: str = Field(description='Name of namespace where updating release is located')
-    chart_name: str = Field(description='Name of the chart to use during update')
-    values: list[dict] = Field(description='Mapping of release names and relase values to update')
+    chart_name: str | None = Field(
+        description='Name of the chart to use during update. If omitted, chart will be recreated from release'
+    )
+    values: dict = Field(description='Mapping of release values')
     dry_run: bool | None = Field(description='If `True` release updating will be simulated', default=False)
 
 

@@ -26,13 +26,13 @@ class HelmUpgrade(HelmBase):
     async def release(
         self, context_name: str, namespace: str, release_name: str, chart: str, values: list[dict], debug: bool = False,
         dry_run: bool = False
-    ) -> None:
+    ) -> dict:
         """
         Updates installed release.
 
         Full description: https://helm.sh/docs/helm/helm_upgrade/
         """
-        args = [release_name, chart, '--reuse-values']
+        args = [release_name, str(chart), '--reuse-values']
         if debug:
             args.append('--debug')
         if dry_run:

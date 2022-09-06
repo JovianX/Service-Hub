@@ -1,3 +1,4 @@
+from .subcommands.dependency import HelmDependency
 from .subcommands.get import HelmGet
 from .subcommands.install import HelmInstall
 from .subcommands.list import HelmList
@@ -19,6 +20,7 @@ class HelmService:
         kubernetes_configuration - path to Kubernetes configuration file.
         helm_home - path to directory where stored Helm data.
         """
+        self.dependency: HelmDependency = HelmDependency(kubernetes_configuration, helm_home)
         self.get: HelmGet = HelmGet(kubernetes_configuration, helm_home)
         self.install: HelmInstall = HelmInstall(kubernetes_configuration, helm_home)
         self.list: HelmList = HelmList(kubernetes_configuration, helm_home)

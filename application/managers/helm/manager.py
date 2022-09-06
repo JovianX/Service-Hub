@@ -264,11 +264,13 @@ class HelmManager:
         }
 
     async def update_release(
-        self, organization: Organization, context_name: str, namespace: str, release_name: str, chart_name: str,
-        values: list[dict], dry_run: bool = False
+        self, organization: Organization, context_name: str, namespace: str, release_name: str,
+        values: dict, chart: str | None = None, dry_run: bool = False
     ):
         """
-        Updates release values.
+        Updates release values. Chart can be provided as repository
+        reference(repository-name/chart-name). If omitted chart will be
+        recreated from release if it possible.
         """
         debug = False
         if dry_run:
@@ -276,13 +278,27 @@ class HelmManager:
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
-                await helm_service.repository.update()
+                if chart:
+                    await helm_service.repository.update()
+                else:
+                    destination = organization_home(organization) / 'dumped_charts' / str(uuid4())
+                    chart = await helm_service.release.create_chart(
+                        context_name=context_name,
+                        namespace=namespace,
+                        release_name=release_name,
+                        targer_directory=destination
+                    )
+                    await helm_service.dependency.build(
+                        context_name=context_name,
+                        namespace=namespace,
+                        chart_directory=chart
+                    )
                 return await helm_service.upgrade.release(
                     context_name=context_name,
                     namespace=namespace,
                     release_name=release_name,
-                    chart=chart_name,
-                    values=values,
+                    chart=chart,
+                    values=[values],
                     debug=debug,
                     dry_run=dry_run
                 )
