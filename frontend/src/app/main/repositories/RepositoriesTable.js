@@ -86,13 +86,13 @@ const RepositoriesTable = () => {
 
   return (
     <>
-      <div className='m-12 flex justify-end items-center'>
-        <Button onClick={handleClickOpen} variant='contained' color='primary' startIcon={<AddIcon />}>
-          Create new repository
+      <div className='min-h-[70px] m-12 flex justify-end items-center'>
+        <Button className='mx-16' onClick={handleClickOpen} variant='contained' color='primary' startIcon={<AddIcon />}>
+          Add repository
         </Button>
       </div>
       <div className='w-full flex flex-col min-h-full'>
-        <Paper className='h-full mx-12 rounded mt-12'>
+        <Paper className='h-full mx-24 rounded mt-12'>
           <FuseScrollbars className='grow overflow-x-auto'>
             <TableContainer>
               <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
@@ -153,8 +153,10 @@ const RepositoriesTable = () => {
               <TextField name='url' type='text' required id='outlined-required' label='URL' margin='normal' fullWidth />
             </div>
           </DialogContent>
-          <DialogActions className='px-24'>
-            <Button onClick={handleClose}>Cancel</Button>
+          <DialogActions className='p-24'>
+            <Button className='mr-14' onClick={handleClose}>
+              Cancel
+            </Button>
             <Button type='submit' className='ml-12' variant='contained' color='primary' startIcon={<AddIcon />}>
               Save
             </Button>
