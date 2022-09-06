@@ -66,7 +66,7 @@ const InvitationsTable = () => {
       <div className='w-full flex flex-col mt-[50px]'>
         {usersData.length ? (
           <Typography variant='h4' component='h4' className='mx-12'>
-            Active users
+            Active Users
           </Typography>
         ) : (
           ''
