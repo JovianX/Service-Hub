@@ -126,8 +126,8 @@ const InvitationsTable = () => {
                     <TableRow>
                       <TableCell>Email</TableCell>
                       <TableCell>Status</TableCell>
-                      <TableCell>Created</TableCell>
-                      <TableCell>Expiration</TableCell>
+                      <TableCell>Sent</TableCell>
+                      <TableCell>Expires</TableCell>
                       <TableCell align='center' className='w-1/5'>
                         Actions
                       </TableCell>
@@ -192,9 +192,9 @@ const InvitationsTable = () => {
             ) : (
               <Box className='text-center pb-[20px]'>
                 <Typography className='mb-[12px] text-3xl' component='h4'>
-                  No users yet
+                  No pending invites
                 </Typography>
-                <p className='mb-[16px] text-xl'>The list of users is empty. To add a user, fill out the form above</p>
+                <p className='mb-[16px] text-xl'>To add a user, fill out the form above</p>
                 <Button
                   className='ml-5 px-[28px]'
                   variant='contained'
