@@ -273,7 +273,7 @@ async def update_release(
         context_name=body.context_name,
         namespace=body.namespase,
         release_name=release_name,
-        chart_name=body.chart_name,
+        chart=body.chart_name,
         values=body.values,
         dry_run=body.dry_run
     )
