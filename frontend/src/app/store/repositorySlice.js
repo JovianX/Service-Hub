@@ -16,7 +16,7 @@ export const getRepositoryList = createAsyncThunk('repositories/getRepositoryLis
   }
 });
 
-export const createRepository = createAsyncThunk('repositories/createRepository', async ({ repository }) => {
+export const createRepository = createAsyncThunk('repositories/createRepository', async (repository) => {
   try {
     const response = await createRepositoryAPI(repository);
     const data = await response.data;
@@ -56,7 +56,6 @@ const repositoriesSlice = createSlice({
       isLoading: false,
     }),
     [createRepository.fulfilled]: (state, { payload }) => ({
-      repositories: [...state.repositories, payload],
       isLoading: false,
     }),
     [createRepository.pending]: (state, { payload }) => ({

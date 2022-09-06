@@ -1,5 +1,9 @@
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,6 +11,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,13 +20,12 @@ import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import DialogModal from 'app/shared-components/DialogModal';
 import {
+  createRepository,
   deleteRepository,
   getRepositoryList,
   selectIsRepositoriesLoading,
   selectRepositories,
 } from 'app/store/repositorySlice';
-
-import CreateRepositoryDialog from './CreateRepositoryDialog';
 
 const RepositoriesTable = () => {
   const dispatch = useDispatch();
@@ -32,9 +36,9 @@ const RepositoriesTable = () => {
     dispatch(getRepositoryList());
   }, [dispatch]);
 
+  const [open, setOpen] = useState(false);
   const [repositoryToDelete, setRepositoryToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const toggleDeleteModalOpen = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -57,6 +61,21 @@ const RepositoriesTable = () => {
     await dispatch(getRepositoryList());
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmitCreate = async (e) => {
+    e.preventDefault();
+    setOpen(false);
+    const repository = { name: e.target.name.value, url: e.target.url.value };
+    await dispatch(createRepository(repository));
+    await dispatch(getRepositoryList());
+  };
+
   if (isLoading) {
     return (
       <div className='w-full flex flex-col min-h-full'>
@@ -68,15 +87,9 @@ const RepositoriesTable = () => {
   return (
     <>
       <div className='m-12 flex justify-end items-center'>
-        <Button
-          onClick={() => setIsCreateModalOpen(!isCreateModalOpen)}
-          variant='contained'
-          color='primary'
-          startIcon={<AddIcon />}
-        >
+        <Button onClick={handleClickOpen} variant='contained' color='primary' startIcon={<AddIcon />}>
           Create new repository
         </Button>
-        {isCreateModalOpen && <CreateRepositoryDialog options={{ isCreateModalOpen: true }} />}
       </div>
       <div className='w-full flex flex-col min-h-full'>
         <Paper className='h-full mx-12 rounded mt-12'>
@@ -121,6 +134,33 @@ const RepositoriesTable = () => {
         confirmText='Delete'
         fullWidth
       />
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
+        <form onSubmit={handleSubmitCreate}>
+          <DialogTitle className='bg-primary text-center text-white'>Create new repository</DialogTitle>
+          <DialogContent className='pb-0'>
+            <div>
+              <TextField
+                name='name'
+                type='text'
+                required
+                id='outlined-required'
+                label='Name'
+                margin='normal'
+                fullWidth
+              />
+            </div>
+            <div>
+              <TextField name='url' type='text' required id='outlined-required' label='URL' margin='normal' fullWidth />
+            </div>
+          </DialogContent>
+          <DialogActions className='px-24'>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type='submit' className='ml-12' variant='contained' color='primary' startIcon={<AddIcon />}>
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </>
   );
 };
