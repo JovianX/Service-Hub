@@ -197,7 +197,7 @@ const InvitationsTable = () => {
                 <p className='mb-[16px] text-xl'>To add a user, fill out the form above</p>
                 <Button
                   className='ml-5 px-[28px]'
-                  variant='contained'
+                  variant='outlined'
                   color='primary'
                   onClick={() => emailInputRef.current?.focus()}
                   startIcon={<AddIcon />}
