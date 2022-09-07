@@ -16,6 +16,14 @@ from ..schemas.common import UserResponseSchema
 router = APIRouter()
 
 
+@router.get('/me', response_model=UserResponseSchema)
+async def get_setting(user: User = Depends(current_active_user)):
+    """
+    Returns current user information.
+    """
+    return user
+
+
 @router.get('/list', response_model=list[UserResponseSchema])
 async def get_setting(
     user: User = Depends(current_active_user),
@@ -67,5 +75,3 @@ async def delete_user(
     user_record = await user_manager.get(user_id)
     if user_record.organization.id == user.organization.id:
         await user_manager.delete(user_record)
-
-# router.include_router(fastapi_users.get_users_router(UserRead, UserUpdate))
