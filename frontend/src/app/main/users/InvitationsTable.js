@@ -103,7 +103,7 @@ const InvitationsTable = () => {
             }}
             defaultValue={48}
           />
-          <Button type='submit' className='ml-12' variant='contained' color='primary' startIcon={<AddIcon />}>
+          <Button type='submit' className='mx-12' variant='contained' color='primary' startIcon={<AddIcon />}>
             Invite
           </Button>
         </form>
@@ -111,13 +111,13 @@ const InvitationsTable = () => {
 
       <div className='w-full flex flex-col'>
         {invitationsData.length ? (
-          <Typography variant='h4' component='h4' className='mx-12'>
+          <Typography variant='h4' component='h4' className='mx-24'>
             Invites
           </Typography>
         ) : (
           ''
         )}
-        <Paper className='h-full mx-12 rounded mt-12'>
+        <Paper className='h-full mx-24 rounded mt-12'>
           <FuseScrollbars className='grow overflow-x-auto'>
             {invitationsData.length ? (
               <TableContainer>
@@ -197,7 +197,7 @@ const InvitationsTable = () => {
                 <p className='mb-[16px] text-xl'>To add a user, fill out the form above</p>
                 <Button
                   className='ml-5 px-[28px]'
-                  variant='contained'
+                  variant='outlined'
                   color='primary'
                   onClick={() => emailInputRef.current?.focus()}
                   startIcon={<AddIcon />}

@@ -65,13 +65,13 @@ const InvitationsTable = () => {
     <>
       <div className='w-full flex flex-col mt-[50px]'>
         {usersData.length ? (
-          <Typography variant='h4' component='h4' className='mx-12'>
+          <Typography variant='h4' component='h4' className='mx-24'>
             Active Users
           </Typography>
         ) : (
           ''
         )}
-        <Paper className='h-full mx-12 rounded mt-12'>
+        <Paper className='h-full mx-24 rounded mt-12'>
           <FuseScrollbars className='grow overflow-x-auto'>
             {usersData.length && (
               <TableContainer>
