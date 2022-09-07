@@ -112,7 +112,7 @@ const RepositoriesTable = () => {
   }
 
   return (
-    <>
+    <div className='w-full flex flex-col min-h-full'>
       <div className='min-h-[70px] m-12 flex justify-end items-center'>
         <Button className='mx-16' onClick={handleClickOpen} variant='contained' color='primary' startIcon={<AddIcon />}>
           Add repository
@@ -210,7 +210,7 @@ const RepositoriesTable = () => {
           </DialogActions>
         </form>
       </Dialog>
-    </>
+    </div>
   );
 };
 
