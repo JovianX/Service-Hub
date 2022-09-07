@@ -136,7 +136,7 @@ const RepositoriesTable = () => {
       />
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
         <form onSubmit={handleSubmitCreate}>
-          <DialogTitle className='bg-primary text-center text-white'>Create new repository</DialogTitle>
+          <DialogTitle className='bg-primary text-center text-white'>Add repository</DialogTitle>
           <DialogContent className='pb-0'>
             <div>
               <TextField
