@@ -18,7 +18,7 @@ import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import { Box } from '@mui/system';
 import yaml from 'js-yaml';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
@@ -42,20 +42,13 @@ const ChartsTable = () => {
   const [cluster, setCluster] = useState('');
   const [namespace, setNamespace] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [yamlErrorMessage, setYamlErrorMessage] = useState('');
+  const [infoMessageError, setInfoMessageError] = useState('');
+  const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
 
   const dispatch = useDispatch();
   const chartData = useSelector(selectCharts);
   const isLoading = useSelector(selectIsChartsLoading);
   const clusterData = useSelector(selectClusters);
-
-  const clusterContextName = useMemo(
-    function () {
-      // return (clusterData.find(({ name }) => name === cluster) || {}).contextName;
-      return cluster;
-    },
-    [cluster],
-  );
 
   useEffect(() => {
     setCharts(chartData);
@@ -89,6 +82,8 @@ const ChartsTable = () => {
   // modal actions
   const handleClickSaveButton = (e) => {
     e.preventDefault();
+    setInfoMessageError('');
+    setInfoMessageSuccess('');
     setLoading(true);
     if (e.target.form) {
       const { chart_name, version, description, release_name, values, context_name } = e.target.form;
@@ -124,14 +119,26 @@ const ChartsTable = () => {
       if (showErrorMessage) {
         await setShowErrorMessage(false);
       }
-      await dispatch(chartInstall(chart));
+      const data = await dispatch(chartInstall(chart));
+      if (data.payload?.message) {
+        await setLoading(false);
+        await setShowErrorMessage(true);
+        await setInfoMessageError(data.payload.message);
+        return;
+      }
+      if (data.payload?.detail) {
+        await setLoading(false);
+        await setShowErrorMessage(true);
+        await setInfoMessageError(`${data.payload.detail[0].loc[1]}: ${data.payload.detail[0].msg}`);
+        return;
+      }
+      await setInfoMessageSuccess('Helm chart installation was successful');
       await setOpen(false);
-      await dispatch(getChartList());
       await setLoading(false);
     } catch (e) {
-      setShowErrorMessage(true);
-      setLoading(false);
-      setYamlErrorMessage(e.reason);
+      await setShowErrorMessage(true);
+      await setLoading(false);
+      await setInfoMessageError(e.reason);
     }
   };
 
@@ -144,6 +151,7 @@ const ChartsTable = () => {
   const handleClose = () => {
     setShowErrorMessage(false);
     setOpen(false);
+    setLoading(false);
   };
 
   const handleChangeSelect = async (e) => {
@@ -164,12 +172,13 @@ const ChartsTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
-      <div className='mx-14 mt-14'>
+      <div className='mx-14 mt-14 flex justify-between items-center'>
         <ChartsFilters
           repositories={repositories}
           selectedRepository={selectedRepository}
           setSelectedRepository={handleSelectedRepository}
         />
+        <div className='mr-10'>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
       </div>
       <Paper className='h-full mx-24 rounded'>
         <FuseScrollbars className='grow overflow-x-auto'>
@@ -243,7 +252,7 @@ const ChartsTable = () => {
                   label='Chart Version'
                   margin='normal'
                   fullWidth
-                  defaultValue={chart.application_version}
+                  defaultValue={chart.version}
                 />
                 <Box sx={{ minWidth: 120 }}>
                   <FormControl margin='normal' fullWidth>
@@ -267,7 +276,7 @@ const ChartsTable = () => {
                 </Box>
 
                 <NamespacesSelect
-                  clusterContextName={clusterContextName}
+                  clusterContextName={cluster}
                   handleGetNamespace={(value) => handleGetNamespace(value)}
                 />
 
@@ -292,7 +301,7 @@ const ChartsTable = () => {
                 />
               </DialogContent>
               <DialogActions className='p-24 justify-between'>
-                <div>{showErrorMessage && yamlErrorMessage && <p className='text-red'>{yamlErrorMessage}</p>}</div>
+                <div>{showErrorMessage && infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
                 <div className='flex'>
                   <Button className='mr-14' onClick={handleClose}>
                     Cancel

@@ -128,7 +128,7 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
         renderOption={(props, option) => <li {...props}>{option.name}</li>}
         sx={{ marginTop: 1.4 }}
         freeSolo
-        renderInput={(params) => <TextField {...params} label='Namespaces' />}
+        renderInput={(params) => <TextField {...params} required label='Namespaces' />}
       />
       <Dialog open={open} onClose={handleClose}>
         <form onSubmit={handleSubmit}>
