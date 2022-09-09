@@ -51,7 +51,8 @@ const ChartsTable = () => {
 
   const clusterContextName = useMemo(
     function () {
-      return (clusterData.find(({ name }) => name === cluster) || {}).contextName;
+      // return (clusterData.find(({ name }) => name === cluster) || {}).contextName;
+      return cluster;
     },
     [cluster],
   );
@@ -108,6 +109,7 @@ const ChartsTable = () => {
 
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const { chart_name, version, description, release_name, values, context_name } = e.target;
     try {
       const chart = {
@@ -125,12 +127,12 @@ const ChartsTable = () => {
       await dispatch(chartInstall(chart));
       await setOpen(false);
       await dispatch(getChartList());
+      await setLoading(false);
     } catch (e) {
       setShowErrorMessage(true);
       setLoading(false);
       setYamlErrorMessage(e.reason);
     }
-    await setLoading(false);
   };
 
   const handleGetChart = (name) => {
@@ -256,7 +258,7 @@ const ChartsTable = () => {
                       onChange={handleChangeSelect}
                     >
                       {clusterData.map((cluster) => (
-                        <MenuItem key={cluster.name} value={cluster.name}>
+                        <MenuItem key={cluster.name} value={cluster.contextName}>
                           {cluster.name}
                         </MenuItem>
                       ))}
