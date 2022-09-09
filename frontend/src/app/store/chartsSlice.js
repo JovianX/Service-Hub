@@ -1,6 +1,20 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getChartList as getChartListAPI, chartInstall as chartInstallAPI } from '../api';
+import {
+  getChartList as getChartListAPI,
+  getNamespacesList as getNamespacesListAPI,
+  chartInstall as chartInstallAPI,
+} from '../api';
+
+export const getNamespacesList = createAsyncThunk('charts/getNamespacesList', async (param) => {
+  try {
+    const response = await getNamespacesListAPI(param);
+    const data = await response.data;
+    return data;
+  } catch (e) {
+    return [];
+  }
+});
 
 export const getChartList = createAsyncThunk('charts/getChartList', async () => {
   try {
@@ -27,6 +41,7 @@ const chartsSlice = createSlice({
   initialState: {
     isLoading: false,
     charts: [],
+    namespaces: [],
   },
   reducers: {},
   extraReducers: {
@@ -42,6 +57,10 @@ const chartsSlice = createSlice({
       ...state,
       isLoading: false,
     }),
+    [getNamespacesList.fulfilled]: (state, { payload }) => ({
+      ...state,
+      namespaces: payload,
+    }),
     [chartInstall.fulfilled]: (state, { payload }) => ({
       ...state,
       isLoading: false,
@@ -50,6 +69,7 @@ const chartsSlice = createSlice({
 });
 
 export const selectCharts = ({ charts }) => charts.charts;
+export const selectNamespaces = ({ charts }) => charts.namespaces;
 export const selectIsChartsLoading = ({ charts }) => charts.isLoading;
 
 export default chartsSlice.reducer;
