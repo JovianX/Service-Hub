@@ -13,7 +13,7 @@ import { getNamespacesList as getNamespacesListAPI } from '../../api';
 
 const filter = createFilterOptions();
 
-const NamespacecSelect = ({ clusterContextName, handleGetNamespace }) => {
+const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
   const [value, setValue] = React.useState(null);
   const [open, toggleOpen] = React.useState(false);
   const [list, setList] = React.useState([]);
@@ -50,23 +50,23 @@ const NamespacecSelect = ({ clusterContextName, handleGetNamespace }) => {
 
   const handleClose = () => {
     setDialogValue({
-      title: '',
-      year: '',
+      name: '',
+      status: '',
     });
 
     toggleOpen(false);
   };
 
   const [dialogValue, setDialogValue] = React.useState({
-    title: '',
-    year: '',
+    name: '',
+    status: '',
   });
 
   const handleSubmit = (event) => {
     event.preventDefault();
     setValue({
-      title: dialogValue.title,
-      year: parseInt(dialogValue.year, 10),
+      name: dialogValue.name,
+      status: dialogValue.status,
     });
 
     handleClose();
@@ -85,14 +85,14 @@ const NamespacecSelect = ({ clusterContextName, handleGetNamespace }) => {
               toggleOpen(true);
               setDialogValue({
                 name: newValue,
-                status: '',
+                status: 'Active',
               });
             });
           } else if (newValue && newValue.inputValue) {
             toggleOpen(true);
             setDialogValue({
               name: newValue.inputValue,
-              status: '',
+              status: 'Active',
             });
           } else {
             setValue(newValue);
@@ -132,10 +132,11 @@ const NamespacecSelect = ({ clusterContextName, handleGetNamespace }) => {
       />
       <Dialog open={open} onClose={handleClose}>
         <form onSubmit={handleSubmit}>
-          <DialogTitle>Add a new film</DialogTitle>
+          <DialogTitle>Add a new namespace</DialogTitle>
           <DialogContent>
-            <DialogContentText>Did you miss any film in our list? Please, add it!</DialogContentText>
+            <DialogContentText>Did you miss any namespace in our list? Please, add it!</DialogContentText>
             <TextField
+              fullWidth
               autoFocus
               margin='dense'
               id='name'
@@ -150,20 +151,6 @@ const NamespacecSelect = ({ clusterContextName, handleGetNamespace }) => {
               type='text'
               variant='standard'
             />
-            <TextField
-              margin='dense'
-              id='name'
-              value={dialogValue.status}
-              onChange={(event) =>
-                setDialogValue({
-                  ...dialogValue,
-                  status: event.target.value,
-                })
-              }
-              label='year'
-              type='number'
-              variant='standard'
-            />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
@@ -175,4 +162,4 @@ const NamespacecSelect = ({ clusterContextName, handleGetNamespace }) => {
   );
 };
 
-export default NamespacecSelect;
+export default NamespacesSelect;

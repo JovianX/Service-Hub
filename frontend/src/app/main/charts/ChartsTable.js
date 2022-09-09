@@ -29,7 +29,7 @@ import { getClustersList, selectClusters } from 'app/store/clustersSlice';
 import { getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ChartsFilters from './ChartsFilters';
-import NamespacecSelect from './NamespacesSelect';
+import NamespacesSelect from './NamespacesSelect';
 
 const ChartsTable = () => {
   const inputRef = useRef(null);
@@ -40,8 +40,9 @@ const ChartsTable = () => {
   const [selectedRepository, setSelectedRepository] = useState('all');
   const [open, setOpen] = useState(false);
   const [cluster, setCluster] = useState('');
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [namespace, setNamespace] = useState('');
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [yamlErrorMessage, setYamlErrorMessage] = useState('');
 
   const dispatch = useDispatch();
   const chartData = useSelector(selectCharts);
@@ -108,8 +109,6 @@ const ChartsTable = () => {
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
     const { chart_name, version, description, release_name, values, context_name } = e.target;
-    console.log(values.value);
-    console.log(yaml.load(values.value, { json: true }));
     try {
       const chart = {
         chart_name: chart_name.value,
@@ -120,11 +119,16 @@ const ChartsTable = () => {
         context_name: context_name.value,
         namespace,
       };
+      if (showErrorMessage) {
+        await setShowErrorMessage(false);
+      }
       await dispatch(chartInstall(chart));
       await setOpen(false);
       await dispatch(getChartList());
     } catch (e) {
-      console.log(e);
+      setShowErrorMessage(true);
+      setLoading(false);
+      setYamlErrorMessage(e.reason);
     }
     await setLoading(false);
   };
@@ -136,12 +140,16 @@ const ChartsTable = () => {
   };
 
   const handleClose = () => {
+    setShowErrorMessage(false);
     setOpen(false);
   };
 
   const handleChangeSelect = async (e) => {
     await setCluster(e.target.value);
-    // await dispatch(getNamespacesList(defaultContext));
+  };
+
+  const handleGetNamespace = (value) => {
+    setNamespace(value);
   };
 
   if (isLoading) {
@@ -151,10 +159,6 @@ const ChartsTable = () => {
       </div>
     );
   }
-
-  const handleGetNamespace = (value) => {
-    setNamespace(value);
-  };
 
   return (
     <div className='w-full flex flex-col min-h-full'>
@@ -260,7 +264,7 @@ const ChartsTable = () => {
                   </FormControl>
                 </Box>
 
-                <NamespacecSelect
+                <NamespacesSelect
                   clusterContextName={clusterContextName}
                   handleGetNamespace={(value) => handleGetNamespace(value)}
                 />
@@ -286,7 +290,7 @@ const ChartsTable = () => {
                 />
               </DialogContent>
               <DialogActions className='p-24 justify-between'>
-                <div>{showErrorMessage && errorsInfo?.message && <p className='text-red'>{errorsInfo.message}</p>}</div>
+                <div>{showErrorMessage && yamlErrorMessage && <p className='text-red'>{yamlErrorMessage}</p>}</div>
                 <div className='flex'>
                   <Button className='mr-14' onClick={handleClose}>
                     Cancel
