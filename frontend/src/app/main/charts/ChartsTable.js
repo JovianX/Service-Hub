@@ -17,7 +17,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import { Box } from '@mui/system';
-import { useEffect, useRef, useState } from 'react';
+import yaml from 'js-yaml';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
@@ -28,6 +29,8 @@ import { getClustersList, selectClusters } from 'app/store/clustersSlice';
 import { getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ChartsFilters from './ChartsFilters';
+import NamespacecSelect from './NamespacesSelect';
+import {value} from "lodash/seq";
 
 const ChartsTable = () => {
   const inputRef = useRef(null);
@@ -39,11 +42,19 @@ const ChartsTable = () => {
   const [open, setOpen] = useState(false);
   const [cluster, setCluster] = useState('');
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [namespace, setNamespace] = useState('');
 
   const dispatch = useDispatch();
   const chartData = useSelector(selectCharts);
   const isLoading = useSelector(selectIsChartsLoading);
   const clusterData = useSelector(selectClusters);
+
+  const clusterContextName = useMemo(
+    function () {
+      return (clusterData.find(({ name }) => name === cluster) || {}).contextName;
+    },
+    [cluster],
+  );
 
   useEffect(() => {
     setCharts(chartData);
@@ -78,35 +89,45 @@ const ChartsTable = () => {
   const handleClickSaveButton = (e) => {
     e.preventDefault();
     setLoading(true);
-    const { chart_name, version, description, release_name, values, context_name } = e.target.form;
-    if (
-      !chart_name?.value ||
-      !version?.value ||
-      !description?.value ||
-      !release_name?.value ||
-      !values?.value ||
-      !context_name?.value
-    ) {
-      setLoading(false);
+    if (e.target.form) {
+      const { chart_name, version, description, release_name, values, context_name } = e.target.form;
+      if (
+        !chart_name?.value ||
+        !version?.value ||
+        !description?.value ||
+        !release_name?.value ||
+        !values?.value ||
+        !context_name?.value
+      ) {
+        setLoading(false);
+      }
     }
+
     inputRef.current.click();
   };
 
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
     const { chart_name, version, description, release_name, values, context_name } = e.target;
-    const chart = {
-      chart_name: chart_name.value,
-      version: version.value,
-      description: description.value,
-      release_name: release_name.value,
-      values: values.value,
-      context_name: context_name.value,
-    };
-    await dispatch(chartInstall(chart));
+    console.log(values.value);
+    console.log(yaml.load(values.value, { json: true }));
+    try {
+      const chart = {
+        chart_name: chart_name.value,
+        version: version.value,
+        description: description.value,
+        release_name: release_name.value,
+        values: yaml.load(values.value, { json: true }),
+        context_name: context_name.value,
+        namespace,
+      };
+      await dispatch(chartInstall(chart));
+      await setOpen(false);
+      await dispatch(getChartList());
+    } catch (e) {
+      console.log(e);
+    }
     await setLoading(false);
-    await setOpen(false);
-    await dispatch(getChartList());
   };
 
   const handleGetChart = (name) => {
@@ -119,8 +140,9 @@ const ChartsTable = () => {
     setOpen(false);
   };
 
-  const handleChangeSelect = (e) => {
-    setCluster(e.target.value);
+  const handleChangeSelect = async (e) => {
+    await setCluster(e.target.value);
+    // await dispatch(getNamespacesList(defaultContext));
   };
 
   if (isLoading) {
@@ -130,6 +152,12 @@ const ChartsTable = () => {
       </div>
     );
   }
+
+  const handleGetNamespace = (value) => {
+    setNamespace(value);
+  };
+
+  useEffect(() => handleGetNamespace(), [value])
 
   return (
     <div className='w-full flex flex-col min-h-full'>
@@ -183,41 +211,9 @@ const ChartsTable = () => {
           </TableContainer>
           <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
             <form onSubmit={handleSubmitInstall}>
-              <DialogTitle className='bg-primary text-center text-white'>Deploy</DialogTitle>
+              <DialogTitle className='bg-primary text-center text-white'>Deploy new Helm release</DialogTitle>
               <DialogContent className='pb-0'>
-                <div className='mt-14'>
-                  <TextField
-                    name='chart_name'
-                    type='text'
-                    required
-                    id='outlined-required'
-                    label='Chart Name'
-                    margin='normal'
-                    fullWidth
-                    defaultValue={chart.name}
-                  />
-                </div>
-                <TextField
-                  name='version'
-                  type='text'
-                  required
-                  id='outlined-required'
-                  label='Chart Version'
-                  margin='normal'
-                  fullWidth
-                  defaultValue={chart.application_version}
-                />
-
-                <TextField
-                  name='description'
-                  type='text'
-                  required
-                  id='outlined-required'
-                  label='Description'
-                  margin='normal'
-                  fullWidth
-                  defaultValue={chart.description}
-                />
+                <div className='mt-24'>Some text</div>
                 <TextField
                   name='release_name'
                   type='text'
@@ -226,6 +222,25 @@ const ChartsTable = () => {
                   label='Release name'
                   margin='normal'
                   fullWidth
+                />
+                <TextField
+                  name='chart_name'
+                  type='text'
+                  required
+                  id='outlined-required'
+                  label='Chart Name'
+                  margin='normal'
+                  fullWidth
+                  defaultValue={chart.name}
+                />
+                <TextField
+                  name='version'
+                  type='text'
+                  id='outlined-required'
+                  label='Chart Version'
+                  margin='normal'
+                  fullWidth
+                  defaultValue={chart.application_version}
                 />
                 <Box sx={{ minWidth: 120 }}>
                   <FormControl margin='normal' fullWidth>
@@ -248,6 +263,19 @@ const ChartsTable = () => {
                   </FormControl>
                 </Box>
 
+                <NamespacecSelect
+                  clusterContextName={clusterContextName}
+                  handleGetNamespace={(value) => handleGetNamespace(value)}
+                />
+
+                <TextField
+                  name='description'
+                  type='text'
+                  id='outlined-required'
+                  label='Description'
+                  margin='normal'
+                  fullWidth
+                />
                 <TextField
                   name='values'
                   id='outlined-multiline-static'
@@ -274,7 +302,7 @@ const ChartsTable = () => {
                     startIcon={<SaveIcon />}
                     variant='contained'
                   >
-                    Save
+                    Deploy
                   </LoadingButton>
                   <input ref={inputRef} type='submit' className='hidden' />
                 </div>
