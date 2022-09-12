@@ -1,4 +1,6 @@
 import SaveIcon from '@mui/icons-material/Save';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
 import LoadingButton from '@mui/lab/LoadingButton';
 import { InputLabel, Select } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -225,7 +227,7 @@ const ChartsTable = () => {
             <form onSubmit={handleSubmitInstall}>
               <DialogTitle className='bg-primary text-center text-white'>Deploy new Helm release</DialogTitle>
               <DialogContent className='pb-0'>
-                <div className='mt-24'>Some text</div>
+                {/* <div className='mt-24'>Deploy a new Helm release</div> */}
                 <TextField
                   name='release_name'
                   type='text'
@@ -236,11 +238,19 @@ const ChartsTable = () => {
                   fullWidth
                 />
                 <TextField
+                  name='description'
+                  type='text'
+                  id='outlined-required'
+                  label='Description'
+                  margin='normal'
+                  fullWidth
+                />
+                <TextField
                   name='chart_name'
                   type='text'
                   required
                   id='outlined-required'
-                  label='Chart Name'
+                  label='Chart'
                   margin='normal'
                   fullWidth
                   defaultValue={chart.name}
@@ -255,8 +265,8 @@ const ChartsTable = () => {
                   defaultValue={chart.version}
                 />
                 <Box sx={{ minWidth: 120 }}>
-                  <FormControl margin='normal' fullWidth>
-                    <InputLabel id='demo-simple-select-label'>Clusters</InputLabel>
+                  <FormControl margin='normal' fullWidth required>
+                    <InputLabel id='demo-simple-select-label'>Cluster</InputLabel>
                     <Select
                       name='context_name'
                       labelId='demo-simple-select-label'
@@ -281,18 +291,9 @@ const ChartsTable = () => {
                 />
 
                 <TextField
-                  name='description'
-                  type='text'
-                  id='outlined-required'
-                  label='Description'
-                  margin='normal'
-                  fullWidth
-                />
-                <TextField
                   name='values'
                   id='outlined-multiline-static'
-                  label='Custom Values'
-                  required
+                  label='Values'
                   multiline
                   minRows={5}
                   maxRows={15}
@@ -311,7 +312,7 @@ const ChartsTable = () => {
                     onClick={handleClickSaveButton}
                     loading={loading}
                     loadingPosition='start'
-                    startIcon={<SaveIcon />}
+                    startIcon={<CloudUploadIcon />}
                     variant='contained'
                   >
                     Deploy
