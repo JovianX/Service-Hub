@@ -1,52 +1,42 @@
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import * as React from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { getNamespacesList as getNamespacesListAPI } from '../../api';
 
 const filter = createFilterOptions();
 
 const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
-  const [value, setValue] = React.useState(null);
-  const [open, toggleOpen] = React.useState(false);
-  const [list, setList] = React.useState([]);
+  const [namespace, setNamespace] = useState(null);
+  const [open, toggleOpen] = useState(false);
+  const [list, setList] = useState([]);
 
   useEffect(() => {
-    handleGetNamespace(value?.name);
-  }, [value]);
+    handleGetNamespace(namespace?.name);
+  }, [namespace]);
 
-  useEffect(
-    function () {
-      let canceled = false;
-      if (clusterContextName) {
-        getNamespacesListAPI(clusterContextName).then(
-          function ({ data }) {
-            if (canceled) {
-              return;
-            }
-            setList(data);
-          },
-          function () {
-            if (canceled) {
-              return;
-            }
-            setList([]);
-          },
-        );
-      }
-      return function () {
-        canceled = true;
-      };
-    },
-    [clusterContextName],
-  );
+  useEffect(() => {
+    let canceled = false;
+    if (clusterContextName) {
+      getNamespacesListAPI(clusterContextName).then(
+        function ({ data }) {
+          if (canceled) {
+            return;
+          }
+          setList(data);
+        },
+        function () {
+          if (canceled) {
+            return;
+          }
+          setList([]);
+        },
+      );
+    }
+    return () => {
+      canceled = true;
+    };
+  }, [clusterContextName]);
 
   const handleClose = () => {
     setDialogValue({
@@ -57,14 +47,14 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
     toggleOpen(false);
   };
 
-  const [dialogValue, setDialogValue] = React.useState({
+  const [dialogValue, setDialogValue] = useState({
     name: '',
     status: '',
   });
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setValue({
+    setNamespace({
       name: dialogValue.name,
       status: dialogValue.status,
     });
@@ -77,7 +67,7 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
       <Autocomplete
         margin='normal'
         fullWidth
-        value={value}
+        value={namespace}
         onChange={(event, newValue) => {
           if (typeof newValue === 'string') {
             // timeout to avoid instant validation of the dialog's form.
@@ -95,7 +85,7 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
               status: 'Active',
             });
           } else {
-            setValue(newValue);
+            setNamespace(newValue);
           }
         }}
         filterOptions={(options, params) => {
@@ -147,7 +137,7 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
                   name: event.target.value,
                 })
               }
-              label='title'
+              label='namespace'
               type='text'
               variant='standard'
             />

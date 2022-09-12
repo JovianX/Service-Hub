@@ -1,63 +1,34 @@
-import SaveIcon from '@mui/icons-material/Save';
-import LoadingButton from '@mui/lab/LoadingButton';
-import { InputLabel, Select } from '@mui/material';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
-import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TextField from '@mui/material/TextField';
-import { Box } from '@mui/system';
-import yaml from 'js-yaml';
-import { useEffect, useRef, useState } from 'react';
+import { Paper, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
-import { getChartList, chartInstall, selectIsChartsLoading, selectCharts } from 'app/store/chartsSlice';
-import { getClustersList, selectClusters } from 'app/store/clustersSlice';
+import { getChartList, selectIsChartsLoading, selectCharts } from 'app/store/chartsSlice';
 
 import { getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ChartsFilters from './ChartsFilters';
-import NamespacesSelect from './NamespacesSelect';
+import ChartsModal from './ChartsModal';
 
 const ChartsTable = () => {
-  const inputRef = useRef(null);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const [charts, setCharts] = useState([]);
-  const [chart, setChart] = useState({});
   const [repositories, setRepositories] = useState([]);
   const [selectedRepository, setSelectedRepository] = useState('all');
-  const [open, setOpen] = useState(false);
-  const [cluster, setCluster] = useState('');
-  const [namespace, setNamespace] = useState('');
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
+  const [chartName, setChartName] = useState('');
+  const [openModal, setOpenModal] = useState(false);
 
-  const dispatch = useDispatch();
   const chartData = useSelector(selectCharts);
   const isLoading = useSelector(selectIsChartsLoading);
-  const clusterData = useSelector(selectClusters);
-
-  useEffect(() => {
-    setCharts(chartData);
-  }, [chartData]);
 
   useEffect(() => {
     dispatch(getChartList());
-    dispatch(getClustersList());
   }, [dispatch]);
+  useEffect(() => {
+    setCharts(chartData);
+  }, [chartData]);
 
   useEffect(() => {
     if (chartData?.length) {
@@ -77,89 +48,6 @@ const ChartsTable = () => {
 
   const handleSelectedRepository = (event) => {
     setSelectedRepository(event.target.value);
-  };
-
-  // modal actions
-  const handleClickSaveButton = (e) => {
-    e.preventDefault();
-    setInfoMessageError('');
-    setInfoMessageSuccess('');
-    setLoading(true);
-    if (e.target.form) {
-      const { chart_name, version, description, release_name, values, context_name } = e.target.form;
-      if (
-        !chart_name?.value ||
-        !version?.value ||
-        !description?.value ||
-        !release_name?.value ||
-        !values?.value ||
-        !context_name?.value
-      ) {
-        setLoading(false);
-      }
-    }
-
-    inputRef.current.click();
-  };
-
-  const handleSubmitInstall = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const { chart_name, version, description, release_name, values, context_name } = e.target;
-    try {
-      const chart = {
-        chart_name: chart_name.value,
-        version: version.value,
-        description: description.value,
-        release_name: release_name.value,
-        values: yaml.load(values.value, { json: true }),
-        context_name: context_name.value,
-        namespace,
-      };
-      if (showErrorMessage) {
-        await setShowErrorMessage(false);
-      }
-      const data = await dispatch(chartInstall(chart));
-      if (data.payload?.message) {
-        await setLoading(false);
-        await setShowErrorMessage(true);
-        await setInfoMessageError(data.payload.message);
-        return;
-      }
-      if (data.payload?.detail) {
-        await setLoading(false);
-        await setShowErrorMessage(true);
-        await setInfoMessageError(`${data.payload.detail[0].loc[1]}: ${data.payload.detail[0].msg}`);
-        return;
-      }
-      await setInfoMessageSuccess('Helm chart installation was successful');
-      await setOpen(false);
-      await setLoading(false);
-    } catch (e) {
-      await setShowErrorMessage(true);
-      await setLoading(false);
-      await setInfoMessageError(e.reason);
-    }
-  };
-
-  const handleGetChart = (name) => {
-    const data = chartData.find((item) => item.name === name);
-    setChart(data);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setShowErrorMessage(false);
-    setOpen(false);
-    setLoading(false);
-  };
-
-  const handleChangeSelect = async (e) => {
-    await setCluster(e.target.value);
-  };
-
-  const handleGetNamespace = (value) => {
-    setNamespace(value);
   };
 
   if (isLoading) {
@@ -211,7 +99,10 @@ const ChartsTable = () => {
                         className='mx-12'
                         variant='contained'
                         color='primary'
-                        onClick={() => handleGetChart(row.name)}
+                        onClick={() => {
+                          setChartName(row.name);
+                          setOpenModal(true);
+                        }}
                       >
                         Deploy
                       </Button>
@@ -221,106 +112,12 @@ const ChartsTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
-            <form onSubmit={handleSubmitInstall}>
-              <DialogTitle className='bg-primary text-center text-white'>Deploy new Helm release</DialogTitle>
-              <DialogContent className='pb-0'>
-                <div className='mt-24'>Some text</div>
-                <TextField
-                  name='release_name'
-                  type='text'
-                  required
-                  id='outlined-required'
-                  label='Release name'
-                  margin='normal'
-                  fullWidth
-                />
-                <TextField
-                  name='chart_name'
-                  type='text'
-                  required
-                  id='outlined-required'
-                  label='Chart Name'
-                  margin='normal'
-                  fullWidth
-                  defaultValue={chart.name}
-                />
-                <TextField
-                  name='version'
-                  type='text'
-                  id='outlined-required'
-                  label='Chart Version'
-                  margin='normal'
-                  fullWidth
-                  defaultValue={chart.version}
-                />
-                <Box sx={{ minWidth: 120 }}>
-                  <FormControl margin='normal' fullWidth>
-                    <InputLabel id='demo-simple-select-label'>Clusters</InputLabel>
-                    <Select
-                      name='context_name'
-                      labelId='demo-simple-select-label'
-                      id='demo-simple-select-autowidth'
-                      value={cluster}
-                      required
-                      label='Clusters'
-                      onChange={handleChangeSelect}
-                    >
-                      {clusterData.map((cluster) => (
-                        <MenuItem key={cluster.name} value={cluster.contextName}>
-                          {cluster.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Box>
-
-                <NamespacesSelect
-                  clusterContextName={cluster}
-                  handleGetNamespace={(value) => handleGetNamespace(value)}
-                />
-
-                <TextField
-                  name='description'
-                  type='text'
-                  id='outlined-required'
-                  label='Description'
-                  margin='normal'
-                  fullWidth
-                />
-                <TextField
-                  name='values'
-                  id='outlined-multiline-static'
-                  label='Custom Values'
-                  required
-                  multiline
-                  minRows={5}
-                  maxRows={15}
-                  fullWidth
-                  margin='normal'
-                />
-              </DialogContent>
-              <DialogActions className='p-24 justify-between'>
-                <div>{showErrorMessage && infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
-                <div className='flex'>
-                  <Button className='mr-14' onClick={handleClose}>
-                    Cancel
-                  </Button>
-                  <LoadingButton
-                    color='primary'
-                    onClick={handleClickSaveButton}
-                    loading={loading}
-                    loadingPosition='start'
-                    startIcon={<SaveIcon />}
-                    variant='contained'
-                  >
-                    Deploy
-                  </LoadingButton>
-                  <input ref={inputRef} type='submit' className='hidden' />
-                </div>
-              </DialogActions>
-            </form>
-          </Dialog>
+          <ChartsModal
+            infoMessageSuccess={infoMessageSuccess}
+            setInfoMessageSuccess={setInfoMessageSuccess}
+            chartName={chartName}
+            openModal={{ openModal, setOpenModal }}
+          />
         </FuseScrollbars>
       </Paper>
     </div>
