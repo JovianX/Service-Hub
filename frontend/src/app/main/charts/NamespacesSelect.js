@@ -38,6 +38,13 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
     };
   }, [clusterContextName]);
 
+  useEffect(() => {
+    if (list.length) {
+      const namespaceItem = list.find((item) => item.name === 'default');
+      setNamespace(namespaceItem);
+    }
+  }, [list]);
+
   const handleClose = () => {
     setDialogValue({
       name: '',
@@ -70,7 +77,6 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
         value={namespace}
         onChange={(event, newValue) => {
           if (typeof newValue === 'string') {
-            // timeout to avoid instant validation of the dialog's form.
             setTimeout(() => {
               toggleOpen(true);
               setDialogValue({
@@ -100,10 +106,9 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
 
           return filtered;
         }}
-        id='free-solo-dialog-demo'
+        id='namespace'
         options={list}
         getOptionLabel={(option) => {
-          // e.g value selected with enter, right from the input
           if (typeof option === 'string') {
             return option;
           }

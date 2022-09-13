@@ -16,7 +16,6 @@ const ChartsTable = () => {
   const [charts, setCharts] = useState([]);
   const [repositories, setRepositories] = useState([]);
   const [selectedRepository, setSelectedRepository] = useState('all');
-  const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [chartName, setChartName] = useState('');
   const [openModal, setOpenModal] = useState(false);
 
@@ -60,13 +59,12 @@ const ChartsTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
-      <div className='mx-14 mt-14 flex justify-between items-center'>
+      <div className='mx-14 mt-14 flex'>
         <ChartsFilters
           repositories={repositories}
           selectedRepository={selectedRepository}
           setSelectedRepository={handleSelectedRepository}
         />
-        <div className='mr-10'>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
       </div>
       <Paper className='h-full mx-24 rounded'>
         <FuseScrollbars className='grow overflow-x-auto'>
@@ -112,12 +110,7 @@ const ChartsTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <ChartsModal
-            infoMessageSuccess={infoMessageSuccess}
-            setInfoMessageSuccess={setInfoMessageSuccess}
-            chartName={chartName}
-            openModal={{ openModal, setOpenModal }}
-          />
+          <ChartsModal chartName={chartName} openModal={{ openModal, setOpenModal }} />
         </FuseScrollbars>
       </Paper>
     </div>

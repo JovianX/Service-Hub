@@ -22,13 +22,14 @@ import { getClustersList, selectClusters } from 'app/store/clustersSlice';
 
 import NamespacesSelect from './NamespacesSelect';
 
-const ChartsModal = ({ setInfoMessageSuccess, chartName, openModal }) => {
+const ChartsModal = ({ chartName, openModal }) => {
   const dispatch = useDispatch();
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
+  const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [cluster, setCluster] = useState('');
   const [namespace, setNamespace] = useState('');
   const [chart, setChart] = useState({});
@@ -44,6 +45,7 @@ const ChartsModal = ({ setInfoMessageSuccess, chartName, openModal }) => {
     setOpen(true);
     const data = chartData.find((item) => item.name === chartName);
     setChart(data);
+    setCluster(clusterData[0]?.contextName);
     openModal.setOpenModal(false);
   }, [openModal.openModal]);
 
@@ -85,36 +87,41 @@ const ChartsModal = ({ setInfoMessageSuccess, chartName, openModal }) => {
         context_name: context_name.value,
         namespace,
       };
-      if (showErrorMessage) {
-        setShowErrorMessage(false);
+      if (showMessage) {
+        setShowMessage(false);
       }
       const data = await dispatch(chartInstall(chart));
       if (data.payload?.message) {
         await setLoading(false);
-        await setShowErrorMessage(true);
+        await setShowMessage(true);
         await setInfoMessageError(data.payload.message);
+
         return;
       }
       if (data.payload?.detail) {
         await setLoading(false);
-        await setShowErrorMessage(true);
+        await setShowMessage(true);
         await setInfoMessageError(`${data.payload.detail[0].loc[1]}: ${data.payload.detail[0].msg}`);
         return;
       }
       if (data.payload.info.status) {
         await setInfoMessageSuccess('Helm chart installation was successful');
-        await setOpen(false);
+        await setShowMessage(true);
         await setLoading(false);
+        setTimeout(() => {
+          setOpen(false);
+          setShowMessage(false);
+        }, 2000);
       }
     } catch (e) {
-      await setShowErrorMessage(true);
       await setLoading(false);
+      await setShowMessage(true);
       await setInfoMessageError(e.reason);
     }
   };
 
   const handleClose = () => {
-    setShowErrorMessage(false);
+    setShowMessage(false);
     setOpen(false);
     setLoading(false);
   };
@@ -135,20 +142,11 @@ const ChartsModal = ({ setInfoMessageSuccess, chartName, openModal }) => {
             <DialogTitle className='bg-primary text-center text-white'>Deploy new Helm release</DialogTitle>
             <DialogContent className='pb-0'>
               <div className='mt-24'>Some text</div>
-              <TextField
-                name='release_name'
-                type='text'
-                required
-                id='outlined-required'
-                label='Release name'
-                margin='normal'
-                fullWidth
-              />
+              <TextField name='release_name' type='text' required label='Release name' margin='normal' fullWidth />
               <TextField
                 name='chart_name'
                 type='text'
                 required
-                id='outlined-required'
                 label='Chart Name'
                 margin='normal'
                 fullWidth
@@ -157,7 +155,6 @@ const ChartsModal = ({ setInfoMessageSuccess, chartName, openModal }) => {
               <TextField
                 name='version'
                 type='text'
-                id='outlined-required'
                 label='Chart Version'
                 margin='normal'
                 fullWidth
@@ -165,11 +162,10 @@ const ChartsModal = ({ setInfoMessageSuccess, chartName, openModal }) => {
               />
               <Box sx={{ minWidth: 120 }}>
                 <FormControl margin='normal' fullWidth>
-                  <InputLabel id='demo-simple-select-label'>Clusters</InputLabel>
+                  <InputLabel id='clusters'>Clusters</InputLabel>
                   <Select
                     name='context_name'
-                    labelId='demo-simple-select-label'
-                    id='demo-simple-select-autowidth'
+                    labelId='clusters'
                     value={cluster}
                     required
                     label='Clusters'
@@ -187,17 +183,9 @@ const ChartsModal = ({ setInfoMessageSuccess, chartName, openModal }) => {
                 clusterContextName={cluster}
                 handleGetNamespace={(value) => handleGetNamespace(value)}
               />
-              <TextField
-                name='description'
-                type='text'
-                id='outlined-required'
-                label='Description'
-                margin='normal'
-                fullWidth
-              />
+              <TextField name='description' type='text' label='Description' margin='normal' fullWidth />
               <TextField
                 name='values'
-                id='outlined-multiline-static'
                 label='Custom Values'
                 required
                 multiline
@@ -208,7 +196,14 @@ const ChartsModal = ({ setInfoMessageSuccess, chartName, openModal }) => {
               />
             </DialogContent>
             <DialogActions className='p-24 justify-between'>
-              <div>{showErrorMessage && infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
+              <div className='mr-10'>
+                {showMessage && (
+                  <>
+                    <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
+                    <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
+                  </>
+                )}
+              </div>
               <div className='flex'>
                 <Button className='mr-14' onClick={handleClose}>
                   Cancel
