@@ -68,6 +68,8 @@ const ChartsModal = ({ chartName, openModal }) => {
       ) {
         setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
 
     inputRef.current.click();
