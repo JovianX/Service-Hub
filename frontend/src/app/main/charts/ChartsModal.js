@@ -1,4 +1,4 @@
-import SaveIcon from '@mui/icons-material/Save';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
   InputLabel,
@@ -140,14 +140,31 @@ const ChartsModal = ({ chartName, openModal }) => {
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
           <form onSubmit={handleSubmitInstall}>
             <DialogTitle className='bg-primary text-center text-white'>Deploy new Helm release</DialogTitle>
-            <DialogContent className='pb-0'>
-              <div className='mt-24'>Some text</div>
-              <TextField name='release_name' type='text' required label='Release name' margin='normal' fullWidth />
+            <DialogContent className='pb-0 mt-8'>
+              {/* <div className='mt-24'>Deploy a new Helm release</div> */}
+              <TextField
+                name='release_name'
+                type='text'
+                required
+                id='outlined-required'
+                label='Release name'
+                margin='normal'
+                fullWidth
+              />
+              <TextField
+                name='description'
+                type='text'
+                id='outlined-required'
+                label='Description'
+                margin='normal'
+                fullWidth
+              />
               <TextField
                 name='chart_name'
                 type='text'
                 required
-                label='Chart Name'
+                id='outlined-required'
+                label='Chart'
                 margin='normal'
                 fullWidth
                 defaultValue={chart.name}
@@ -155,17 +172,18 @@ const ChartsModal = ({ chartName, openModal }) => {
               <TextField
                 name='version'
                 type='text'
+                id='outlined-required'
                 label='Chart Version'
                 margin='normal'
                 fullWidth
                 defaultValue={chart.version}
               />
               <Box sx={{ minWidth: 120 }}>
-                <FormControl margin='normal' fullWidth>
-                  <InputLabel id='clusters'>Clusters</InputLabel>
+                <FormControl margin='normal' fullWidth required>
+                  <InputLabel id='cluster'>Cluster</InputLabel>
                   <Select
                     name='context_name'
-                    labelId='clusters'
+                    labelId='cluster'
                     value={cluster}
                     required
                     label='Clusters'
@@ -179,15 +197,16 @@ const ChartsModal = ({ chartName, openModal }) => {
                   </Select>
                 </FormControl>
               </Box>
+
               <NamespacesSelect
                 clusterContextName={cluster}
                 handleGetNamespace={(value) => handleGetNamespace(value)}
               />
-              <TextField name='description' type='text' label='Description' margin='normal' fullWidth />
+
               <TextField
                 name='values'
-                label='Custom Values'
-                required
+                id='outlined-multiline-static'
+                label='Values'
                 multiline
                 minRows={5}
                 maxRows={15}
@@ -213,7 +232,7 @@ const ChartsModal = ({ chartName, openModal }) => {
                   onClick={handleClickSaveButton}
                   loading={loading}
                   loadingPosition='start'
-                  startIcon={<SaveIcon />}
+                  startIcon={<CloudUploadIcon />}
                   variant='contained'
                 >
                   Deploy
