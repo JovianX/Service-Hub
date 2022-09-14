@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { chartInstall, selectCharts } from 'app/store/chartsSlice';
-import { getClustersList, selectClusters } from 'app/store/clustersSlice';
+import { getContextList, selectContexts } from 'app/store/clustersSlice';
 
 import NamespacesSelect from './NamespacesSelect';
 
@@ -35,10 +35,10 @@ const ChartsModal = ({ chartName, openModal }) => {
   const [chart, setChart] = useState({});
 
   const chartData = useSelector(selectCharts);
-  const clusterData = useSelector(selectClusters);
+  const clusterData = useSelector(selectContexts);
 
   useEffect(() => {
-    dispatch(getClustersList());
+    dispatch(getContextList());
   }, [dispatch]);
 
   useEffect(() => {
