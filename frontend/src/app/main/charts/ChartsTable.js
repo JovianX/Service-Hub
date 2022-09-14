@@ -16,6 +16,8 @@ const ChartsTable = () => {
   const [charts, setCharts] = useState([]);
   const [repositories, setRepositories] = useState([]);
   const [selectedRepository, setSelectedRepository] = useState('all');
+
+  const [searchText, setSearchText] = useState('');
   const [chartName, setChartName] = useState('');
   const [openModal, setOpenModal] = useState(false);
 
@@ -42,11 +44,28 @@ const ChartsTable = () => {
     if (selectedRepository !== 'all') {
       filteredCharts = filteredCharts.filter((el) => el.repository_name === selectedRepository);
     }
+
+    if (searchText !== '') {
+      filteredCharts = filteredCharts.filter(({ name, application_name, repository_name, description }) => {
+        return (
+          name.includes(searchText) ||
+          application_name.includes(searchText) ||
+          repository_name.includes(searchText) ||
+          description.includes(searchText)
+        );
+      });
+    }
+
+
     setCharts(filteredCharts);
-  }, [selectedRepository]);
+  }, [selectedRepository, searchText]);
 
   const handleSelectedRepository = (event) => {
     setSelectedRepository(event.target.value);
+  };
+
+  const handleSearchText = (event) => {
+    setSearchText(event.target.value);
   };
 
   if (isLoading) {
@@ -60,13 +79,15 @@ const ChartsTable = () => {
   return (
     <div className='w-full flex flex-col min-h-full'>
       <div className='mx-14 mt-14 flex'>
-        <ChartsFilters
-          repositories={repositories}
-          selectedRepository={selectedRepository}
-          setSelectedRepository={handleSelectedRepository}
-        />
+      <ChartsFilters
+        repositories={repositories}
+        selectedRepository={selectedRepository}
+        setSelectedRepository={handleSelectedRepository}
+        searchText={searchText}
+        handleSearchText={handleSearchText}
+      />
       </div>
-      <Paper className='h-full mx-24 rounded'>
+      <Paper className='h-full mx-12 rounded'>
         <FuseScrollbars className='grow overflow-x-auto'>
           <TableContainer>
             <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>

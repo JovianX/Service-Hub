@@ -1,5 +1,7 @@
 import { lazy } from 'react';
 
+import { PATHS } from '../../constants/paths';
+
 const Clusters = lazy(() => import('./Clusters'));
 
 const ClustersConfig = {
@@ -10,7 +12,7 @@ const ClustersConfig = {
   },
   routes: [
     {
-      path: 'clusters',
+      path: PATHS.CLUSTERS,
       element: <Clusters />,
     },
   ],

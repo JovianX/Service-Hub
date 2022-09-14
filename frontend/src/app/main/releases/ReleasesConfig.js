@@ -1,5 +1,7 @@
 import { lazy } from 'react';
 
+import { PATHS } from '../../constants/paths';
+
 const Releases = lazy(() => import('./Releases'));
 
 const ReleasesConfig = {
@@ -10,7 +12,7 @@ const ReleasesConfig = {
   },
   routes: [
     {
-      path: 'releases',
+      path: PATHS.RELEASES,
       element: <Releases />,
     },
   ],

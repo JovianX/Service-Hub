@@ -1,3 +1,5 @@
+import { PATHS } from '../../constants/paths';
+
 import SignOutPage from './SignOutPage';
 
 const SignOutConfig = {
@@ -15,7 +17,7 @@ const SignOutConfig = {
   auth: null,
   routes: [
     {
-      path: 'sign-out',
+      path: PATHS.SIGN_OUT,
       element: <SignOutPage />,
     },
   ],

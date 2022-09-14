@@ -1,4 +1,5 @@
 import authRoles from '../../auth/authRoles';
+import { PATHS } from '../../constants/paths';
 
 import SignUpPage from './SignUpPage';
 
@@ -17,7 +18,7 @@ const SignUpConfig = {
   auth: authRoles.onlyGuest,
   routes: [
     {
-      path: 'sign-up',
+      path: PATHS.SIGN_UP,
       element: <SignUpPage />,
     },
   ],

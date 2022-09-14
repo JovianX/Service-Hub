@@ -1,5 +1,7 @@
 import { lazy } from 'react';
 
+import { PATHS } from '../../constants/paths';
+
 const Repositories = lazy(() => import('./Repositories'));
 
 const RepositoriesConfig = {
@@ -10,7 +12,7 @@ const RepositoriesConfig = {
   },
   routes: [
     {
-      path: 'repositories',
+      path: PATHS.REPOSITORIES,
       element: <Repositories />,
     },
   ],

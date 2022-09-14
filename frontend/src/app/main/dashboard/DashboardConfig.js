@@ -1,5 +1,7 @@
 import { lazy } from 'react';
 
+import { PATHS } from '../../constants/paths';
+
 const Dashboard = lazy(() => import('./Dashboard'));
 
 const DashboardConfig = {
@@ -10,7 +12,7 @@ const DashboardConfig = {
   },
   routes: [
     {
-      path: 'dashboard',
+      path: PATHS.DASHBOARD,
       element: <Dashboard />,
     },
   ],

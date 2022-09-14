@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,8 +11,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import history from '@history';
 import { getServiceList, selectIsServicesLoading, selectServices } from 'app/store/servicesSlice';
 
+import { PATHS } from '../../constants/paths';
 import { getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ServicesFilters from './ServicesFilters';
@@ -72,6 +76,10 @@ const ServicesTable = () => {
     setSelectedCluster(event.target.value);
   };
 
+  const redirectToCreateServicePage = () => {
+    history.push(PATHS.SERVICE_CREATE);
+  };
+
   if (isLoading) {
     return (
       <div className='w-full flex flex-col min-h-full'>
@@ -82,15 +90,22 @@ const ServicesTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
-      <ServicesFilters
-        selectedNamespace={selectedNamespace}
-        setSelectedNamespace={handleSelectedNamespace}
-        namespaces={namespaces}
-        selectedCluster={selectedCluster}
-        setSelectedCluster={handleSelectedCluster}
-        clusters={clusters}
-        className='p-12'
-      />
+      <div className='w-full flex justify-between items-center'>
+        <ServicesFilters
+          selectedNamespace={selectedNamespace}
+          setSelectedNamespace={handleSelectedNamespace}
+          namespaces={namespaces}
+          selectedCluster={selectedCluster}
+          setSelectedCluster={handleSelectedCluster}
+          clusters={clusters}
+          className='p-12'
+        />
+
+        <Button onClick={redirectToCreateServicePage} variant='outlined' color='success' className='mr-12'>
+          Create
+          <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:plus-sm</FuseSvgIcon>
+        </Button>
+      </div>
 
       <Paper className='h-full mx-12 rounded'>
         <FuseScrollbars className='grow overflow-x-auto'>

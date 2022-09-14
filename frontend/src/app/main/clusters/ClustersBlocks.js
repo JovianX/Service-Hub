@@ -10,10 +10,10 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import DialogModal from 'app/shared-components/DialogModal';
 import {
   deleteContext,
-  getClustersList,
-  selectClusters,
+  getContextList,
+  selectContexts,
   selectDefaultContext,
-  selectIsClustersLoading,
+  selectIsContextsLoading,
 } from 'app/store/clustersSlice';
 
 import { checkTrimString } from '../../uitls';
@@ -21,12 +21,12 @@ import { checkTrimString } from '../../uitls';
 const ClustersBlocks = () => {
   const dispatch = useDispatch();
 
-  const clusterData = useSelector(selectClusters);
-  const isLoading = useSelector(selectIsClustersLoading);
+  const contextData = useSelector(selectContexts);
+  const isLoading = useSelector(selectIsContextsLoading);
   const defaultContext = useSelector(selectDefaultContext);
 
   useEffect(() => {
-    dispatch(getClustersList());
+    dispatch(getContextList());
   }, [dispatch]);
 
   const [contextToDelete, setContextToDelete] = useState(null);
@@ -37,7 +37,7 @@ const ClustersBlocks = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
 
-  const handleDeleteCluster = (context) => {
+  const handleDeleteContext = (context) => {
     setContextToDelete(context);
 
     toggleDeleteModalOpen();
@@ -54,28 +54,28 @@ const ClustersBlocks = () => {
 
     setContextToDelete(null);
 
-    await dispatch(getClustersList());
+    await dispatch(getContextList());
   };
 
   const renderClusters = () => {
-    return clusterData?.map(({ region, contextName, name, cloud_provider }) => (
+    return contextData?.map(({ region, name, cluster, cloud_provider }) => (
       <Card key={name} className='flex flex-col h-320 shadow w-320 mr-24'>
         <CardContent className='flex flex-col flex-auto p-24'>
           <div className='w-full'>
             <div className='flex items-center justify-between mb-16'>
               {region && <Chip className='font-semibold text-12' label={region} size='small' />}
 
-              {contextName === defaultContext && (
+              {name === defaultContext && (
                 <FuseSvgIcon className='text-green-600' size={20}>
                   heroicons-solid:badge-check
                 </FuseSvgIcon>
               )}
             </div>
 
-            <Typography className='text-16 font-medium'>Cluster: {checkTrimString(name, 40, 15)}</Typography>
+            <Typography className='text-16 font-medium'>Cluster: {checkTrimString(cluster, 40, 15)}</Typography>
 
             <Typography className='text-13 mt-2 line-clamp-2' color='text.secondary'>
-              Context: {checkTrimString(contextName, 40, 15) || '-'}
+              Context: {checkTrimString(name, 40, 15) || '-'}
             </Typography>
           </div>
 
@@ -94,9 +94,9 @@ const ClustersBlocks = () => {
           </Typography>
         </CardContent>
 
-        {contextName && (
+        {name && (
           <CardActions className='items-center justify-end px-24'>
-            <Button onClick={() => handleDeleteCluster(contextName)} variant='outlined' color='error'>
+            <Button onClick={() => handleDeleteContext(name)} variant='outlined' color='error'>
               <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
             </Button>
           </CardActions>
