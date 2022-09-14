@@ -1,16 +1,24 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getChartList as getChartListAPI } from '../api';
+import { getChartList as getChartListAPI, chartInstall as chartInstallAPI } from '../api';
 
 export const getChartList = createAsyncThunk('charts/getChartList', async () => {
   try {
     const response = await getChartListAPI();
-
     const data = await response.data;
-
     return data;
   } catch (e) {
     return [];
+  }
+});
+
+export const chartInstall = createAsyncThunk('charts/chartInstall', async (chart) => {
+  try {
+    const response = await chartInstallAPI(chart);
+    const data = await response.data;
+    return data;
+  } catch (e) {
+    return e.response.data;
   }
 });
 
@@ -31,6 +39,10 @@ const chartsSlice = createSlice({
       isLoading: true,
     }),
     [getChartList.rejected]: (state) => ({
+      ...state,
+      isLoading: false,
+    }),
+    [chartInstall.fulfilled]: (state, { payload }) => ({
       ...state,
       isLoading: false,
     }),

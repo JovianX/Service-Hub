@@ -1,10 +1,4 @@
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import { Paper, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,41 +9,39 @@ import { getChartList, selectIsChartsLoading, selectCharts } from 'app/store/cha
 import { getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ChartsFilters from './ChartsFilters';
+import ChartsModal from './ChartsModal';
 
 const ChartsTable = () => {
+  const dispatch = useDispatch();
   const [charts, setCharts] = useState([]);
   const [repositories, setRepositories] = useState([]);
   const [selectedRepository, setSelectedRepository] = useState('all');
+  const [chartName, setChartName] = useState('');
+  const [openModal, setOpenModal] = useState(false);
 
-  const dispatch = useDispatch();
   const chartData = useSelector(selectCharts);
   const isLoading = useSelector(selectIsChartsLoading);
 
+  useEffect(() => {
+    dispatch(getChartList());
+  }, [dispatch]);
   useEffect(() => {
     setCharts(chartData);
   }, [chartData]);
 
   useEffect(() => {
-    dispatch(getChartList());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (chartData?.length) {
       const uniqueRepositories = getUniqueKeysFromTableData(chartData, 'repository_name');
-
       const namespacesSelectOptions = getSelectItemsFromArray(uniqueRepositories);
-
       setRepositories(namespacesSelectOptions);
     }
   }, [chartData]);
 
   useEffect(() => {
     let filteredCharts = chartData;
-
     if (selectedRepository !== 'all') {
       filteredCharts = filteredCharts.filter((el) => el.repository_name === selectedRepository);
     }
-
     setCharts(filteredCharts);
   }, [selectedRepository]);
 
@@ -67,13 +59,14 @@ const ChartsTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
-      <ChartsFilters
-        repositories={repositories}
-        selectedRepository={selectedRepository}
-        setSelectedRepository={handleSelectedRepository}
-      />
-
-      <Paper className='h-full mx-12 rounded'>
+      <div className='mx-14 mt-14 flex'>
+        <ChartsFilters
+          repositories={repositories}
+          selectedRepository={selectedRepository}
+          setSelectedRepository={handleSelectedRepository}
+        />
+      </div>
+      <Paper className='h-full mx-24 rounded'>
         <FuseScrollbars className='grow overflow-x-auto'>
           <TableContainer>
             <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
@@ -98,12 +91,26 @@ const ChartsTable = () => {
                     <TableCell align='left'>{row.application_version}</TableCell>
                     <TableCell align='left'>{row.repository_name}</TableCell>
                     <TableCell align='left'>{row.description}</TableCell>
-                    <TableCell align='left'>-</TableCell>
+                    <TableCell align='right'>
+                      <Button
+                        type='submit'
+                        className='mx-12'
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                          setChartName(row.name);
+                          setOpenModal(true);
+                        }}
+                      >
+                        Deploy
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
+          <ChartsModal chartName={chartName} openModal={{ openModal, setOpenModal }} />
         </FuseScrollbars>
       </Paper>
     </div>
