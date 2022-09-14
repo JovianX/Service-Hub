@@ -6,8 +6,8 @@ import base64
 import shutil
 from asyncio import create_task
 from collections.abc import Iterable
+from datetime import timedelta
 from uuid import uuid4
-
 
 from constants.helm import ReleaseHealthStatuses
 from constants.kubernetes import K8sKinds
@@ -327,6 +327,56 @@ class HelmManager:
                     release_name=release_name,
                     debug=debug,
                     dry_run=dry_run
+                )
+
+    ############################################################################
+    # Release TTL
+    ############################################################################
+
+    async def set_release_ttl(
+        self, organization: Organization, context_name: str, namespace: str, release_name: str, minutes: int
+    ) -> None:
+        """
+        Set release TTL(time to live).
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                await helm_service.release.set_ttl(
+                    context_name=context_name,
+                    namespace=namespace,
+                    release_name=release_name,
+                    time_delta=timedelta(minutes=minutes)
+                )
+
+    async def read_release_ttl(
+        self, organization: Organization, context_name: str, namespace: str, release_name: str
+    ) -> None:
+        """
+        Reads release TTL(time to live). Returns date and time when release will be deleted.
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                return await helm_service.release.read_ttl(
+                    context_name=context_name,
+                    namespace=namespace,
+                    release_name=release_name
+                )
+
+    async def delete_release_ttl(
+        self, organization: Organization, context_name: str, namespace: str, release_name: str
+    ) -> None:
+        """
+        Deletes  release TTL(time to live).
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                await helm_service.release.unset_ttl(
+                    context_name=context_name,
+                    namespace=namespace,
+                    release_name=release_name
                 )
 
     ############################################################################

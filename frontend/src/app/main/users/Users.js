@@ -2,6 +2,7 @@ import FusePageCarded from '@fuse/core/FusePageCarded';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
 import TableHeader from 'app/shared-components/TableHeader';
 
+import InvitationsTable from './InvitationsTable';
 import UsersTable from './UsersTable';
 
 const Users = () => {
@@ -10,7 +11,12 @@ const Users = () => {
   return (
     <FusePageCarded
       header={<TableHeader title='Users' />}
-      content={<UsersTable />}
+      content={
+        <>
+          <InvitationsTable />
+          <UsersTable />
+        </>
+      }
       scroll={isMobile ? 'normal' : 'content'}
       className='px-24'
     />

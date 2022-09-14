@@ -5,4 +5,5 @@ export * from './repositories';
 export * from './services';
 export * from './clusters';
 export * from './kubernetes';
+export * from './invitations';
 export * from './users';
