@@ -12,18 +12,20 @@ const ReleasesFilters = ({
   return (
     <div className={`flex ${className}`}>
       <TableDropdownFilter
-        dropdownItems={namespaces}
-        label='Namespaces'
-        handleSelectedValueChange={setSelectedNamespace}
-        selectedValue={selectedNamespace}
-      />
-      <TableDropdownFilter
         dropdownItems={clusters}
         label='Clusters'
         handleSelectedValueChange={setSelectedCluster}
         selectedValue={selectedCluster}
+      />
+
+      <TableDropdownFilter
+        dropdownItems={namespaces}
+        label='Namespaces'
+        handleSelectedValueChange={setSelectedNamespace}
+        selectedValue={selectedNamespace}
         className='ml-12'
       />
+
     </div>
   );
 };

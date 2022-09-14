@@ -127,9 +127,9 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
       />
       <Dialog open={open} onClose={handleClose}>
         <form onSubmit={handleSubmit}>
-          <DialogTitle>Add a new namespace</DialogTitle>
+          <DialogTitle>Create a new namespace</DialogTitle>
           <DialogContent>
-            <DialogContentText>Did you miss any namespace in our list? Please, add it!</DialogContentText>
+            {/* <DialogContentText>Create a new Namespace</DialogContentText> */}
             <TextField
               fullWidth
               autoFocus
@@ -142,7 +142,7 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
                   name: event.target.value,
                 })
               }
-              label='namespace'
+              label='Namespace name'
               type='text'
               variant='standard'
             />
