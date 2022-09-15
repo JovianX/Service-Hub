@@ -27,7 +27,18 @@ class K8sEntitySchema(BaseModel):
             if self.specification['type'] == 'LoadBalancer':
                 ingress = self.status.get('load_balancer', {}).get('ingress')
                 return ingress is not None
-        elif self.kind in (K8sKinds.stateful_set, K8sKinds.replica_set, K8sKinds.deployment):
+        elif self.kind == K8sKinds.deployment:
+            condition_statuses = {
+                'Progressing': False,
+                'Available': False
+            }
+            for condition in self.status.get('conditions', []):
+                type = condition.get('type')
+                if type in condition_statuses:
+                    status = condition.get('status') or 'False'
+                    condition_statuses[type] = status == 'True'
+            return all(condition_statuses.values())
+        elif self.kind in (K8sKinds.stateful_set, K8sKinds.replica_set):
             if self.kind == K8sKinds.deployment:
                 replicas = self.status.get('available_replicas', 0)
             else:
