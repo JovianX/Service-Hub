@@ -6,3 +6,7 @@
     margin: 0;
     height: 100%;
 }
+
+.monaco-editor.no-user-select.mac.showUnused.showDeprecated.hc-black {
+    padding-top: 12px;
+}

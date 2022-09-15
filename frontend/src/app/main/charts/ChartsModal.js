@@ -45,7 +45,7 @@ const ChartsModal = ({ chartName, openModal }) => {
     setOpen(true);
     const data = chartData.find((item) => item.name === chartName);
     setChart(data);
-    setCluster(clusterData[0]?.contextName);
+    setCluster(clusterData[0]?.name);
     openModal.setOpenModal(false);
   }, [openModal.openModal]);
 
@@ -97,7 +97,6 @@ const ChartsModal = ({ chartName, openModal }) => {
         await setLoading(false);
         await setShowMessage(true);
         await setInfoMessageError(data.payload.message);
-
         return;
       }
       if (data.payload?.detail) {
@@ -192,8 +191,8 @@ const ChartsModal = ({ chartName, openModal }) => {
                     onChange={handleChangeSelect}
                   >
                     {clusterData.map((cluster) => (
-                      <MenuItem key={cluster.name} value={cluster.contextName}>
-                        {cluster.name}
+                      <MenuItem key={cluster.name} value={cluster.name}>
+                        {cluster.cluster}
                       </MenuItem>
                     ))}
                   </Select>

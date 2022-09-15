@@ -1,4 +1,5 @@
-import { CardActions, CardContent, Chip } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import {CardActions, CardContent, Chip, InputLabel} from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
@@ -18,6 +19,8 @@ import {
 
 import { checkTrimString } from '../../uitls';
 
+import ClusterModal from './ClusterModal';
+
 const ClustersBlocks = () => {
   const dispatch = useDispatch();
 
@@ -30,8 +33,8 @@ const ClustersBlocks = () => {
   }, [dispatch]);
 
   const [contextToDelete, setContextToDelete] = useState(null);
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const toggleDeleteModalOpen = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -51,9 +54,7 @@ const ClustersBlocks = () => {
   const handleDeleteConfirm = async () => {
     await dispatch(deleteContext(contextToDelete));
     toggleDeleteModalOpen();
-
     setContextToDelete(null);
-
     await dispatch(getContextList());
   };
 
@@ -115,6 +116,18 @@ const ClustersBlocks = () => {
 
   return (
     <>
+      <div className='min-h-[70px] m-12 flex justify-end items-center'>
+        <Button
+          className='mx-16'
+          variant='contained'
+          color='primary'
+          startIcon={<AddIcon />}
+          onClick={() => setOpenModal(true)}
+        >
+          Add new cluster
+        </Button>
+        <ClusterModal openModal={{ openModal, setOpenModal }} />
+      </div>
       <div className='w-full flex p-24 justify-start'>{renderClusters()}</div>
 
       <DialogModal
