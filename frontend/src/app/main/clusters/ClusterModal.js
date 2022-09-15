@@ -1,7 +1,7 @@
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import SaveIcon from '@mui/icons-material/Save';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
@@ -116,10 +116,10 @@ const ClusterModal = ({ openModal }) => {
       <Dialog open={open} onClose={handleClose} maxWidth='md' fullWidth>
         <form onSubmit={handleSubmitInstall}>
           <DialogTitle className='bg-primary text-center text-white'>Add new cluster</DialogTitle>
-          <DialogContent className='p-0 min-h-[520px]'>
+          <DialogContent className='p-0 min-h-[520px] overflow-y-hidden'>
             <div className='grid grid-cols-[1fr_4fr] grid-rows-[1fr_3fr] place-items-stretch'>
               <div className='border-r-2 p-24 text-gray'>
-                <p>Add cluster via CLI"</p>
+                <p>via CLI</p>
               </div>
 
               <div className='border-b-2 p-24 relative'>
@@ -143,11 +143,13 @@ const ClusterModal = ({ openModal }) => {
                     message='Copied to clipboard'
                   />
                 </div>
-                <span className='text-3xl text-gray absolute px-[15px] bg-white right-[50%] bottom-[-18px]'>Or</span>
+                <Stack direction='row' spacing={1} className='absolute bg-white right-[44%] bottom-[-18px]'>
+                  <Chip label='Or' className='text-3xl text-gray px-14' />
+                </Stack>
               </div>
 
               <div className='p-24 border-r-2 text-gray'>
-                <p>Paste Kubeconfig</p>
+                <p>paste kubeconfig</p>
               </div>
 
               <div className='p-24 pb-0'>
@@ -182,7 +184,7 @@ const ClusterModal = ({ openModal }) => {
                 onClick={handleClickSaveButton}
                 loading={loading}
                 loadingPosition='start'
-                startIcon={<CloudUploadIcon />}
+                startIcon={<SaveIcon />}
                 variant='contained'
               >
                 Save
