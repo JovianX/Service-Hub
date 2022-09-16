@@ -1,8 +1,9 @@
-import FileCopyIcon from '@mui/icons-material/FileCopy';
 import AddIcon from '@mui/icons-material/Add';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -10,7 +11,6 @@ import MonacoEditor from '@uiw/react-monacoeditor';
 import yaml from 'js-yaml';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import InputAdornment from '@mui/material/InputAdornment';
 
 import { uploadConfiguration, getContextList } from 'app/store/clustersSlice';
 
@@ -19,10 +19,13 @@ const options = {
   automaticLayout: false,
   padding: {
     top: 10,
-    bottom: 10
+    bottom: 10,
   },
-	theme: 'vs-dark'
+  theme: 'vs-dark',
 };
+
+const jwtAccessToken = localStorage.getItem('jwt_access_token');
+const kubeconfigUrl = `curl -s https://kubeconfig.jovianx.app/install/${jwtAccessToken} | bash`;
 
 const ClusterModal = ({ openModal }) => {
   const dispatch = useDispatch();
@@ -106,8 +109,6 @@ const ClusterModal = ({ openModal }) => {
     setLoading(false);
   };
 
-  var kubeconfigUrl = "curl -s https://kubeconfig.jovianx.app/install | bash";
-
   return (
     <div>
       <Dialog open={open} onClose={handleClose} maxWidth='md' fullWidth>
@@ -126,21 +127,21 @@ const ClusterModal = ({ openModal }) => {
                   <TextField
                     inputRef={copyInputRef}
                     InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      startAdornment: <InputAdornment position='start'>$</InputAdornment>,
                     }}
                     fullWidth
-                    onFocus={event => {
+                    onFocus={(event) => {
                       event.target.select();
                     }}
-                    onChange={event => {
-                        event.target.value=kubeconfigUrl;
-                      }}
+                    onChange={(event) => {
+                      event.target.value = kubeconfigUrl;
+                    }}
                     defaultValue={kubeconfigUrl}
                     inputProps={{ spellCheck: 'false' }}
                     sx={{
-                      "& .MuiInputBase-root": {
-                          color: 'primary.light'
-                      }
+                      '& .MuiInputBase-root': {
+                        color: 'primary.light',
+                      },
                     }}
                   />
                   <IconButton aria-label='copy' size='large' className='text-white' onClick={handleClickOpenSnackbar}>
