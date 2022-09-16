@@ -1,5 +1,5 @@
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import SaveIcon from '@mui/icons-material/Save';
+import AddIcon from '@mui/icons-material/Add';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
@@ -10,23 +10,18 @@ import MonacoEditor from '@uiw/react-monacoeditor';
 import yaml from 'js-yaml';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import InputAdornment from '@mui/material/InputAdornment';
 
 import { uploadConfiguration, getContextList } from 'app/store/clustersSlice';
 
 const options = {
   readOnly: false,
   automaticLayout: false,
-  theme: 'hc-black',
-  scrollbar: {
-    useShadows: false,
-    verticalHasArrows: true,
-    horizontalHasArrows: true,
-    vertical: 'visible',
-    horizontal: 'visible',
-    verticalScrollbarSize: 17,
-    horizontalScrollbarSize: 17,
-    arrowSize: 30,
+  padding: {
+    top: 10,
+    bottom: 10
   },
+	theme: 'vs-dark'
 };
 
 const ClusterModal = ({ openModal }) => {
@@ -111,27 +106,42 @@ const ClusterModal = ({ openModal }) => {
     setLoading(false);
   };
 
+  var kubeconfigUrl = "curl -s https://kubeconfig.jovianx.app/install | bash";
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose} maxWidth='md' fullWidth>
         <form onSubmit={handleSubmitInstall}>
-          <DialogTitle className='bg-primary text-center text-white'>Add new cluster</DialogTitle>
+          <DialogTitle className='bg-primary text-center text-white'>Add Kubernetes cluster</DialogTitle>
           <DialogContent className='p-0 min-h-[520px] overflow-y-hidden'>
             <div className='grid grid-cols-[1fr_4fr] grid-rows-[1fr_3fr] place-items-stretch'>
-              <div className='border-r-2 p-24 text-gray'>
-                <p>via CLI</p>
+              <div className='border-r-2 p-24'>
+                <p>Kubectl</p>
               </div>
-
               <div className='border-b-2 p-24 relative'>
-                <Typography component='h3' className='mb-8 text-gray'>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit
+                <Typography component='h3' className='mb-8'>
+                  Run command in your terminal to add a Kubernetes cluster via kubectl command
                 </Typography>
                 <div className='flex items-center bg-black'>
                   <TextField
                     inputRef={copyInputRef}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                    }}
                     fullWidth
-                    disabled
-                    defaultValue='curl -s https://service-hub-application-rn5pfez6gq-uc.a.run.app/docs#/organizations/upload_configuration_api_v1_organization_kubernetes_configuration_post'
+                    onFocus={event => {
+                      event.target.select();
+                    }}
+                    onChange={event => {
+                        event.target.value=kubeconfigUrl;
+                      }}
+                    defaultValue={kubeconfigUrl}
+                    inputProps={{ spellCheck: 'false' }}
+                    sx={{
+                      "& .MuiInputBase-root": {
+                          color: 'primary.light'
+                      }
+                    }}
                   />
                   <IconButton aria-label='copy' size='large' className='text-white' onClick={handleClickOpenSnackbar}>
                     <FileCopyIcon />
@@ -144,17 +154,17 @@ const ClusterModal = ({ openModal }) => {
                   />
                 </div>
                 <Stack direction='row' spacing={1} className='absolute bg-white right-[44%] bottom-[-18px]'>
-                  <Chip label='Or' className='text-3xl text-gray px-14' />
+                  <Chip label='OR' className='text-2xl text-gray px-20 border-b-40 ' />
                 </Stack>
               </div>
 
-              <div className='p-24 border-r-2 text-gray'>
-                <p>paste kubeconfig</p>
+              <div className='p-24 border-r-2'>
+                <p>Paste kubeconfig</p>
               </div>
 
               <div className='p-24 pb-0'>
-                <Typography component='h3' className='mb-8 text-gray'>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit
+                <Typography component='h3' className='my-8'>
+                  Paste a kubeconfig file to add a Kubernetes cluster
                 </Typography>
                 <MonacoEditor
                   height='400px'
@@ -163,14 +173,21 @@ const ClusterModal = ({ openModal }) => {
                   options={options}
                   onChange={getValue.bind(this)}
                 />
+
+                <div className='mt-10'>
+                  {showMessage && (
+                    <>
+                      <div className=''>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </DialogContent>
           <DialogActions className='p-24 justify-between'>
-            <div className='mr-10'>
+            <div className='mr-10	'>
               {showMessage && (
                 <>
-                  <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
                   <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
                 </>
               )}
@@ -184,10 +201,10 @@ const ClusterModal = ({ openModal }) => {
                 onClick={handleClickSaveButton}
                 loading={loading}
                 loadingPosition='start'
-                startIcon={<SaveIcon />}
+                startIcon={<AddIcon />}
                 variant='contained'
               >
-                Save
+                Add
               </LoadingButton>
               <input ref={inputRef} type='submit' className='hidden' />
             </div>

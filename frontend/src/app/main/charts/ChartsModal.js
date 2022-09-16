@@ -216,7 +216,7 @@ const ChartsModal = ({ chartName, openModal }) => {
                   width='100%'
                   name='values'
                   language='yaml'
-                  theme='hc-black'
+                  theme='vs-dark'
                   onChange={getValue.bind(this)}
                 />
               </div>

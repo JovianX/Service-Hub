@@ -124,7 +124,7 @@ const ClustersBlocks = () => {
           startIcon={<AddIcon />}
           onClick={() => setOpenModal(true)}
         >
-          Add new cluster
+          Add Kubernetes cluster
         </Button>
         <ClusterModal openModal={{ openModal, setOpenModal }} />
       </div>

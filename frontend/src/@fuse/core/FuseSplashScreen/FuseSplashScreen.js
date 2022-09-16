@@ -5,7 +5,7 @@ function FuseSplashScreen() {
   return (
     <div id='fuse-splash-screen'>
       <div className='logo'>
-        <img width='200' src='assets/images/logo.png' alt='logo' />
+        <img width='200' src='assets/images/logo-white.png' alt='logo' />
       </div>
       <Box
         id='spinner'
