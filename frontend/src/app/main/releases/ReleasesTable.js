@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, Chip, Stack } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -101,10 +101,26 @@ const ReleasesTable = () => {
   const handleDeleteConfirm = async () => {
     await dispatch(deleteRelease(releaseToDelete));
     toggleDeleteModalOpen();
-
     setReleaseToDelete(null);
-
     await dispatch(getReleases());
+  };
+
+  const setStatusColor = (color) => {
+    if (
+      color === 'unknown' ||
+      color === 'uninstalling' ||
+      color === 'pending_install' ||
+      color === 'pending_upgrade' ||
+      color === 'pending_rollback'
+    ) {
+      return 'warning';
+    }
+    if (color === 'uninstalled' || color === 'superseded' || color === 'failed' || color === 'unhealthy') {
+      return 'danger';
+    }
+    if (color === 'deployed' || color === 'healthy') {
+      return 'success';
+    }
   };
 
   if (isLoading) {
@@ -124,10 +140,10 @@ const ReleasesTable = () => {
         selectedCluster={selectedCluster}
         setSelectedCluster={handleSelectedCluster}
         clusters={clusters}
-        className='p-12'
+        className='p-24'
       />
 
-      <Paper className='h-full mx-12 rounded'>
+      <Paper className='h-full mx-24 rounded'>
         <FuseScrollbars className='grow overflow-x-auto'>
           <TableContainer>
             <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
@@ -151,8 +167,16 @@ const ReleasesTable = () => {
                 {releases?.map((row) => (
                   <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell align='left'>{row.name}</TableCell>
-                    <TableCell align='left'>{row.status}</TableCell>
-                    <TableCell align='left'>{row.health_status}</TableCell>
+                    <TableCell align='left'>
+                      <Stack>
+                        <Chip label={row.status} color={setStatusColor(row.status)} />
+                      </Stack>
+                    </TableCell>
+                    <TableCell align='left'>
+                      <Stack>
+                        <Chip label={row.health_status} color={setStatusColor(row.health_status)} />
+                      </Stack>
+                    </TableCell>
                     <TableCell align='left'>-</TableCell>
                     <TableCell align='left'>{checkTrimString(row.namespace, 50, 15)}</TableCell>
                     <TableCell align='left'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
