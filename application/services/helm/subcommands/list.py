@@ -5,11 +5,14 @@ from typing import List
 
 import yaml
 
+from exceptions.kubernetes import ClusterUnreachableException
+
 from ..schemas import ReleaseSchema
+from .base import HandleUnreachableClusterMixin
 from .base import HelmBase
 
 
-class HelmList(HelmBase):
+class HelmList(HandleUnreachableClusterMixin, HelmBase):
     """
     Class responsible for working with `list` helm subcommand.
     """
