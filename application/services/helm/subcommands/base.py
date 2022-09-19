@@ -2,6 +2,8 @@ from pathlib import Path
 from typing import Dict
 
 from core.configuration import settings
+from exceptions.kubernetes import ClusterUnreachableException
+from exceptions.shell import NonZeroStatusException
 from utils.shell import run
 
 
@@ -53,3 +55,19 @@ class HelmBase:
         Executes helm CLI command.
         """
         return await run(command=command, environment=self.environment, directory=directory)
+
+
+class HandleUnreachableClusterMixin:
+    """
+    Mixing to handle unprocessable Kubernetes cluster.
+    """
+    async def _run_command(self, command: str, directory: str = None) -> str:
+        """
+        Executes helm CLI command.
+        """
+        try:
+            return await super()._run_command(command=command, directory=directory)
+        except NonZeroStatusException as error:
+            error_message = error.stderr_message.strip()
+            if 'Kubernetes cluster unreachable' in error_message:
+                raise ClusterUnreachableException()

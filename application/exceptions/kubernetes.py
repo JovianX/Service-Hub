@@ -15,3 +15,14 @@ class ProxyRequestException(ServiceHubException):
         self.reason = reason
         self.status_code = status_code
         super().__init__(reason)
+
+
+class ClusterUnreachableException(ServiceHubException):
+    """
+    Raised when unable to connect to cluster.
+    """
+    message: str
+
+    def __init__(self, message: str | None = None) -> None:
+        self.message = message or 'Kubernetes cluster unreachable.'
+        super().__init__(message)

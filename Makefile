@@ -70,7 +70,8 @@ down: ## Shutdown dockerized infrastructure.
 	docker-compose down
 
 serve: ## Run only infrastructure containers.
-	docker-compose up --detach postgres
+	docker-compose up --no-deps --detach postgres
+	docker-compose up --no-deps --detach frontend
 
 logs: ## Show contaiters logs.
 	@docker-compose logs --follow || true

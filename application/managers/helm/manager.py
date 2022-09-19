@@ -11,6 +11,7 @@ from uuid import uuid4
 
 from constants.helm import ReleaseHealthStatuses
 from constants.kubernetes import K8sKinds
+from exceptions.kubernetes import ClusterUnreachableException
 from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
 from models.organization import Organization
@@ -118,10 +119,13 @@ class HelmManager:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 for context_name in kubernetes_configuration.contexts:
-                    releases, charts = await asyncio.gather(
-                        helm_service.list.releases(context_name, namespace),
-                        self.list_repositories_charts(organization)
-                    )
+                    try:
+                        releases, charts = await asyncio.gather(
+                            helm_service.list.releases(context_name, namespace),
+                            self.list_repositories_charts(organization)
+                        )
+                    except ClusterUnreachableException:
+                        continue
                     for release in releases:
                         item = release.dict()
                         item['available_chart'] = next(
