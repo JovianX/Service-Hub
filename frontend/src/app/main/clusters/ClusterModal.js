@@ -27,7 +27,7 @@ const options = {
 const ABSOLUTE_API_HOST = window?.___env_vars___?.API_URL || 'http://localhost:8000';
 
 const jwtAccessToken = localStorage.getItem('jwt_access_token');
-const kubeconfigUrl = `curl -s https://kubeconfig.jovianx.app/install | bash -s -- --jwt-token ${jwtAccessToken} --jovianx-url ${ABSOLUTE_API_HOST} --quiet`;
+const kubeconfigUrl = `curl -s https://kubeconfig.jovianx.app/install | bash -s -- --jwt-token ${jwtAccessToken} --jovianx-url ${ABSOLUTE_API_HOST}`;
 
 const ClusterModal = ({ openModal }) => {
   const dispatch = useDispatch();
