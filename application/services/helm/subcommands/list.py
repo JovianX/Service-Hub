@@ -5,8 +5,6 @@ from typing import List
 
 import yaml
 
-from exceptions.kubernetes import ClusterUnreachableException
-
 from ..schemas import ReleaseSchema
 from .base import HandleUnreachableClusterMixin
 from .base import HelmBase

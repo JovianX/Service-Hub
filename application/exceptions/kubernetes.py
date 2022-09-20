@@ -1,10 +1,18 @@
 """
 Kubernetes related exeptions.
 """
-from .base import ServiceHubException
+from fastapi import status
+
+from .common import CommonException
 
 
-class ProxyRequestException(ServiceHubException):
+class KubernetesException(CommonException):
+    """
+    Common exception for Kubernetes Python client and kubectl CLI.
+    """
+
+
+class ProxyRequestException(KubernetesException):
     """
     Raised when proxy request to Kubernetes resource fails.
     """
@@ -26,3 +34,25 @@ class ClusterUnreachableException(ServiceHubException):
     def __init__(self, message: str | None = None) -> None:
         self.message = message or 'Kubernetes cluster unreachable.'
         super().__init__(message)
+
+
+class KubectlException(KubernetesException):
+    """
+    Raised when call kubectl fails.
+    """
+    message: str
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(message)
+
+
+class ContextNotFoundException(KubernetesException):
+    """
+    Raised when context absent in Kubernetes configuration.
+    """
+    message: str
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(self.message, status.HTTP_404_NOT_FOUND)

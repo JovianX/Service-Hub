@@ -50,6 +50,14 @@ class OrganizationManager:
             kubernetes_configuration['metadata']
         )
         configuration.update(incoming_configuration)
+        with configuration as k8s_configuration_path:
+            k8s_manager = K8sManager(k8s_configuration_path)
+            for context in configuration.contexts:
+                if not await k8s_manager.is_configuration_valid(context):
+                    raise CommonException(
+                        f'Cluster is unreachable. Unable to establish connection to cluster using "{context}" context.',
+                        status.HTTP_422_UNPROCESSABLE_ENTITY
+                    )
         instance.kubernetes_configuration = {
             'configuration': configuration.configuration,
             'metadata': configuration.metadata
