@@ -1,5 +1,3 @@
-from typing import List
-
 import yaml
 
 from exceptions.helm import ReleaseNotFoundException
@@ -42,7 +40,7 @@ class HelmGet(HelmBase):
 
         return yaml.safe_load(output)
 
-    async def hooks(self, context_name: str, namespace: str, release_name: str) -> List[ManifestSchema]:
+    async def hooks(self, context_name: str, namespace: str, release_name: str) -> list[ManifestSchema]:
         """
         Returns hooks manifests.
 
@@ -67,7 +65,7 @@ class HelmGet(HelmBase):
 
         return manifests
 
-    async def manifest(self, context_name: str, namespace: str, release_name: str) -> List[ManifestSchema]:
+    async def manifest(self, context_name: str, namespace: str, release_name: str) -> list[ManifestSchema]:
         """
         Returns release entity list.
 

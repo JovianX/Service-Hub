@@ -1,5 +1,3 @@
-from typing import List
-
 import yaml
 
 from exceptions.shell import NonZeroStatusException
@@ -15,7 +13,7 @@ class HelmSearch(HelmBase):
 
     subcommand = 'search'
 
-    async def repositories(self) -> List[ChartSchema]:
+    async def repositories(self) -> list[ChartSchema]:
         """
         Searches for repositories and displays charts detailed information.
 

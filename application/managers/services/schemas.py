@@ -2,7 +2,6 @@
 Schemas for services from service catalog.
 """
 from typing import Any
-from typing import Dict
 from typing import Literal
 
 from pydantic import BaseModel
@@ -11,7 +10,6 @@ from pydantic import Field
 from pydantic import HttpUrl
 
 from constants.common import HTTPMethods
-from constants.services import ServiceTypes
 from schemas.common_types import K8sSubdomainNameString
 
 
@@ -19,7 +17,7 @@ class HealthCheckSettingsBaseSchema(BaseModel, extra=Extra.forbid):
     """
     Base settings for Kubernetes resource and HTTP endpoint service health check.
     """
-    headers: Dict[str, str] | None = Field(description='Request headers with which hit health check endpoint')
+    headers: dict[str, str] | None = Field(description='Request headers with which hit health check endpoint')
     timeout: int | None = Field(description='Health check request timeout in seconds', default=60)
 
 
@@ -54,6 +52,6 @@ class HTTPEndpointHealthCheckSettingsSchema(HealthCheckSettingsBaseSchema):
     Kubernetes resource service health check settings.
     """
     method: HTTPMethods = Field(description='Methods to hit health check endpoint')
-    parameters: Dict[str, Any] | None = Field(description='Query parameters with which hit health check endpoint')
-    body: Dict[str, Any] | None = Field(description='Request body parameters with which hit health check endpoint')
+    parameters: dict[str, Any] | None = Field(description='Query parameters with which hit health check endpoint')
+    body: dict[str, Any] | None = Field(description='Request body parameters with which hit health check endpoint')
     url: HttpUrl = Field(description='Health check endpoint URL')

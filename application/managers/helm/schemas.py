@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from pydantic import BaseModel
 from pydantic import Field
@@ -57,6 +56,6 @@ class ReleaseDetails(BaseModel):
     """
     user_supplied_values: dict = Field(description='Values provided by user to Helm')
     computed_values: dict = Field(description='Final(rendered) values used by Helm')
-    hooks: List[dict] = Field(description='Detailed list of hooks entities.')
-    manifests: List[dict] = Field(description='Detailed list of Helm release entities')
+    hooks: list[dict] = Field(description='Detailed list of hooks entities.')
+    manifests: list[dict] = Field(description='Detailed list of Helm release entities')
     notes: str = Field(description='Release notes')

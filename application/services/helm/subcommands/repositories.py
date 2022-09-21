@@ -1,5 +1,3 @@
-from typing import List
-
 import yaml
 
 from exceptions.helm import RepositoryNotFoundException
@@ -24,7 +22,7 @@ class HelmRepository(HelmBase):
         command = self._formup_command('add', name, url)
         await self._run_command(command)
 
-    async def list(self) -> List[dict]:
+    async def list(self) -> list[dict]:
         """
         Lists all chart repositories.
 
