@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Dict
 
 from core.configuration import settings
 from exceptions.kubernetes import ClusterUnreachableException
@@ -24,7 +23,7 @@ class HelmBase:
         self.home_directory = Path(helm_home)
 
     @property
-    def environment(self) -> Dict[str, str]:
+    def environment(self) -> dict[str, str]:
         """
         Environment variables, in form of dictionary, with which helm mush be
         executed.

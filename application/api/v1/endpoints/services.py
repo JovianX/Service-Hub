@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
@@ -39,7 +37,7 @@ async def create_service(
     )
 
 
-@router.get('/list', response_model=List[ServiceResponseSchema])
+@router.get('/list', response_model=list[ServiceResponseSchema])
 async def service_list(
     user: User = Depends(current_active_user),
     service_manager: ServiceManager = Depends(get_service_manager)
@@ -63,7 +61,7 @@ async def update_service(
     return await service_manager.update_service(service_id, user.organization, body.dict(exclude_unset=True))
 
 
-@router.delete('/{service_id}', response_model=List[ServiceResponseSchema])
+@router.delete('/{service_id}', response_model=list[ServiceResponseSchema])
 async def delete_service(
     service_id: int = Path(title='The ID of the service to delete'),
     user: User = Depends(current_active_user),

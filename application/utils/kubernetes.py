@@ -4,8 +4,6 @@ Different Kubernetes utilities.
 import re
 from copy import deepcopy
 from tempfile import _TemporaryFileWrapper
-from typing import Dict
-from typing import List
 
 import yaml
 from kubernetes.config.kube_config import ENV_KUBECONFIG_PATH_SEPARATOR
@@ -47,7 +45,7 @@ class KubernetesConfiguration:
         self.file.close()
 
     @property
-    def clusters(self) -> Dict[str, dict]:
+    def clusters(self) -> dict[str, dict]:
         """
         Returns clusters data in form of dictionary.
         """
@@ -57,7 +55,7 @@ class KubernetesConfiguration:
         return {cluster['name']: cluster['cluster'] for cluster in self.configuration['clusters']}
 
     @property
-    def contexts(self) -> Dict[str, dict]:
+    def contexts(self) -> dict[str, dict]:
         """
         Returns contexts data in form of dictionary.
         """
@@ -67,7 +65,7 @@ class KubernetesConfiguration:
         return {cluster['name']: cluster['context'] for cluster in self.configuration['contexts']}
 
     @property
-    def users(self) -> Dict[str, dict]:
+    def users(self) -> dict[str, dict]:
         """
         Returns users data in form of dictionary.
         """

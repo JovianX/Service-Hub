@@ -1,7 +1,5 @@
-from typing import List
 from typing import Literal
 
-from pydantic import AnyHttpUrl
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from pydantic import Field
@@ -50,7 +48,7 @@ class KubernetesConfigurationSchema(BaseModel):
         alias='apiVersion', description='Version of using API in form of semantic versioning', example='v1'
     )
     current_context: str = Field(alias='current-context', description='Default context.', example='some-context')
-    clusters: List[KubernetesConfigurationClusterSchema] = Field(description='List of clusters.')
-    contexts: List[KubernetesConfigurationContextSchema] = Field(description='List of contexts.')
-    users: List[KubernetesConfigurationUserSchema] = Field(description='List of users.')
+    clusters: list[KubernetesConfigurationClusterSchema] = Field(description='List of clusters.')
+    contexts: list[KubernetesConfigurationContextSchema] = Field(description='List of contexts.')
+    users: list[KubernetesConfigurationUserSchema] = Field(description='List of users.')
     preferences: dict | None = Field(description='Various settings.')
