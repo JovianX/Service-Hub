@@ -25,7 +25,7 @@ class ProxyRequestException(KubernetesException):
         super().__init__(reason)
 
 
-class ClusterUnreachableException(ServiceHubException):
+class ClusterUnreachableException(KubernetesException):
     """
     Raised when unable to connect to cluster.
     """
