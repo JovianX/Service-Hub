@@ -22,10 +22,10 @@ const settingsConfig = {
           "contrastText": "rgb(255,255,255)"
         },
         "secondary": {
-          "light": "#C2ECF0",
-          "main": "#33C1CD",
-          "dark": "#149EAE",
-          "contrastText": "rgb(17, 24, 39)"
+          "light": "#818cf8",
+          "main": "#4f46e5",
+          "dark": "#3730a3",
+          "contrastText": "rgb(255,255,255)"
         },
         "background": {
           "paper": "#FFFFFF",
