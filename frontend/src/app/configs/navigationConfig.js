@@ -30,7 +30,7 @@ const navigationConfig = [
     title: 'Releases',
     translate: 'RELEASES',
     type: 'item',
-    icon: 'heroicons-outline:clipboard-check',
+    icon: 'heroicons-outline:cube-transparent',
     url: 'releases',
   },
   {
@@ -38,7 +38,7 @@ const navigationConfig = [
     title: 'Releases',
     translate: 'CHARTS',
     type: 'item',
-    icon: 'heroicons-outline:presentation-chart-line',
+    icon: 'heroicons-outline:cube',
     url: 'charts',
   },
   {
