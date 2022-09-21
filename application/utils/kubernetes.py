@@ -4,15 +4,15 @@ Different Kubernetes utilities.
 import re
 from copy import deepcopy
 from tempfile import _TemporaryFileWrapper
-from typing import Dict
-from typing import List
 
 import yaml
+from fastapi import status
 from kubernetes.config.kube_config import ENV_KUBECONFIG_PATH_SEPARATOR
 from kubernetes.config.kube_config import KubeConfigMerger
 
 from constants.common import UNRECOGNIZED_CLOUD_PROVIDER_REGION
 from constants.common import CloudProviders
+from exceptions.common import CommonException
 from schemas.kubernetes import KubernetesConfigurationSchema
 from utils.temporary_file import yaml_temporary_file
 
@@ -47,7 +47,7 @@ class KubernetesConfiguration:
         self.file.close()
 
     @property
-    def clusters(self) -> Dict[str, dict]:
+    def clusters(self) -> dict[str, dict]:
         """
         Returns clusters data in form of dictionary.
         """
@@ -57,7 +57,7 @@ class KubernetesConfiguration:
         return {cluster['name']: cluster['cluster'] for cluster in self.configuration['clusters']}
 
     @property
-    def contexts(self) -> Dict[str, dict]:
+    def contexts(self) -> dict[str, dict]:
         """
         Returns contexts data in form of dictionary.
         """
@@ -67,7 +67,7 @@ class KubernetesConfiguration:
         return {cluster['name']: cluster['context'] for cluster in self.configuration['contexts']}
 
     @property
-    def users(self) -> Dict[str, dict]:
+    def users(self) -> dict[str, dict]:
         """
         Returns users data in form of dictionary.
         """
@@ -79,12 +79,28 @@ class KubernetesConfiguration:
     @property
     def default_context(self) -> str:
         """
-        Returns default context.
+        Returns default configuration context.
         """
         if not self.configuration:
             return
 
         return self.configuration['current_context']
+
+    @default_context.setter
+    def default_context(self, context_name) -> None:
+        """
+        Sets default configuration context.
+        """
+        if not self.configuration:
+            return
+
+        if context_name not in self.contexts:
+            raise CommonException(
+                f'Context "{context_name}" is absent in list of contexts of current Kubernetes configuration.',
+                status.HTTP_404_NOT_FOUND
+            )
+
+        self.configuration['current_context'] = context_name
 
     def get_cloud_provider(self, context_name: str) -> CloudProviders:
         """
