@@ -45,19 +45,12 @@ class OrganizationManager:
         Saves new of does merge with existing Kubernetes configuration.
         """
         kubernetes_configuration = instance.kubernetes_configuration
+        await self._validate_confiugration(incoming_configuration)
         configuration = KubernetesConfiguration(
             kubernetes_configuration['configuration'],
             kubernetes_configuration['metadata']
         )
         configuration.update(incoming_configuration)
-        with configuration as k8s_configuration_path:
-            k8s_manager = K8sManager(k8s_configuration_path)
-            for context in configuration.contexts:
-                if not await k8s_manager.is_configuration_valid(context):
-                    raise CommonException(
-                        f'Cluster is unreachable. Unable to establish connection to cluster using "{context}" context.',
-                        status.HTTP_422_UNPROCESSABLE_ENTITY
-                    )
         instance.kubernetes_configuration = {
             'configuration': configuration.configuration,
             'metadata': configuration.metadata
@@ -136,6 +129,20 @@ class OrganizationManager:
             )
 
         return KubernetesConfiguration(configuration=configuration['configuration'], metadata=configuration['metadata'])
+
+    async def _validate_confiugration(self, Incoming_configuration: dict):
+        """
+        Helper that makes Kubernetes configuration test.
+        """
+        configuration = KubernetesConfiguration(Incoming_configuration, {})
+        with configuration as k8s_configuration_path:
+            k8s_manager = K8sManager(k8s_configuration_path)
+            for context in configuration.contexts:
+                if not await k8s_manager.is_configuration_valid(context):
+                    raise CommonException(
+                        f'Cluster is unreachable. Unable to establish connection to cluster using "{context}" context.',
+                        status.HTTP_422_UNPROCESSABLE_ENTITY
+                    )
 
 
 async def get_organization_manager(organization_db=Depends(get_organization_db)):
