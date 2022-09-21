@@ -13,6 +13,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Box } from '@mui/system';
+import MonacoEditor from '@uiw/react-monacoeditor';
 import yaml from 'js-yaml';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,6 +34,7 @@ const ChartsModal = ({ chartName, openModal }) => {
   const [cluster, setCluster] = useState('');
   const [namespace, setNamespace] = useState('');
   const [chart, setChart] = useState({});
+  const [configYamlText, setConfigYamlText] = useState('');
 
   const chartData = useSelector(selectCharts);
   const clusterData = useSelector(selectContexts);
@@ -45,9 +47,13 @@ const ChartsModal = ({ chartName, openModal }) => {
     setOpen(true);
     const data = chartData.find((item) => item.name === chartName);
     setChart(data);
-    setCluster(clusterData[0]?.contextName);
+    setCluster(clusterData[0]?.name);
     openModal.setOpenModal(false);
   }, [openModal.openModal]);
+
+  const getValue = (newValue) => {
+    setConfigYamlText(newValue);
+  };
 
   // modal actions
   const handleClickSaveButton = (e) => {
@@ -56,14 +62,14 @@ const ChartsModal = ({ chartName, openModal }) => {
     setInfoMessageSuccess('');
     setLoading(true);
     if (e.target.form) {
-      const { chart_name, version, description, release_name, values, context_name } = e.target.form;
+      const { chart_name, version, description, release_name, context_name } = e.target.form;
 
       if (
         !chart_name.value ||
         !version.value ||
         !description.value ||
         !release_name.value ||
-        !values.value ||
+        !configYamlText ||
         !context_name.value
       ) {
         setLoading(false);
@@ -78,14 +84,14 @@ const ChartsModal = ({ chartName, openModal }) => {
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const { chart_name, version, description, release_name, values, context_name } = e.target;
+    const { chart_name, version, description, release_name, context_name } = e.target;
     try {
       const chart = {
         chart_name: chart_name.value,
         version: version.value,
         description: description.value,
         release_name: release_name.value,
-        values: yaml.load(values.value, { json: true }),
+        values: yaml.load(configYamlText, { json: true }),
         context_name: context_name.value,
         namespace,
       };
@@ -97,7 +103,6 @@ const ChartsModal = ({ chartName, openModal }) => {
         await setLoading(false);
         await setShowMessage(true);
         await setInfoMessageError(data.payload.message);
-
         return;
       }
       if (data.payload?.detail) {
@@ -142,7 +147,7 @@ const ChartsModal = ({ chartName, openModal }) => {
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
           <form onSubmit={handleSubmitInstall}>
             <DialogTitle className='bg-primary text-center text-white'>Deploy new Helm release</DialogTitle>
-            <DialogContent className='pb-0 mt-8'>
+            <DialogContent className='pb-0 mt-8 overflow-y-hidden'>
               {/* <div className='mt-24'>Deploy a new Helm release</div> */}
               <TextField
                 name='release_name'
@@ -192,8 +197,8 @@ const ChartsModal = ({ chartName, openModal }) => {
                     onChange={handleChangeSelect}
                   >
                     {clusterData.map((cluster) => (
-                      <MenuItem key={cluster.name} value={cluster.contextName}>
-                        {cluster.name}
+                      <MenuItem key={cluster.name} value={cluster.name}>
+                        {cluster.cluster}
                       </MenuItem>
                     ))}
                   </Select>
@@ -205,16 +210,16 @@ const ChartsModal = ({ chartName, openModal }) => {
                 handleGetNamespace={(value) => handleGetNamespace(value)}
               />
 
-              <TextField
-                name='values'
-                id='outlined-multiline-static'
-                label='Values'
-                multiline
-                minRows={5}
-                maxRows={15}
-                fullWidth
-                margin='normal'
-              />
+              <div className='mt-24'>
+                <MonacoEditor
+                  height='150px'
+                  width='100%'
+                  name='values'
+                  language='yaml'
+                  theme='vs-dark'
+                  onChange={getValue.bind(this)}
+                />
+              </div>
             </DialogContent>
             <DialogActions className='p-24 justify-between'>
               <div className='mr-10'>

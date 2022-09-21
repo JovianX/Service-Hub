@@ -56,7 +56,6 @@ const ChartsTable = () => {
       });
     }
 
-
     setCharts(filteredCharts);
   }, [selectedRepository, searchText]);
 
@@ -79,15 +78,15 @@ const ChartsTable = () => {
   return (
     <div className='w-full flex flex-col min-h-full'>
       <div className='mx-14 mt-14 flex'>
-      <ChartsFilters
-        repositories={repositories}
-        selectedRepository={selectedRepository}
-        setSelectedRepository={handleSelectedRepository}
-        searchText={searchText}
-        handleSearchText={handleSearchText}
-      />
+        <ChartsFilters
+          repositories={repositories}
+          selectedRepository={selectedRepository}
+          setSelectedRepository={handleSelectedRepository}
+          searchText={searchText}
+          handleSearchText={handleSearchText}
+        />
       </div>
-      <Paper className='h-full mx-12 rounded'>
+      <Paper className='h-full mx-24 rounded'>
         <FuseScrollbars className='grow overflow-x-auto'>
           <TableContainer>
             <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>

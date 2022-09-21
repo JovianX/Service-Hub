@@ -2,7 +2,11 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import _ from '@lodash';
 
-import { getClusterList as getClusterListAPI, deleteContext as deleteContextAPI } from '../api';
+import {
+  getClusterList as getClusterListAPI,
+  deleteContext as deleteContextAPI,
+  uploadConfiguration as uploadConfigurationAPI,
+} from '../api';
 
 export const getContextList = createAsyncThunk('clusters/getContextList', async () => {
   try {
@@ -40,6 +44,16 @@ export const getContextList = createAsyncThunk('clusters/getContextList', async 
   }
 });
 
+export const uploadConfiguration = createAsyncThunk('clusters/uploadConfiguration', async (configuration) => {
+  try {
+    const response = await uploadConfigurationAPI(configuration);
+    const { data } = response;
+    return data;
+  } catch (e) {
+    return e.response.data;
+  }
+});
+
 export const deleteContext = createAsyncThunk('clusters/deleteContext', async (contextName) => {
   try {
     await deleteContextAPI(contextName);
@@ -69,6 +83,9 @@ const clustersSlice = createSlice({
     [getContextList.rejected]: (state) => ({
       ...state,
       isLoading: false,
+    }),
+    [uploadConfiguration.fulfilled]: (state) => ({
+      ...state,
     }),
   },
 });

@@ -10,3 +10,6 @@ export const deleteContext = async (contextName) =>
       'context-name': contextName,
     },
   });
+
+export const uploadConfiguration = async (configuration) =>
+  await axios.post(`${CLUSTERS_API_PATH}/kubernetes-configuration`, configuration);
