@@ -1,7 +1,6 @@
 from typing import List
 from typing import Literal
 
-from pydantic import AnyHttpUrl
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Extra
 from pydantic import Field

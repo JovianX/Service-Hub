@@ -56,6 +56,25 @@ class OrganizationManager:
         }
         await self.db.save(instance)
 
+    async def set_default_context(self, instance: Organization, context_name: str):
+        """
+        Sets default context in organization's Kubernetes configuration.
+        """
+        kubernetes_configuration = instance.kubernetes_configuration
+        configuration = KubernetesConfiguration(
+            kubernetes_configuration['configuration'],
+            kubernetes_configuration['metadata']
+        )
+        if configuration.default_context != context_name:
+            configuration.default_context = context_name
+            instance.kubernetes_configuration = {
+                'configuration': configuration.configuration,
+                'metadata': configuration.metadata
+            }
+            await self.db.save(instance)
+
+        return configuration
+
     async def delete_context(self, instance: Organization, context_name: str) -> KubernetesConfiguration:
         """
         Deletes context from Kubernetes configuration with helm of kubectl.
