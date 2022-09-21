@@ -1,19 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getReleasesList, deleteRelease as deleteReleaseAPI, getReleaseHealth as getReleaseHealthAPI } from '../api';
+import { getReleasesList, deleteRelease as deleteReleaseAPI } from '../api';
 
 export const getReleases = createAsyncThunk('releases/getReleasesList', async () => {
   try {
     const response = await getReleasesList();
-    const listData = await response.data;
-    const health_statuses = [];
-    if (listData.length) {
-      for (const el of listData) {
-        const response = await getReleaseHealthAPI(el.namespace, el.context_name, el.name);
-        health_statuses.push({ ...el, health_status: response.data.status });
-      }
-    }
-    return health_statuses;
+    return response.data;
   } catch (e) {
     return [];
   }
@@ -47,14 +39,6 @@ const releasesSlice = createSlice({
       ...state,
       isLoading: false,
     }),
-    // [getReleaseHealth.fulfilled]: (state) => ({
-    //   ...state,
-    //   isLoading: false,
-    // }),
-    // [getReleaseHealth.pending]: (state) => ({
-    //   ...state,
-    //   isLoading: true,
-    // }),
   },
 });
 
