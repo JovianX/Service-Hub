@@ -1,11 +1,15 @@
-import { Button, Chip, Stack } from '@mui/material';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import {
+  Button,
+  Chip,
+  Stack,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -16,7 +20,7 @@ import withRouter from '@fuse/core/withRouter';
 import DialogModal from 'app/shared-components/DialogModal';
 import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
 
-import { getReleaseHealth as getReleaseHealthAPI } from '../../api';
+import { getReleaseHealth } from '../../api';
 import { checkTrimString, getTimeFormat, getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ReleasesFilters from './ReleasesFilters';
@@ -27,18 +31,18 @@ const ReleasesTable = () => {
   const [namespaces, setNamespaces] = useState([]);
   const [clusters, setClusters] = useState([]);
   const [releases, setReleases] = useState([]);
-  const [rows, setRows] = useState({});
   const [selectedNamespace, setSelectedNamespace] = useState('all');
   const [selectedCluster, setSelectedCluster] = useState('all');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [releaseToDelete, setReleaseToDelete] = useState(null);
+  const [healthRows, setHealthRows] = useState({});
 
   const releasesData = useSelector(selectReleases);
   const isLoading = useSelector(selectIsReleasesLoading);
 
   useEffect(() => {
     setReleases(releasesData);
-    getRows(releasesData);
+    getHealthRows(releasesData);
   }, [releasesData]);
 
   useEffect(() => {
@@ -64,17 +68,20 @@ const ReleasesTable = () => {
     if (selectedCluster !== 'all') {
       filteredReleases = filteredReleases.filter((el) => el.context_name === selectedCluster);
     }
+
     setReleases(filteredReleases);
   }, [selectedNamespace, selectedCluster]);
 
-  async function getRows(releases) {
-    releases.map(async (row, id) => {
-      await getReleaseHealthAPI(row.namespace, row.context_name, row.name).then((status) => {
-        const newObj = {};
-        newObj[id] = status.data.status;
-        setRows((rows) => ({ ...rows, ...newObj }));
+  async function getHealthRows(releases) {
+    if (releases.length) {
+      await releases.map((row, index) => {
+        getReleaseHealth(row.context_name, row.namespace, row.name).then((res) => {
+          const healthStatus = {};
+          healthStatus[index] = res.data.status;
+          setHealthRows((healthRows) => ({ ...healthRows, ...healthStatus }));
+        });
       });
-    });
+    }
   }
 
   const handleSelectedNamespace = (event) => {
@@ -111,7 +118,7 @@ const ReleasesTable = () => {
     await dispatch(getReleases());
   };
 
-  const setStatusColor = (color) => {
+  const handleStatusColor = (color) => {
     if (
       color === 'unknown' ||
       color === 'uninstalling' ||
@@ -170,16 +177,22 @@ const ReleasesTable = () => {
               </TableHead>
 
               <TableBody>
-                {releases?.map((row, num) => (
+                {releases?.map((row, index) => (
                   <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell align='left'>{row.name}</TableCell>
                     <TableCell align='left'>
                       <Stack>
-                        <Chip label={row.status} color={setStatusColor(row.status)} />
+                        <Chip label={row.status} color={handleStatusColor(row.status)} />
                       </Stack>
                     </TableCell>
                     <TableCell align='left'>
-                      <Stack>{rows[num] ? <Chip label={rows[num]} color={setStatusColor(rows[num])} /> : ''}</Stack>
+                      {healthRows[index] ? (
+                        <Stack>
+                          <Chip label={healthRows[index]} color={handleStatusColor(healthRows[index])} />
+                        </Stack>
+                      ) : (
+                        ''
+                      )}
                     </TableCell>
                     <TableCell align='left'>-</TableCell>
                     <TableCell align='left'>{checkTrimString(row.namespace, 50, 15)}</TableCell>
