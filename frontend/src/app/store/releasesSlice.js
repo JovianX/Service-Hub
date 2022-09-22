@@ -5,10 +5,7 @@ import { getReleasesList, deleteRelease as deleteReleaseAPI } from '../api';
 export const getReleases = createAsyncThunk('releases/getReleasesList', async () => {
   try {
     const response = await getReleasesList();
-
-    const data = await response.data;
-
-    return data;
+    return response.data;
   } catch (e) {
     return [];
   }
