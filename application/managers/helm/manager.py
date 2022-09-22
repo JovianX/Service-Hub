@@ -235,37 +235,36 @@ class HelmManager:
         """
         Returns health status of release and health details for each release entity.
         """
-        kinds_to_check = (
-            K8sKinds.daemon_set,
-            K8sKinds.deployment,
-            K8sKinds.replica_set,
-            K8sKinds.replication_controller,
-            K8sKinds.service,
-            K8sKinds.stateful_set,
-        )
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 k8s_manager = K8sManager(k8s_config_path)
-                entities_details = await self._get_detailed_manifest(
-                    helm_service, k8s_manager, context_name, namespace, release_name, kinds_to_check
+                health_status = await self._release_health_status(
+                    helm_service, k8s_manager, context_name, namespace, release_name
                 )
 
-        health_details = {}
-        health_status = ReleaseHealthStatuses.healthy
-        for entity in entities_details:
-            if entity.is_healthy is None:
-                continue
-            entity_name = entity.metadata['name']
-            kind_health_statuses = health_details.setdefault(entity.kind, {})
-            kind_health_statuses[entity_name] = entity.is_healthy
-            if not entity.is_healthy:
-                health_status = ReleaseHealthStatuses.unhealthy
+        return health_status
 
-        return {
-            'status': health_status,
-            'details': health_details
-        }
+    async def list_unhealthy_releases(self, organization: Organization) -> list[dict]:
+        """
+        Returns list of unhealthy releases.
+        """
+        releases = await self.list_releases(organization)
+        if not releases:
+            return []
+        unhealthy_releases = []
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                k8s_manager = K8sManager(k8s_config_path)
+                for release in releases:
+                    health_status = await self._release_health_status(
+                        helm_service, k8s_manager, release['context_name'], release['namespace'], release['name']
+                    )
+                    if health_status['status'] == ReleaseHealthStatuses.unhealthy:
+                        unhealthy_releases.append(release)
+
+        return unhealthy_releases
 
     async def update_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str,
@@ -460,3 +459,37 @@ class HelmManager:
         ])
 
         return [item for item in resources_details if item is not None]
+
+    async def _release_health_status(
+        self, helm_service: HelmService, k8s_manager: K8sManager, context_name: str, namespace: str, release_name: str
+    ) -> dict[str, ReleaseHealthStatuses | dict[str, dict[str, bool]]]:
+        """
+        Returns health status of release and health details for each release entity.
+        """
+        kinds_to_check = (
+            K8sKinds.daemon_set,
+            K8sKinds.deployment,
+            K8sKinds.replica_set,
+            K8sKinds.replication_controller,
+            K8sKinds.service,
+            K8sKinds.stateful_set,
+        )
+        entities_details = await self._get_detailed_manifest(
+            helm_service, k8s_manager, context_name, namespace, release_name, kinds_to_check
+        )
+
+        health_details = {}
+        health_status = ReleaseHealthStatuses.healthy
+        for entity in entities_details:
+            if entity.is_healthy is None:
+                continue
+            entity_name = entity.metadata['name']
+            kind_health_statuses = health_details.setdefault(entity.kind, {})
+            kind_health_statuses[entity_name] = entity.is_healthy
+            if not entity.is_healthy:
+                health_status = ReleaseHealthStatuses.unhealthy
+
+        return {
+            'status': health_status,
+            'details': health_details
+        }
