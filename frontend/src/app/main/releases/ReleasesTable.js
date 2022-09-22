@@ -122,7 +122,7 @@ const ReleasesTable = () => {
       return 'warning';
     }
     if (color === 'uninstalled' || color === 'superseded' || color === 'failed' || color === 'unhealthy') {
-      return 'danger';
+      return 'error';
     }
     if (color === 'deployed' || color === 'healthy') {
       return 'success';
