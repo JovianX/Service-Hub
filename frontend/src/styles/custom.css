@@ -6,3 +6,7 @@
     margin: 0;
     height: 100%;
 }
+
+.customDatePickerWidth .MuiFormControl-root.MuiTextField-root.muiltr-1u3bzj6-MuiFormControl-root-MuiTextField-root{
+    width: 100%;
+}

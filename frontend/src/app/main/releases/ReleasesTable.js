@@ -1,4 +1,4 @@
-import HourglassTopIcon from '@mui/icons-material/HourglassTop';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import {
   Button,
   Chip,
@@ -27,12 +27,8 @@ import { checkTrimString, getSelectItemsFromArray, getUniqueKeysFromTableData } 
 import ReleasesFilters from './ReleasesFilters';
 import ReleasesModal from './ReleasesModal';
 
-const newReceivedOneTtls = [];
-
 const ReleasesTable = () => {
   const dispatch = useDispatch();
-
-  const [receivedOneTtl, setReceivedOneTtl] = useState({});
   const [namespaces, setNamespaces] = useState([]);
   const [clusters, setClusters] = useState([]);
   const [releases, setReleases] = useState([]);
@@ -43,31 +39,25 @@ const ReleasesTable = () => {
   const [healthRows, setHealthRows] = useState({});
   const [ttls, setTtls] = useState({});
   const [selectedParameters, setSelectedParameters] = useState({});
+  const [refresh, setRefresh] = useState(false);
 
   const [openModal, setOpenModal] = useState(false);
 
   const releasesData = useSelector(selectReleases);
   const isLoading = useSelector(selectIsReleasesLoading);
-
   useEffect(() => {
     setReleases(releasesData);
-    getRows(releasesData);
+    getHealthRows(releasesData);
+    getTtlRows(releasesData);
   }, [releasesData]);
-
-  useEffect(() => {
-    if (releases.length && newReceivedOneTtls.length !== releases.length) {
-      for (let i = 1; i <= releases.length; i++) {
-        newReceivedOneTtls.push({});
-      }
-    }
-    if (receivedOneTtl?.timestamp) {
-      newReceivedOneTtls[receivedOneTtl.ttlCellIndex] = receivedOneTtl;
-    }
-  }, [receivedOneTtl]);
 
   useEffect(() => {
     dispatch(getReleases());
   }, [dispatch]);
+
+  useEffect(() => {
+    getTtlRows(releasesData);
+  }, [refresh]);
 
   useEffect(() => {
     if (releasesData?.length) {
@@ -88,11 +78,10 @@ const ReleasesTable = () => {
     if (selectedCluster !== 'all') {
       filteredReleases = filteredReleases.filter((el) => el.context_name === selectedCluster);
     }
-
     setReleases(filteredReleases);
   }, [selectedNamespace, selectedCluster]);
 
-  async function getRows(releases) {
+  async function getHealthRows(releases) {
     if (releases.length) {
       await releases.map((row, index) => {
         getReleaseHealth(row.context_name, row.namespace, row.name).then((res) => {
@@ -100,6 +89,13 @@ const ReleasesTable = () => {
           healthStatus[index] = res.data.status;
           setHealthRows((healthRows) => ({ ...healthRows, ...healthStatus }));
         });
+      });
+    }
+  }
+
+  async function getTtlRows(releases) {
+    if (releases.length) {
+      await releases.map((row, index) => {
         getReleaseTtl(row.context_name, row.namespace, row.name).then((res) => {
           const scheduledTime = {};
           scheduledTime[index] = res.data.scheduled_time;
@@ -198,7 +194,7 @@ const ReleasesTable = () => {
                   <TableCell>Updated</TableCell>
                   <TableCell>TTL</TableCell>
                   <TableCell>Revision</TableCell>
-                  <TableCell align='center'>Actions</TableCell>
+                  <TableCell align='center' />
                 </TableRow>
               </TableHead>
 
@@ -230,24 +226,15 @@ const ReleasesTable = () => {
                     </TableCell>
 
                     <TableCell lign='left'>
-                      {newReceivedOneTtls[index] && newReceivedOneTtls[index].ttlCellIndex === index
-                        ? new Date(newReceivedOneTtls[index].timestamp * 1000)
-                            .toLocaleString()
-                            .replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1')
-                        : ''}
-
                       {ttls[index]
                         ? new Date(+ttls[index] * 1000).toLocaleString().replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1')
                         : ''}
                     </TableCell>
                     <TableCell align='left'>{row.revision}</TableCell>
                     <TableCell align='left'>
-                      <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
-                        <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                      </Button>
                       <Button
                         variant='text'
-                        color='primary'
+                        color='inherit'
                         onClick={() => {
                           setSelectedParameters({
                             ttlCellIndex: index,
@@ -259,7 +246,10 @@ const ReleasesTable = () => {
                           setOpenModal(true);
                         }}
                       >
-                        <HourglassTopIcon />
+                        <HourglassEmptyIcon />
+                      </Button>
+                      <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
+                        <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -268,8 +258,8 @@ const ReleasesTable = () => {
             </Table>
           </TableContainer>
           <ReleasesModal
-            receivedOneTtl={receivedOneTtl}
-            setReceivedOneTtl={setReceivedOneTtl}
+            refresh={refresh}
+            setRefresh={setRefresh}
             parameters={selectedParameters}
             openModal={{ openModal, setOpenModal }}
           />

@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
 const ReleasesDatePicker = ({ currentDate, getSelectedDate }) => {
-  let currentDateInFormat = {};
+  let currentDateInFormat = new Date();
   if (currentDate) {
     currentDateInFormat = new Date(currentDate * 1000);
   }
@@ -23,13 +23,15 @@ const ReleasesDatePicker = ({ currentDate, getSelectedDate }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DateTimePicker
-        label='ttl'
-        renderInput={(params) => <TextField {...params} />}
-        value={value}
-        onChange={handleChange}
-        minDate={dayjs(new Date())}
-      />
+      <div className='customDatePickerWidth'>
+        <DateTimePicker
+          label='ttl'
+          renderInput={(params) => <TextField {...params} />}
+          value={value}
+          onChange={handleChange}
+          minDate={dayjs(new Date())}
+        />
+      </div>
     </LocalizationProvider>
   );
 };

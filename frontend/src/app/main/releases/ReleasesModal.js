@@ -4,13 +4,11 @@ import { useDispatch } from 'react-redux';
 
 import { createReleaseTtl, deleteReleaseTtl } from 'app/store/releasesSlice';
 
-import { getReleaseTtl } from '../../api';
-
 import ReleasesDatePicker from './ReleasesDatePicker';
 
-const ReleasesModal = ({ setReceivedOneTtl, openModal, parameters }) => {
+const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
   const dispatch = useDispatch();
-  const { ttlCellIndex, currentDate, context_name, namespace, name } = parameters;
+  const { currentDate, context_name, namespace, name } = parameters;
   const [open, setOpen] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -58,18 +56,14 @@ const ReleasesModal = ({ setReceivedOneTtl, openModal, parameters }) => {
     await dispatch(createReleaseTtl({ context_name, namespace, name, minutes })).then((res) => {
       showMessage(res.payload);
     });
-    await getReleaseTtl(context_name, namespace, name).then((res) => {
-      setReceivedOneTtl((ttl) => ({ ...ttl, timestamp: res.data.scheduled_time, ttlCellIndex }));
-    });
+    await setRefresh(!refresh);
   };
 
   const handleDeleteReleaseTtl = async (context_name, namespace, name) => {
     await dispatch(deleteReleaseTtl({ context_name, namespace, name })).then((res) => {
       showMessage(res.payload);
     });
-    await getReleaseTtl(context_name, namespace, name).then((res) => {
-      setReceivedOneTtl((ttl) => ({ ...ttl, timestamp: res.data.scheduled_time, ttlCellIndex }));
-    });
+    await setRefresh(!refresh);
   };
 
   return (
@@ -77,19 +71,31 @@ const ReleasesModal = ({ setReceivedOneTtl, openModal, parameters }) => {
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
         <DialogTitle className='bg-primary text-center text-white mb-24'>Change TTL</DialogTitle>
         <DialogContent>
-          <div className='pt-24 flex justify-center'>
-            <ReleasesDatePicker currentDate={currentDate || ''} getSelectedDate={getSelectedDate} />
+          <div>
+            <div className='mb-24'>Lorem ipsum dolor sit amet, consectetur adipisicing elit</div>
+          </div>
+          <div>
+            <ReleasesDatePicker currentDate={currentDate} getSelectedDate={getSelectedDate} />
           </div>
         </DialogContent>
-        <DialogActions className='p-24 pb-0 justify-between'>
-          <Button
-            color='error'
-            variant='contained'
-            className='mr-14'
-            onClick={() => handleDeleteReleaseTtl(context_name, namespace, name)}
-          >
-            Delete
-          </Button>
+        <DialogActions className='p-24 pt-4 justify-between'>
+          <div className='flex items-center'>
+            <Button
+              color='error'
+              variant='contained'
+              className='mr-14'
+              onClick={() => handleDeleteReleaseTtl(context_name, namespace, name)}
+            >
+              Delete
+            </Button>
+            <div>
+              {showErrorMessage && <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>}
+              {showSuccessMessage && (
+                <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
+              )}
+            </div>
+          </div>
+
           <div>
             <Button className='mr-14' onClick={handleClose}>
               Cancel
@@ -97,17 +103,12 @@ const ReleasesModal = ({ setReceivedOneTtl, openModal, parameters }) => {
             <Button
               variant='contained'
               color='primary'
-              className='mr-14'
               onClick={() => handleCreateReleaseTtl(context_name, namespace, name)}
             >
               Save
             </Button>
           </div>
         </DialogActions>
-        <div className='p-24 min-h-[70px]'>
-          {showErrorMessage && <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>}
-          {showSuccessMessage && <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>}
-        </div>
       </Dialog>
     </div>
   );
