@@ -87,6 +87,7 @@ class ReleaseListItemSchema(BaseModel):
     """
     Helm release list item.
     """
+    application_name: str = Field(description='Application name')
     application_version: str = Field(description='Application version')
     chart_version: str = Field(description='Used chart version')
     chart: str = Field(description='Used chart name')
@@ -96,18 +97,6 @@ class ReleaseListItemSchema(BaseModel):
     status: ReleaseStatuses = Field(description='Status')
     updated: datetime = Field(description='Release last update date')
     context_name: str = Field(description='Kubernetes configuration context name with which was accessed release')
-    available_chart: ReleaseListItemAvailableChart | None = Field(description='Release chart update candidate')
-
-    @root_validator(pre=True)
-    def extract_chart_version(cls, values: dict) -> dict:
-        """
-        Helm don't returns chart name in CLI output, but we can extract it from
-        chart name.
-        """
-        *_, chart_version = values['chart'].split('-')
-        values['chart_version'] = chart_version
-
-        return values
 
     class Config:
         json_encoders = {
@@ -119,12 +108,12 @@ class ChartListItemSchema(BaseModel):
     """
     Chart list item schema.
     """
+    application_name: str = Field(description='Name chart application')
     application_version: str = Field(description='Version of application deployed by chart')
-    description: str = Field(description='Chart description')
     name: str = Field(description='Chart name')
     version: str = Field(description='Chart version')
     repository_name: str = Field(description='Repository name')
-    application_name: str = Field(description='Name chart application')
+    description: str = Field(description='Chart description')
 
     class Config:
         orm_mode = True

@@ -42,8 +42,10 @@ class ReleaseSchema(BaseModel):
     """
     Helm release response.
     """
+    application_name: str = Field(description='Application name')
     application_version: str = Field(alias='app_version', description='Application version')
     chart: str = Field(description='Used chart name')
+    chart_version: str = Field(description='Used chart version')
     name: str = Field(description='Release name')
     namespace: str = Field(description='Namespace')
     revision: str = Field(description='Revision number')
@@ -53,23 +55,19 @@ class ReleaseSchema(BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    @property
-    def application_name(self) -> str:
+    @root_validator(pre=True, skip_on_failure=True)
+    def parse_chart_name(cls, values: dict) -> dict:
         """
-        Extracted Helm chart name.
+        Extracts repository and application name from chart name.
         """
-        *splited_name, _ = self.chart.split('-')
+        chart_name = values.get('chart')
+        if not chart_name:
+            raise ValueError(f'No chart name was provided.')
+        *splited_name, chart_version = chart_name.split('-')
+        values['application_name'] = '-'.join(splited_name)
+        values['chart_version'] = chart_version
 
-        return '-'.join(splited_name)
-
-    @property
-    def chart_version(self) -> str:
-        """
-        Extracted Helm chart name.
-        """
-        *_, chart_version = self.chart.split('-')
-
-        return chart_version
+        return values
 
 
 class ManifestMetaSchema(BaseModel):
@@ -95,12 +93,12 @@ class ChartSchema(BaseModel):
     """
     Helm chart description.
     """
+    application_name: str = Field(description='Name of chart application')
     application_version: str = Field(alias='app_version', description='Version of application deployed by chart')
-    description: str = Field(description='Chart description')
     name: str = Field(description='Chart name')
     version: str = Field(description='Chart version')
     repository_name: str = Field(description='Name of repository where chart is stored')
-    application_name: str = Field(description='Name of chart application')
+    description: str = Field(description='Chart description')
 
     class Config:
         allow_population_by_field_name = True
@@ -112,7 +110,7 @@ class ChartSchema(BaseModel):
         """
         name = values.get('name')
         if not name:
-            raise ValueError(f'No chart name provided.')
+            raise ValueError(f'No chart name was provided.')
         repository_name, application_name = name.split('/')
         if not repository_name:
             raise ValueError(f'Failed to extract repository name from chart name: "{name}".')

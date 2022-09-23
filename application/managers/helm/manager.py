@@ -16,6 +16,7 @@ from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
 from models.organization import Organization
 from services.helm.facade import HelmService
+from services.helm.schemas import ChartSchema
 from services.kubernetes.schemas import K8sEntitySchema
 from utils.achive import tar
 from utils.helm import HelmArchive
@@ -94,7 +95,7 @@ class HelmManager:
                     dry_run=dry_run
                 )
 
-    async def list_repositories_charts(self, organization: Organization):
+    async def list_repositories_charts(self, organization: Organization) -> list[ChartSchema]:
         """
         Returns lists of charts in all repositories.
         """
@@ -120,19 +121,11 @@ class HelmManager:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 for context_name in kubernetes_configuration.contexts:
                     try:
-                        releases, charts = await asyncio.gather(
-                            helm_service.list.releases(context_name, namespace),
-                            self.list_repositories_charts(organization)
-                        )
+                        releases = await helm_service.list.releases(context_name, namespace)
                     except ClusterUnreachableException:
                         continue
                     for release in releases:
                         item = release.dict()
-                        item['available_chart'] = next(
-                            ({'chart_name': chart.name, 'chart_version': chart.version}
-                             for chart in charts if chart.application_name == release.application_name),
-                            None
-                        )
                         item['context_name'] = context_name
                         items.append(item)
 
@@ -151,6 +144,14 @@ class HelmManager:
                 )
 
         return sum([len(item) for item in releases])
+
+    async def list_available_charts(self, organization: Organization, application_name: str) -> list[dict]:
+        """
+        Returns list of available charts from different repositories with which release can be updated.
+        """
+        charts = await self.list_repositories_charts(organization)
+
+        return [chart.dict() for chart in charts if chart.application_name == application_name]
 
     async def get_user_supplied_values(
         self, organization: Organization, context_name: str, namespace: str, release_name: str
@@ -257,10 +258,13 @@ class HelmManager:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 k8s_manager = K8sManager(k8s_config_path)
-                for release in releases:
-                    health_status = await self._release_health_status(
+                health_statuses = await asyncio.gather(*[
+                    self._release_health_status(
                         helm_service, k8s_manager, release['context_name'], release['namespace'], release['name']
                     )
+                    for release in releases
+                ])
+                for release, health_status in zip(releases, health_statuses):
                     if health_status['status'] == ReleaseHealthStatuses.unhealthy:
                         unhealthy_releases.append(release)
 

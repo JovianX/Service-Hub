@@ -87,6 +87,21 @@ async def list_charts_in_repsitories(
     return charts
 
 
+@router.get('/chart/available', response_model=list[ChartListItemSchema])
+async def list_available_for_application_charts(
+    application_name: str = Query(description='Name of application for which chart requested'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    List charts available charts for given application.
+    """
+    helm_manager = HelmManager(organization_manager)
+    charts = await helm_manager.list_available_charts(user.organization, application_name)
+
+    return charts
+
+
 @router.post('/chart/install')
 async def install_chart(
     data: InstallChartBodySchema,
