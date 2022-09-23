@@ -152,7 +152,10 @@ const ReleasesTable = () => {
     if (color === 'uninstalled' || color === 'superseded' || color === 'failed' || color === 'unhealthy') {
       return 'error';
     }
-    if (color === 'deployed' || color === 'healthy') {
+    if (color === 'deployed') {
+      return 'info';
+    }
+    if (color === 'healthy') {
       return 'success';
     }
   };
@@ -184,9 +187,7 @@ const ReleasesTable = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Release Name</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Health</TableCell>
-                  <TableCell>Rules</TableCell>
+                  <TableCell align='center'>Health</TableCell>
                   <TableCell>Namespace</TableCell>
                   <TableCell>Cluster</TableCell>
                   <TableCell>Chart</TableCell>
@@ -194,6 +195,7 @@ const ReleasesTable = () => {
                   <TableCell>Updated</TableCell>
                   <TableCell>TTL</TableCell>
                   <TableCell>Revision</TableCell>
+                  <TableCell align='center'>Status</TableCell>
                   <TableCell align='center' />
                 </TableRow>
               </TableHead>
@@ -203,11 +205,6 @@ const ReleasesTable = () => {
                   <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell align='left'>{row.name}</TableCell>
                     <TableCell align='left'>
-                      <Stack>
-                        <Chip label={row.status} color={handleStatusColor(row.status)} />
-                      </Stack>
-                    </TableCell>
-                    <TableCell align='left'>
                       {healthRows[index] ? (
                         <Stack>
                           <Chip label={healthRows[index]} color={handleStatusColor(healthRows[index])} />
@@ -216,7 +213,6 @@ const ReleasesTable = () => {
                         ''
                       )}
                     </TableCell>
-                    <TableCell align='left'>-</TableCell>
                     <TableCell align='left'>{checkTrimString(row.namespace, 50, 15)}</TableCell>
                     <TableCell align='left'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
                     <TableCell align='left'>{row.chart}</TableCell>
@@ -231,6 +227,11 @@ const ReleasesTable = () => {
                         : ''}
                     </TableCell>
                     <TableCell align='left'>{row.revision}</TableCell>
+                    <TableCell align='left'>
+                      <Stack>
+                        <Chip label={row.status} color={handleStatusColor(row.status)} />
+                      </Stack>
+                    </TableCell>
                     <TableCell align='left'>
                       <Button
                         variant='text'
