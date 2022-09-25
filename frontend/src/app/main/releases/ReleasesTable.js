@@ -1,4 +1,5 @@
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
+
 import {
   Button,
   Chip,
@@ -23,7 +24,7 @@ import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } f
 
 import { getReleaseHealth, getReleaseTtl } from '../../api';
 import { checkTrimString, getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
-
+import ButtonGroup from '@mui/material/ButtonGroup';
 import ReleasesFilters from './ReleasesFilters';
 import ReleasesModal from './ReleasesModal';
 
@@ -207,7 +208,7 @@ const ReleasesTable = () => {
                     <TableCell align='left'>
                       {healthRows[index] ? (
                         <Stack>
-                          <Chip label={healthRows[index]} color={handleStatusColor(healthRows[index])} />
+                          <Chip  inputProps={{style: {textTransform: 'capitalize'}}} label={healthRows[index]} color={handleStatusColor(healthRows[index])} />
                         </Stack>
                       ) : (
                         ''
@@ -233,9 +234,10 @@ const ReleasesTable = () => {
                       </Stack>
                     </TableCell>
                     <TableCell align='left'>
+                    <ButtonGroup aria-label="primary button group">
                       <Button
                         variant='text'
-                        color='inherit'
+                        color='error'
                         onClick={() => {
                           setSelectedParameters({
                             ttlCellIndex: index,
@@ -247,11 +249,13 @@ const ReleasesTable = () => {
                           setOpenModal(true);
                         }}
                       >
-                        <HourglassEmptyIcon />
+                        <AutoDeleteOutlinedIcon />
                       </Button>
                       <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
                         <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                       </Button>
+                    </ButtonGroup>
+
                     </TableCell>
                   </TableRow>
                 ))}

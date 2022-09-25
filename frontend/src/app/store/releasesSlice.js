@@ -32,12 +32,12 @@ export const createReleaseTtl = createAsyncThunk(
       await createReleaseTtlAPI(context_name, namespace, name, minutes);
       return {
         status: 'success',
-        message: 'adding ttl was successful',
+        message: 'Setting ttl was successful',
       };
     } catch (e) {
       return {
         status: 'error',
-        message: 'an error occurred when adding ttl',
+        message: 'An error occurred when adding ttl',
       };
     }
   },
@@ -50,12 +50,12 @@ export const deleteReleaseTtl = createAsyncThunk(
       await deleteReleaseTtlAPI(context_name, namespace, name);
       return {
         status: 'success',
-        message: 'deleting ttl was successful',
+        message: 'Unset ttl was successful',
       };
     } catch (e) {
       return {
         status: 'error',
-        message: 'an error occurred when deleting ttl',
+        message: 'An error occurred when unsetting ttl',
       };
     }
   },

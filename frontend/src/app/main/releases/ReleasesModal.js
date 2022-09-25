@@ -69,10 +69,10 @@ const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
-        <DialogTitle className='bg-primary text-center text-white mb-24'>Change TTL</DialogTitle>
+        <DialogTitle className='bg-primary text-center text-white mb-24'>Set TTL</DialogTitle>
         <DialogContent>
           <div>
-            <div className='mb-24'>Lorem ipsum dolor sit amet, consectetur adipisicing elit</div>
+            <div className='mb-24'>Set scheduled deletion of the helm release:</div>
           </div>
           <div>
             <ReleasesDatePicker currentDate={currentDate} getSelectedDate={getSelectedDate} />
@@ -86,7 +86,7 @@ const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
               className='mr-14'
               onClick={() => handleDeleteReleaseTtl(context_name, namespace, name)}
             >
-              Delete
+              Unset TTL
             </Button>
             <div>
               {showErrorMessage && <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>}
