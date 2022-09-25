@@ -11,17 +11,18 @@
 ```
 
 ## Service Hub for Kubernetes
+
 JovianX **Service Hub** is a DevOps tool to create on-demand services using Helm and Kubernetes.
 
-
 ## Features:
-- Allow users to deploy ApplicationSets from tempaltes 
+
+- Allow users to deploy ApplicationSets from tempaltes
 - Set TTL for applications and Helm releases
 - Monitor the http endpints for service health
-- Set placement and context-based rules for helm releases 
-
+- Set placement and context-based rules for helm releases
 
 ### Serivce tempalte example:
+
 ```
 name: my-new-service
 charts:                                      # required
