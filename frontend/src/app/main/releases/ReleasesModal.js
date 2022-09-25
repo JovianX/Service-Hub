@@ -1,3 +1,5 @@
+import SaveIcon from '@mui/icons-material/Save';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -9,6 +11,7 @@ import ReleasesDatePicker from './ReleasesDatePicker';
 const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
   const dispatch = useDispatch();
   const { currentDate, context_name, namespace, name } = parameters;
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -24,11 +27,11 @@ const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
     }
   }, [openModal.openModal]);
 
-  // modal actions
   const handleClose = () => {
     setShowErrorMessage(false);
     setShowSuccessMessage(false);
     setOpen(false);
+    setLoading(false);
   };
 
   const showMessage = (res) => {
@@ -41,9 +44,11 @@ const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
       setShowErrorMessage(true);
       setInfoMessageError(res.message);
     }
+    setLoading(false);
   };
 
   const handleCreateReleaseTtl = async (context_name, namespace, name) => {
+    setLoading(true);
     const selectedDateUnix = new Date(selectedDate);
     const selectedUnixTimestamp = selectedDateUnix.getTime();
     const timestamp = Date.now();
@@ -100,13 +105,16 @@ const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
             <Button className='mr-14' onClick={handleClose}>
               Cancel
             </Button>
-            <Button
-              variant='contained'
+            <LoadingButton
               color='primary'
               onClick={() => handleCreateReleaseTtl(context_name, namespace, name)}
+              loading={loading}
+              loadingPosition='start'
+              startIcon={<SaveIcon />}
+              variant='contained'
             >
               Save
-            </Button>
+            </LoadingButton>
           </div>
         </DialogActions>
       </Dialog>
