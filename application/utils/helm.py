@@ -49,7 +49,7 @@ class HelmArchive:
             )
             with open(self.helm_home_archive, mode='rb') as file:
                 archive_data = file.read()
-            if self.organization.helm_home != archive_data:
+            if archive_data and self.organization.helm_home != archive_data:
                 self.organization.helm_home = archive_data
                 await self.organization_manager.db.save(self.organization)
             archive_size = self.helm_home_archive.stat().st_size

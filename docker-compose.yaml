@@ -9,9 +9,9 @@ services:
         HELM_VERSION: ${HELM_VERSION}
         KUBECTL_VERSION: ${KUBECTL_VERSION}
     volumes:
-      - ./application:/code
-      - ./credentials:/code/credentials
-      - ./.env:/code/.env
+      - ./application:/home/app/hub
+      - ./credentials:/home/app/hub/credentials
+      - ./.env:/home/app/hub/.env
     networks:
       - service-network
     ports:
