@@ -17,8 +17,8 @@ const TtlModal = ({ refresh, setRefresh, openModal, parameters }) => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
-
   const [selectedDate, getSelectedDate] = useState('');
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     if (openModal.openModal) {
@@ -26,6 +26,14 @@ const TtlModal = ({ refresh, setRefresh, openModal, parameters }) => {
       openModal.setOpenModal(false);
     }
   }, [openModal.openModal]);
+
+  useEffect(() => {
+    if (currentDate) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  }, [currentDate]);
 
   const handleClose = () => {
     setShowErrorMessage(false);
@@ -59,15 +67,22 @@ const TtlModal = ({ refresh, setRefresh, openModal, parameters }) => {
     }
 
     await dispatch(createReleaseTtl({ context_name, namespace, name, minutes })).then((res) => {
+      setDisabled(false);
       showMessage(res.payload);
+      setTimeout(() => {
+        handleClose();
+      }, 2000);
     });
     await setRefresh(!refresh);
   };
 
   const handleDeleteReleaseTtl = async (context_name, namespace, name) => {
     await dispatch(deleteReleaseTtl({ context_name, namespace, name })).then((res) => {
+      setDisabled(true);
       showMessage(res.payload);
-      handleClose;
+      setTimeout(() => {
+        handleClose();
+      }, 2000);
     });
     await setRefresh(!refresh);
   };
@@ -87,6 +102,7 @@ const TtlModal = ({ refresh, setRefresh, openModal, parameters }) => {
         <DialogActions className='p-24 pt-4 justify-between'>
           <div className='flex items-center'>
             <Button
+              disabled={disabled}
               color='error'
               variant='contained'
               className='mr-14'
