@@ -23,15 +23,15 @@ JovianX **Service Hub** is a DevOps tool to create on-demand services using Helm
 
 ## Installation
 
-Docker Compose
+### Docker Compose
 
-Make
+### Make
 
 ## Usage
 
 ### Service template example:
 
-```
+```text
 name: my-new-service
 charts:                                      # required
   - name: my-application
