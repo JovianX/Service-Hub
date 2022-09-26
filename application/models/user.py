@@ -1,6 +1,4 @@
 
-from typing import List
-
 from fastapi_users.db import SQLAlchemyBaseOAuthAccountTableUUID
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 from sqlalchemy import Column
@@ -16,7 +14,7 @@ class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
-    oauth_accounts: List[OAuthAccount] = relationship('OAuthAccount', lazy='selectin')
+    oauth_accounts: list[OAuthAccount] = relationship('OAuthAccount', lazy='selectin')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
     organization = relationship('Organization', back_populates='members', lazy='selectin')
     created_services = relationship('Service', back_populates='creator', lazy='selectin')
