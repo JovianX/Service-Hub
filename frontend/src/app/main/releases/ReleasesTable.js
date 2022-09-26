@@ -26,7 +26,7 @@ import { getReleaseHealth, getReleaseTtl } from '../../api';
 import { checkTrimString, getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ReleasesFilters from './ReleasesFilters';
-import ReleasesModal from './ReleasesModal';
+import TtlModal from './ttlModal';
 
 const ReleasesTable = () => {
   const dispatch = useDispatch();
@@ -208,7 +208,7 @@ const ReleasesTable = () => {
                     <TableCell align='left'>
                       {healthRows[index] ? (
                         <Stack>
-                          <Chip  inputProps={{style: {textTransform: 'capitalize'}}} label={healthRows[index]} color={handleStatusColor(healthRows[index])} />
+                          <Chip label={healthRows[index]} color={handleStatusColor(healthRows[index])} />
                         </Stack>
                       ) : (
                         ''
@@ -262,7 +262,7 @@ const ReleasesTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <ReleasesModal
+          <TtlModal
             refresh={refresh}
             setRefresh={setRefresh}
             parameters={selectedParameters}

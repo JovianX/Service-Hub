@@ -8,7 +8,7 @@ import { createReleaseTtl, deleteReleaseTtl } from 'app/store/releasesSlice';
 
 import ReleasesDatePicker from './ReleasesDatePicker';
 
-const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
+const TtlModal = ({ refresh, setRefresh, openModal, parameters }) => {
   const dispatch = useDispatch();
   const { currentDate, context_name, namespace, name } = parameters;
   const [loading, setLoading] = useState(false);
@@ -67,6 +67,7 @@ const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
   const handleDeleteReleaseTtl = async (context_name, namespace, name) => {
     await dispatch(deleteReleaseTtl({ context_name, namespace, name })).then((res) => {
       showMessage(res.payload);
+      handleClose;
     });
     await setRefresh(!refresh);
   };
@@ -121,4 +122,4 @@ const ReleasesModal = ({ refresh, setRefresh, openModal, parameters }) => {
     </div>
   );
 };
-export default ReleasesModal;
+export default TtlModal;
