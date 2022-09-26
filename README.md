@@ -16,6 +16,7 @@ JovianX **Service Hub** is a DevOps tool to create on-demand services using Helm
 
 ## Features:
 
+
 *   Allow users to deploy ApplicationSets from templates
 *   Set TTL for applications and Helm releases
 *   Monitor the HTTP endpoints for service health

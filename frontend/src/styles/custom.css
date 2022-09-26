@@ -10,3 +10,6 @@
 .monaco-editor.no-user-select.mac.showUnused.showDeprecated.hc-black {
     padding-top: 12px;
 }
+.customDatePickerWidth .MuiFormControl-root.MuiTextField-root.muiltr-1u3bzj6-MuiFormControl-root-MuiTextField-root{
+    width: 100%;
+}
