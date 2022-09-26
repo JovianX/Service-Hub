@@ -58,11 +58,11 @@ charts:                                      # required
 inputs:                                      # optional
   - name: username                           # required
     type: string                             # required, Options: string, select, checkbox
-    lable: 'User Name'                       # optional
-    defualt: 'user'                          # optional
+    label: 'User Name'                       # optional
+    default: 'user'                          # optional
 
   - name: some_user_input
     type: string
-    lable: 'Enter your name'
-    defualt: 'John'
+    label: 'Enter your name'
+    default: 'John'
 ```
