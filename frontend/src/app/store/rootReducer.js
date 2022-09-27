@@ -9,6 +9,7 @@ import invitations from './invitationsSlice';
 import releases from './releasesSlice';
 import repositories from './repositorySlice';
 import services from './servicesSlice';
+import templates from './templatesSlice';
 import user from './userSlice';
 import users from './usersSlice';
 
@@ -19,6 +20,7 @@ const createReducer = (asyncReducers) => (state, action) => {
     user,
     invitations,
     users,
+    templates,
     dashboard,
     releases,
     charts,

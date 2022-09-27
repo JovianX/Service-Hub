@@ -7,6 +7,6 @@
     height: 100%;
 }
 
-.monaco-editor.no-user-select.mac.showUnused.showDeprecated.hc-black {
+.monaco-editor.no-user-select {
     padding-top: 12px;
 }

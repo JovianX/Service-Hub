@@ -65,6 +65,14 @@ const navigationConfig = [
     icon: 'heroicons-outline:users',
     url: 'users',
   },
+  {
+    id: 'templates-component',
+    title: 'Templates',
+    translate: 'TEMPLATES',
+    type: 'item',
+    icon: 'material-outline:pattern',
+    url: 'templates',
+  },
 ];
 
 export default navigationConfig;
