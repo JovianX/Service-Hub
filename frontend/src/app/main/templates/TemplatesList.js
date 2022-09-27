@@ -55,10 +55,6 @@ const TemplatesList = () => {
     setSelectedIndex(templateIndex);
   }, [templateId]);
 
-  const getValue = (newValue) => {
-    setTemplateYamlText(newValue);
-  };
-
   const showMessage = (res) => {
     if (res.status === 'success') {
       setInfoMessageSuccess(res.message);
@@ -100,12 +96,12 @@ const TemplatesList = () => {
           />
         ))}
       </List>
-      <div className='w-7/12 h-[70vh]'>
+      <div className='w-7/12'>
         <MonacoEditor
+          height='600px'
           value={templateYamlText}
           language='yaml'
-          options={{ theme: 'vs-dark' }}
-          onChange={getValue.bind(this)}
+          options={{ theme: 'vs-dark', readOnly: true }}
         />
         <div className='mt-36 mb-24 flex justify-between items-center'>
           <Button size='large' color='primary' variant='outlined'>
