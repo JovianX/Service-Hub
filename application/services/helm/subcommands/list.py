@@ -3,8 +3,6 @@ Implementation of helm list subcommand.
 """
 import yaml
 
-from exceptions.kubernetes import ClusterUnreachableException
-
 from ..schemas import ReleaseSchema
 from .base import HandleUnreachableClusterMixin
 from .base import HelmBase
