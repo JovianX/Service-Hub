@@ -97,12 +97,9 @@ const TemplatesList = () => {
         ))}
       </List>
       <div className='w-7/12'>
-        <MonacoEditor
-          height='600px'
-          value={templateYamlText}
-          language='yaml'
-          options={{ theme: 'vs-dark', readOnly: true }}
-        />
+        <div className='h-[600px]'>
+          <MonacoEditor value={templateYamlText} language='yaml' options={{ theme: 'vs-dark', readOnly: true }} />
+        </div>
         <div className='mt-36 mb-24 flex justify-between items-center'>
           <Button size='large' color='primary' variant='outlined'>
             Delete
