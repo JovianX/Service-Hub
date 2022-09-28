@@ -1,4 +1,4 @@
-import SaveIcon from '@mui/icons-material/Save';
+import SettingsIcon from '@mui/icons-material/Settings';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 import List from '@mui/material/List';
@@ -7,7 +7,9 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
+import DialogModal from 'app/shared-components/DialogModal';
 import {
+  deleteTemplate,
   getTemplatesList,
   makeTemplateDefault,
   selectIsTemplatesLoading,
@@ -22,11 +24,13 @@ const TemplatesList = () => {
   const [templates, setTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
   const [templateYamlText, setTemplateYamlText] = useState('');
-  const templatesData = useSelector(selectTemplates);
-  const isLoading = useSelector(selectIsTemplatesLoading);
   const [loading, setLoading] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const templatesData = useSelector(selectTemplates);
+  const isLoading = useSelector(selectIsTemplatesLoading);
 
   useEffect(() => {
     dispatch(getTemplatesList());
@@ -65,6 +69,8 @@ const TemplatesList = () => {
   };
 
   const handleClickMakeDefaultButton = async (id) => {
+    setInfoMessageError('');
+    setInfoMessageSuccess('');
     setLoading(true);
     await dispatch(makeTemplateDefault(id)).then((res) => {
       showMessage(res.payload);
@@ -73,6 +79,33 @@ const TemplatesList = () => {
         setInfoMessageSuccess('');
       }, 2000);
     });
+  };
+
+  //  delete modal action
+  const toggleDeleteModalOpen = () => {
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+  };
+  const handleDeleteTemplate = () => {
+    setInfoMessageError('');
+    setInfoMessageSuccess('');
+    toggleDeleteModalOpen();
+  };
+  const handleDeleteCancel = () => {
+    toggleDeleteModalOpen();
+  };
+  const handleDeleteConfirm = async () => {
+    const res = await dispatch(deleteTemplate(templateId));
+    if (res.payload.status === 'success') {
+      const updatedTemplates = templates.filter((item) => item.id !== templateId);
+      await setTemplates(updatedTemplates);
+      await dispatch(getTemplatesList());
+    } else {
+      setTimeout(() => {
+        setInfoMessageError('');
+      }, 2000);
+    }
+    showMessage(res.payload);
+    toggleDeleteModalOpen();
   };
 
   if (isLoading) {
@@ -96,12 +129,18 @@ const TemplatesList = () => {
           />
         ))}
       </List>
+
       <div className='w-7/12'>
-        <div className='h-[600px]'>
-          <MonacoEditor value={templateYamlText} language='yaml' options={{ theme: 'vs-dark', readOnly: true }} />
+        <div style={{ height: 'calc(100vh - 304px)' }}>
+          <MonacoEditor
+            height='100%'
+            value={templateYamlText}
+            language='yaml'
+            options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
+          />
         </div>
-        <div className='mt-36 mb-24 flex justify-between items-center'>
-          <Button size='large' color='primary' variant='outlined'>
+        <div className='mt-36 flex justify-between items-center'>
+          <Button size='large' color='primary' variant='outlined' onClick={handleDeleteTemplate}>
             Delete
           </Button>
 
@@ -116,13 +155,25 @@ const TemplatesList = () => {
             onClick={() => handleClickMakeDefaultButton(templateId)}
             loading={loading}
             loadingPosition='start'
-            startIcon={<SaveIcon />}
+            startIcon={<SettingsIcon />}
             variant='contained'
           >
             Set Default
           </LoadingButton>
         </div>
       </div>
+
+      <DialogModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        title='Delete template'
+        text='Are you sure you want to proceed?'
+        onCancel={handleDeleteCancel}
+        cancelText='Cancel'
+        onConfirm={handleDeleteConfirm}
+        confirmText='Delete'
+        fullWidth
+      />
     </div>
   );
 };

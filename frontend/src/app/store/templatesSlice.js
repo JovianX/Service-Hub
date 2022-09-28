@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getTemplatesList as getTemplatesListAPI, makeTemplateDefault as makeTemplateDefaultAPI } from '../api';
+import {
+  getTemplatesList as getTemplatesListAPI,
+  makeTemplateDefault as makeTemplateDefaultAPI,
+  deleteTemplate as deleteTemplateAPI,
+} from '../api';
 
 export const getTemplatesList = createAsyncThunk('templates/getTemplatesList', async () => {
   try {
@@ -24,6 +28,21 @@ export const makeTemplateDefault = createAsyncThunk('templates/makeTemplateDefau
     return {
       status: 'error',
       message: 'setting default wasn\'t successful',
+    };
+  }
+});
+
+export const deleteTemplate = createAsyncThunk('templates/deleteTemplate', async (id) => {
+  try {
+    await deleteTemplateAPI(id);
+    return {
+      status: 'success',
+      message: 'template was successfully deleted',
+    };
+  } catch (e) {
+    return {
+      status: 'error',
+      message: e.response.data.message,
     };
   }
 });
