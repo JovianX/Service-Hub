@@ -1,11 +1,7 @@
 """
 Implementation of helm list subcommand.
 """
-from typing import List
-
 import yaml
-
-from exceptions.kubernetes import ClusterUnreachableException
 
 from ..schemas import ReleaseSchema
 from .base import HandleUnreachableClusterMixin
@@ -18,7 +14,7 @@ class HelmList(HandleUnreachableClusterMixin, HelmBase):
     """
     subcommand = 'list'
 
-    async def releases(self, context_name: str, namespace: str = None) -> List[ReleaseSchema]:
+    async def releases(self, context_name: str, namespace: str = None) -> list[ReleaseSchema]:
         """
         Lists all releases.
 

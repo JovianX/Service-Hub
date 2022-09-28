@@ -16,6 +16,7 @@ from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
 from models.organization import Organization
 from services.helm.facade import HelmService
+from services.helm.schemas import ChartSchema
 from services.kubernetes.schemas import K8sEntitySchema
 from utils.achive import tar
 from utils.helm import HelmArchive
@@ -94,7 +95,7 @@ class HelmManager:
                     dry_run=dry_run
                 )
 
-    async def list_repositories_charts(self, organization: Organization):
+    async def list_repositories_charts(self, organization: Organization) -> list[ChartSchema]:
         """
         Returns lists of charts in all repositories.
         """
@@ -120,19 +121,11 @@ class HelmManager:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 for context_name in kubernetes_configuration.contexts:
                     try:
-                        releases, charts = await asyncio.gather(
-                            helm_service.list.releases(context_name, namespace),
-                            self.list_repositories_charts(organization)
-                        )
+                        releases = await helm_service.list.releases(context_name, namespace)
                     except ClusterUnreachableException:
                         continue
                     for release in releases:
                         item = release.dict()
-                        item['available_chart'] = next(
-                            ({'chart_name': chart.name, 'chart_version': chart.version}
-                             for chart in charts if chart.application_name == release.application_name),
-                            None
-                        )
                         item['context_name'] = context_name
                         items.append(item)
 
@@ -151,6 +144,14 @@ class HelmManager:
                 )
 
         return sum([len(item) for item in releases])
+
+    async def list_available_charts(self, organization: Organization, application_name: str) -> list[dict]:
+        """
+        Returns list of available charts from different repositories with which release can be updated.
+        """
+        charts = await self.list_repositories_charts(organization)
+
+        return [chart.dict() for chart in charts if chart.application_name == application_name]
 
     async def get_user_supplied_values(
         self, organization: Organization, context_name: str, namespace: str, release_name: str
@@ -235,37 +236,39 @@ class HelmManager:
         """
         Returns health status of release and health details for each release entity.
         """
-        kinds_to_check = (
-            K8sKinds.daemon_set,
-            K8sKinds.deployment,
-            K8sKinds.replica_set,
-            K8sKinds.replication_controller,
-            K8sKinds.service,
-            K8sKinds.stateful_set,
-        )
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 k8s_manager = K8sManager(k8s_config_path)
-                entities_details = await self._get_detailed_manifest(
-                    helm_service, k8s_manager, context_name, namespace, release_name, kinds_to_check
+                health_status = await self._release_health_status(
+                    helm_service, k8s_manager, context_name, namespace, release_name
                 )
 
-        health_details = {}
-        health_status = ReleaseHealthStatuses.healthy
-        for entity in entities_details:
-            if entity.is_healthy is None:
-                continue
-            entity_name = entity.metadata['name']
-            kind_health_statuses = health_details.setdefault(entity.kind, {})
-            kind_health_statuses[entity_name] = entity.is_healthy
-            if not entity.is_healthy:
-                health_status = ReleaseHealthStatuses.unhealthy
+        return health_status
 
-        return {
-            'status': health_status,
-            'details': health_details
-        }
+    async def list_unhealthy_releases(self, organization: Organization) -> list[dict]:
+        """
+        Returns list of unhealthy releases.
+        """
+        releases = await self.list_releases(organization)
+        if not releases:
+            return []
+        unhealthy_releases = []
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                k8s_manager = K8sManager(k8s_config_path)
+                health_statuses = await asyncio.gather(*[
+                    self._release_health_status(
+                        helm_service, k8s_manager, release['context_name'], release['namespace'], release['name']
+                    )
+                    for release in releases
+                ])
+                for release, health_status in zip(releases, health_statuses):
+                    if health_status['status'] == ReleaseHealthStatuses.unhealthy:
+                        unhealthy_releases.append(release)
+
+        return unhealthy_releases
 
     async def update_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str,
@@ -460,3 +463,37 @@ class HelmManager:
         ])
 
         return [item for item in resources_details if item is not None]
+
+    async def _release_health_status(
+        self, helm_service: HelmService, k8s_manager: K8sManager, context_name: str, namespace: str, release_name: str
+    ) -> dict[str, ReleaseHealthStatuses | dict[str, dict[str, bool]]]:
+        """
+        Returns health status of release and health details for each release entity.
+        """
+        kinds_to_check = (
+            K8sKinds.daemon_set,
+            K8sKinds.deployment,
+            K8sKinds.replica_set,
+            K8sKinds.replication_controller,
+            K8sKinds.service,
+            K8sKinds.stateful_set,
+        )
+        entities_details = await self._get_detailed_manifest(
+            helm_service, k8s_manager, context_name, namespace, release_name, kinds_to_check
+        )
+
+        health_details = {}
+        health_status = ReleaseHealthStatuses.healthy
+        for entity in entities_details:
+            if entity.is_healthy is None:
+                continue
+            entity_name = entity.metadata['name']
+            kind_health_statuses = health_details.setdefault(entity.kind, {})
+            kind_health_statuses[entity_name] = entity.is_healthy
+            if not entity.is_healthy:
+                health_status = ReleaseHealthStatuses.unhealthy
+
+        return {
+            'status': health_status,
+            'details': health_details
+        }

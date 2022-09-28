@@ -1,3 +1,4 @@
+from .subcommands.cluster_info import KubectlClusterInformation
 from .subcommands.configuration import KubectlConfig
 
 
@@ -11,4 +12,5 @@ class KubectlCLI:
         Parameters:
         kubernetes_configuration - path to Kubernetes configuration file.
         """
+        self.cluster_information: KubectlClusterInformation = KubectlClusterInformation(kubernetes_configuration)
         self.configuration: KubectlConfig = KubectlConfig(kubernetes_configuration)

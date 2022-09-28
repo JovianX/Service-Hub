@@ -1,3 +1,4 @@
+import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
 import {
   Button,
   Chip,
@@ -10,6 +11,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -20,14 +22,14 @@ import withRouter from '@fuse/core/withRouter';
 import DialogModal from 'app/shared-components/DialogModal';
 import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
 
-import { getReleaseHealth } from '../../api';
-import { checkTrimString, getTimeFormat, getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
+import { getReleaseHealth, getReleaseTtl } from '../../api';
+import { checkTrimString, getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
 import ReleasesFilters from './ReleasesFilters';
+import TtlModal from './ttlModal';
 
 const ReleasesTable = () => {
   const dispatch = useDispatch();
-
   const [namespaces, setNamespaces] = useState([]);
   const [clusters, setClusters] = useState([]);
   const [releases, setReleases] = useState([]);
@@ -36,18 +38,27 @@ const ReleasesTable = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [releaseToDelete, setReleaseToDelete] = useState(null);
   const [healthRows, setHealthRows] = useState({});
+  const [ttls, setTtls] = useState({});
+  const [selectedParameters, setSelectedParameters] = useState({});
+  const [refresh, setRefresh] = useState(false);
+
+  const [openModal, setOpenModal] = useState(false);
 
   const releasesData = useSelector(selectReleases);
   const isLoading = useSelector(selectIsReleasesLoading);
-
   useEffect(() => {
     setReleases(releasesData);
     getHealthRows(releasesData);
+    getTtlRows(releasesData);
   }, [releasesData]);
 
   useEffect(() => {
     dispatch(getReleases());
   }, [dispatch]);
+
+  useEffect(() => {
+    getTtlRows(releasesData);
+  }, [refresh]);
 
   useEffect(() => {
     if (releasesData?.length) {
@@ -68,7 +79,6 @@ const ReleasesTable = () => {
     if (selectedCluster !== 'all') {
       filteredReleases = filteredReleases.filter((el) => el.context_name === selectedCluster);
     }
-
     setReleases(filteredReleases);
   }, [selectedNamespace, selectedCluster]);
 
@@ -79,6 +89,18 @@ const ReleasesTable = () => {
           const healthStatus = {};
           healthStatus[index] = res.data.status;
           setHealthRows((healthRows) => ({ ...healthRows, ...healthStatus }));
+        });
+      });
+    }
+  }
+
+  async function getTtlRows(releases) {
+    if (releases.length) {
+      await releases.map((row, index) => {
+        getReleaseTtl(row.context_name, row.namespace, row.name).then((res) => {
+          const scheduledTime = {};
+          scheduledTime[index] = res.data.scheduled_time;
+          setTtls((ttl) => ({ ...ttl, ...scheduledTime }));
         });
       });
     }
@@ -131,9 +153,9 @@ const ReleasesTable = () => {
     if (color === 'uninstalled' || color === 'superseded' || color === 'failed' || color === 'unhealthy') {
       return 'error';
     }
-    if (color === 'deployed' ) {
+    if (color === 'deployed') {
       return 'info';
-    }    
+    }
     if (color === 'healthy') {
       return 'success';
     }
@@ -172,9 +194,10 @@ const ReleasesTable = () => {
                   <TableCell>Chart</TableCell>
                   <TableCell>App Version</TableCell>
                   <TableCell>Updated</TableCell>
+                  <TableCell>TTL</TableCell>
                   <TableCell>Revision</TableCell>
                   <TableCell align='center'>Status</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell align='center' />
                 </TableRow>
               </TableHead>
 
@@ -185,7 +208,11 @@ const ReleasesTable = () => {
                     <TableCell align='left'>
                       {healthRows[index] ? (
                         <Stack>
-                          <Chip label={healthRows[index]} color={handleStatusColor(healthRows[index])} />
+                          <Chip
+                            className='capitalize'
+                            label={healthRows[index]}
+                            color={handleStatusColor(healthRows[index])}
+                          />
                         </Stack>
                       ) : (
                         ''
@@ -195,24 +222,54 @@ const ReleasesTable = () => {
                     <TableCell align='left'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
                     <TableCell align='left'>{row.chart}</TableCell>
                     <TableCell align='left'>{row.application_version}</TableCell>
-                    <TableCell align='left'>{getTimeFormat(row.updated)}</TableCell>
+                    <TableCell align='left'>
+                      {new Date(+row.updated * 1000).toLocaleString().replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1')}
+                    </TableCell>
+                    <TableCell lign='left'>
+                      {ttls[index]
+                        ? new Date(+ttls[index] * 1000).toLocaleString().replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1')
+                        : ''}
+                    </TableCell>
                     <TableCell align='left'>{row.revision}</TableCell>
                     <TableCell align='left'>
                       <Stack>
                         <Chip label={row.status} color={handleStatusColor(row.status)} />
                       </Stack>
                     </TableCell>
-
                     <TableCell align='left'>
-                      <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
-                        <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                      </Button>
+                      <ButtonGroup aria-label='primary button group'>
+                        <Button
+                          variant='text'
+                          color='error'
+                          onClick={() => {
+                            setSelectedParameters({
+                              ttlCellIndex: index,
+                              currentDate: ttls[index],
+                              context_name: row.context_name,
+                              namespace: row.namespace,
+                              name: row.name,
+                            });
+                            setOpenModal(true);
+                          }}
+                        >
+                          <AutoDeleteOutlinedIcon />
+                        </Button>
+                        <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
+                          <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                        </Button>
+                      </ButtonGroup>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
+          <TtlModal
+            refresh={refresh}
+            setRefresh={setRefresh}
+            parameters={selectedParameters}
+            openModal={{ openModal, setOpenModal }}
+          />
         </FuseScrollbars>
       </Paper>
 

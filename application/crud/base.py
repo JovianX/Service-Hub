@@ -2,7 +2,6 @@
 Classes responsible for interaction with organization database entities.
 """
 from typing import Any
-from typing import Dict
 
 from sqlalchemy import delete
 from sqlalchemy import select
@@ -30,7 +29,7 @@ class BaseDatabase:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, create_dict: Dict[str, Any]):
+    async def create(self, create_dict: dict[str, Any]):
         instance = self.table(**create_dict)
         self.session.add(instance)
         await self.session.commit()

@@ -12,6 +12,7 @@ from managers.organizations.settings_schemas import ROOT_SETTING_NAMES
 from models.user import User
 from schemas.kubernetes import KubernetesConfigurationSchema
 
+from ..schemas.organization import DefaultContextRequestBody
 from ..schemas.organization import K8sConfigurationResponseSchema
 
 
@@ -57,6 +58,21 @@ async def delete_configuration_context(
     """
     organization = user.organization
     configuration = await organization_manager.delete_context(organization, context_name)
+
+    return {'configuration': configuration}
+
+
+@router.post('/kubernetes-configuration/set-default-context', response_model=K8sConfigurationResponseSchema)
+async def set_default_configuration_context(
+    data: DefaultContextRequestBody = Body(description='Default context data'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Sets default Kubernetes configuration context.
+    """
+    organization = user.organization
+    configuration = await organization_manager.set_default_context(organization, data.context)
 
     return {'configuration': configuration}
 

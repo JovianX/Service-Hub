@@ -1,5 +1,3 @@
-from typing import Dict
-
 from core.configuration import settings
 from utils.shell import run
 
@@ -18,7 +16,7 @@ class KubectlBase:
         self.configuration = kubernetes_configuration
 
     @property
-    def environment(self) -> Dict[str, str]:
+    def environment(self) -> dict[str, str]:
         """
         Environment variables, in form of dictionary, with which kubectl mush be
         executed.

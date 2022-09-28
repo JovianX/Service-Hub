@@ -3,6 +3,7 @@ Kubernetes manager related functionality.
 """
 from constants.common import HTTPMethods
 from constants.kubernetes import K8sKinds
+from exceptions.kubernetes import KubectlException
 from exceptions.kubernetes import ProxyRequestException
 from services.kubernetes.cli.facade import KubectlCLI
 from services.kubernetes.client import K8sClient
@@ -119,3 +120,16 @@ class K8sManager:
         Deletes context from Kubernetes configuration.
         """
         await self.cli.configuration.delete_context(context_name)
+
+    async def is_configuration_valid(self, context_name: str):
+        """
+        Validates Kubernetes configuration by attempting to connection to
+        cluster with given context name. If validation fails returns `False`
+        else `True`.
+        """
+        try:
+            await self.cli.cluster_information.get(context_name)
+        except KubectlException:
+            return False
+
+        return True

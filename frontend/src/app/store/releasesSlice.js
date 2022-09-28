@@ -1,11 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getReleasesList, deleteRelease as deleteReleaseAPI } from '../api';
+import {
+  getReleasesList,
+  deleteRelease as deleteReleaseAPI,
+  createReleaseTtl as createReleaseTtlAPI,
+  deleteReleaseTtl as deleteReleaseTtlAPI,
+} from '../api';
 
 export const getReleases = createAsyncThunk('releases/getReleasesList', async () => {
   try {
     const response = await getReleasesList();
-    return response.data;
+    const { data } = response;
+    return data;
   } catch (e) {
     return [];
   }
@@ -18,6 +24,42 @@ export const deleteRelease = createAsyncThunk('releases/deleteRelease', async ({
     // handle error state
   }
 });
+
+export const createReleaseTtl = createAsyncThunk(
+  'releases/createReleaseTtl',
+  async ({ context_name, namespace, name, minutes }) => {
+    try {
+      await createReleaseTtlAPI(context_name, namespace, name, minutes);
+      return {
+        status: 'success',
+        message: 'Setting ttl was successful',
+      };
+    } catch (e) {
+      return {
+        status: 'error',
+        message: 'An error occurred when adding ttl',
+      };
+    }
+  },
+);
+
+export const deleteReleaseTtl = createAsyncThunk(
+  'releases/deleteReleaseTtl',
+  async ({ context_name, namespace, name }) => {
+    try {
+      await deleteReleaseTtlAPI(context_name, namespace, name);
+      return {
+        status: 'success',
+        message: 'Unset ttl was successful',
+      };
+    } catch (e) {
+      return {
+        status: 'error',
+        message: 'An error occurred when unsetting ttl',
+      };
+    }
+  },
+);
 
 const releasesSlice = createSlice({
   name: 'releases/releasesList',

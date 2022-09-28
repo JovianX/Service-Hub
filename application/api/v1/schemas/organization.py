@@ -3,8 +3,13 @@ Organization related API schemas.
 """
 
 from pydantic import BaseModel
+from pydantic import Field
 
 from utils.kubernetes import KubernetesConfiguration
+
+
+class DefaultContextRequestBody(BaseModel):
+    context: str = Field(description='New default context name')
 
 
 class K8sClusterResponseSchema(BaseModel):
