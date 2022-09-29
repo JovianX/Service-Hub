@@ -12,6 +12,7 @@ import {
   deleteTemplate,
   getTemplatesList,
   makeTemplateDefault,
+  selectInfoMessage,
   selectIsTemplatesLoading,
   selectTemplates,
 } from 'app/store/templatesSlice';
@@ -31,6 +32,7 @@ const TemplatesList = () => {
 
   const templatesData = useSelector(selectTemplates);
   const isLoading = useSelector(selectIsTemplatesLoading);
+  const infoMessage = useSelector(selectInfoMessage);
 
   useEffect(() => {
     dispatch(getTemplatesList());
@@ -42,13 +44,22 @@ const TemplatesList = () => {
 
   useEffect(() => {
     if (templates.length) {
-      setTemplateId(templates[0].id);
+      templates.map((template) => {
+        if (template.default) {
+          setTemplateId(template.id);
+        }
+      });
     }
   }, [templates]);
 
   useEffect(() => {
-    setInfoMessageError('');
-    setInfoMessageSuccess('');
+    if (infoMessage?.status) {
+      showMessage(infoMessage);
+      dispatch(getTemplatesList());
+    }
+  }, [infoMessage]);
+
+  useEffect(() => {
     const templateIndex = templates.findIndex((template) => templateId === template.id);
     const oneTemplate = templates.find((template) => templateId === template.id);
     if (oneTemplate?.template.substring(0, 1) === '\n') {
@@ -66,19 +77,17 @@ const TemplatesList = () => {
       setInfoMessageError(res.message);
     }
     setLoading(false);
+    setTimeout(() => {
+      setInfoMessageError('');
+      setInfoMessageSuccess('');
+    }, 2000);
   };
 
-  const handleClickMakeDefaultButton = async (id) => {
+  const handleClickMakeDefaultButton = (id) => {
     setInfoMessageError('');
     setInfoMessageSuccess('');
     setLoading(true);
-    await dispatch(makeTemplateDefault(id)).then((res) => {
-      showMessage(res.payload);
-      setTimeout(() => {
-        setInfoMessageError('');
-        setInfoMessageSuccess('');
-      }, 2000);
-    });
+    dispatch(makeTemplateDefault(id));
   };
 
   //  delete modal action
@@ -94,17 +103,7 @@ const TemplatesList = () => {
     toggleDeleteModalOpen();
   };
   const handleDeleteConfirm = async () => {
-    const res = await dispatch(deleteTemplate(templateId));
-    if (res.payload.status === 'success') {
-      const updatedTemplates = templates.filter((item) => item.id !== templateId);
-      await setTemplates(updatedTemplates);
-      await dispatch(getTemplatesList());
-    } else {
-      setTimeout(() => {
-        setInfoMessageError('');
-      }, 2000);
-    }
-    showMessage(res.payload);
+    await dispatch(deleteTemplate(templateId));
     toggleDeleteModalOpen();
   };
 
@@ -115,7 +114,6 @@ const TemplatesList = () => {
       </div>
     );
   }
-
   return (
     <div className='flex justify-between p-24'>
       <List className='w-5/12 pt-0 h-[70vh] overflow-y-scroll mr-12'>

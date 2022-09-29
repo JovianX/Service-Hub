@@ -52,6 +52,7 @@ const templatesSlice = createSlice({
   initialState: {
     isLoading: false,
     templates: [],
+    infoMessage: {},
   },
   reducers: {},
   extraReducers: {
@@ -67,9 +68,30 @@ const templatesSlice = createSlice({
       ...state,
       isLoading: false,
     }),
+    [makeTemplateDefault.fulfilled]: (state, { payload }) => ({
+      ...state,
+      infoMessage: payload,
+    }),
+    [makeTemplateDefault.pending]: (state) => ({
+      ...state,
+    }),
+    [makeTemplateDefault.rejected]: (state) => ({
+      ...state,
+    }),
+    [deleteTemplate.fulfilled]: (state, { payload }) => ({
+      ...state,
+      infoMessage: payload,
+    }),
+    [deleteTemplate.pending]: (state) => ({
+      ...state,
+    }),
+    [deleteTemplate.rejected]: (state) => ({
+      ...state,
+    }),
   },
 });
 
+export const selectInfoMessage = ({ templates }) => templates.infoMessage;
 export const selectTemplates = ({ templates }) => templates.templates;
 export const selectIsTemplatesLoading = ({ templates }) => templates.isLoading;
 
