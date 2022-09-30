@@ -3,7 +3,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   getTemplatesList as getTemplatesListAPI,
   makeTemplateDefault as makeTemplateDefaultAPI,
+  createTemplate as createTemplateAPI,
   deleteTemplate as deleteTemplateAPI,
+  editTemplate as editTemplateAPI,
 } from '../api';
 
 export const getTemplatesList = createAsyncThunk('templates/getTemplatesList', async () => {
@@ -17,17 +19,29 @@ export const getTemplatesList = createAsyncThunk('templates/getTemplatesList', a
   }
 });
 
+export const createTemplate = createAsyncThunk('templates/createTemplate', async (template) => {
+  try {
+    const response = await createTemplateAPI(template);
+    return response.data;
+  } catch (e) {
+    return {
+      status: 'error',
+      message: 'setting template wasn\'t successfull',
+    };
+  }
+});
+
 export const makeTemplateDefault = createAsyncThunk('templates/makeTemplateDefault', async (id) => {
   try {
     await makeTemplateDefaultAPI(id);
     return {
       status: 'success',
-      message: 'setting default was successful',
+      message: '',
     };
   } catch (e) {
     return {
       status: 'error',
-      message: 'setting default wasn\'t successful',
+      message: 'setting default wasn\'t successfull',
     };
   }
 });
@@ -38,6 +52,21 @@ export const deleteTemplate = createAsyncThunk('templates/deleteTemplate', async
     return {
       status: 'success',
       message: 'template was successfully deleted',
+    };
+  } catch (e) {
+    return {
+      status: 'error',
+      message: e.response.data.message,
+    };
+  }
+});
+
+export const editTemplate = createAsyncThunk('templates/editTemplate', async ({ id, template }) => {
+  try {
+    await editTemplateAPI(id, template);
+    return {
+      status: 'success',
+      message: 'template was successfully edited',
     };
   } catch (e) {
     return {
@@ -86,6 +115,16 @@ const templatesSlice = createSlice({
       ...state,
     }),
     [deleteTemplate.rejected]: (state) => ({
+      ...state,
+    }),
+    [editTemplate.fulfilled]: (state, { payload }) => ({
+      ...state,
+      infoMessage: payload,
+    }),
+    [editTemplate.pending]: (state) => ({
+      ...state,
+    }),
+    [editTemplate.rejected]: (state) => ({
       ...state,
     }),
   },

@@ -1,8 +1,7 @@
-import SettingsIcon from '@mui/icons-material/Settings';
-import LoadingButton from '@mui/lab/LoadingButton';
 import { Button } from '@mui/material';
 import List from '@mui/material/List';
 import MonacoEditor from '@uiw/react-monacoeditor';
+import yaml from 'js-yaml';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -11,24 +10,26 @@ import DialogModal from 'app/shared-components/DialogModal';
 import {
   deleteTemplate,
   getTemplatesList,
-  makeTemplateDefault,
+  editTemplate,
   selectInfoMessage,
   selectIsTemplatesLoading,
   selectTemplates,
 } from 'app/store/templatesSlice';
 
 import TemplatesListItem from './TemplatesListItem';
+import TemplatesModal from './TemplatesModal';
 
-const TemplatesList = () => {
+const TemplatesList = ({ openModal, setOpenModal }) => {
   const dispatch = useDispatch();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [templates, setTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
   const [templateYamlText, setTemplateYamlText] = useState('');
-  const [loading, setLoading] = useState(false);
+
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [readOnly, setReadOnly] = useState(true);
 
   const templatesData = useSelector(selectTemplates);
   const isLoading = useSelector(selectIsTemplatesLoading);
@@ -76,18 +77,10 @@ const TemplatesList = () => {
     } else {
       setInfoMessageError(res.message);
     }
-    setLoading(false);
     setTimeout(() => {
       setInfoMessageError('');
       setInfoMessageSuccess('');
     }, 2000);
-  };
-
-  const handleClickMakeDefaultButton = (id) => {
-    setInfoMessageError('');
-    setInfoMessageSuccess('');
-    setLoading(true);
-    dispatch(makeTemplateDefault(id));
   };
 
   //  delete modal action
@@ -105,6 +98,19 @@ const TemplatesList = () => {
   const handleDeleteConfirm = async () => {
     await dispatch(deleteTemplate(templateId));
     toggleDeleteModalOpen();
+  };
+
+  const handleOnChangeTemplate = (value) => {
+    setTemplateYamlText(value);
+  };
+
+  const handleClickEdit = async (id) => {
+    try {
+      const template = yaml.load(templateYamlText, { json: true });
+      await dispatch(editTemplate({ id, template }));
+    } catch (e) {
+      setInfoMessageError(e.reason);
+    }
   };
 
   if (isLoading) {
@@ -134,7 +140,8 @@ const TemplatesList = () => {
             height='100%'
             value={templateYamlText}
             language='yaml'
-            options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
+            onChange={handleOnChangeTemplate.bind(this)}
+            options={{ theme: 'vs-dark', readOnly, automaticLayout: true }}
           />
         </div>
         <div className='mt-36 flex justify-between items-center'>
@@ -146,20 +153,10 @@ const TemplatesList = () => {
             <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
             <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
           </div>
-
-          <LoadingButton
-            size='large'
-            color='primary'
-            onClick={() => handleClickMakeDefaultButton(templateId)}
-            loading={loading}
-            loadingPosition='start'
-            startIcon={<SettingsIcon />}
-            variant='contained'
-          >
-            Set Default
-          </LoadingButton>
         </div>
       </div>
+
+      <TemplatesModal setTemplates={setTemplates} openModal={openModal} setOpenModal={setOpenModal} />
 
       <DialogModal
         isOpen={isDeleteModalOpen}
