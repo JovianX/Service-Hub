@@ -19,7 +19,7 @@ import {
 import TemplatesListItem from './TemplatesListItem';
 import TemplatesModal from './TemplatesModal';
 
-const TemplatesList = ({ openModal, setOpenModal }) => {
+const TemplatesList = () => {
   const dispatch = useDispatch();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [templates, setTemplates] = useState([]);
@@ -30,6 +30,7 @@ const TemplatesList = ({ openModal, setOpenModal }) => {
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [readOnly, setReadOnly] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
 
   const templatesData = useSelector(selectTemplates);
   const isLoading = useSelector(selectIsTemplatesLoading);
@@ -123,6 +124,18 @@ const TemplatesList = ({ openModal, setOpenModal }) => {
   return (
     <div className='flex justify-between p-24'>
       <List className='w-5/12 pt-0 h-[70vh] overflow-y-scroll mr-12'>
+        <div className='flex justify-end'>
+          <Button
+            className='mb-12'
+            color='primary'
+            variant='contained'
+            onClick={() => {
+              setOpenModal(true);
+            }}
+          >
+            Add templete
+          </Button>
+        </div>
         {templates?.map((template, index) => (
           <TemplatesListItem
             key={template.id}
@@ -145,14 +158,16 @@ const TemplatesList = ({ openModal, setOpenModal }) => {
           />
         </div>
         <div className='mt-36 flex justify-between items-center'>
-          <Button size='large' color='primary' variant='outlined' onClick={handleDeleteTemplate}>
+          <Button size='large' color='error' variant='outlined' onClick={handleDeleteTemplate}>
             Delete
           </Button>
-
           <div>
             <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
             <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
           </div>
+          <Button size='large' color='primary' variant='outlined' onClick={handleClickEdit}>
+            Edit
+          </Button>
         </div>
       </div>
 

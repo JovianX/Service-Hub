@@ -1,7 +1,9 @@
-import { Button, Chip, ListItemButton } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { Chip, ListItemButton } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { makeTemplateDefault } from 'app/store/templatesSlice';
@@ -10,13 +12,15 @@ import { getTimeFormatWithoutSeconds } from '../../uitls';
 
 const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const handleGetOneTemplate = (id) => {
     setTemplateId(id);
   };
 
-  const handleClickMakeDefaultButton = (id) => {
-    dispatch(makeTemplateDefault(id));
+  const handleClickMakeDefaultButton = async (id) => {
+    await setLoading(true);
+    await dispatch(makeTemplateDefault(id));
   };
 
   return (
@@ -35,18 +39,19 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) =>
             {template.default ? (
               <Chip className='ml-12' label='Default' />
             ) : (
-              <Button
-                className='hidden group-hover:flex py-4 px-8'
+              <LoadingButton
+                loading={loading}
+                className='hidden group-hover:flex py-3 px-8'
                 size='small'
                 color='primary'
                 onClick={() => handleClickMakeDefaultButton(template.id)}
                 variant='outlined'
               >
                 Set Default
-              </Button>
+              </LoadingButton>
             )}
           </div>
-          <div className='mt-6 flex justify-between'>
+          <div className='mt-10 flex justify-between h-[30px]'>
             <Typography component='p' variant='subtitle2'>
               Reversion {template.revision}
             </Typography>
@@ -54,7 +59,7 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) =>
               {getTimeFormatWithoutSeconds(template.created_at)}
             </Typography>
           </div>
-          <Typography component='p' variant='body2' style={{ color: '#616161' }}>
+          <Typography component='p' variant='body2' className='text-gray-700' >
             {template.description}
           </Typography>
         </ListItemText>

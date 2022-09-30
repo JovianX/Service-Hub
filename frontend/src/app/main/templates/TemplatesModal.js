@@ -26,7 +26,6 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates }) => {
     setConfigYamlText(newValue);
   };
 
-  // modal actions
   const handleSubmitCreate = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -63,7 +62,7 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates }) => {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='md'>
         <form onSubmit={handleSubmitCreate}>
           <DialogTitle className='bg-primary text-center text-white'>Create new template</DialogTitle>
           <DialogContent className='pb-0 mt-16 overflow-y-hidden'>
@@ -77,6 +76,7 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates }) => {
               fullWidth
             />
             <div className='mt-24'>
+              <p className='mb-8 ml-14 text-[#6B7280]'>Template</p>
               <MonacoEditor
                 height='350px'
                 width='100%'
