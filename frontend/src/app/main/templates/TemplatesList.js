@@ -23,6 +23,7 @@ const TemplatesList = () => {
   const dispatch = useDispatch();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [templates, setTemplates] = useState([]);
+  const [transformedTemplates, setTransformedTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
   const [templateYamlText, setTemplateYamlText] = useState('');
 
@@ -46,11 +47,34 @@ const TemplatesList = () => {
 
   useEffect(() => {
     if (templates.length) {
-      templates.map((template) => {
+      const names = [];
+      let revision = [];
+      const newArr = [];
+      templates.map((obj, id) => {
+        const template = JSON.parse(JSON.stringify(obj));
+        names.push(template.name);
+        if (
+          id + 1 <= templates.length - 1 &&
+          names.indexOf(templates[id + 1].name) === names.lastIndexOf(templates[id + 1].name)
+        ) {
+          newArr.push(template);
+        }
+        for (let j = id + 1; j <= templates.length - 1; j++) {
+          if (template.name === templates[j].name) {
+            if (names.indexOf(templates[j].name) === names.lastIndexOf(templates[j].name)) {
+              revision.push(templates[j]);
+            }
+          }
+        }
+        if (revision.length >= 1) {
+          template.reversions = revision;
+        }
+        revision = [];
         if (template.default) {
           setTemplateId(template.id);
         }
       });
+      setTransformedTemplates(newArr);
     }
   }, [templates]);
 
@@ -126,7 +150,7 @@ const TemplatesList = () => {
       <List className='w-5/12 pt-0 h-[70vh] overflow-y-scroll mr-12'>
         <div className='flex justify-end'>
           <Button
-            className='mb-12'
+            className='mb-12 mr-12'
             color='primary'
             variant='contained'
             onClick={() => {
@@ -136,7 +160,7 @@ const TemplatesList = () => {
             Add templete
           </Button>
         </div>
-        {templates?.map((template, index) => (
+        {transformedTemplates?.map((template, index) => (
           <TemplatesListItem
             key={template.id}
             selectedIndex={selectedIndex}
