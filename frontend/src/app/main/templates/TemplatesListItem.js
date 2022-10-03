@@ -47,7 +47,7 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) =>
                 onClick={() => handleClickMakeDefaultButton(template.id)}
                 variant='outlined'
               >
-                Set Default
+                Default
               </LoadingButton>
             )}
           </div>
