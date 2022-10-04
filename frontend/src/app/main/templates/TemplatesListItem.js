@@ -16,9 +16,11 @@ import { makeTemplateDefault } from 'app/store/templatesSlice';
 
 import { getTimeFormatWithoutSeconds } from '../../uitls';
 
-const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) => {
+const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId, setReversionTemplateId }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [activeReversion, setActiveReversion] = useState(false);
+  const [selectedReversion, setSelectredReversion] = useState(null);
 
   const handleGetOneTemplate = (id) => {
     setTemplateId(id);
@@ -29,20 +31,26 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) =>
     await dispatch(makeTemplateDefault(id));
   };
 
+  const handleGetReversion = (index, id) => {
+    setActiveReversion(true);
+    setSelectredReversion(index);
+    setReversionTemplateId(id);
+  };
+
   return (
     <>
       <ListItemButton
         selected={selectedIndex === index}
-        onClick={() => handleGetOneTemplate(template.id)}
+        onClick={() => handleGetOneTemplate(template[0].id)}
         style={{ borderLeft: selectedIndex === index ? '3px solid #2A3BAB' : '' }}
         className='group'
       >
         <ListItemText>
           <div className='flex justify-between'>
             <Typography className='w-3/5' component='p' variant='h6'>
-              {template.name}
+              {template[0].name}
             </Typography>
-            {template.default ? (
+            {template[0].default ? (
               <Chip className='ml-12' label='Default' />
             ) : (
               <LoadingButton
@@ -50,7 +58,7 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) =>
                 className='hidden group-hover:flex py-3 px-8'
                 size='small'
                 color='primary'
-                onClick={() => handleClickMakeDefaultButton(template.id)}
+                onClick={() => handleClickMakeDefaultButton(template[0].id)}
                 variant='outlined'
               >
                 Default
@@ -58,13 +66,13 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) =>
             )}
           </div>
           <div className='mt-10 flex justify-between h-[30px]'>
+            <Typography component='p' variant='body2' className='text-gray-700'>
+              {template[0].description}
+            </Typography>
             <Typography component='p' variant='subtitle2'>
-              {getTimeFormatWithoutSeconds(template.created_at)}
+              {getTimeFormatWithoutSeconds(template[0].created_at)}
             </Typography>
           </div>
-          <Typography component='p' variant='body2' className='text-gray-700'>
-            {template.description}
-          </Typography>
 
           <Timeline
             className='px-0'
@@ -76,25 +84,38 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId }) =>
               },
             }}
           >
-            {template.reversions &&
-              template.reversions.map((item, index) => {
-                return (
-                  <TimelineItem key={item.id} sx={{ minHeight: '70px', paddingLeft: '16' }}>
-                    <TimelineSeparator>
-                      <TimelineDot />
-                      {template.reversions.length - 1 !== index && <TimelineConnector />}
-                    </TimelineSeparator>
-                    <TimelineContent sx={{ padding: '10px 0px 10px 16px' }}>
-                      <div className='flex justify-between'>
-                        <div>
-                          <p>Reversion {item.revision}</p>
-                          <p className='text-gray-700'>{item.description}</p>
-                        </div>
-                        <div className='text-xs'>{getTimeFormatWithoutSeconds(item.created_at)}</div>
+            {template.length > 1 &&
+              template.map((item, index) => {
+                if (index > 0) {
+                  return (
+                    <TimelineItem key={item.id} sx={{ minHeight: '70px' }}>
+                      <TimelineSeparator>
+                        <TimelineDot className='mt-0' />
+                        {template.length - 1 !== index && <TimelineConnector className='mb-10' />}
+                      </TimelineSeparator>
+
+                      <div
+                        className={`${
+                          selectedReversion === index && activeReversion && 'bg-white'
+                        }  ease-in duration-300 hover:bg-blue/[.06] ml-12 w-full mb-7`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleGetReversion(index, item.id);
+                        }}
+                      >
+                        <TimelineContent>
+                          <div className='flex justify-between'>
+                            <div>
+                              <p>Reversion {item.revision}</p>
+                              <p className='text-gray-700'>{item.description}</p>
+                            </div>
+                            <div className='text-xs'>{getTimeFormatWithoutSeconds(item.created_at)}</div>
+                          </div>
+                        </TimelineContent>
                       </div>
-                    </TimelineContent>
-                  </TimelineItem>
-                );
+                    </TimelineItem>
+                  );
+                }
               })}
           </Timeline>
         </ListItemText>
