@@ -75,17 +75,6 @@ const TemplatesList = () => {
     setSelectedIndex(templateIndex);
   }, [templateId]);
 
-  useEffect(() => {
-    const templateIndex = templates.findIndex((template) => reversionTemplateId === template.id);
-    const oneTemplate = templates.find((template) => reversionTemplateId === template.id);
-    if (oneTemplate?.template.substring(0, 1) === '\n') {
-      setTemplateYamlText(oneTemplate?.template.substring(1));
-    } else {
-      setTemplateYamlText(oneTemplate?.template);
-    }
-    setSelectedIndex(templateIndex);
-  }, [reversionTemplateId]);
-
   const showMessage = (res) => {
     if (res.status === 'success') {
       setInfoMessageSuccess(res.message);
@@ -110,11 +99,8 @@ const TemplatesList = () => {
     toggleDeleteModalOpen();
   };
   const handleDeleteConfirm = async () => {
-    if (reversionTemplateId) {
-      await dispatch(deleteTemplate(reversionTemplateId));
-    } else {
-      await dispatch(deleteTemplate(templateId));
-    }
+    await dispatch(deleteTemplate(templateId));
+
     toggleDeleteModalOpen();
   };
 
@@ -157,10 +143,9 @@ const TemplatesList = () => {
           <TemplatesListItem
             key={template.name}
             selectedIndex={selectedIndex}
-            index={index}
-            template={template.templates}
+            mainIndex={index}
+            template={template.templates.reverse()}
             setTemplateId={setTemplateId}
-            setReversionTemplateId={setReversionTemplateId}
           />
         ))}
       </List>

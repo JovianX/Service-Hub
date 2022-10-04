@@ -16,14 +16,16 @@ import { makeTemplateDefault } from 'app/store/templatesSlice';
 
 import { getTimeFormatWithoutSeconds } from '../../uitls';
 
-const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId, setReversionTemplateId }) => {
+const TemplatesListItem = ({ selectedIndex, mainIndex, template, setTemplateId }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [activeReversion, setActiveReversion] = useState(false);
-  const [selectedReversion, setSelectredReversion] = useState(null);
+  const [selectedReversion, setSelectedReversion] = useState(null);
 
-  const handleGetOneTemplate = (id) => {
+  const handleGetOneTemplate = (index, id) => {
     setTemplateId(id);
+    setActiveReversion(true);
+    setSelectedReversion(index);
   };
 
   const handleClickMakeDefaultButton = async (id) => {
@@ -31,49 +33,15 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId, setR
     await dispatch(makeTemplateDefault(id));
   };
 
-  const handleGetReversion = (index, id) => {
-    setActiveReversion(true);
-    setSelectredReversion(index);
-    setReversionTemplateId(id);
-  };
-
   return (
     <>
-      <ListItemButton
-        selected={selectedIndex === index}
-        onClick={() => handleGetOneTemplate(template[0].id)}
-        style={{ borderLeft: selectedIndex === index ? '3px solid #2A3BAB' : '' }}
-        className='group'
-      >
+      <ListItemButton className='hover:bg-white hover:cursor-default'>
         <ListItemText>
           <div className='flex justify-between'>
-            <Typography className='w-3/5' component='p' variant='h6'>
+            <Typography component='p' variant='h6'>
               {template[0].name}
             </Typography>
-            {template[0].default ? (
-              <Chip className='ml-12' label='Default' />
-            ) : (
-              <LoadingButton
-                loading={loading}
-                className='hidden group-hover:flex py-3 px-8'
-                size='small'
-                color='primary'
-                onClick={() => handleClickMakeDefaultButton(template[0].id)}
-                variant='outlined'
-              >
-                Default
-              </LoadingButton>
-            )}
           </div>
-          <div className='mt-10 flex justify-between h-[30px]'>
-            <Typography component='p' variant='body2' className='text-gray-700'>
-              {template[0].description}
-            </Typography>
-            <Typography component='p' variant='subtitle2'>
-              {getTimeFormatWithoutSeconds(template[0].created_at)}
-            </Typography>
-          </div>
-
           <Timeline
             className='px-0'
             sx={{
@@ -84,39 +52,53 @@ const TemplatesListItem = ({ selectedIndex, index, template, setTemplateId, setR
               },
             }}
           >
-            {template.length > 1 &&
-              template.map((item, index) => {
-                if (index > 0) {
-                  return (
-                    <TimelineItem key={item.id} sx={{ minHeight: '70px' }}>
-                      <TimelineSeparator>
-                        <TimelineDot className='mt-0' />
-                        {template.length - 1 !== index && <TimelineConnector className='mb-10' />}
-                      </TimelineSeparator>
+            {template?.map((item, index) => {
+              return (
+                <TimelineItem className='group' key={item.id}>
+                  <TimelineSeparator>
+                    <TimelineDot className='mt-0' />
+                    {template.length - 1 !== index && <TimelineConnector className='mb-10' />}
+                  </TimelineSeparator>
 
-                      <div
-                        className={`${
-                          selectedReversion === index && activeReversion && 'bg-white'
-                        }  ease-in duration-300 hover:bg-blue/[.06] ml-12 w-full mb-7`}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleGetReversion(index, item.id);
-                        }}
-                      >
-                        <TimelineContent>
-                          <div className='flex justify-between'>
-                            <div>
-                              <p>Reversion {item.revision}</p>
-                              <p className='text-gray-700'>{item.description}</p>
-                            </div>
-                            <div className='text-xs'>{getTimeFormatWithoutSeconds(item.created_at)}</div>
-                          </div>
-                        </TimelineContent>
+                  <div
+                    className={`${
+                      selectedReversion === index && activeReversion && 'bg-blue/[.06]'
+                    }  ease-in duration-300 hover:bg-blue/[.06] ml-12 w-full mb-7`}
+                    onClick={() => {
+                      handleGetOneTemplate(index, item.id);
+                    }}
+                  >
+                    <TimelineContent>
+                      <div className='min-h-[80px]'>
+                        <div className='flex justify-between mb-10'>
+                          <p>Reversion {item.revision}</p>
+                          <Typography className='text-xs' component='p' variant='caption'>
+                            {getTimeFormatWithoutSeconds(item.created_at)}
+                          </Typography>
+                        </div>
+                        <div className='flex justify-between'>
+                          <p className='w-9/12 text-gray-700'>{item.description}</p>
+                          {item.default ? (
+                            <Chip size='small' className='ml-12 py-3 h-full leading-loose' label='Default' />
+                          ) : (
+                            <LoadingButton
+                              loading={loading}
+                              className='hidden group-hover:flex px-8 h-full'
+                              size='small'
+                              color='primary'
+                              onClick={() => handleClickMakeDefaultButton(item.id)}
+                              variant='outlined'
+                            >
+                              Default
+                            </LoadingButton>
+                          )}
+                        </div>
                       </div>
-                    </TimelineItem>
-                  );
-                }
-              })}
+                    </TimelineContent>
+                  </div>
+                </TimelineItem>
+              );
+            })}
           </Timeline>
         </ListItemText>
       </ListItemButton>
