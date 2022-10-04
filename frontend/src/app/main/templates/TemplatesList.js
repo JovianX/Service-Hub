@@ -25,6 +25,7 @@ const TemplatesList = () => {
   const [templates, setTemplates] = useState([]);
   const [transformedTemplates, setTransformedTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
+  const [reversionTemplateId, setReversionTemplateId] = useState('');
   const [templateYamlText, setTemplateYamlText] = useState('');
 
   const [infoMessageError, setInfoMessageError] = useState('');
@@ -47,34 +48,12 @@ const TemplatesList = () => {
 
   useEffect(() => {
     if (templates.length) {
-      const names = [];
-      let revision = [];
-      const newArr = [];
-      templates.map((obj, id) => {
-        const template = JSON.parse(JSON.stringify(obj));
-        names.push(template.name);
-        if (
-          id + 1 <= templates.length - 1 &&
-          names.indexOf(templates[id + 1].name) === names.lastIndexOf(templates[id + 1].name)
-        ) {
-          newArr.push(template);
-        }
-        for (let j = id + 1; j <= templates.length - 1; j++) {
-          if (template.name === templates[j].name) {
-            if (names.indexOf(templates[j].name) === names.lastIndexOf(templates[j].name)) {
-              revision.push(templates[j]);
-            }
-          }
-        }
-        if (revision.length >= 1) {
-          template.reversions = revision;
-        }
-        revision = [];
-        if (template.default) {
-          setTemplateId(template.id);
-        }
-      });
-      setTransformedTemplates(newArr);
+      const unique = [...new Set(templates.map((item) => item.name))];
+      const res = unique.map((item) => ({
+        name: item,
+        templates: templates.filter((searchItem) => searchItem.name === item),
+      }));
+      setTransformedTemplates(res);
     }
   }, [templates]);
 
@@ -96,6 +75,17 @@ const TemplatesList = () => {
     setSelectedIndex(templateIndex);
   }, [templateId]);
 
+  useEffect(() => {
+    const templateIndex = templates.findIndex((template) => reversionTemplateId === template.id);
+    const oneTemplate = templates.find((template) => reversionTemplateId === template.id);
+    if (oneTemplate?.template.substring(0, 1) === '\n') {
+      setTemplateYamlText(oneTemplate?.template.substring(1));
+    } else {
+      setTemplateYamlText(oneTemplate?.template);
+    }
+    setSelectedIndex(templateIndex);
+  }, [reversionTemplateId]);
+
   const showMessage = (res) => {
     if (res.status === 'success') {
       setInfoMessageSuccess(res.message);
@@ -108,7 +98,6 @@ const TemplatesList = () => {
     }, 2000);
   };
 
-  //  delete modal action
   const toggleDeleteModalOpen = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
@@ -121,7 +110,11 @@ const TemplatesList = () => {
     toggleDeleteModalOpen();
   };
   const handleDeleteConfirm = async () => {
-    await dispatch(deleteTemplate(templateId));
+    if (reversionTemplateId) {
+      await dispatch(deleteTemplate(reversionTemplateId));
+    } else {
+      await dispatch(deleteTemplate(templateId));
+    }
     toggleDeleteModalOpen();
   };
 
@@ -162,11 +155,12 @@ const TemplatesList = () => {
         </div>
         {transformedTemplates?.map((template, index) => (
           <TemplatesListItem
-            key={template.id}
+            key={template.name}
             selectedIndex={selectedIndex}
             index={index}
-            template={template}
+            template={template.templates}
             setTemplateId={setTemplateId}
+            setReversionTemplateId={setReversionTemplateId}
           />
         ))}
       </List>
