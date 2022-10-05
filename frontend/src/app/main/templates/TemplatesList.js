@@ -1,6 +1,5 @@
 import { Button, List } from '@mui/material';
 import MonacoEditor from '@uiw/react-monacoeditor';
-import yaml from 'js-yaml';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,7 +8,6 @@ import DialogModal from 'app/shared-components/DialogModal';
 import {
   deleteTemplate,
   getTemplatesList,
-  editTemplate,
   selectInfoMessage,
   selectIsTemplatesLoading,
   selectTemplates,
@@ -29,8 +27,13 @@ const TemplatesList = () => {
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [readOnly, setReadOnly] = useState(true);
   const [openModal, setOpenModal] = useState(false);
+  const [modalInfo, setModalInfo] = useState({
+    action: '',
+    title: '',
+    confirmText: '',
+    template: {},
+  });
 
   const templatesData = useSelector(selectTemplates);
   const isLoading = useSelector(selectIsTemplatesLoading);
@@ -52,7 +55,6 @@ const TemplatesList = () => {
         templates: templates.filter((searchItem) => searchItem.name === item).reverse(),
       }));
       setTransformedTemplates(res);
-      setTemplateId(res[0].templates[0].id);
     }
   }, [templates]);
 
@@ -109,13 +111,24 @@ const TemplatesList = () => {
     setTemplateYamlText(value);
   };
 
-  const handleClickEdit = async (id) => {
-    try {
-      const template = yaml.load(templateYamlText, { json: true });
-      await dispatch(editTemplate({ id, template }));
-    } catch (e) {
-      setInfoMessageError(e.reason);
-    }
+  const handleClickEdit = () => {
+    const template = templates.find((template) => templateId === template.id);
+    setModalInfo({
+      action: 'EDIT',
+      title: `Edit ${template.name}`,
+      confirmText: 'Edit',
+      template,
+    });
+    setOpenModal(true);
+  };
+
+  const handleClickAdd = () => {
+    setModalInfo({
+      action: 'CREATE',
+      title: 'Create new template',
+      confirmText: 'Create',
+    });
+    setOpenModal(true);
   };
 
   if (isLoading) {
@@ -129,14 +142,7 @@ const TemplatesList = () => {
     <div className='flex justify-between p-24'>
       <List className='w-5/12 pt-0 h-[70vh] overflow-y-scroll mr-12'>
         <div className='flex justify-end'>
-          <Button
-            className='mb-12 mr-12'
-            color='primary'
-            variant='contained'
-            onClick={() => {
-              setOpenModal(true);
-            }}
-          >
+          <Button className='mb-12 mr-12' color='primary' variant='contained' onClick={handleClickAdd}>
             Add templete
           </Button>
         </div>
@@ -158,7 +164,7 @@ const TemplatesList = () => {
             value={templateYamlText}
             language='yaml'
             onChange={handleOnChangeTemplate.bind(this)}
-            options={{ theme: 'vs-dark', readOnly, automaticLayout: true }}
+            options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
           />
         </div>
         <div className='mt-36 flex justify-between items-center'>
@@ -175,7 +181,12 @@ const TemplatesList = () => {
         </div>
       </div>
 
-      <TemplatesModal setTemplates={setTemplates} openModal={openModal} setOpenModal={setOpenModal} />
+      <TemplatesModal
+        setTemplates={setTemplates}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        modalInfo={modalInfo}
+      />
 
       <DialogModal
         isOpen={isDeleteModalOpen}

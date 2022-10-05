@@ -1,19 +1,23 @@
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import MonacoEditor from '@uiw/react-monacoeditor';
+import yaml from 'js-yaml';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { createTemplate } from 'app/store/templatesSlice';
+import { createTemplate, editTemplate } from 'app/store/templatesSlice';
 
-const TemplatesModal = ({ openModal, setOpenModal, setTemplates }) => {
+const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [template, setTemplate] = useState({});
   const [open, setOpen] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [configYamlText, setConfigYamlText] = useState('');
+  const [inputDescription, setInputDescription] = useState('');
 
   useEffect(() => {
     if (openModal) {
@@ -22,26 +26,53 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates }) => {
     }
   }, [openModal]);
 
+  useEffect(() => {
+    if (modalInfo?.action) {
+      setTemplate(modalInfo.template);
+      setInputDescription(modalInfo.template?.description);
+    }
+  }, [modalInfo.template]);
+
   const getValue = (newValue) => {
     setConfigYamlText(newValue);
   };
 
-  const handleSubmitCreate = async (e) => {
+  const onChangeInputDescription = (e) => {
+    setInputDescription(e.target.value);
+  };
+
+  const handleSubmitTemplate = async (e) => {
     e.preventDefault();
     setLoading(true);
     const { description } = e.target;
     try {
-      const template = {
-        description: description.value,
-        template: configYamlText,
-        enabled: true,
-      };
-      const data = await dispatch(createTemplate(template));
+      let data = {};
+      let requestBody = {};
+      if (modalInfo?.action === 'EDIT') {
+        requestBody = {
+          description: inputDescription,
+          template: yaml.load(configYamlText, { json: true }),
+          enabled: true,
+        };
+        data = await dispatch(editTemplate({ id: template.id, requestBody }));
+      } else if (modalInfo?.action === 'CREATE') {
+        requestBody = {
+          description: description.value,
+          template: configYamlText,
+          enabled: true,
+        };
+        data = await dispatch(createTemplate(requestBody));
+      }
       if (data.payload.status === 'error') {
         setInfoMessageError(data.payload.message);
       } else {
-        setTemplates((templates) => [...templates, data.payload]);
-        setInfoMessageSuccess('The template was created successfully');
+        if (modalInfo?.action === 'EDIT') {
+          setTemplates((templates) => [...templates, data.payload]);
+          setInfoMessageSuccess('The template was created successfully');
+        } else if (modalInfo?.action === 'CREATE') {
+          setInfoMessageSuccess('The template was successfully edited');
+        }
+
         setTimeout(() => setOpen(false), 2000);
       }
       setLoading(false);
@@ -63,11 +94,13 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates }) => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='md'>
-        <form onSubmit={handleSubmitCreate}>
-          <DialogTitle className='bg-primary text-center text-white'>Create new template</DialogTitle>
+        <form onSubmit={handleSubmitTemplate}>
+          <DialogTitle className='bg-primary text-center text-white'>{modalInfo.title}</DialogTitle>
           <DialogContent className='pb-0 mt-16 overflow-y-hidden'>
             {/* <div className='mt-24'>create new template</div> */}
             <TextField
+              value={inputDescription || ''}
+              onChange={onChangeInputDescription}
               name='description'
               type='text'
               id='outlined-required'
@@ -78,6 +111,7 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates }) => {
             <div className='mt-24'>
               <p className='mb-8 ml-14 text-[#6B7280]'>Template</p>
               <MonacoEditor
+                value={template?.template}
                 height='350px'
                 width='100%'
                 name='values'
@@ -101,10 +135,13 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates }) => {
                 type='submit'
                 loading={loading}
                 loadingPosition='start'
-                startIcon={<AddIcon />}
+                startIcon={[
+                  modalInfo.action === 'CREATE' && <AddIcon key={modalInfo.action} />,
+                  modalInfo.action === 'EDIT' && <EditIcon key={modalInfo.action} />,
+                ]}
                 variant='contained'
               >
-                Create
+                {modalInfo.confirmText}
               </LoadingButton>
             </div>
           </DialogActions>

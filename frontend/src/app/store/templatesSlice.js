@@ -61,17 +61,14 @@ export const deleteTemplate = createAsyncThunk('templates/deleteTemplate', async
   }
 });
 
-export const editTemplate = createAsyncThunk('templates/editTemplate', async ({ id, template }) => {
+export const editTemplate = createAsyncThunk('templates/editTemplate', async ({ id, requestBody }) => {
   try {
-    await editTemplateAPI(id, template);
-    return {
-      status: 'success',
-      message: 'template was successfully edited',
-    };
+    const response = await editTemplateAPI(id, requestBody);
+    return response.data;
   } catch (e) {
     return {
       status: 'error',
-      message: e.response.data.message,
+      message: 'editing template wasn\'t successfull',
     };
   }
 });
