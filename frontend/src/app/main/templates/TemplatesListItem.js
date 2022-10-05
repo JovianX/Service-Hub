@@ -1,14 +1,14 @@
-import LoadingButton from '@mui/lab/LoadingButton';
-import Timeline from '@mui/lab/Timeline';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import { Chip, ListItemButton } from '@mui/material';
-import Divider from '@mui/material/Divider';
-import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
+import {
+  LoadingButton,
+  Timeline,
+  TimelineDot,
+  TimelineContent,
+  TimelineConnector,
+  TimelineSeparator,
+  TimelineItem,
+} from '@mui/lab';
+import { timelineItemClasses } from '@mui/lab/TimelineItem';
+import { Divider, ListItemText, Typography, Chip, ListItemButton } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -19,12 +19,10 @@ import { getTimeFormatWithoutSeconds } from '../../uitls';
 const TemplatesListItem = ({ selectedIndex, mainIndex, template, setTemplateId }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [activeReversion, setActiveReversion] = useState(false);
-  const [selectedReversion, setSelectedReversion] = useState(null);
+  const [selectedReversion, setSelectedReversion] = useState(0);
 
   const handleGetOneTemplate = (index, id) => {
     setTemplateId(id);
-    setActiveReversion(true);
     setSelectedReversion(index);
   };
 
@@ -35,7 +33,10 @@ const TemplatesListItem = ({ selectedIndex, mainIndex, template, setTemplateId }
 
   return (
     <>
-      <ListItemButton className='hover:bg-white hover:cursor-default'>
+      <ListItemButton
+        className='hover:bg-white hover:cursor-default'
+        style={{ borderLeft: selectedIndex === mainIndex ? '3px solid #2A3BAB' : '' }}
+      >
         <ListItemText>
           <div className='flex justify-between'>
             <Typography component='p' variant='h6'>
@@ -56,14 +57,13 @@ const TemplatesListItem = ({ selectedIndex, mainIndex, template, setTemplateId }
               return (
                 <TimelineItem className='group' key={item.id}>
                   <TimelineSeparator>
-                    <TimelineDot className='mt-0' />
-                    {template.length - 1 !== index && <TimelineConnector className='mb-10' />}
+                    <TimelineDot />
+                    {template.length - 1 !== index && <TimelineConnector />}
                   </TimelineSeparator>
-
                   <div
                     className={`${
-                      selectedReversion === index && activeReversion && 'bg-blue/[.06]'
-                    }  ease-in duration-300 hover:bg-blue/[.06] ml-12 w-full mb-7`}
+                      selectedIndex === mainIndex && selectedReversion === index && 'bg-blue/[.06]'
+                    }  ease-in duration-300 hover:bg-gray-400/[.08] ml-12 w-full mb-7`}
                     onClick={() => {
                       handleGetOneTemplate(index, item.id);
                     }}

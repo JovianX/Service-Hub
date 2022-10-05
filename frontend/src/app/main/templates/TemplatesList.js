@@ -1,5 +1,4 @@
-import { Button } from '@mui/material';
-import List from '@mui/material/List';
+import { Button, List } from '@mui/material';
 import MonacoEditor from '@uiw/react-monacoeditor';
 import yaml from 'js-yaml';
 import { useEffect, useState } from 'react';
@@ -25,7 +24,6 @@ const TemplatesList = () => {
   const [templates, setTemplates] = useState([]);
   const [transformedTemplates, setTransformedTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
-  const [reversionTemplateId, setReversionTemplateId] = useState('');
   const [templateYamlText, setTemplateYamlText] = useState('');
 
   const [infoMessageError, setInfoMessageError] = useState('');
@@ -51,9 +49,10 @@ const TemplatesList = () => {
       const unique = [...new Set(templates.map((item) => item.name))];
       const res = unique.map((item) => ({
         name: item,
-        templates: templates.filter((searchItem) => searchItem.name === item),
+        templates: templates.filter((searchItem) => searchItem.name === item).reverse(),
       }));
       setTransformedTemplates(res);
+      setTemplateId(res[0].templates[0].id);
     }
   }, [templates]);
 
@@ -65,7 +64,9 @@ const TemplatesList = () => {
   }, [infoMessage]);
 
   useEffect(() => {
-    const templateIndex = templates.findIndex((template) => templateId === template.id);
+    const templateIndex = transformedTemplates.findIndex((template) => {
+      return template.templates.find((item) => templateId === item.id);
+    });
     const oneTemplate = templates.find((template) => templateId === template.id);
     if (oneTemplate?.template.substring(0, 1) === '\n') {
       setTemplateYamlText(oneTemplate?.template.substring(1));
@@ -144,7 +145,7 @@ const TemplatesList = () => {
             key={template.name}
             selectedIndex={selectedIndex}
             mainIndex={index}
-            template={template.templates.reverse()}
+            template={template.templates}
             setTemplateId={setTemplateId}
           />
         ))}
