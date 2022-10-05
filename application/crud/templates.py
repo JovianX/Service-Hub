@@ -30,7 +30,7 @@ class TemplateDatabase(BaseDatabase):
         return templates[-1]
 
     async def list(self, query=None, **parameters) -> list:
-        query = select(self.table).order_by(self.table.revision)
+        query = select(self.table).order_by(self.table.name, self.table.revision)
 
         return await super().list(query, **parameters)
 
