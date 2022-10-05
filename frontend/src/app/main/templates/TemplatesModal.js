@@ -3,13 +3,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import MonacoEditor from '@uiw/react-monacoeditor';
-import yaml from 'js-yaml';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { createTemplate, editTemplate } from 'app/store/templatesSlice';
+import { createTemplate } from 'app/store/templatesSlice';
 
-const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo }) => {
+const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setEditTemplateId }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [template, setTemplate] = useState({});
@@ -51,10 +50,10 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo }) =>
       if (modalInfo?.action === 'EDIT') {
         requestBody = {
           description: inputDescription,
-          template: yaml.load(configYamlText, { json: true }),
+          template: configYamlText,
           enabled: true,
         };
-        data = await dispatch(editTemplate({ id: template.id, requestBody }));
+        data = await dispatch(createTemplate(requestBody));
       } else if (modalInfo?.action === 'CREATE') {
         requestBody = {
           description: description.value,
@@ -67,12 +66,10 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo }) =>
         setInfoMessageError(data.payload.message);
       } else {
         if (modalInfo?.action === 'EDIT') {
-          setTemplates((templates) => [...templates, data.payload]);
-          setInfoMessageSuccess('The template was created successfully');
-        } else if (modalInfo?.action === 'CREATE') {
-          setInfoMessageSuccess('The template was successfully edited');
+          setEditTemplateId(data.payload.id);
         }
-
+        setTemplates((templates) => [...templates, data.payload]);
+        setInfoMessageSuccess('The template was created successfully');
         setTimeout(() => setOpen(false), 2000);
       }
       setLoading(false);

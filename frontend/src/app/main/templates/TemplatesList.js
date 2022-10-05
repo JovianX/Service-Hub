@@ -34,6 +34,7 @@ const TemplatesList = () => {
     confirmText: '',
     template: {},
   });
+  const [editTemplateId, setEditTemplateId] = useState('');
 
   const templatesData = useSelector(selectTemplates);
   const isLoading = useSelector(selectIsTemplatesLoading);
@@ -76,7 +77,17 @@ const TemplatesList = () => {
       setTemplateYamlText(oneTemplate?.template);
     }
     setSelectedIndex(templateIndex);
+    setInfoMessageError('');
   }, [templateId]);
+
+  useEffect(() => {
+    const oneTemplate = templates.find((template) => editTemplateId === template.id);
+    if (oneTemplate?.template.substring(0, 1) === '\n') {
+      setTemplateYamlText(oneTemplate?.template.substring(1));
+    } else {
+      setTemplateYamlText(oneTemplate?.template);
+    }
+  }, [editTemplateId]);
 
   const showMessage = (res) => {
     if (res.status === 'success') {
@@ -112,17 +123,25 @@ const TemplatesList = () => {
   };
 
   const handleClickEdit = () => {
-    const template = templates.find((template) => templateId === template.id);
-    setModalInfo({
-      action: 'EDIT',
-      title: `Edit ${template.name}`,
-      confirmText: 'Edit',
-      template,
-    });
-    setOpenModal(true);
+    try {
+      const template = templates.find((template) => templateId === template.id);
+      setModalInfo({
+        action: 'EDIT',
+        title: `Edit ${template.name}`,
+        confirmText: 'Edit',
+        template,
+      });
+      setOpenModal(true);
+    } catch (e) {
+      setInfoMessageError('Please select a template');
+      setTimeout(() => {
+        setInfoMessageError('');
+      }, 2000);
+    }
   };
 
   const handleClickAdd = () => {
+    setInfoMessageError('');
     setModalInfo({
       action: 'CREATE',
       title: 'Create new template',
@@ -186,6 +205,7 @@ const TemplatesList = () => {
         openModal={openModal}
         setOpenModal={setOpenModal}
         modalInfo={modalInfo}
+        setEditTemplateId={setEditTemplateId}
       />
 
       <DialogModal
