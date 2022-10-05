@@ -1,4 +1,3 @@
-from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
@@ -6,6 +5,7 @@ from fastapi import Query
 from pydantic import conlist
 
 from core.authentication import current_active_user
+from core.fastapi import RoleAPIRouter
 from managers.helm.manager import HelmManager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
@@ -20,7 +20,7 @@ from ..schemas.rules import RuleUpdateBodySchema
 from ..schemas.rules import ValuesToApplyResultResponceBodySchema
 
 
-router = APIRouter()
+router = RoleAPIRouter()
 
 
 @router.post('/', response_model=RuleResponseSchema)

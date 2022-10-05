@@ -1,10 +1,11 @@
 from uuid import UUID
 
-from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Path
 
+from constants.roles import Roles
 from core.authentication import current_active_user
+from core.fastapi import RoleAPIRouter
 from managers.users import UserManager
 from managers.users import get_user_manager
 from models.user import User
@@ -13,11 +14,11 @@ from schemas.users import UserUpdate
 from ..schemas.common import UserResponseSchema
 
 
-router = APIRouter()
+router = RoleAPIRouter()
 
 
-@router.get('/me', response_model=UserResponseSchema)
-async def get_setting(user: User = Depends(current_active_user)):
+@router.get('/me', response_model=UserResponseSchema, roles=[Roles.operator])
+async def get_current_user(user: User = Depends(current_active_user)):
     """
     Returns current user information.
     """
@@ -25,7 +26,7 @@ async def get_setting(user: User = Depends(current_active_user)):
 
 
 @router.get('/list', response_model=list[UserResponseSchema])
-async def get_setting(
+async def list_organization_users(
     user: User = Depends(current_active_user),
     user_manager: UserManager = Depends(get_user_manager)
 ):

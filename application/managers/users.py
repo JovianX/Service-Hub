@@ -10,6 +10,7 @@ from fastapi_users import BaseUserManager
 from fastapi_users import UUIDIDMixin
 from fastapi_users import exceptions
 
+from constants.roles import Roles
 from core.configuration import settings
 from crud.users import UserDatabase
 from crud.users import get_user_db
@@ -145,13 +146,18 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         return user
 
     async def on_after_register(self, user: User, request: Request | None = None):
-        print(f'User {user.id} has registered.')
+        users = await self.user_db.list(organization_id=user.organization.id)
+        if len(users) > 1:
+            user.role = Roles.operator
+        else:
+            user.role = Roles.admin
+        await self.user_db.save(user)
 
     async def on_after_forgot_password(self, user: User, token: str, request: Request | None = None):
-        print(f'User {user.id} has forgot their password. Reset token: {token}')
+        pass
 
     async def on_after_request_verify(self, user: User, token: str, request: Request | None = None):
-        print(f'Verification requested for user {user.id}. Verification token: {token}')
+        pass
 
     async def organization_users(self, organization: Organization) -> list[User]:
         """
