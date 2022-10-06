@@ -110,3 +110,18 @@ async def send_invitation_email(
     """
     invitation_record = await invitation_manager.get_invitation(user.organization, invitation_id)
     await invitation_manager.send_email(invitation_record)
+
+
+@router.get('/{invitation_id}/invitation-link', response_model=str, dependencies=[Depends(AuthorizedUser())])
+async def get_user_invitation_link(
+    invitation_id: UUID = Path(title='The ID user invitation.'),
+    user: User = Depends(current_active_user),
+    invitation_manager: InvitationManager = Depends(get_invitation_manager)
+):
+    """
+    Returns user invitation link.
+    """
+    invitation_record = await invitation_manager.get_invitation(user.organization, invitation_id)
+    link = invitation_manager.get_invitation_link(invitation_record)
+
+    return link
