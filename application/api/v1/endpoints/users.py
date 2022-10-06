@@ -1,23 +1,27 @@
 from uuid import UUID
 
+from fastapi import APIRouter
+from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
-from constants.roles import Roles
+from core.authentication import AdminRolePermission
+from core.authentication import AuthorizedUser
+from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
-from core.fastapi import RoleAPIRouter
 from managers.users import UserManager
 from managers.users import get_user_manager
 from models.user import User
 from schemas.users import UserUpdate
 
 from ..schemas.common import UserResponseSchema
+from ..schemas.users import SetUserRoleRequestSchema
 
 
-router = RoleAPIRouter()
+router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
 
 
-@router.get('/me', response_model=UserResponseSchema, roles=[Roles.operator])
+@router.get('/me', response_model=UserResponseSchema, dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def get_current_user(user: User = Depends(current_active_user)):
     """
     Returns current user information.
@@ -76,3 +80,16 @@ async def delete_user(
     user_record = await user_manager.get(user_id)
     if user_record.organization.id == user.organization.id:
         await user_manager.delete(user_record)
+
+
+@router.post('/roles/set')
+async def set_user_role(
+    data: SetUserRoleRequestSchema = Body(description='User role data'),
+    user: User = Depends(current_active_user),
+    user_manager: UserManager = Depends(get_user_manager)
+):
+    """
+    Sets user's role.
+    """
+    user_record = await user_manager.get(data.user_id)
+    await user_manager.set_user_role(setter=user, user=user_record, role=data.role)

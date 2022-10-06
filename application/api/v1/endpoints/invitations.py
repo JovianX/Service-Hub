@@ -4,12 +4,14 @@ Invitations related API endpoints.
 import logging
 from uuid import UUID
 
+from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
+from core.authentication import AdminRolePermission
+from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
-from core.fastapi import RoleAPIRouter
 from managers.invitations import InvitationManager
 from managers.invitations import get_invitation_manager
 from managers.users import UserManager
@@ -24,7 +26,7 @@ from ..schemas.invitations import UseSchema
 
 logger = logging.getLogger(__name__)
 
-router = RoleAPIRouter()
+router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
 
 
 @router.post('/', response_model=InvitationResponseSchema)

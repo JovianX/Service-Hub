@@ -1,20 +1,26 @@
+from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Query
 
 from constants.kubernetes import K8sKinds
-from constants.roles import Roles
+from core.authentication import AdminRolePermission
+from core.authentication import AuthorizedUser
+from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
-from core.fastapi import RoleAPIRouter
 from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
 from models.user import User
 
 
-router = RoleAPIRouter()
+router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
 
 
-@router.get('/namespace/list', response_model=list[dict], roles=[Roles.operator])
+@router.get(
+    '/namespace/list',
+    response_model=list[dict],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def list_namespaces(
     context_name: str = Query(description='Name of context name to use.'),
     user: User = Depends(current_active_user),
@@ -36,7 +42,7 @@ async def list_namespaces(
     ]
 
 
-@router.get('/ingress/list', response_model=list[dict], roles=[Roles.operator])
+@router.get('/ingress/list', response_model=list[dict], dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def list_ingresses(
     context_name: str = Query(description='Name of context name to use.'),
     user: User = Depends(current_active_user),
@@ -58,7 +64,7 @@ async def list_ingresses(
     ]
 
 
-@router.get('/service/list', response_model=list[dict], roles=[Roles.operator])
+@router.get('/service/list', response_model=list[dict], dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def list_services(
     context_name: str = Query(description='Name of context name to use.'),
     user: User = Depends(current_active_user),

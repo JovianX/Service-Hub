@@ -1,7 +1,6 @@
 import uuid
 
 import jwt
-from fastapi import Depends
 from fastapi import Request
 from fastapi import status
 from fastapi_users import FastAPIUsers
@@ -82,29 +81,49 @@ auth_backend = AuthenticationBackend(
 
 fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
 
-active_user_authorizer = fastapi_users.current_user(active=True)
+current_active_user = fastapi_users.current_user(active=True)
 
 
-async def authorizate_user(request: Request, user: User = Depends(active_user_authorizer)):
-    """
-    Dependency to authorize authenticated user.
-    """
-    if user.role == Roles.admin:
-        # This is superuser nothing to check here.
-        return user
+class BasePermission:
+    def authorize(self, request: Request) -> bool:
+        raise NotImplementedError()
 
-    jwt_strategy = get_jwt_strategy()
-    route = request.scope['route']
-    token = request.headers['authorization'][7:]
-    token_data = jwt_strategy.extract_token_data(token) or {}
-    if token_data.get('user_role') not in route.roles:
-        raise CommonException(
-            'You do not have permission to access to this functionality. Ask organization\'s administrator grant you '
-            'permission.',
-            status_code=status.HTTP_403_FORBIDDEN
-        )
 
-    return user
+class BaseRolePermission(BasePermission):
+    @classmethod
+    def authorize(cls, request: Request) -> bool:
+        if request is None:
+            raise ValueError(f'{__class__.__name__}: no request was provided during authorization.')
+        jwt_strategy = get_jwt_strategy()
+        token = request.headers['authorization'][7:]
+        token_data = jwt_strategy.extract_token_data(token) or {}
 
-# current_active_user = fastapi_users.current_user(active=True)
-current_active_user = authorizate_user
+        return token_data.get('user_role') == cls.role
+
+    @property
+    def role(self):
+        raise NotImplementedError('You must provide user role to authorize.')
+
+
+class AdminRolePermission(BaseRolePermission):
+    role = Roles.admin
+
+
+class OperatorRolePermission(BaseRolePermission):
+    role = Roles.operator
+
+
+class AuthorizedUser:
+    def __init__(self, *permissions: tuple[BasePermission]) -> None:
+        self.permissions = permissions
+
+    def __call__(self, request: Request) -> None:
+        authorized = []
+        for permission in self.permissions:
+            authorized.append(permission.authorize(request=request))
+        if not any(authorized):
+            raise CommonException(
+                'You do not have permission to access to this functionality. Ask organization\'s administrator grant '
+                'you permission.',
+                status_code=status.HTTP_403_FORBIDDEN
+            )

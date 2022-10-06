@@ -1,12 +1,14 @@
 from typing import Any
 
+from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Query
 
-from constants.roles import Roles
+from core.authentication import AdminRolePermission
+from core.authentication import AuthorizedUser
+from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
-from core.fastapi import RoleAPIRouter
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
 from managers.organizations.settings_schemas import ROOT_SETTING_NAMES
@@ -17,7 +19,7 @@ from ..schemas.organization import DefaultContextRequestBody
 from ..schemas.organization import K8sConfigurationResponseSchema
 
 
-router = RoleAPIRouter()
+router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
 
 
 @router.post('/kubernetes-configuration', response_model=K8sConfigurationResponseSchema)
@@ -35,7 +37,11 @@ async def upload_configuration(
     return {'configuration': configuration}
 
 
-@router.get('/kubernetes-configuration', response_model=K8sConfigurationResponseSchema, roles=[Roles.operator])
+@router.get(
+    '/kubernetes-configuration',
+    response_model=K8sConfigurationResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def get_configuration(
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)

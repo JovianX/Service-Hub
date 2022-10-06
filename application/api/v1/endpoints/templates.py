@@ -1,12 +1,14 @@
 """
 Templates endpoints
 """
+from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
+from core.authentication import AdminRolePermission
+from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
-from core.fastapi import RoleAPIRouter
 from managers.templates import TemplateManager
 from managers.templates import get_template_manager
 from models.user import User
@@ -18,7 +20,7 @@ from ..schemas.templates import TemplateResponseBodySchema
 from ..schemas.templates import TemplateUpdateBodySchema
 
 
-router = RoleAPIRouter()
+router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
 
 
 @router.post('/', response_model=TemplateResponseBodySchema)

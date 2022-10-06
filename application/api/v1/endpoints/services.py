@@ -1,10 +1,12 @@
+from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
 from constants.services import ServiceHealthStatuses
+from core.authentication import AdminRolePermission
+from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
-from core.fastapi import RoleAPIRouter
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
 from managers.services.manager import ServiceManager
@@ -16,7 +18,7 @@ from ..schemas.services import ServiceResponseSchema
 from ..schemas.services import UpdateServiceSchema
 
 
-router = RoleAPIRouter()
+router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
 
 
 @router.post('/', response_model=ServiceResponseSchema)

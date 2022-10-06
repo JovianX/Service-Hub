@@ -1,11 +1,13 @@
+from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 from fastapi import Query
 
-from constants.roles import Roles
+from core.authentication import AdminRolePermission
+from core.authentication import AuthorizedUser
+from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
-from core.fastapi import RoleAPIRouter
 from managers.helm.manager import HelmManager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
@@ -22,7 +24,7 @@ from ..schemas.helm import ReleaseUpdateRequestSchema
 from ..schemas.helm import SetReleaseTTLRequestSchema
 
 
-router = RoleAPIRouter()
+router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
 
 
 ################################################################################
@@ -42,7 +44,7 @@ async def add_repository(
     await helm_manager.add_repository(user.organization, data.name, data.url)
 
 
-@router.get('/repository/list', roles=[Roles.operator])
+@router.get('/repository/list', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def list_repository(
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
@@ -74,7 +76,11 @@ async def delete_repository(
 ################################################################################
 
 
-@router.get('/chart/list', response_model=list[ChartListItemSchema], roles=[Roles.operator])
+@router.get(
+    '/chart/list',
+    response_model=list[ChartListItemSchema],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def list_charts_in_repsitories(
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
@@ -131,7 +137,11 @@ async def install_chart(
 ################################################################################
 
 
-@router.get('/release/list', response_model=list[ReleaseListItemSchema], roles=[Roles.operator])
+@router.get(
+    '/release/list',
+    response_model=list[ReleaseListItemSchema],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def list_releases(
     namespace: str | None = Query(default=None),
     user: User = Depends(current_active_user),
@@ -149,7 +159,7 @@ async def list_releases(
 @router.get(
     '/release/{release_name}/health-status',
     response_model=ReleaseHealthStatusResponseBodySchema,
-    roles=[Roles.operator]
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def release_health_status(
     release_name: str = Path(description='Name of relase to get details'),
@@ -169,7 +179,11 @@ async def release_health_status(
     return health_details
 
 
-@router.get('/release/{release_name}/user-supplied-values', response_model=dict, roles=[Roles.operator])
+@router.get(
+    '/release/{release_name}/user-supplied-values',
+    response_model=dict,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def release_user_supplied_values(
     release_name: str = Path(description='Name of relase to get details'),
     context_name: str = Query(title='Name of context to use during data fetch'),
@@ -188,7 +202,11 @@ async def release_user_supplied_values(
     return user_supplied_values
 
 
-@router.get('/release/{release_name}/computed-values', response_model=dict, roles=[Roles.operator])
+@router.get(
+    '/release/{release_name}/computed-values',
+    response_model=dict,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def release_computed_values(
     release_name: str = Path(description='Name of relase to get details'),
     context_name: str = Query(title='Name of context to use during data fetch'),
@@ -207,7 +225,11 @@ async def release_computed_values(
     return computed_values
 
 
-@router.get('/release/{release_name}/detailed-hooks', response_model=list[dict], roles=[Roles.operator])
+@router.get(
+    '/release/{release_name}/detailed-hooks',
+    response_model=list[dict],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def release_detailed_hooks(
     release_name: str = Path(description='Name of relase to get details'),
     context_name: str = Query(title='Name of context to use during data fetch'),
@@ -226,7 +248,11 @@ async def release_detailed_hooks(
     return detailed_hooks
 
 
-@router.get('/release/{release_name}/detailed-manifest', response_model=list[dict], roles=[Roles.operator])
+@router.get(
+    '/release/{release_name}/detailed-manifest',
+    response_model=list[dict],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def release_detailed_manifest(
     release_name: str = Path(description='Name of relase to get details'),
     context_name: str = Query(title='Name of context to use during data fetch'),
@@ -245,7 +271,11 @@ async def release_detailed_manifest(
     return detailed_manifest
 
 
-@router.get('/release/{release_name}/notes', response_model=str, roles=[Roles.operator])
+@router.get(
+    '/release/{release_name}/notes',
+    response_model=str,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def release_notes(
     release_name: str = Path(description='Name of relase to get details'),
     context_name: str = Query(title='Name of context to use during data fetch'),
@@ -264,7 +294,11 @@ async def release_notes(
     return notes
 
 
-@router.get('/release/{release_name}/dump-chart', response_model=ChartDumpResponseSchema, roles=[Roles.operator])
+@router.get(
+    '/release/{release_name}/dump-chart',
+    response_model=ChartDumpResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def create_release_chart(
     release_name: str = Path(description='Name of target release'),
     context_name: str = Query(title='Name of context where release located'),
@@ -279,7 +313,11 @@ async def create_release_chart(
     return await helm_manager.get_release_chart(user.organization, context_name, namespase, release_name)
 
 
-@router.patch('/release/{release_name}', response_model=dict, roles=[Roles.operator])
+@router.patch(
+    '/release/{release_name}',
+    response_model=dict,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def update_release(
     release_name: str = Path(description='Name of relase to get details'),
     body: ReleaseUpdateRequestSchema = Body(description='Release update parameters'),
@@ -301,7 +339,7 @@ async def update_release(
     )
 
 
-@router.delete('/release/{release_name}', roles=[Roles.operator])
+@router.delete('/release/{release_name}', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def delete_release(
     release_name: str = Path(description='Name of relase to get details'),
     context_name: str = Query(title='Name of context where uninstalling release is located'),
@@ -318,7 +356,7 @@ async def delete_release(
     )
 
 
-@router.post('/release/{release_name}/ttl', roles=[Roles.operator])
+@router.post('/release/{release_name}/ttl', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def set_release_ttl(
     release_name: str = Path(description='Name of relase to set TTL'),
     data: SetReleaseTTLRequestSchema = Body(description='Release TTL data'),
@@ -335,7 +373,11 @@ async def set_release_ttl(
     )
 
 
-@router.get('/release/{release_name}/ttl', response_model=ReleaseTTLResponseSchema, roles=[Roles.operator])
+@router.get(
+    '/release/{release_name}/ttl',
+    response_model=ReleaseTTLResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def get_release_ttl(
     release_name: str = Path(description='Name of relase to get TTL'),
     context_name: str = Query(title='Name of context where release is located'),
@@ -354,7 +396,7 @@ async def get_release_ttl(
     return {'scheduled_time': release_scheduled_removal_date}
 
 
-@router.delete('/release/{release_name}/ttl', roles=[Roles.operator])
+@router.delete('/release/{release_name}/ttl', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def unset_release_ttl(
     release_name: str = Path(description='Name of relase to remove TTL'),
     context_name: str = Query(title='Name of context where release is located'),
