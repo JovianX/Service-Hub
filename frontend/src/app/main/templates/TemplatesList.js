@@ -181,6 +181,7 @@ const TemplatesList = () => {
             template={template.templates}
             setTemplateId={setTemplateId}
             setSelectedTemplateId={setSelectedTemplateId}
+            setTemplates={setTemplates}
           />
         ))}
       </List>

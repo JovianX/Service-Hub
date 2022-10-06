@@ -2,10 +2,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
   getTemplatesList as getTemplatesListAPI,
-  makeTemplateDefault as makeTemplateDefaultAPI,
   createTemplate as createTemplateAPI,
   deleteTemplate as deleteTemplateAPI,
   editTemplate as editTemplateAPI,
+  makeTemplateDefault as makeTemplateDefaultAPI,
 } from '../api';
 
 export const getTemplatesList = createAsyncThunk('templates/getTemplatesList', async () => {
@@ -33,11 +33,8 @@ export const createTemplate = createAsyncThunk('templates/createTemplate', async
 
 export const makeTemplateDefault = createAsyncThunk('templates/makeTemplateDefault', async (id) => {
   try {
-    await makeTemplateDefaultAPI(id);
-    return {
-      status: 'success',
-      message: '',
-    };
+    const response = await makeTemplateDefaultAPI(id);
+    return response.data;
   } catch (e) {
     return {
       status: 'error',
@@ -93,16 +90,6 @@ const templatesSlice = createSlice({
     [getTemplatesList.rejected]: (state) => ({
       ...state,
       isLoading: false,
-    }),
-    [makeTemplateDefault.fulfilled]: (state, { payload }) => ({
-      ...state,
-      infoMessage: payload,
-    }),
-    [makeTemplateDefault.pending]: (state) => ({
-      ...state,
-    }),
-    [makeTemplateDefault.rejected]: (state) => ({
-      ...state,
     }),
     [deleteTemplate.fulfilled]: (state, { payload }) => ({
       ...state,

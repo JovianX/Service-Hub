@@ -16,7 +16,14 @@ import { makeTemplateDefault } from 'app/store/templatesSlice';
 
 import { getTimeFormatWithoutSeconds } from '../../uitls';
 
-const TemplatesListItem = ({ selectedIndex, mainIndex, template, setTemplateId, setSelectedTemplateId }) => {
+const TemplatesListItem = ({
+  selectedIndex,
+  mainIndex,
+  template,
+  setTemplateId,
+  setSelectedTemplateId,
+  setTemplates,
+}) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [selectedReversion, setSelectedReversion] = useState(0);
@@ -29,7 +36,29 @@ const TemplatesListItem = ({ selectedIndex, mainIndex, template, setTemplateId, 
 
   const handleClickMakeDefaultButton = async (id) => {
     await setLoading(true);
-    await dispatch(makeTemplateDefault(id));
+    const data = await dispatch(makeTemplateDefault(id));
+    if (data.payload.status === 'error') {
+      return false;
+    }
+    setLoading(false);
+    setTemplates((templates) => {
+      templates = templates.map((item) => {
+        if (item.default) {
+          return {
+            ...item,
+            default: false,
+          };
+        }
+        if (item.id === data.payload.id) {
+          return {
+            ...item,
+            default: true,
+          };
+        }
+        return item;
+      });
+      return templates;
+    });
   };
 
   return (
