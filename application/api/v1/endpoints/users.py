@@ -5,7 +5,6 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
-from core.authentication import AdminRolePermission
 from core.authentication import AuthorizedUser
 from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
@@ -18,7 +17,7 @@ from ..schemas.common import UserResponseSchema
 from ..schemas.users import SetUserRoleRequestSchema
 
 
-router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
+router = APIRouter()
 
 
 @router.get('/me', response_model=UserResponseSchema, dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
@@ -29,7 +28,7 @@ async def get_current_user(user: User = Depends(current_active_user)):
     return user
 
 
-@router.get('/list', response_model=list[UserResponseSchema])
+@router.get('/list', response_model=list[UserResponseSchema], dependencies=[Depends(AuthorizedUser())])
 async def list_organization_users(
     user: User = Depends(current_active_user),
     user_manager: UserManager = Depends(get_user_manager)
@@ -40,7 +39,7 @@ async def list_organization_users(
     return await user_manager.organization_users(user.organization)
 
 
-@router.post('/{user_id}/deactivate')
+@router.post('/{user_id}/deactivate', dependencies=[Depends(AuthorizedUser())])
 async def deactivate_user(
     user_id: UUID = Path(title='The ID of the user to deactivate'),
     user: User = Depends(current_active_user),
@@ -54,7 +53,7 @@ async def deactivate_user(
         await user_manager.update(user_update=UserUpdate(is_active=False), user=user_record, safe=False)
 
 
-@router.post('/{user_id}/activate')
+@router.post('/{user_id}/activate', dependencies=[Depends(AuthorizedUser())])
 async def activate_user(
     user_id: UUID = Path(title='The ID of the user to activate'),
     user: User = Depends(current_active_user),
@@ -68,7 +67,7 @@ async def activate_user(
         await user_manager.update(user_update=UserUpdate(is_active=True), user=user_record, safe=False)
 
 
-@router.delete('/{user_id}')
+@router.delete('/{user_id}', dependencies=[Depends(AuthorizedUser())])
 async def delete_user(
     user_id: UUID = Path(title='The ID of the user to delete'),
     user: User = Depends(current_active_user),
@@ -82,7 +81,7 @@ async def delete_user(
         await user_manager.delete(user_record)
 
 
-@router.post('/roles/set')
+@router.post('/roles/set', dependencies=[Depends(AuthorizedUser())])
 async def set_user_role(
     data: SetUserRoleRequestSchema = Body(description='User role data'),
     user: User = Depends(current_active_user),

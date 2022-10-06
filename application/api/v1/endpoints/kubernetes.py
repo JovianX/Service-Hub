@@ -3,7 +3,6 @@ from fastapi import Depends
 from fastapi import Query
 
 from constants.kubernetes import K8sKinds
-from core.authentication import AdminRolePermission
 from core.authentication import AuthorizedUser
 from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
@@ -13,7 +12,7 @@ from managers.organizations.manager import get_organization_manager
 from models.user import User
 
 
-router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
+router = APIRouter()
 
 
 @router.get(

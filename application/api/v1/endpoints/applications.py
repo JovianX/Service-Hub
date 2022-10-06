@@ -6,7 +6,6 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
-from core.authentication import AdminRolePermission
 from core.authentication import AuthorizedUser
 from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
@@ -24,7 +23,7 @@ from ..schemas.applications import UpgradeRequestSchema
 from ..schemas.applications import UserInputUpdateRequestSchema
 
 
-router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
+router = APIRouter()
 
 
 @router.post(

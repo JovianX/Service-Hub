@@ -5,7 +5,6 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Query
 
-from core.authentication import AdminRolePermission
 from core.authentication import AuthorizedUser
 from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
@@ -19,10 +18,14 @@ from ..schemas.organization import DefaultContextRequestBody
 from ..schemas.organization import K8sConfigurationResponseSchema
 
 
-router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
+router = APIRouter()
 
 
-@router.post('/kubernetes-configuration', response_model=K8sConfigurationResponseSchema)
+@router.post(
+    '/kubernetes-configuration',
+    response_model=K8sConfigurationResponseSchema,
+    dependencies=[Depends(AuthorizedUser())]
+)
 async def upload_configuration(
     incoming_configuration: KubernetesConfigurationSchema = Body(description='Kubernetes configuration'),
     user: User = Depends(current_active_user),
@@ -54,7 +57,11 @@ async def get_configuration(
     return {'configuration': configuration}
 
 
-@router.delete('/kubernetes-configuration/context', response_model=K8sConfigurationResponseSchema)
+@router.delete(
+    '/kubernetes-configuration/context',
+    response_model=K8sConfigurationResponseSchema,
+    dependencies=[Depends(AuthorizedUser())]
+)
 async def delete_configuration_context(
     context_name: str = Query(alias='context-name'),
     user: User = Depends(current_active_user),
@@ -69,7 +76,11 @@ async def delete_configuration_context(
     return {'configuration': configuration}
 
 
-@router.post('/kubernetes-configuration/set-default-context', response_model=K8sConfigurationResponseSchema)
+@router.post(
+    '/kubernetes-configuration/set-default-context',
+    response_model=K8sConfigurationResponseSchema,
+    dependencies=[Depends(AuthorizedUser())]
+)
 async def set_default_configuration_context(
     data: DefaultContextRequestBody = Body(description='Default context data'),
     user: User = Depends(current_active_user),
@@ -84,7 +95,7 @@ async def set_default_configuration_context(
     return {'configuration': configuration}
 
 
-@router.post('/settings/{setting_name}')
+@router.post('/settings/{setting_name}', dependencies=[Depends(AuthorizedUser())])
 async def save_setting(
     setting_name: ROOT_SETTING_NAMES,
     setting_value: Any = Body(),
@@ -98,7 +109,7 @@ async def save_setting(
     await organization_manager.update_setting(organization, setting_name, setting_value)
 
 
-@router.get('/settings/{setting_name}')
+@router.get('/settings/{setting_name}', dependencies=[Depends(AuthorizedUser())])
 async def get_setting(
     setting_name: ROOT_SETTING_NAMES,
     user: User = Depends(current_active_user),

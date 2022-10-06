@@ -4,7 +4,6 @@ from fastapi import Depends
 from fastapi import Path
 from fastapi import Query
 
-from core.authentication import AdminRolePermission
 from core.authentication import AuthorizedUser
 from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
@@ -24,14 +23,14 @@ from ..schemas.helm import ReleaseUpdateRequestSchema
 from ..schemas.helm import SetReleaseTTLRequestSchema
 
 
-router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
+router = APIRouter()
 
 
 ################################################################################
 # Repositories
 ################################################################################
 
-@router.post('/repository/add')
+@router.post('/repository/add', dependencies=[Depends(AuthorizedUser())])
 async def add_repository(
     data: AddHelmRepositoryBodySchema,
     user: User = Depends(current_active_user),
@@ -58,7 +57,7 @@ async def list_repository(
     return repositories
 
 
-@router.delete('/repository/{repository_name}')
+@router.delete('/repository/{repository_name}', dependencies=[Depends(AuthorizedUser())])
 async def delete_repository(
     repository_name: str = Path(description='Name of Helm repository to delete', example='nginx-stable'),
     user: User = Depends(current_active_user),
@@ -94,7 +93,7 @@ async def list_charts_in_repsitories(
     return charts
 
 
-@router.get('/chart/available', response_model=list[ChartListItemSchema])
+@router.get('/chart/available', response_model=list[ChartListItemSchema], dependencies=[Depends(AuthorizedUser())])
 async def list_available_for_application_charts(
     application_name: str = Query(description='Name of application for which chart requested'),
     user: User = Depends(current_active_user),
@@ -109,7 +108,7 @@ async def list_available_for_application_charts(
     return charts
 
 
-@router.post('/chart/install')
+@router.post('/chart/install', dependencies=[Depends(AuthorizedUser())])
 async def install_chart(
     data: InstallChartBodySchema,
     user: User = Depends(current_active_user),
