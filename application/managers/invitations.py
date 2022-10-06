@@ -117,7 +117,7 @@ class InvitationManager:
                 )
         # NOTE: Link should lead to FE page. Should be replaced to real when FE
         #       will be deployed. Hardcoding for now.
-        link = f'http://localhost:8000/api/v1/invitation/{invitation.id}/use'
+        link = self.get_invitation_link(invitation)
         await send_email(
             invitation.email,
             f'You have been invited to join "{invitation.organization.title}" organization!',
@@ -125,6 +125,12 @@ class InvitationManager:
         )
         invitation.email_sent_at = datetime.now()
         await self.db.save(invitation)
+
+    def get_invitation_link(self, invitation: UserInvitation) -> str:
+        """
+        Returns link clicking on which user can finish registration.
+        """
+        return f'http://localhost:8000/api/v1/invitation/{invitation.id}/use'
 
 
 async def get_invitation_manager(db=Depends(get_invitation_db)):
