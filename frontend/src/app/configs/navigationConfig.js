@@ -65,6 +65,14 @@ const navigationConfig = [
     icon: 'heroicons-outline:users',
     url: 'users',
   },
+  {
+    id: 'applications-component',
+    title: 'Applications',
+    translate: 'APPLICATIONS',
+    type: 'item',
+    icon: 'material-outline:apps',
+    url: 'applications',
+  },
 ];
 
 export default navigationConfig;

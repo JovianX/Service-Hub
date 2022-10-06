@@ -16,12 +16,14 @@ import SignInConfig from '../main/sign-in/SignInConfig';
 import SignOutConfig from '../main/sign-out/SignOutConfig';
 import SignUpConfig from '../main/sign-up/SignUpConfig';
 import UsersConfig from '../main/users/UsersConfig';
+import ApplicationsConfig from "../main/applications/ApplicationsConfig";
 
 const routeConfigs = [
   ClustersConfig,
   RepositoriesConfig,
   ServicesConfig,
   ChartsConfig,
+    ApplicationsConfig,
   ReleasesConfig,
   DashboardConfig,
   ExampleConfig,
