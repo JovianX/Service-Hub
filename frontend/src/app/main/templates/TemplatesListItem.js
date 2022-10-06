@@ -16,12 +16,13 @@ import { makeTemplateDefault } from 'app/store/templatesSlice';
 
 import { getTimeFormatWithoutSeconds } from '../../uitls';
 
-const TemplatesListItem = ({ selectedIndex, mainIndex, template, setTemplateId }) => {
+const TemplatesListItem = ({ selectedIndex, mainIndex, template, setTemplateId, setSelectedTemplateId }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [selectedReversion, setSelectedReversion] = useState(0);
 
   const handleGetOneTemplate = (index, id) => {
+    setSelectedTemplateId(id);
     setTemplateId(id);
     setSelectedReversion(index);
   };

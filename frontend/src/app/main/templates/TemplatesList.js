@@ -22,6 +22,7 @@ const TemplatesList = () => {
   const [templates, setTemplates] = useState([]);
   const [transformedTemplates, setTransformedTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [templateYamlText, setTemplateYamlText] = useState('');
 
   const [infoMessageError, setInfoMessageError] = useState('');
@@ -45,6 +46,10 @@ const TemplatesList = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    setTemplateId(selectedTemplateId);
+  }, [selectedTemplateId]);
+
+  useEffect(() => {
     setTemplates(templatesData);
   }, [templatesData]);
 
@@ -56,6 +61,9 @@ const TemplatesList = () => {
         templates: templates.filter((searchItem) => searchItem.name === item).reverse(),
       }));
       setTransformedTemplates(res);
+      if (!selectedTemplateId) {
+        setTemplateId(res[0].templates[0].id);
+      }
     }
   }, [templates]);
 
@@ -172,6 +180,7 @@ const TemplatesList = () => {
             mainIndex={index}
             template={template.templates}
             setTemplateId={setTemplateId}
+            setSelectedTemplateId={setSelectedTemplateId}
           />
         ))}
       </List>
