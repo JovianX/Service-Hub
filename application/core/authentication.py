@@ -116,12 +116,14 @@ class OperatorRolePermission(BaseRolePermission):
 class AuthorizedUser:
     def __init__(self, *permissions: tuple[BasePermission]) -> None:
         self.permissions = permissions
+        if AdminRolePermission not in self.permissions:
+            self.permissions = (AdminRolePermission, *self.permissions)
 
     def __call__(self, request: Request) -> None:
-        authorized = []
         for permission in self.permissions:
-            authorized.append(permission.authorize(request=request))
-        if not any(authorized):
+            if permission.authorize(request=request):
+                break
+        else:
             raise CommonException(
                 'You do not have permission to access to this functionality. Ask organization\'s administrator grant '
                 'you permission.',

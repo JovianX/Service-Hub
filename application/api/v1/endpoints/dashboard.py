@@ -4,7 +4,6 @@ Dashboard endpoints.
 from fastapi import APIRouter
 from fastapi import Depends
 
-from core.authentication import AdminRolePermission
 from core.authentication import AuthorizedUser
 from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
@@ -16,7 +15,7 @@ from managers.services.manager import get_service_manager
 from models.user import User
 
 
-router = APIRouter(dependencies=[Depends(AuthorizedUser(AdminRolePermission))])
+router = APIRouter()
 
 
 @router.get('/release-count', response_model=int, dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
