@@ -1,9 +1,19 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import DialogModal from 'app/shared-components/DialogModal';
+import { deleteApplication } from 'app/store/applicationsSlice';
 
-const ApplicationDeleteDialogModal = ({ options }) => {
+const ApplicationDeleteDialogModal = ({ options, setApplications, setOpenDeleteModal }) => {
+  const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(options.isOpenModal);
+
+  const handleDeleteApplication = async (id) => {
+    await dispatch(deleteApplication(id)).then((res) => {
+      setApplications((applications) => ({ ...applications.filter((item) => item.id !== id) }));
+      setOpenDeleteModal(false);
+    });
+  };
 
   const toggleModalOpen = () => {
     setIsModalOpen(!isModalOpen);
@@ -11,9 +21,10 @@ const ApplicationDeleteDialogModal = ({ options }) => {
   const handleCancel = () => {
     toggleModalOpen();
   };
+
   const handleConfirm = () => {
     toggleModalOpen();
-    options.action(options.id);
+    handleDeleteApplication(options.id);
   };
 
   return (

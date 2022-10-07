@@ -11,123 +11,6 @@ import { getApplicationsList, selectApplications, selectIsApplicationsLoading } 
 import ApplicationDeleteDialogModal from './ApplicationDeleteDialogModal';
 import ApplicationsModal from './ApplicationsModal';
 
-const applications2 = [
-  {
-    application: {
-      id: 1,
-      created_at: '2022-10-06T14:19:59.869Z',
-      name: 'It is application №1',
-      description: 'string',
-      manifest: 'string',
-      status: 'created',
-      context_name: 'string',
-      namespace: 'string',
-      user_inputs: {},
-      template: {
-        id: 0,
-        created_at: '2022-10-06T14:19:59.869Z',
-        name: 'namespace\'s name',
-        description: 'string',
-        revision: 0,
-        enabled: true,
-        default: true,
-        template: 'string',
-      },
-      creator: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        email: 'ee@ee.com',
-        is_active: true,
-        is_verified: true,
-      },
-      organization: {
-        id: 0,
-        title: 'string',
-      },
-    },
-    results: {
-      additionalProp1: {},
-      additionalProp2: {},
-      additionalProp3: {},
-    },
-  },
-  {
-    application: {
-      id: 2,
-      created_at: '2022-10-06T14:19:59.869Z',
-      name: 'here is second app',
-      description: 'string',
-      manifest: 'string',
-      status: 'created',
-      context_name: 'string',
-      namespace: 'string',
-      user_inputs: {},
-      template: {
-        id: 0,
-        created_at: '2022-10-06T14:19:59.869Z',
-        name: 'string',
-        description: 'string',
-        revision: 1,
-        enabled: true,
-        default: true,
-        template: 'string',
-      },
-      creator: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        email: 'ee@ee.com',
-        is_active: true,
-        is_verified: true,
-      },
-      organization: {
-        id: 0,
-        title: 'string',
-      },
-    },
-    results: {
-      additionalProp1: {},
-      additionalProp2: {},
-      additionalProp3: {},
-    },
-  },
-  {
-    application: {
-      id: 3,
-      created_at: '2022-10-06T14:19:59.869Z',
-      name: 'This is app 3',
-      description: 'string',
-      manifest: 'string',
-      status: 'created',
-      context_name: 'string',
-      namespace: 'string',
-      user_inputs: {},
-      template: {
-        id: 0,
-        created_at: '2022-10-06T14:19:59.869Z',
-        name: 'string',
-        description: 'string',
-        revision: 2,
-        enabled: true,
-        default: true,
-        template: 'string',
-      },
-      creator: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        email: 'ee@ee.com',
-        is_active: true,
-        is_verified: true,
-      },
-      organization: {
-        id: 0,
-        title: 'string',
-      },
-    },
-    results: {
-      additionalProp1: {},
-      additionalProp2: {},
-      additionalProp3: {},
-    },
-  },
-];
-
 const ApplicationsTable = () => {
   const dispatch = useDispatch();
 
@@ -146,10 +29,6 @@ const ApplicationsTable = () => {
   useEffect(() => {
     setApplications(applicationsData);
   }, [applicationsData]);
-
-  const handleDeleteApplication = (id) => {
-  return false
-  };
 
   if (isLoading) {
     return (
@@ -181,32 +60,36 @@ const ApplicationsTable = () => {
                 </TableRow>
               </TableHead>
 
-              <TableBody>
-                {applications2?.map((row) => (
-                  <TableRow key={row.application.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell align='left'>{row.application.name}</TableCell>
-                    <TableCell align='left'>{row.application.status}</TableCell>
-                    <TableCell align='left'>{row.application.template.name}</TableCell>
-                    <TableCell align='left'>{row.application.template.revision}</TableCell>
-                    <TableCell align='left'>{row.application.creator.email}</TableCell>
-                    <TableCell align='right'>
-                      <Button
-                        onClick={() => {
-                          setOpenDeleteModal(!openDeleteModal);
-                          setOpenDeleteInfo({
-                            id: row.application.id,
-                            name: row.application.name,
-                          });
-                        }}
-                        variant='text'
-                        color='error'
-                      >
-                        <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+              {applications.length ? (
+                <TableBody>
+                  {applications.map((row) => (
+                    <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                      <TableCell align='left'>{row.name}</TableCell>
+                      <TableCell align='left'>{row.status}</TableCell>
+                      <TableCell align='left'>{row.template.name}</TableCell>
+                      <TableCell align='left'>{row.template.revision}</TableCell>
+                      <TableCell align='left'>{row.creator.email}</TableCell>
+                      <TableCell align='right'>
+                        <Button
+                          onClick={() => {
+                            setOpenDeleteModal(!openDeleteModal);
+                            setOpenDeleteInfo({
+                              id: row.id,
+                              name: row.name,
+                            });
+                          }}
+                          variant='text'
+                          color='error'
+                        >
+                          <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              ) : (
+                ''
+              )}
             </Table>
           </TableContainer>
           <ApplicationsModal openModal={openModal} setOpenModal={setOpenModal} />
@@ -217,11 +100,12 @@ const ApplicationsTable = () => {
           options={{
             id: openDeleteInfo.id,
             isOpenModal: true,
-            title: 'Delete applications',
-            text: `Are you sure you want to proceed ${openDeleteInfo.name}?`,
+            title: `Delete applications ${openDeleteInfo.name}?`,
+            text: 'Are you sure you want to proceed',
             confirmText: 'Delete',
-            action: handleDeleteApplication,
           }}
+          setApplications={setApplications}
+          setOpenDeleteModal={setOpenDeleteModal}
         />
       )}
     </div>

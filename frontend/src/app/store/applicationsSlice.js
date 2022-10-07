@@ -1,15 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getApplicationsList as getApplicationsListAPi } from '../api';
+import { getApplicationsList as getApplicationsListAPi, deleteApplication as deleteApplicationAPI } from '../api';
 
-export const getApplicationsList = createAsyncThunk('invitations/getApplicationsList', async () => {
+export const getApplicationsList = createAsyncThunk('applications/getApplicationsList', async () => {
   try {
     const response = await getApplicationsListAPi();
-    const data = await response.data;
+    const { data } = response;
     return data;
   } catch (e) {
     console.log(e);
     return [];
+  }
+});
+
+export const deleteApplication = createAsyncThunk('applications/deleteApplication', async (id) => {
+  try {
+    await deleteApplicationAPI(id);
+    return {
+      status: 'success',
+      text: 'Application was successfully removed',
+    };
+  } catch (e) {
+    return {
+      status: 'error',
+      text: e.response.data.message,
+    };
   }
 });
 
@@ -30,6 +45,18 @@ const applicationsSlice = createSlice({
       isLoading: true,
     }),
     [getApplicationsList.rejected]: (state) => ({
+      ...state,
+      isLoading: false,
+    }),
+    [deleteApplication.fulfilled]: (state) => ({
+      ...state,
+      isLoading: false,
+    }),
+    [deleteApplication.pending]: (state, action) => ({
+      ...state,
+      isLoading: true,
+    }),
+    [deleteApplication.rejected]: (state) => ({
       ...state,
       isLoading: false,
     }),
