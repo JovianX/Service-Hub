@@ -26,7 +26,7 @@ export const createTemplate = createAsyncThunk('templates/createTemplate', async
   } catch (e) {
     return {
       status: 'error',
-      message: 'setting template wasn\'t successfull',
+      message: e.response.data.message,
     };
   }
 });
