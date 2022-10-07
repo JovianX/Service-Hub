@@ -7,6 +7,7 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { getApplicationsList, selectApplications, selectIsApplicationsLoading } from 'app/store/applicationsSlice';
+import { getContextList, selectContexts } from 'app/store/clustersSlice';
 
 import ApplicationDeleteDialogModal from './ApplicationDeleteDialogModal';
 import ApplicationsModal from './ApplicationsModal';
@@ -14,11 +15,13 @@ import ApplicationsModal from './ApplicationsModal';
 const ApplicationsTable = () => {
   const dispatch = useDispatch();
 
+  const [kubernetesConfiguration, setKubernetesConfiguration] = useState({});
   const [applications, setApplications] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openDeleteInfo, setOpenDeleteInfo] = useState({});
 
+  const contextData = useSelector(selectContexts);
   const applicationsData = useSelector(selectApplications);
   const isLoading = useSelector(selectIsApplicationsLoading);
 
@@ -27,8 +30,16 @@ const ApplicationsTable = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    dispatch(getContextList());
+  }, [dispatch]);
+
+  useEffect(() => {
     setApplications(applicationsData);
   }, [applicationsData]);
+
+  useEffect(() => {
+    setKubernetesConfiguration(contextData);
+  }, [contextData]);
 
   if (isLoading) {
     return (
@@ -92,7 +103,11 @@ const ApplicationsTable = () => {
               )}
             </Table>
           </TableContainer>
-          <ApplicationsModal openModal={openModal} setOpenModal={setOpenModal} />
+          <ApplicationsModal
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+            kubernetesConfiguration={kubernetesConfiguration}
+          />
         </FuseScrollbars>
       </Paper>
       {openDeleteModal && (

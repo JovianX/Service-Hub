@@ -13,6 +13,16 @@ export const getApplicationsList = createAsyncThunk('applications/getApplication
   }
 });
 
+export const applicationInstall = createAsyncThunk('applications/applicationInstall', async (application) => {
+  try {
+    const response = await applicationInstall(application);
+    const { data } = response;
+    return data;
+  } catch (e) {
+    return e.response.data;
+  }
+});
+
 export const deleteApplication = createAsyncThunk('applications/deleteApplication', async (id) => {
   try {
     await deleteApplicationAPI(id);

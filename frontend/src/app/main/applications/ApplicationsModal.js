@@ -1,14 +1,37 @@
 import AddIcon from '@mui/icons-material/Add';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
+import { Box } from '@mui/system';
 import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-const ApplicationsModal = ({ openModal, setOpenModal }) => {
+import { applicationInstall } from 'app/store/applicationsSlice';
+
+import NamespacesSelect from './NamespacesSelect';
+
+const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration }) => {
+  const dispatch = useDispatch();
   const inputRef = useRef();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
+  const [cluster, setCluster] = useState('');
+  const [namespace, setNamespace] = useState('');
+
+  useEffect(() => {
+    setCluster(kubernetesConfiguration[0]?.name);
+  }, [kubernetesConfiguration]);
 
   useEffect(() => {
     if (openModal) {
@@ -17,22 +40,11 @@ const ApplicationsModal = ({ openModal, setOpenModal }) => {
     }
   }, [openModal]);
 
-  // modal actions
   const handleClickSaveButton = (e) => {
     e.preventDefault();
     setInfoMessageError('');
     setInfoMessageSuccess('');
     setLoading(true);
-    if (e.target.form) {
-      const { chart_name, version, description, release_name, context_name } = e.target.form;
-
-      if (!chart_name.value) {
-        setLoading(false);
-      }
-    } else {
-      setLoading(false);
-    }
-
     inputRef.current.click();
   };
 
@@ -41,25 +53,57 @@ const ApplicationsModal = ({ openModal, setOpenModal }) => {
     setOpen(false);
   };
 
-  const add = () => {
+  const handleSubmitInstall = async (e) => {
     console.log(1);
+    e.preventDefault();
+    const { template_id, inputs, context_name } = e.target;
+    const application = {
+      template_id,
+      inputs,
+      context_name,
+      namespace,
+      dry_run: false,
+    };
+    const data = await dispatch(applicationInstall(application));
+  };
+
+  const handleChangeSelect = (e) => {
+    setCluster(e.target.value);
+  };
+
+  const handleGetNamespace = (value) => {
+    setNamespace(value);
   };
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
-        <form onSubmit={add}>
+        <form onSubmit={handleSubmitInstall}>
           <DialogTitle className='bg-primary text-center text-white'>Create Application</DialogTitle>
-          <DialogContent className='pb-0 mt-8 overflow-y-hidden'>
-            {/* <div className='mt-24'>Deploy a new Helm release</div> */}
-            <TextField
-              name='description'
-              type='text'
-              id='outlined-required'
-              label='Description'
-              margin='normal'
-              fullWidth
-            />
+          <DialogContent className='pb-0  overflow-y-hidden'>
+            <div className='mt-24'>Create a new applicaion</div>
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl margin='normal' fullWidth required>
+                <InputLabel id='cluster'>Cluster</InputLabel>
+                <Select
+                  name='context_name'
+                  labelId='cluster'
+                  value={cluster}
+                  required
+                  label='Clusters'
+                  onChange={handleChangeSelect}
+                >
+                  {kubernetesConfiguration.length &&
+                    kubernetesConfiguration?.map((cluster) => (
+                      <MenuItem key={cluster.name} value={cluster.name}>
+                        {cluster.cluster}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Box>
+
+            <NamespacesSelect clusterContextName={cluster} handleGetNamespace={(value) => handleGetNamespace(value)} />
           </DialogContent>
 
           <DialogActions className='p-24 justify-between'>
