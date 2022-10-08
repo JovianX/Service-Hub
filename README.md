@@ -9,8 +9,10 @@
    
              Create X-as-a-Service on Kubernetes with Helm
 ```
-
+<div align="center">
 <table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">🤩 Star the project if you like it ⭐</a></td><td><a href="https://discord.gg/sAWBJxrh">💬 Join our Discord</a></td></tr></tbody></table>
+</div><br />
+
 
 ## 🌉 JovianX Service Hub for Kubernetes
 
