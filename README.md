@@ -10,11 +10,9 @@
              Create X-as-a-Service on Kubernetes with Helm
 ```
 
-<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">🤩 Star the project if you like it ⭐</a></td><td><a href="https://discord.gg/sAWBJxrh">💬 Join our Discord</a></td></tr></tbody></table>
-
-## 🌉 JovianX Service Hub for Kubernetes
-
 JovianX **Service Hub** is a Platform Engineering tool to create on-demand services using Helm and Kubernetes.
+
+<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">🤩 Star the project if you like it ⭐</a></td><td><a href="https://discord.gg/sAWBJxrh">💬 Join our Discord</a></td></tr></tbody></table>
 
 ## 🦄 Features:
 
@@ -76,8 +74,4 @@ Copyright 2022 JovianX Ltd.
 
 Licensed under GNU AFFERO GENERAL PUBLIC LICENSE(AGPL).
 
-
-<a href="https://jovianx.com">
-    <img src=https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png  height="50">
-</a>
-
+![](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png)
