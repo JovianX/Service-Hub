@@ -50,20 +50,37 @@ const navigationConfig = [
     url: 'repositories',
   },
   {
-    id: 'clusters-component',
-    title: 'Clusters',
-    translate: 'CLUSTERS',
+    id: 'templates-component',
+    title: 'Templates',
+    translate: 'TEMPLATES',
     type: 'item',
-    icon: 'heroicons-outline:collection',
-    url: 'clusters',
+    icon: 'heroicons-outline:template',
+    url: 'templates',
   },
   {
-    id: 'users-component',
-    title: 'Users',
-    translate: 'USERS',
-    type: 'item',
-    icon: 'heroicons-outline:users',
-    url: 'users',
+    id: 'settings-component',
+    title: 'Settings',
+    translate: 'SETTINGS',
+    type: 'group',
+    icon: 'heroicons-outline:cog',
+    children: [
+      {
+        id: 'clusters-component',
+        title: 'Clusters',
+        translate: 'CLUSTERS',
+        type: 'item',
+        icon: 'heroicons-outline:collection',
+        url: 'clusters',
+      },
+      {
+        id: 'users-component',
+        title: 'Users',
+        translate: 'USERS',
+        type: 'item',
+        icon: 'heroicons-outline:users',
+        url: 'users',
+      },
+    ]
   },
 ];
 

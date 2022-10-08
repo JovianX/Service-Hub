@@ -49,9 +49,10 @@ class TemplateManager:
         if enabled is None:
             enabled = False
         revision_number = 1
-        default = False
 
         parsed_template = load_template(template)
+        organization_templates = await self.list_templates(creator.organization)
+        default = len(organization_templates) < 1  # First organization template or not.
         last_revision = await self.get_last_revision(creator.organization, parsed_template.name)
         if last_revision:
             # Revision of existing template.
@@ -61,9 +62,6 @@ class TemplateManager:
                     status_code=status.HTTP_409_CONFLICT
                 )
             revision_number += last_revision.revision
-        else:
-            # First template upload.
-            default = True
 
         template_data = {
             'name': parsed_template.name,
