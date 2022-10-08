@@ -76,4 +76,6 @@ Copyright 2022 JovianX Ltd.
 
 Licensed under GNU AFFERO GENERAL PUBLIC LICENSE(AGPL).
 
-![](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png)
+![]( =250x)
+<img src="https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png" alt="JovianX" height="80"/>
+
