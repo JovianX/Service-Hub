@@ -6,6 +6,8 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
+from core.authentication import AuthorizedUser
+from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
 from managers.applications import ApplicationManager
 from managers.applications import get_application_manager
@@ -24,7 +26,11 @@ from ..schemas.applications import UserInputUpdateRequestSchema
 router = APIRouter()
 
 
-@router.post('/install', response_model=ApplicationInstallResponseSchema)
+@router.post(
+    '/install',
+    response_model=ApplicationInstallResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def install_application(
     body: InstallRequestBodySchema = Body(description='Application installation data'),
     user: User = Depends(current_active_user),
@@ -48,7 +54,11 @@ async def install_application(
     )
 
 
-@router.post('/{application_id}/upgrade', response_model=ApplicationUpgradeResponseSchema)
+@router.post(
+    '/{application_id}/upgrade',
+    response_model=ApplicationUpgradeResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def upgrade_application(
     application_id: int = Path(title='The ID of the application to upgrade'),
     body: UpgradeRequestSchema = Body(description='Application upgrage parameters'),
@@ -68,7 +78,11 @@ async def upgrade_application(
     return await application_manager.upgrade(application, template, body.dry_run)
 
 
-@router.post('/{application_id}/user-inputs', response_model=dict)
+@router.post(
+    '/{application_id}/user-inputs',
+    response_model=dict,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def update_user_inputs(
     application_id: int = Path(title='The ID of the application'),
     body: UserInputUpdateRequestSchema = Body(description='User inputs'),
@@ -83,7 +97,7 @@ async def update_user_inputs(
     return await application_manager.update_user_inputs(application, body.inputs, body.dry_run)
 
 
-@router.delete('/{application_id}')
+@router.delete('/{application_id}', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def uninstall_application(
     application_id: int = Path(title='The ID of the application to terminate'),
     user: User = Depends(current_active_user),
@@ -96,7 +110,11 @@ async def uninstall_application(
     await application_manager.terminate(application)
 
 
-@router.get('/list', response_model=list[ApplicationResponseSchema])
+@router.get(
+    '/list',
+    response_model=list[ApplicationResponseSchema],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def list_applications(
     user: User = Depends(current_active_user),
     application_manager: ApplicationManager = Depends(get_application_manager)
