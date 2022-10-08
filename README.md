@@ -71,7 +71,7 @@ inputs:                                      # optional
     default: 'jon'                           # optional  
 ```
 
-## License
+## 📜 License
 
 Copyright 2022 JovianX Ltd.
 
