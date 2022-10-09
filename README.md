@@ -12,9 +12,7 @@
 
 JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
-<div align='center'>
 <table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">🤩 Star the project if you like it ⭐</a></td><td><a href="https://discord.gg/sAWBJxrh">💬 Join our Discord</a></td></tr></tbody></table>
-</div>
 
 ## 🦄 Features:
 
@@ -35,21 +33,26 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 ## 👷 Installation
 
-### Docker Compose
+Clone the repo locally
 
-Get the docker-compose file
-
-```shell
-# curl https://raw.githubusercontent.com/JovianX/service-hub/main/docker-compose.yaml
+```
+git clone https://github.com/JovianX/service-hub.git
 ```
 
-Run the docker-compose file 
+Change directory(`cd`) to  `service-hub`
 
-```shell
-# docker-compose up
+```
+cd service-hub
 ```
 
-## 🤽‍♀️ Usage
+Start the project
+
+```
+make up
+```
+
+##   
+🤽‍♀️ Usage
 
 ### 🍱 Application template example:
 
@@ -76,6 +79,9 @@ Copyright 2022 JovianX Ltd.
 
 Licensed under GNU AFFERO GENERAL PUBLIC LICENSE(AGPL).
 
-![]( =250x)
-<img src="https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png" alt="JovianX" height="80"/>
+![](=250x)
 
+  
+ 
+
+![JovianX](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png)
