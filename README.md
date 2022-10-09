@@ -21,6 +21,8 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
     *   Helm Restful API - Full restful API for Helm
     *   Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
 
+![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
+
 ## 🚀 Roadmap - WIP
 
 *   **Application Templates**
@@ -35,24 +37,29 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 Clone the repo locally
 
-```
+```shell
 git clone https://github.com/JovianX/service-hub.git
 ```
 
 Change directory(`cd`) to  `service-hub`
 
-```
+```shell
 cd service-hub
 ```
 
 Start the project
 
-```
+```shell
 make up
 ```
 
-##   
-🤽‍♀️ Usage
+Open your browser and go to `localhost:3000` :
+
+```shell
+xdg-open 'http://localhost:3000'
+```
+
+### 🤽‍♀️ Usage
 
 ### 🍱 Application template example:
 
@@ -80,8 +87,5 @@ Copyright 2022 JovianX Ltd.
 Licensed under GNU AFFERO GENERAL PUBLIC LICENSE(AGPL).
 
 ![](=250x)
-
-  
- 
 
 ![JovianX](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png)
