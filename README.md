@@ -12,7 +12,7 @@
 
 JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
-<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">🤩 Star the project if you like it ⭐</a></td><td><a href="https://discord.gg/sAWBJxrh">💬 Join our Discord</a></td></tr></tbody></table>
+<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> ⭐ Star the project if you like it 🤩 </a></td><td><a href="https://discord.gg/sAWBJxrh">💬 Join our Discord</a></td></tr></tbody></table>
 
 ## 🦄 Features:
 
