@@ -63,7 +63,12 @@ Open your browser and go to `localhost:3000` :
 xdg-open 'http://localhost:3000'
 ```
 
-### 🤽‍♀️ Usage
+## 🤽‍♀️ Usage
+
+1.  Create your account and user
+    1.  HOW TO DOC
+2.  Connect to your Kubernetes clusters
+    1.  HOW TO DOC
 
 ### 🍱 Application template example:
 
