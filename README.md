@@ -41,7 +41,7 @@ Clone the repo locally
 git clone https://github.com/JovianX/service-hub.git
 ```
 
-Change directory(`cd`) to  `service-hub`
+Change directory to `service-hub`
 
 ```shell
 cd service-hub
