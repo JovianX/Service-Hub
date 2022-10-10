@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { applicationInstall } from 'app/store/applicationsSlice';
 
 import NamespacesSelect from './NamespacesSelect';
+import TemplatesSelect from './TemplatesSelect';
 
 const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration }) => {
   const dispatch = useDispatch();
@@ -54,7 +55,6 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration })
   };
 
   const handleSubmitInstall = async (e) => {
-    console.log(1);
     e.preventDefault();
     const { template_id, inputs, context_name } = e.target;
     const application = {
@@ -82,6 +82,7 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration })
           <DialogTitle className='bg-primary text-center text-white'>Create Application</DialogTitle>
           <DialogContent className='pb-0  overflow-y-hidden'>
             <div className='mt-24'>Create a new applicaion</div>
+            <TemplatesSelect />
             <Box sx={{ minWidth: 120 }}>
               <FormControl margin='normal' fullWidth required>
                 <InputLabel id='cluster'>Cluster</InputLabel>
@@ -102,7 +103,6 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration })
                 </Select>
               </FormControl>
             </Box>
-
             <NamespacesSelect clusterContextName={cluster} handleGetNamespace={(value) => handleGetNamespace(value)} />
           </DialogContent>
 
