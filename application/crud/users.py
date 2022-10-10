@@ -23,6 +23,11 @@ class UserDatabase(SQLAlchemyUserDatabase):
 
         return result.unique().scalars().all()
 
+    async def save(self, instance):
+        self.session.add(instance)
+        await self.session.commit()
+        await self.session.refresh(instance)
+
     def _apply_filter_parameters(self, query, **parameters: dict):
         """
         Helper to apply `where` filter parameters.

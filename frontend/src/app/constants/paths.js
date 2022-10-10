@@ -7,6 +7,7 @@ export const PATHS = {
   DASHBOARD: 'dashboard',
   RELEASES: 'releases',
   REPOSITORIES: 'repositories',
+  TEMPLATES: 'templates',
   SIGN_IN: 'sign-in',
   SIGN_UP: 'sign-up',
   SIGN_OUT: 'sign-out',

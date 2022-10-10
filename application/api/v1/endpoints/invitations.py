@@ -9,6 +9,7 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
+from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
 from managers.invitations import InvitationManager
 from managers.invitations import get_invitation_manager
@@ -16,7 +17,6 @@ from managers.users import UserManager
 from managers.users import get_user_manager
 from models.user import User
 from schemas.users import UserCreate
-from utils.email import send_email
 
 from ..schemas.invitations import CreateSchema
 from ..schemas.invitations import InvitationResponseSchema
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post('/', response_model=InvitationResponseSchema)
+@router.post('/', response_model=InvitationResponseSchema, dependencies=[Depends(AuthorizedUser())])
 async def create_invitation(
     data: CreateSchema = Body(description='Invitation data'),
     user: User = Depends(current_active_user),
@@ -47,7 +47,7 @@ async def create_invitation(
     return invitation_record
 
 
-@router.get('/list', response_model=list[InvitationResponseSchema])
+@router.get('/list', response_model=list[InvitationResponseSchema], dependencies=[Depends(AuthorizedUser())])
 async def list_invitations(
     user: User = Depends(current_active_user),
     invitation_manager: InvitationManager = Depends(get_invitation_manager)
@@ -58,7 +58,11 @@ async def list_invitations(
     return await invitation_manager.list_invitations(user.organization)
 
 
-@router.delete('/{invitation_id}', response_model=list[InvitationResponseSchema])
+@router.delete(
+    '/{invitation_id}',
+    response_model=list[InvitationResponseSchema],
+    dependencies=[Depends(AuthorizedUser())]
+)
 async def delete_invitaion(
     invitation_id: UUID = Path(title='The ID user invitation.'),
     user: User = Depends(current_active_user),
@@ -73,7 +77,7 @@ async def delete_invitaion(
     return await invitation_manager.list_invitations(user.organization)
 
 
-@router.post('/{invitation_id}/use')
+@router.post('/{invitation_id}/use', dependencies=[Depends(AuthorizedUser())])
 async def use_invitaion(
     invitation_id: UUID = Path(title='The ID user invitation.'),
     data: UseSchema = Body(description='User creation data'),
@@ -95,7 +99,7 @@ async def use_invitaion(
     await invitation_manager.use(invitation_record, new_user_record)
 
 
-@router.post('/{invitation_id}/send-email')
+@router.post('/{invitation_id}/send-email', dependencies=[Depends(AuthorizedUser())])
 async def send_invitation_email(
     invitation_id: UUID = Path(title='The ID user invitation.'),
     user: User = Depends(current_active_user),
@@ -106,3 +110,18 @@ async def send_invitation_email(
     """
     invitation_record = await invitation_manager.get_invitation(user.organization, invitation_id)
     await invitation_manager.send_email(invitation_record)
+
+
+@router.get('/{invitation_id}/invitation-link', response_model=str, dependencies=[Depends(AuthorizedUser())])
+async def get_user_invitation_link(
+    invitation_id: UUID = Path(title='The ID user invitation.'),
+    user: User = Depends(current_active_user),
+    invitation_manager: InvitationManager = Depends(get_invitation_manager)
+):
+    """
+    Returns user invitation link.
+    """
+    invitation_record = await invitation_manager.get_invitation(user.organization, invitation_id)
+    link = invitation_manager.get_invitation_link(invitation_record)
+
+    return link

@@ -1,8 +1,8 @@
 """
 Functionality responsible for handling users business logic.
 """
+import logging
 import uuid
-from typing import TYPE_CHECKING
 
 from fastapi import Depends
 from fastapi import Request
@@ -10,14 +10,19 @@ from fastapi_users import BaseUserManager
 from fastapi_users import UUIDIDMixin
 from fastapi_users import exceptions
 
+from constants.roles import Roles
 from core.configuration import settings
 from crud.users import UserDatabase
 from crud.users import get_user_db
+from exceptions.organization import DifferentOrganizationException
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
 from models.organization import Organization
 from models.user import User
 from schemas.users import UserCreate
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
@@ -145,19 +150,38 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         return user
 
     async def on_after_register(self, user: User, request: Request | None = None):
-        print(f'User {user.id} has registered.')
+        users = await self.user_db.list(organization_id=user.organization.id)
+        if len(users) > 1:
+            user.role = Roles.operator
+        else:
+            user.role = Roles.admin
+        await self.user_db.save(user)
 
     async def on_after_forgot_password(self, user: User, token: str, request: Request | None = None):
-        print(f'User {user.id} has forgot their password. Reset token: {token}')
+        pass
 
     async def on_after_request_verify(self, user: User, token: str, request: Request | None = None):
-        print(f'Verification requested for user {user.id}. Verification token: {token}')
+        pass
 
     async def organization_users(self, organization: Organization) -> list[User]:
         """
         Returns list of organization's users.
         """
         return await self.user_db.list(organization_id=organization.id)
+
+    async def set_user_role(self, setter: User, user: User, role: Roles) -> None:
+        """
+        Sets user role.
+        """
+        if setter.organization.id != user.organization.id:
+            logger.critical(
+                f'Attempt of alter entity of different organization. '
+                f'<User id={setter.id} organization={setter.organization.id}> tried to change role of '
+                f'<User id={user.id} organization={user.organization.id}> from "{user.role}" to "{role}".'
+            )
+            raise DifferentOrganizationException()
+        user.role = role
+        await self.user_db.save(user)
 
 
 async def get_user_manager(user_db=Depends(get_user_db), organization_manager=Depends(get_organization_manager)):

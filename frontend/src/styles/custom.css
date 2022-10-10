@@ -7,7 +7,7 @@
     height: 100%;
 }
 
-.monaco-editor.no-user-select.mac.showUnused.showDeprecated.hc-black {
+.monaco-editor.no-user-select {
     padding-top: 12px;
 }
 .customDatePickerWidth .MuiFormControl-root.MuiTextField-root.muiltr-1u3bzj6-MuiFormControl-root-MuiTextField-root{

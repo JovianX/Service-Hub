@@ -5,6 +5,7 @@ from fastapi import Path
 from fastapi import Query
 from pydantic import conlist
 
+from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
 from managers.helm.manager import HelmManager
 from managers.organizations.manager import OrganizationManager
@@ -23,7 +24,7 @@ from ..schemas.rules import ValuesToApplyResultResponceBodySchema
 router = APIRouter()
 
 
-@router.post('/', response_model=RuleResponseSchema)
+@router.post('/', response_model=RuleResponseSchema, dependencies=[Depends(AuthorizedUser())])
 async def create_rule(
     rule: RuleCreateBodySchema = Body(description='Rule create data'),
     user: User = Depends(current_active_user),
@@ -45,7 +46,7 @@ async def create_rule(
     return created_rule
 
 
-@router.get('/list', response_model=list[RuleResponseSchema])
+@router.get('/list', response_model=list[RuleResponseSchema], dependencies=[Depends(AuthorizedUser())])
 async def list_organization_rules(
     user: User = Depends(current_active_user),
     rule_manager: RuleManager = Depends(get_rule_manager)
@@ -59,7 +60,7 @@ async def list_organization_rules(
     return rules
 
 
-@router.patch('/{rule_id}', response_model=RuleResponseSchema)
+@router.patch('/{rule_id}', response_model=RuleResponseSchema, dependencies=[Depends(AuthorizedUser())])
 async def update_rule(
     rule_id: int = Path(title='The ID of the service to update'),
     rule_data: RuleUpdateBodySchema = Body(description='Rule update data'),
@@ -76,7 +77,7 @@ async def update_rule(
     )
 
 
-@router.post('/reorder', response_model=list[RuleResponseSchema])
+@router.post('/reorder', response_model=list[RuleResponseSchema], dependencies=[Depends(AuthorizedUser())])
 async def reorder_rules(
     identifiers: conlist(int, unique_items=True) = Body(description='List of rule IDs'),
     user: User = Depends(current_active_user),
@@ -88,7 +89,7 @@ async def reorder_rules(
     return await rule_manager.reorder_rules(user.organization, identifiers)
 
 
-@router.delete('/{rule_id}', response_model=list[RuleResponseSchema])
+@router.delete('/{rule_id}', response_model=list[RuleResponseSchema], dependencies=[Depends(AuthorizedUser())])
 async def delete_rule(
     rule_id: int = Path(title='The ID of the service to delete'),
     user: User = Depends(current_active_user),
@@ -101,7 +102,11 @@ async def delete_rule(
     return await rule_manager.delete_organization_rule(organization=organization, rule_id=rule_id)
 
 
-@router.get('/release-audit', response_model=ReleaseAuditResultResponceBodySchema)
+@router.get(
+    '/release-audit',
+    response_model=ReleaseAuditResultResponceBodySchema,
+    dependencies=[Depends(AuthorizedUser())]
+)
 async def audit_release(
     context_name: str = Query(alias='context-name', description='Name of context'),
     namespace: str = Query(description='Name space where release is located'),
@@ -129,7 +134,11 @@ async def audit_release(
     )
 
 
-@router.get('/values-to-apply', response_model=ValuesToApplyResultResponceBodySchema)
+@router.get(
+    '/values-to-apply',
+    response_model=ValuesToApplyResultResponceBodySchema,
+    dependencies=[Depends(AuthorizedUser())]
+)
 async def values_to_apply(
     context_name: str = Query(alias='context-name', description='Name of context'),
     namespace: str = Query(description='Name space where release is located'),
