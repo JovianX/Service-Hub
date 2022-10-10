@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getApplicationsList as getApplicationsListAPi, deleteApplication as deleteApplicationAPI } from '../api';
+import {
+  getApplicationsList as getApplicationsListAPi,
+  deleteApplication as deleteApplicationAPI,
+  applicationInstall as applicationInstallAPI,
+} from '../api';
 
 export const getApplicationsList = createAsyncThunk('applications/getApplicationsList', async () => {
   try {
@@ -15,11 +19,14 @@ export const getApplicationsList = createAsyncThunk('applications/getApplication
 
 export const applicationInstall = createAsyncThunk('applications/applicationInstall', async (application) => {
   try {
-    const response = await applicationInstall(application);
+    const response = await applicationInstallAPI(application);
     const { data } = response;
     return data;
   } catch (e) {
-    return e.response.data;
+    return {
+      status: 'error',
+      message: e.response.data.message,
+    };
   }
 });
 
@@ -28,12 +35,12 @@ export const deleteApplication = createAsyncThunk('applications/deleteApplicatio
     await deleteApplicationAPI(id);
     return {
       status: 'success',
-      text: 'Application was successfully removed',
+      message: 'Application was successfully removed',
     };
   } catch (e) {
     return {
       status: 'error',
-      text: e.response.data.message,
+      message: e.response.data.message,
     };
   }
 });

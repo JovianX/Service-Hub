@@ -8,6 +8,7 @@ import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { getApplicationsList, selectApplications, selectIsApplicationsLoading } from 'app/store/applicationsSlice';
 import { getContextList, selectContexts } from 'app/store/clustersSlice';
+import { getTemplatesList } from 'app/store/templatesSlice';
 
 import ApplicationDeleteDialogModal from './ApplicationDeleteDialogModal';
 import ApplicationsModal from './ApplicationsModal';
@@ -27,6 +28,7 @@ const ApplicationsTable = () => {
 
   useEffect(() => {
     dispatch(getApplicationsList());
+    dispatch(getTemplatesList());
   }, [dispatch]);
 
   useEffect(() => {
@@ -107,6 +109,7 @@ const ApplicationsTable = () => {
             openModal={openModal}
             setOpenModal={setOpenModal}
             kubernetesConfiguration={kubernetesConfiguration}
+            setApplications={setApplications}
           />
         </FuseScrollbars>
       </Paper>

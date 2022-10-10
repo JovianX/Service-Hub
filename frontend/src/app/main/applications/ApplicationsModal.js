@@ -20,7 +20,7 @@ import { applicationInstall } from 'app/store/applicationsSlice';
 import NamespacesSelect from './NamespacesSelect';
 import TemplatesSelect from './TemplatesSelect';
 
-const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration }) => {
+const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, setApplications }) => {
   const dispatch = useDispatch();
   const inputRef = useRef();
   const [open, setOpen] = useState(false);
@@ -29,6 +29,7 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration })
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [cluster, setCluster] = useState('');
   const [namespace, setNamespace] = useState('');
+  const [templateFormData, setTemplateFormData] = useState({});
 
   useEffect(() => {
     setCluster(kubernetesConfiguration[0]?.name);
@@ -41,30 +42,53 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration })
     }
   }, [openModal]);
 
-  const handleClickSaveButton = (e) => {
-    e.preventDefault();
+  const clearMessages = () => {
     setInfoMessageError('');
     setInfoMessageSuccess('');
-    setLoading(true);
-    inputRef.current.click();
+  };
+
+  const handleClickSaveButton = (e) => {
+    e.preventDefault();
+    clearMessages();
+    if (e.target.form) {
+      const { context_name } = e.target.form;
+      if (!context_name.value) {
+        setLoading(false);
+      }
+      setLoading(true);
+      inputRef.current.click();
+    }
+  };
+
+  const handleSubmitInstall = async (e) => {
+    e.preventDefault();
+    const { context_name } = e.target;
+    const application = {
+      template_id: templateFormData.id,
+      inputs: templateFormData.inputs_data,
+      context_name: context_name.value,
+      namespace,
+      dry_run: false,
+    };
+    const data = await dispatch(applicationInstall(application));
+
+    if (data.payload.status === 'error') {
+      setInfoMessageError(data.payload.message);
+    } else {
+      setInfoMessageSuccess('Application was successfully created');
+      setApplications((applications) => [...applications, data.payload.application]);
+    }
+    setLoading(false);
+    setTimeout(() => {
+      setOpen(false);
+      clearMessages();
+    }, 2000);
   };
 
   const handleClose = () => {
     setLoading(false);
     setOpen(false);
-  };
-
-  const handleSubmitInstall = async (e) => {
-    e.preventDefault();
-    const { template_id, inputs, context_name } = e.target;
-    const application = {
-      template_id,
-      inputs,
-      context_name,
-      namespace,
-      dry_run: false,
-    };
-    const data = await dispatch(applicationInstall(application));
+    clearMessages();
   };
 
   const handleChangeSelect = (e) => {
@@ -82,7 +106,7 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration })
           <DialogTitle className='bg-primary text-center text-white'>Create Application</DialogTitle>
           <DialogContent className='pb-0  overflow-y-hidden'>
             <div className='mt-24'>Create a new applicaion</div>
-            <TemplatesSelect />
+            <TemplatesSelect setTemplateFormData={setTemplateFormData} />
             <Box sx={{ minWidth: 120 }}>
               <FormControl margin='normal' fullWidth required>
                 <InputLabel id='cluster'>Cluster</InputLabel>
