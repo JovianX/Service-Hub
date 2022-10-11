@@ -1,17 +1,18 @@
 import { Checkbox, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import { Box } from '@mui/system';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { selectTemplates } from 'app/store/templatesSlice';
 
 const TemplatesSelect = ({ setTemplateFormData }) => {
+  const inputText = useRef();
   const [templates, setTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
   const [inputs, setInputs] = useState([]);
-
   const templatesData = useSelector(selectTemplates);
 
   useEffect(() => {
@@ -28,15 +29,37 @@ const TemplatesSelect = ({ setTemplateFormData }) => {
     if (template) {
       const { inputs } = template.parsed_template;
       setInputs(inputs);
-      setTemplateFormData({
-        id: templateId,
-        inputs_data: { [inputs[0].name]: inputs[0].default },
-      });
     }
   }, [templateId]);
 
+  useEffect(() => {
+    if (inputs.length) {
+      const obj = {};
+      inputs.map((item) => (obj[item.name] = item.default));
+      setTemplateFormData(obj);
+    }
+  }, [inputs]);
+
   const handleChangeSelect = (e) => {
     setTemplateId(e.target.value);
+  };
+
+  const onChangeInputs = (item) => {
+    let newItem = {};
+    if (item.type === 'checkbox') {
+      newItem = { ...item, default: !item.default };
+    }
+    if (item.type === 'string') {
+      newItem = { ...item, default: inputText.current.value };
+    }
+
+    setInputs((input) => {
+      return [
+        ...inputs.slice(0, inputs.indexOf(item)),
+        newItem,
+        ...inputs.slice(inputs.indexOf(item) + 1, inputs.length),
+      ];
+    });
   };
 
   return (
@@ -61,12 +84,13 @@ const TemplatesSelect = ({ setTemplateFormData }) => {
         </FormControl>
       </Box>
 
-      {inputs?.map((item) => {
+      {inputs?.map((item, index) => {
         if (item.type === 'string') {
           return (
             <TextField
+              inputRef={inputText}
               key={item.name}
-              name='inputs'
+              name='text'
               type='text'
               required
               id='outlined-required'
@@ -74,36 +98,32 @@ const TemplatesSelect = ({ setTemplateFormData }) => {
               margin='normal'
               fullWidth
               value={item.default}
+              onChange={() => onChangeInputs(item)}
             />
           );
         }
         if (item.type === 'checkbox') {
           return (
-            <Box>
-              <Checkbox defaultChecked />
+            <Box key={item.name}>
+              <FormControlLabel
+                name='checkbox'
+                control={<Checkbox checked={item.default} />}
+                label={item.label}
+                labelPlacement='end'
+                onChange={() => onChangeInputs(item)}
+              />
             </Box>
           );
         }
         if (item.type === 'switch') {
           return (
-            <Box>
+            <Box key={item.name}>
               <Switch defaultChecked />
             </Box>
           );
         }
         if (item.type === 'select') {
-          return (
-            <TextField
-              name='inputs'
-              type='text'
-              required
-              id='outlined-required'
-              label={item.label}
-              margin='normal'
-              fullWidth
-              value={item.default}
-            />
-          );
+          return <TextField />;
         }
       })}
     </>

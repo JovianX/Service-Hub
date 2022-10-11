@@ -10,7 +10,7 @@ const ApplicationDeleteDialogModal = ({ options, setApplications, setOpenDeleteM
 
   const handleDeleteApplication = async (id) => {
     await dispatch(deleteApplication(id)).then((res) => {
-      setApplications((applications) => ({ ...applications.filter((item) => item.id !== id) }));
+      setApplications((applications) => [...applications.filter((item) => item.id !== id)]);
       setOpenDeleteModal(false);
     });
   };

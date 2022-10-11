@@ -62,10 +62,10 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, s
 
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
-    const { context_name } = e.target;
+    const { context_name, template_id } = e.target;
     const application = {
-      template_id: templateFormData.id,
-      inputs: templateFormData.inputs_data,
+      template_id: template_id.value,
+      inputs: templateFormData,
       context_name: context_name.value,
       namespace,
       dry_run: false,
