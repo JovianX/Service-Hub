@@ -94,6 +94,8 @@ class BaseRolePermission(BasePermission):
     def authorize(cls, request: Request) -> bool:
         if request is None:
             raise ValueError(f'{__class__.__name__}: no request was provided during authorization.')
+        if 'authorization' not in request.headers:
+            raise ValueError(f'{__class__.__name__}: unable to authorize user, no "authorization" header in request.')
         jwt_strategy = get_jwt_strategy()
         token = request.headers['authorization'][7:]
         token_data = jwt_strategy.extract_token_data(token) or {}

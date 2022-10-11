@@ -1,16 +1,22 @@
 """
 Templates endpoints
 """
+import json
+
+import yaml
 from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
+from fastapi import Query
 
+from constants.base_enum import StrEnum
 from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
 from managers.templates import TemplateManager
 from managers.templates import get_template_manager
 from models.user import User
+from schemas.templates import TemplateSchema
 from utils.template import render_template
 from utils.template import validate_inputs
 
@@ -20,6 +26,11 @@ from ..schemas.templates import TemplateUpdateBodySchema
 
 
 router = APIRouter()
+
+
+class TemplateSchemaFormats(StrEnum):
+    json = 'json'
+    yaml = 'yaml'
 
 
 @router.post('/', response_model=TemplateResponseBodySchema, dependencies=[Depends(AuthorizedUser())])
@@ -50,6 +61,22 @@ async def list_organization_templates(
     Returns organization's templates.
     """
     return await template_manager.list_templates(organization=user.organization)
+
+
+@router.get('/schema', response_model=str)
+async def template_schema(
+    format: TemplateSchemaFormats = Query(title='Format of returned data.', default=TemplateSchemaFormats.json),
+):
+    """
+    Returns template schema.
+    """
+    schema = TemplateSchema.schema()
+    if format == TemplateSchemaFormats.json:
+        rendered_schema = json.dumps(schema)
+    elif format == TemplateSchemaFormats.yaml:
+        rendered_schema = yaml.dump(schema)
+
+    return rendered_schema
 
 
 @router.post('/{template_id}/render', response_model=str, dependencies=[Depends(AuthorizedUser())])
