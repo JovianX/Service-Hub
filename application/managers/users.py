@@ -15,8 +15,11 @@ from core.configuration import settings
 from crud.users import UserDatabase
 from crud.users import get_user_db
 from exceptions.organization import DifferentOrganizationException
+from managers.invitations import InvitationManager
+from managers.invitations import get_invitation_manager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
+from models.invitation import UserInvitation
 from models.organization import Organization
 from models.user import User
 from schemas.users import UserCreate
@@ -28,9 +31,13 @@ logger = logging.getLogger(__name__)
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = settings.SECRET
     verification_token_secret = settings.SECRET
+    invitation_record: UserInvitation | None = None
 
-    def __init__(self, user_db: UserDatabase, organizations: OrganizationManager):
+    def __init__(
+        self, user_db: UserDatabase, organizations: OrganizationManager, invitation_manager: InvitationManager
+    ):
         self.organizations = organizations
+        self.invitation_manager = invitation_manager
         super().__init__(user_db)
 
     async def create(self, user_create: UserCreate, safe: bool = False, request: Request | None = None) -> User:
@@ -58,11 +65,9 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             if safe
             else user_create.create_update_dict_superuser()
         )
+        await self.on_before_register(user_dict, request)
         password = user_dict.pop('password')
         user_dict['hashed_password'] = self.password_helper.hash(password)
-        if not user_dict.get('organization_id'):
-            organization = await self.organizations.create()
-            user_dict['organization_id'] = organization.id
         created_user = await self.user_db.create(user_dict)
 
         await self.on_after_register(created_user, request)
@@ -127,12 +132,11 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             except exceptions.UserNotExists:
                 # Create account
                 password = self.password_helper.generate()
-                organization = await self.organizations.create()
                 user_dict = {
                     'email': account_email,
-                    'hashed_password': self.password_helper.hash(password),
-                    'organization_id': organization.id
+                    'hashed_password': self.password_helper.hash(password)
                 }
+                await self.on_before_register(user_dict, request)
                 user = await self.user_db.create(user_dict)
                 user = await self.user_db.add_oauth_account(user, oauth_account_dict)
                 await self.on_after_register(user, request)
@@ -149,6 +153,19 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
         return user
 
+    async def on_before_register(self, user: dict, request: Request | None = None):
+        organization: Organization | None = None
+        invitation_id = request.query_params.get('invitation')
+        if invitation_id:
+            self.invitation_record = await self.invitation_manager.get_invitation_by_id(invitation_id)
+            self.invitation_manager.is_valid(self.invitation_record)
+            organization = self.invitation_record.organization
+
+        if organization is None:
+            organization = await self.organizations.create()
+
+        user['organization_id'] = organization.id
+
     async def on_after_register(self, user: User, request: Request | None = None):
         users = await self.user_db.list(organization_id=user.organization.id)
         if len(users) > 1:
@@ -156,6 +173,9 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         else:
             user.role = Roles.admin
         await self.user_db.save(user)
+
+        if self.invitation_record:
+            await self.invitation_manager.use(self.invitation_record, user)
 
     async def on_after_forgot_password(self, user: User, token: str, request: Request | None = None):
         pass
@@ -184,5 +204,9 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         await self.user_db.save(user)
 
 
-async def get_user_manager(user_db=Depends(get_user_db), organization_manager=Depends(get_organization_manager)):
-    yield UserManager(user_db, organization_manager)
+async def get_user_manager(
+    user_db=Depends(get_user_db),
+    organization_manager=Depends(get_organization_manager),
+    invitation_manager=Depends(get_invitation_manager)
+):
+    yield UserManager(user_db, organization_manager, invitation_manager)
