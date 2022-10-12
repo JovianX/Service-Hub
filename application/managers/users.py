@@ -155,7 +155,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
     async def on_before_register(self, user: dict, request: Request | None = None):
         organization: Organization | None = None
-        invitation_id = request.query_params.get('invitation')
+        invitation_id = request.query_params.get('invite_id')
         if invitation_id:
             self.invitation_record = await self.invitation_manager.get_invitation_by_id(invitation_id)
             self.invitation_manager.is_valid(self.invitation_record)

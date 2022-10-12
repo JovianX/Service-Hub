@@ -49,7 +49,7 @@ const SignInPage = () => {
 
     const authCode = url.searchParams.get('code');
     const state = url.searchParams.get('state');
-    const invitationId = url.searchParams.get('invitation');
+    const inviteId = url.searchParams.get('invite_id');
 
     if (authCode) {
       setIsLoading(true);
@@ -58,7 +58,7 @@ const SignInPage = () => {
 
       const requestData = {
         code: authCode,
-        invitation: invitationId,
+        invite_id: inviteId,
         state,
       };
 

@@ -13,14 +13,10 @@ from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
 from managers.invitations import InvitationManager
 from managers.invitations import get_invitation_manager
-from managers.users import UserManager
-from managers.users import get_user_manager
 from models.user import User
-from schemas.users import UserCreate
 
 from ..schemas.invitations import CreateSchema
 from ..schemas.invitations import InvitationResponseSchema
-from ..schemas.invitations import UseSchema
 
 
 logger = logging.getLogger(__name__)
