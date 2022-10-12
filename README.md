@@ -96,11 +96,13 @@ inputs:                                      # optional
     - name: option_a
       label: 'Option A'
     - name: option_b
-      label: 'Option B'    
+      label: 'Option B'
+      
   - name: switch_example
     type: switch
     label: 'Toggle this off or on'
     default: 'true' # or 'false'
+    
   - name: checkbox_example
     type: checkbox
     label: 'Enable or disable this'
