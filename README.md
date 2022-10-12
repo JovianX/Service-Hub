@@ -100,12 +100,11 @@ inputs:                                      # optional
   - name: switch_example
     type: switch
     label: 'Toggle this off or on'
-    default: 'on' # or 'off'
+    default: 'true' # or 'false'
   - name: checkbox_example
     type: checkbox
     label: 'Enable or disable this'
     default: 'true' # or 'false'
-
 ```
 
 ## 📜 License
