@@ -8,9 +8,13 @@ from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
+from fastapi import status
 
+from constants.invitations import InvitationStatuses
 from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
+from exceptions.common import CommonException
+from exceptions.db import RecordNotFoundException
 from managers.invitations import InvitationManager
 from managers.invitations import get_invitation_manager
 from models.user import User
@@ -52,6 +56,23 @@ async def list_invitations(
     Lists organization's user invitations.
     """
     return await invitation_manager.list_invitations(user.organization)
+
+
+@router.get('/{invitation_id}/email', response_model=str)
+async def get_invited_user_email(
+    invitation_id: UUID = Path(title='The ID user invitation.'),
+    invitation_manager: InvitationManager = Depends(get_invitation_manager)
+):
+    """
+    Returns email of invited user.
+    """
+    try:
+        invitation_record = await invitation_manager.get_invitation(invitation_id, status=InvitationStatuses.pending)
+    except RecordNotFoundException:
+        # Erasing details from error message.
+        raise CommonException('Invitation not found', status_code=status.HTTP_404_NOT_FOUND)
+
+    return invitation_record.email
 
 
 @router.delete(
