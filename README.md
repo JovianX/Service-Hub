@@ -84,9 +84,14 @@ charts:                                      # required
 
 inputs:                                      # optional
   - name: username                           # required
-    type: string                             # required, Options: string, select, checkbox
+    type: text                             # required, Options: string, select, checkbox
     label: 'User Name'                       # optional
     default: 'jon'                           # optional  
+
+  - name: bio
+    type: textarea
+    label: 'Short Bio'
+    default: 'This is a short bio for Jon'
 
   - name: options_example
     type: select
