@@ -130,7 +130,7 @@ class InvitationManager:
         """
         Returns link clicking on which user can finish registration.
         """
-        return f'http://localhost:8000/api/v1/invitation/{invitation.id}/use'
+        return f'http://{settings.UI_HOST}/sign-up?invite_id={invitation.id}'
 
 
 async def get_invitation_manager(db=Depends(get_invitation_db)):
