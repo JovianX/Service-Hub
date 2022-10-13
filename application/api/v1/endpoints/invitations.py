@@ -67,7 +67,10 @@ async def get_invited_user_email(
     Returns email of invited user.
     """
     try:
-        invitation_record = await invitation_manager.get_invitation(invitation_id, status=InvitationStatuses.pending)
+        invitation_record = await invitation_manager.get_invitation_by_id(
+            invitation_id,
+            status=InvitationStatuses.pending
+        )
     except RecordNotFoundException:
         # Erasing details from error message.
         raise CommonException('Invitation not found', status_code=status.HTTP_404_NOT_FOUND)

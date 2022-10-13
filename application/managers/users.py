@@ -157,7 +157,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         organization: Organization | None = None
         invitation_id = request.query_params.get('invite_id')
         if invitation_id:
-            self.invitation_record = await self.invitation_manager.get_invitation(invitation_id)
+            self.invitation_record = await self.invitation_manager.get_invitation_by_id(invitation_id)
             self.invitation_manager.is_valid(self.invitation_record)
             organization = self.invitation_record.organization
 
