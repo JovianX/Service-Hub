@@ -76,7 +76,6 @@ class JwtService extends FuseUtils.EventEmitter {
 
   signInWithGithub = async () => {
     const response = await axios.get(jwtServiceConfig.signInWithGithub);
-
     if (response?.data?.authorization_url) {
       return response?.data?.authorization_url;
     }
@@ -87,11 +86,10 @@ class JwtService extends FuseUtils.EventEmitter {
     const response = await axios.get(jwtServiceConfig.getTokenWithGithubCode, {
       params,
     });
-
     if (response?.data?.access_token) {
       this.setSession(response.data.access_token);
-
       this.emit('onLogin');
+      localStorage.removeItem('inviteId');
     } else {
       throw new Error(response.data.error);
     }

@@ -19,12 +19,6 @@ import { getInvitedUserEmail } from 'app/store/invitationsSlice';
 import history from '../../../@history/@history';
 import jwtService from '../../auth/services/jwtService';
 
-const defaultValues = {
-  email: '',
-  password: '',
-  passwordConfirm: '',
-};
-
 const schema = yup.object().shape({
   email: yup.string().email('You must enter a valid email').required('You must enter a email'),
   password: yup
@@ -37,7 +31,14 @@ const schema = yup.object().shape({
 function SignUpPage() {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+  const inviteId = searchParams.get('invite_id');
   const [invitedEmail, setInvitedEmail] = useState('');
+
+  const defaultValues = {
+    email: invitedEmail,
+    password: '',
+    passwordConfirm: '',
+  };
 
   const { control, formState, handleSubmit, setError } = useForm({
     mode: 'onChange',
@@ -46,7 +47,6 @@ function SignUpPage() {
   });
 
   useEffect(() => {
-    const inviteId = searchParams.get('invite_id');
     if (inviteId) {
       const fetchData = async () => {
         const data = await dispatch(getInvitedUserEmail(inviteId));
@@ -79,6 +79,9 @@ function SignUpPage() {
   const onGithubSignUp = async () => {
     try {
       const url = await jwtService.signInWithGithub();
+      if (inviteId) {
+        localStorage.setItem('inviteId', inviteId);
+      }
       history.push(url);
     } catch (errors) {
       setError('email', {
