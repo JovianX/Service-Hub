@@ -6,8 +6,20 @@ from .base_enum import StrEnum
 
 class InputTypes(StrEnum):
     """
-    Template user input types.
+    Template user input form widget types.
     """
-    string = 'string'
-    select = 'select'
     checkbox = 'checkbox'
+    number = 'number'
+    radio_select = 'radio_select'
+    select = 'select'
+    slider = 'slider'
+    switch = 'switch'
+    text = 'text'
+    textarea = 'textarea'
+
+
+class ComponentTypes(StrEnum):
+    """
+    Template application components types.
+    """
+    helm_chart = 'helm_chart'
