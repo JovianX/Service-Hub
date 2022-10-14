@@ -73,11 +73,11 @@ class InvitationManager:
         """
         return await self.db.list(organization_id=organization.id)
 
-    async def delete_invitation(self, invitation: UserInvitation) -> None:
+    async def delete_invitation(self, invitation: UserInvitation, force: bool = False) -> None:
         """
         Deletes invitation.
         """
-        if invitation.status == InvitationStatuses.used:
+        if invitation.status == InvitationStatuses.used and not force:
             raise CommonException(
                 'Invitation was used and cannot be deleted',
                 status_code=status.HTTP_403_FORBIDDEN

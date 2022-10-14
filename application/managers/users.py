@@ -189,6 +189,10 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         """
         return await self.user_db.list(organization_id=organization.id)
 
+    async def on_before_delete(self, user: User, request: Request | None = None) -> None:
+        await self.user_db.delete_oauth_account(user)
+        await self.invitation_manager.delete_invitation(user.invitation, force=True)
+
     async def set_user_role(self, setter: User, user: User, role: Roles) -> None:
         """
         Sets user role.
