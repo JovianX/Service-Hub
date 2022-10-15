@@ -112,7 +112,13 @@ inputs:                                      # optional
     type: checkbox
     label: 'Enable or disable this'
     default: 'true' # or 'false'
+    
+    
 ```
+
+## Documentation
+
+For product documentation refer to the [Documentation Folder](documentation/README.md).
 
 ## 📜 License
 
