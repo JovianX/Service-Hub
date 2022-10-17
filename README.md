@@ -35,7 +35,7 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 ## 👷 Installation
 
-<table><tbody><tr><td>👉🌎 Service-Hub SaaS at <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a></td></tr></tbody></table>
+<table><tbody><tr><td>🌎 Service-Hub SaaS at👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a></td></tr></tbody></table>
 
 ### OR
 
@@ -197,7 +197,12 @@ inputs:                                         # Optional. User input list.
     min: 1                                      # Optional. Minimal value.
     max: 10                                     # Optional. Maximal value.
     default: 5
+
 ```
+
+## Documentation
+
+For product documentation refer to the [Documentation Folder](documentation/README.md).
 
 ## 📜 License
 
