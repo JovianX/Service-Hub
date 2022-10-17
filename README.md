@@ -94,12 +94,12 @@ components:                                     # Required. Application componen
     version: 17.0.6                             # Optional. Chart version to install.
     values:                                     # Optional. Helm chart values to install/update.
       - db:
-          username: {{ inputs.username }}       # Example of usage dynamic tempalte variables.
+          username: {{ inputs.text_example }}   # Example of usage dynamic tempalte variables.
 
 # List of user inputs. These inputs allow collect data from user before
 # application launch.
 # Each input must have unique name. That name is used in dynamic template
-# variables, `{{ inputs.username }}` for instance.
+# variables, `{{ inputs.text_example }}` for instance.
 # Available next inputs types:
 #     Boolean:
 #     Inputs that handling boolean values.
@@ -136,7 +136,7 @@ components:                                     # Required. Application componen
 #             Input with textarea widget. Suitable for long multi-line string,
 #             some description for example.
 inputs:                                         # Optional. User input list.
-  - name: text_example                              # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
+  - name: text_example                          # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
     type: text                                  # Required. Input type.
     label: 'User Name'                          # Optional. User friendly short input title.
     default: 'John Connor'                      # Optional. Default input value. Used if was no input from user.
