@@ -35,16 +35,25 @@ function SignUpPage() {
   const [invitedEmail, setInvitedEmail] = useState('');
 
   const defaultValues = {
-    email: invitedEmail,
+    email: '',
     password: '',
     passwordConfirm: '',
   };
 
-  const { control, formState, handleSubmit, setError } = useForm({
+  const { control, formState, handleSubmit, setError, setValue } = useForm({
     mode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    if (invitedEmail) {
+      setValue('email', invitedEmail, {
+        shouldValidate: false,
+        shouldDirty: false,
+      });
+    }
+  }, [invitedEmail]);
 
   useEffect(() => {
     if (inviteId) {
@@ -60,7 +69,7 @@ function SignUpPage() {
 
   const onSubmit = async ({ password, email }) => {
     try {
-      await jwtService.createUser({
+      await jwtService.createUser(inviteId || '', {
         password,
         email,
       });
@@ -125,7 +134,7 @@ function SignUpPage() {
                   variant='outlined'
                   required
                   fullWidth
-                  value={invitedEmail}
+                  disabled={!!invitedEmail}
                 />
               )}
             />

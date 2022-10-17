@@ -50,8 +50,11 @@ class JwtService extends FuseUtils.EventEmitter {
     }
   };
 
-  createUser = async (data) => {
-    await axios.post(jwtServiceConfig.signUp, data);
+  createUser = async (id, data) => {
+    const response = await axios.post(jwtServiceConfig.signUp(id), data);
+    if (response.data?.id) {
+      localStorage.removeItem('inviteId');
+    }
   };
 
   getUserData = async () => {
