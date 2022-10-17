@@ -1,5 +1,5 @@
 .ONESHELL:
-.PHONY: help setup setup_helm setup_kubectl db_synchronization db_revision up down serve logs db_shell run format tests
+.PHONY: help setup setup_helm setup_kubectl setup_fe db_synchronization db_revision up down serve_be serve_fe logs db_shell run format tests
 
 include .env
 export
