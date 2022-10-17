@@ -72,6 +72,8 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, s
     };
     const data = await dispatch(applicationInstall(application));
 
+    setLoading(false);
+
     if (data.payload.status === 'error') {
       setInfoMessageError(data.payload.message);
     } else {

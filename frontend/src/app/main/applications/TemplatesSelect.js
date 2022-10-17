@@ -1,15 +1,17 @@
 import { Checkbox, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import { Box } from '@mui/system';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { selectTemplates } from 'app/store/templatesSlice';
 
 const TemplatesSelect = ({ setTemplateFormData }) => {
-  const inputText = useRef();
   const [templates, setTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
   const [inputs, setInputs] = useState([]);
@@ -44,13 +46,25 @@ const TemplatesSelect = ({ setTemplateFormData }) => {
     setTemplateId(e.target.value);
   };
 
-  const onChangeInputs = (item) => {
+  const onChangeInputs = (e, item) => {
     let newItem = {};
-    if (item.type === 'checkbox') {
+    if (item.type === 'text') {
+      newItem = { ...item, default: e.target.value };
+    }
+    if (item.type === 'textarea') {
+      newItem = { ...item, default: e.target.value };
+    }
+    if (item.type === 'select') {
+      newItem = { ...item, default: e.target.value };
+    }
+    if (item.type === 'radio_select') {
+      newItem = { ...item, default: e.target.value };
+    }
+    if (item.type === 'switch') {
       newItem = { ...item, default: !item.default };
     }
-    if (item.type === 'string') {
-      newItem = { ...item, default: inputText.current.value };
+    if (item.type === 'checkbox') {
+      newItem = { ...item, default: !item.default };
     }
 
     setInputs((input) => {
@@ -85,45 +99,107 @@ const TemplatesSelect = ({ setTemplateFormData }) => {
       </Box>
 
       {inputs?.map((item, index) => {
-        if (item.type === 'string') {
+        if (item.type === 'text') {
           return (
             <TextField
-              inputRef={inputText}
               key={item.name}
-              name='text'
+              margin='normal'
               type='text'
               required
-              id='outlined-required'
               label={item.label}
-              margin='normal'
               fullWidth
               value={item.default}
-              onChange={() => onChangeInputs(item)}
+              onChange={(e) => onChangeInputs(e, item)}
             />
+          );
+        }
+        if (item.type === 'textarea') {
+          return (
+            <TextField
+              key={item.name}
+              label={item.label}
+              margin='normal'
+              required
+              multiline
+              rows={2}
+              value={item.default}
+              fullWidth
+              onChange={(e) => onChangeInputs(e, item)}
+            />
+          );
+        }
+        if (item.type === 'select') {
+          return (
+            <Box key={item.name}>
+              <FormControl margin='normal' fullWidth required>
+                <InputLabel id='select'>{item.label}</InputLabel>
+                <Select
+                  labelId='select'
+                  value={item.default ?? ''}
+                  required
+                  label={item.label}
+                  onChange={(e) => onChangeInputs(e, item)}
+                >
+                  {item?.options.length &&
+                    item?.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Box>
+          );
+        }
+
+        if (item.type === 'radio_select') {
+          return (
+            <Box key={item.name}>
+              <FormControl margin='normal'>
+                <FormLabel id='demo-row-radio-buttons-group-label'>{item.label}</FormLabel>
+                <RadioGroup row aria-labelledby='demo-row-radio-buttons-group-label' name='row-radio-buttons-group'>
+                  {item?.options.length &&
+                    item?.options.map((radio) => (
+                      <FormControlLabel
+                        key={radio.value}
+                        value={radio.value}
+                        control={<Radio />}
+                        label={radio.label}
+                        onChange={(e) => onChangeInputs(e, item)}
+                      />
+                    ))}
+                </RadioGroup>
+              </FormControl>
+            </Box>
+          );
+        }
+
+        if (item.type === 'switch') {
+          return (
+            <Box key={item.name}>
+              <FormControl margin='normal'>
+                <FormControlLabel
+                  control={<Switch checked={item.default} />}
+                  label={item.label}
+                  onChange={(e) => onChangeInputs(e, item)}
+                />
+              </FormControl>
+            </Box>
           );
         }
         if (item.type === 'checkbox') {
           return (
             <Box key={item.name}>
-              <FormControlLabel
-                name='checkbox'
-                control={<Checkbox checked={item.default} />}
-                label={item.label}
-                labelPlacement='end'
-                onChange={() => onChangeInputs(item)}
-              />
+              <FormControl margin='normal'>
+                <FormControlLabel
+                  control={<Checkbox checked={item.default} />}
+                  label={item.label}
+                  labelPlacement='end'
+                  onChange={(e) => onChangeInputs(e, item)}
+                />
+              </FormControl>
             </Box>
           );
-        }
-        if (item.type === 'switch') {
-          return (
-            <Box key={item.name}>
-              <Switch defaultChecked />
-            </Box>
-          );
-        }
-        if (item.type === 'select') {
-          return <TextField />;
         }
       })}
     </>

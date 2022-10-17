@@ -23,9 +23,15 @@ export const applicationInstall = createAsyncThunk('applications/applicationInst
     const { data } = response;
     return data;
   } catch (e) {
+    if (e?.response.data.message) {
+      return {
+        status: 'error',
+        message: e.response.data.message,
+      };
+    }
     return {
       status: 'error',
-      message: e.response.data.message,
+      message: 'Failed to install the application',
     };
   }
 });
