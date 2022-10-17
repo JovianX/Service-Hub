@@ -48,7 +48,7 @@ class ApplicationManager:
 
         results = {}
         try:
-            for index, chart in enumerate(manifest_schema.charts):
+            for index, chart in enumerate(manifest_schema.components):
                 results[chart.name] = await self.helm_manager.install_chart(
                     organization=user.organization,
                     context_name=context_name,
@@ -65,7 +65,7 @@ class ApplicationManager:
                     f'Application installation failed. Failed to install Helm chart "{chart.chart}". '
                     f'<Organization: id={user.organization.id}> <Template: id={template.id}>'
                 )
-                for chart in reversed(manifest_schema.charts[:index]):
+                for chart in reversed(manifest_schema.components[:index]):
                     try:
                         await self.helm_manager.uninstall_release(
                             organization=user.organization,
@@ -116,14 +116,16 @@ class ApplicationManager:
         new_template_schema = load_template(rendered_template)
         old_template_schema = load_template(application.manifest)
 
-        charts_to_install = new_template_schema.chart_mapping.keys() - old_template_schema.chart_mapping.keys()
-        releases_to_remove = old_template_schema.chart_mapping.keys() - new_template_schema.chart_mapping.keys()
-        releases_to_update = old_template_schema.chart_mapping.keys() & new_template_schema.chart_mapping.keys()
+        new_components_names = new_template_schema.components_mapping.keys()
+        old_components_names = old_template_schema.components_mapping.keys()
+        charts_to_install = new_components_names - old_components_names
+        releases_to_remove = old_components_names - new_components_names
+        releases_to_update = old_components_names & new_components_names
 
         install_results = {}
         installed_charts = []
         for release_name in charts_to_install:
-            chart = new_template_schema.chart_mapping[release_name]
+            chart = new_template_schema.components_mapping[release_name]
             try:
                 install_results[chart.name] = await self.helm_manager.install_chart(
                     organization=application.organization,
@@ -161,7 +163,7 @@ class ApplicationManager:
 
         update_results = {}
         for release_name in releases_to_update:
-            chart = new_template_schema.chart_mapping[release_name]
+            chart = new_template_schema.components_mapping[release_name]
             update_results[release_name] = await self.helm_manager.update_release(
                 organization=application.organization,
                 context_name=application.context_name,
@@ -173,7 +175,7 @@ class ApplicationManager:
             )
 
         for release_name in releases_to_remove:
-            chart = old_template_schema.chart_mapping[release_name]
+            chart = old_template_schema.components_mapping[release_name]
             try:
                 await self.helm_manager.uninstall_release(
                     organization=application.organization,
@@ -227,7 +229,9 @@ class ApplicationManager:
         new_template_schema = load_template(new_manifes)
 
         # Ensuring that charts critical parts of chart specification wasn't changed.
-        absent_release_names = old_template_schema.chart_mapping.keys() - new_template_schema.chart_mapping.keys()
+        old_components_names = old_template_schema.components_mapping.keys()
+        new_components_names = new_template_schema.components_mapping.keys()
+        absent_release_names = old_components_names - new_components_names
         if absent_release_names:
             CommonException(
                 f'Failed to update user inputs. Unable to find charts with release names '
@@ -236,7 +240,7 @@ class ApplicationManager:
             )
 
         update_results = {}
-        for release_name, chart in new_template_schema.chart_mapping.items():
+        for release_name, chart in new_template_schema.components_mapping.items():
             update_results[release_name] = await self.helm_manager.update_release(
                 organization=application.organization,
                 context_name=application.context_name,
@@ -258,7 +262,7 @@ class ApplicationManager:
         Terminates application. Removes all resources related with application.
         """
         manifest_schema = load_template(application.manifest)
-        for chart in manifest_schema.charts:
+        for chart in manifest_schema.components:
             try:
                 await self.helm_manager.uninstall_release(
                     organization=application.organization,
