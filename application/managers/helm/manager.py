@@ -105,6 +105,16 @@ class HelmManager:
                 await helm_service.repository.update()
                 return await helm_service.search.repositories()
 
+    async def chart_defaults(self, organization: Organization, chart_name: str) -> str:
+        """
+        Returns default chart values(content of values.yaml file).
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                await helm_service.repository.update()
+                return await helm_service.show.values(chart_name)
+
     ############################################################################
     # Releases
     ############################################################################
