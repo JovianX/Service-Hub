@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { applicationInstall } from 'app/store/applicationsSlice';
 
 import NamespacesSelect from './NamespacesSelect';
-import TemplatesSelect from './TemplatesSelect';
+import TemplateInputs from './TemplateInputs/TemplateInputs';
 
 const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, setApplications }) => {
   const dispatch = useDispatch();
@@ -50,18 +50,12 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, s
   const handleClickSaveButton = (e) => {
     e.preventDefault();
     clearMessages();
-    if (e.target.form) {
-      const { context_name } = e.target.form;
-      if (!context_name.value) {
-        setLoading(false);
-      }
-      setLoading(true);
-      inputRef.current.click();
-    }
+    inputRef.current.click();
   };
 
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const { context_name, template_id } = e.target;
     const application = {
       template_id: template_id.value,
@@ -72,19 +66,17 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, s
     };
     const data = await dispatch(applicationInstall(application));
 
-    setLoading(false);
-
     if (data.payload.status === 'error') {
       setInfoMessageError(data.payload.message);
     } else {
       setInfoMessageSuccess('Application was successfully created');
       setApplications((applications) => [...applications, data.payload.application]);
+      setTimeout(() => {
+        setOpen(false);
+        clearMessages();
+      }, 2000);
     }
     setLoading(false);
-    setTimeout(() => {
-      setOpen(false);
-      clearMessages();
-    }, 2000);
   };
 
   const handleClose = () => {
@@ -108,7 +100,7 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, s
           <DialogTitle className='bg-primary text-center text-white'>Create Application</DialogTitle>
           <DialogContent className='pb-0  overflow-y-hidden'>
             <div className='mt-24'>Create a new applicaion</div>
-            <TemplatesSelect setTemplateFormData={setTemplateFormData} />
+            <TemplateInputs setTemplateFormData={setTemplateFormData} clearMessages={clearMessages} />
             <Box sx={{ minWidth: 120 }}>
               <FormControl margin='normal' fullWidth required>
                 <InputLabel id='cluster'>Cluster</InputLabel>
