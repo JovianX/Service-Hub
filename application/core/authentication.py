@@ -36,8 +36,11 @@ class CustomPayloadJWTStrategy(JWTStrategy):
         return generate_jwt(data, self.encode_key, self.lifetime_seconds, algorithm=self.algorithm)
 
     async def read_token(self, token: str | None, user_manager: UserManager) -> User | None:
-        data = self.extract_token_data(token)
-        if data is None:
+        if token is None:
+            return None
+        try:
+            data = self.extract_token_data(token)
+        except jwt.PyJWTError:
             return None
         user_id = data.get('user_id')
         if user_id is None:
@@ -53,15 +56,7 @@ class CustomPayloadJWTStrategy(JWTStrategy):
         """
         Extracts encoded in token data.
         """
-        if token is None:
-            return None
-
-        try:
-            data = decode_jwt(token, self.decode_key, self.token_audience, algorithms=[self.algorithm])
-        except jwt.PyJWTError:
-            return None
-
-        return data
+        return decode_jwt(token, self.decode_key, self.token_audience, algorithms=[self.algorithm])
 
 
 github_client = GitHubOAuth2(settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET)
@@ -70,7 +65,7 @@ bearer_transport = BearerTransport(tokenUrl='api/v1/auth/jwt/login')
 
 
 def get_jwt_strategy() -> CustomPayloadJWTStrategy:
-    return CustomPayloadJWTStrategy(secret=settings.SECRET, lifetime_seconds=3600)
+    return CustomPayloadJWTStrategy(secret=settings.SECRET, lifetime_seconds=settings.USER_SESSION_TTL)
 
 
 auth_backend = AuthenticationBackend(
@@ -92,8 +87,6 @@ class BasePermission:
 class BaseRolePermission(BasePermission):
     @classmethod
     def authorize(cls, request: Request) -> bool:
-        if request is None:
-            raise ValueError(f'{__class__.__name__}: no request was provided during authorization.')
         authorization_header = request.headers.get('authorization')
         if not authorization_header:
             raise CommonException(
@@ -102,9 +95,15 @@ class BaseRolePermission(BasePermission):
             )
         jwt_strategy = get_jwt_strategy()
         token = authorization_header[7:]  # Cutting off "Bearer "
-        token_data = jwt_strategy.extract_token_data(token) or {}
+        try:
+            token_data = jwt_strategy.extract_token_data(token)
+        except jwt.ExpiredSignatureError:
+            raise CommonException('Expired JWT token.', status_code=status.HTTP_401_UNAUTHORIZED)
+        user_role = token_data.get('user_role')
+        if not user_role:
+            raise CommonException('Unknown user role.', status_code=status.HTTP_401_UNAUTHORIZED)
 
-        return token_data.get('user_role') == cls.role
+        return user_role == cls.role
 
     @property
     def role(self):
