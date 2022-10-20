@@ -94,10 +94,14 @@ class BaseRolePermission(BasePermission):
     def authorize(cls, request: Request) -> bool:
         if request is None:
             raise ValueError(f'{__class__.__name__}: no request was provided during authorization.')
-        if 'authorization' not in request.headers:
-            raise ValueError(f'{__class__.__name__}: unable to authorize user, no "authorization" header in request.')
+        authorization_header = request.headers.get('authorization')
+        if not authorization_header:
+            raise CommonException(
+                '"Authorization" header is absent in request.',
+                status_code=status.HTTP_401_UNAUTHORIZED
+            )
         jwt_strategy = get_jwt_strategy()
-        token = request.headers['authorization'][7:]
+        token = authorization_header[7:]  # Cutting off "Bearer "
         token_data = jwt_strategy.extract_token_data(token) or {}
 
         return token_data.get('user_role') == cls.role
