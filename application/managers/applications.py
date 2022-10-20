@@ -6,11 +6,14 @@ import logging
 from fastapi import Depends
 from fastapi import status
 
+from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
+from constants.helm import ReleaseHealthStatuses
 from crud.applications import ApplicationDatabase
 from crud.applications import get_application_db
 from exceptions.common import CommonException
 from exceptions.helm import HelmException
+from exceptions.helm import ReleaseNotFoundException
 from exceptions.templates import InvalidUserInputsException
 from managers.helm.manager import HelmManager
 from managers.organizations.manager import get_organization_manager
@@ -277,6 +280,31 @@ class ApplicationManager:
                 )
                 pass
         await self.db.delete(id=application.id)
+
+    async def get_application_health_status(self, application: Application) -> ApplicationHealthStatuses:
+        """
+        Returns application status.
+        """
+        template_schema = load_template(application.manifest)
+        application_components_healthy = []
+        for component in template_schema.components:
+            try:
+                component_health_status = await self.helm_manager.release_health_status(
+                    application.organization,
+                    application.context_name,
+                    application.namespace,
+                    component.name
+                )
+            except ReleaseNotFoundException:
+                application_components_healthy.append(False)
+                break
+            application_components_healthy.append(
+                component_health_status['status'] == ReleaseHealthStatuses.healthy
+            )
+        if all(application_components_healthy):
+            return ApplicationHealthStatuses.healthy
+        else:
+            return ApplicationHealthStatuses.unhealthy
 
     async def get_organization_application(self, application_id: int, organization: Organization) -> Application:
         """
