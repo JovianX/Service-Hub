@@ -68,7 +68,6 @@ xdg-open 'http://localhost:3000'
 ```
 
 # 🤽‍♀️ Getting Strated - Usage
-
 1.  Sign up
 2.  Add your cluster
 

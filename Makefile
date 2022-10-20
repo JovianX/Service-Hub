@@ -1,5 +1,5 @@
 .ONESHELL:
-.PHONY: help setup setup_helm setup_kubectl db_synchronization db_revision up down serve logs db_shell run format tests
+.PHONY: help setup setup_helm setup_kubectl setup_fe db_synchronization db_revision up down serve_be serve_fe logs db_shell run format tests
 
 include .env
 export
@@ -41,6 +41,9 @@ setup_kubectl: ## Install Kubernetes CLI.
 	@wget --output-document=$(VE_DIRECTORY)/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 	@chmod +x $(VE_DIRECTORY)/bin/kubectl
 
+setup_fe: ## Setup front-end develop environment.
+	cd frontend; npm install
+
 db_synchronization: ## Apply all unapplied migrations.
 	@if [ -z `docker ps --quiet --no-trunc | grep --only-matching "$(shell docker-compose ps --quiet application)"` ]; then
 		. $(VE_DIRECTORY)/bin/activate; cd application; alembic upgrade head
@@ -69,9 +72,14 @@ up: ## Launch dockerized infrastructure.
 down: ## Shutdown dockerized infrastructure.
 	docker-compose down
 
-serve: ## Run only infrastructure containers.
+serve_be: ## Run only infrastructure containers required by back-end.
 	docker-compose up --no-deps --detach postgres
 	docker-compose up --no-deps --detach frontend
+
+serve_fe: ## Run only infrastructure containers required by front-end.
+	docker-compose up --no-deps --detach postgres
+	docker-compose up --no-deps --detach application
+	cd frontend; npm start
 
 logs: ## Show contaiters logs.
 	@docker-compose logs --follow || true

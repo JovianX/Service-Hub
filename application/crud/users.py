@@ -3,6 +3,7 @@ Functionality for interaction with user database entities.
 """
 from fastapi import Depends
 from fastapi_users.db import SQLAlchemyUserDatabase
+from sqlalchemy import delete
 from sqlalchemy import select
 
 from db.session import get_session
@@ -27,6 +28,12 @@ class UserDatabase(SQLAlchemyUserDatabase):
         self.session.add(instance)
         await self.session.commit()
         await self.session.refresh(instance)
+
+    async def delete_oauth_account(self, user: User) -> None:
+        query = delete(self.oauth_account_table)
+        query.where(self.oauth_account_table.user_id == user.id)
+        await self.session.execute(query)
+        await self.session.commit()
 
     def _apply_filter_parameters(self, query, **parameters: dict):
         """

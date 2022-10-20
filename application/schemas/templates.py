@@ -266,11 +266,11 @@ class TemplateSchema(BaseModel):
     _unique_inputs = validator('inputs', allow_reuse=True)(unique_names)
 
     @property
-    def chart_mapping(self) -> dict[str, Component]:
+    def components_mapping(self) -> dict[str, Component]:
         """
-        Mapping of chart release name and chart itself.
+        Mapping of application component name and component itself.
         """
-        return {chart.name: chart for chart in self.charts}
+        return {chart.name: chart for chart in self.components}
 
     @property
     def inputs_mapping(self) -> dict[str, BaseInput]:
