@@ -1,4 +1,5 @@
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
   InputLabel,
@@ -18,7 +19,7 @@ import yaml from 'js-yaml';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { chartInstall, selectCharts } from 'app/store/chartsSlice';
+import { chartInstall, getDefaultValues, selectCharts } from 'app/store/chartsSlice';
 import { getContextList, selectContexts } from 'app/store/clustersSlice';
 
 import NamespacesSelect from './NamespacesSelect';
@@ -27,6 +28,7 @@ const ChartsModal = ({ chartName, openModal }) => {
   const dispatch = useDispatch();
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [loadingDefaultValues, setLoadingDefaultValues] = useState(false);
   const [open, setOpen] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
@@ -35,6 +37,7 @@ const ChartsModal = ({ chartName, openModal }) => {
   const [namespace, setNamespace] = useState('');
   const [chart, setChart] = useState({});
   const [configYamlText, setConfigYamlText] = useState('');
+  const [defaultValuesParam, setDefaultValuesParam] = useState('');
 
   const chartData = useSelector(selectCharts);
   const clusterData = useSelector(selectContexts);
@@ -49,10 +52,45 @@ const ChartsModal = ({ chartName, openModal }) => {
     setChart(data);
     setCluster(clusterData[0]?.name);
     openModal.setOpenModal(false);
+    setConfigYamlText('');
   }, [openModal.openModal]);
+
+  useEffect(() => {
+    if (chart?.name) {
+      setDefaultValuesParam(chart.name);
+    }
+  }, [chart]);
 
   const getValue = (newValue) => {
     setConfigYamlText(newValue);
+  };
+
+  const onChangeDefaultValuesParam = (e) => {
+    setDefaultValuesParam(e.target.value);
+  };
+
+  const handleGetDefaultValues = () => {
+    if (defaultValuesParam) {
+      if (showMessage) {
+        setShowMessage(false);
+      }
+      setLoadingDefaultValues(true);
+      const nameList = defaultValuesParam.split('/');
+      const fetchData = async () => {
+        await dispatch(getDefaultValues({ repository_name: nameList[0], application_name: nameList[1] })).then(
+          (res) => {
+            if (res.payload?.status === 'error') {
+              setShowMessage(true);
+              setInfoMessageError(res.payload.message);
+            } else {
+              setConfigYamlText(res.payload);
+            }
+            setLoadingDefaultValues(false);
+          },
+        );
+      };
+      fetchData();
+    }
   };
 
   // modal actions
@@ -175,6 +213,7 @@ const ChartsModal = ({ chartName, openModal }) => {
                 margin='normal'
                 fullWidth
                 defaultValue={chart.name}
+                onChange={onChangeDefaultValuesParam}
               />
               <TextField
                 name='version'
@@ -210,8 +249,18 @@ const ChartsModal = ({ chartName, openModal }) => {
                 handleGetNamespace={(value) => handleGetNamespace(value)}
               />
 
-              <div className='mt-24'>
+              <div className='mt-24 flex items-end flex-col'>
+                <LoadingButton
+                  className='mb-6'
+                  color='primary'
+                  onClick={handleGetDefaultValues}
+                  loading={loadingDefaultValues}
+                  variant='outlined'
+                >
+                  <FileDownloadIcon />
+                </LoadingButton>
                 <MonacoEditor
+                  value={configYamlText}
                   height='150px'
                   width='100%'
                   name='values'
@@ -241,6 +290,7 @@ const ChartsModal = ({ chartName, openModal }) => {
                   loadingPosition='start'
                   startIcon={<CloudUploadIcon />}
                   variant='contained'
+                  disabled={loadingDefaultValues}
                 >
                   Deploy
                 </LoadingButton>
