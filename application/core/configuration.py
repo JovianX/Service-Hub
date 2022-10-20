@@ -22,8 +22,6 @@ class Settings(BaseSettings):
     DATABASE_URL: PostgresDsn
     TEST_DATABASE_URL: PostgresDsn
 
-    SECRET: str = 'SUW2kc5vw4XXASRmdefbUVWLQ0dRq8ylEdetifdKgzU'
-
     # Helm settings.
     HELM_EXECUTABLE: str = 'helm'
     HELM_HOME_ARCHIVE_SIZE_LIMIT: int | float = 300 * 1024  # 300KiB in bytes
@@ -31,6 +29,10 @@ class Settings(BaseSettings):
 
     # Kubernetes settings.
     KUBECTL_EXECUTABLE: str = 'kubectl'
+
+    # Authentication and authorization
+    SECRET: str = 'SUW2kc5vw4XXASRmdefbUVWLQ0dRq8ylEdetifdKgzU'
+    USER_SESSION_TTL: int = 3600  # In seconds
 
     # OAuth authentication
     GOOGLE_CLIENT_ID: str = ''

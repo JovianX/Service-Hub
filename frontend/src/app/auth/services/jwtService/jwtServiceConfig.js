@@ -3,7 +3,7 @@ const authApiPath = 'api/v1/auth';
 const jwtServiceConfig = {
   signIn: `${authApiPath}/jwt/login`,
   logout: `${authApiPath}/jwt/logout`,
-  signUp: `${authApiPath}/register`,
+  signUp: (id) => (id ? `${authApiPath}/register?invite_id=${id}` : `${authApiPath}/register`),
   forgotPassword: `${authApiPath}/forgot-password`,
   resetPassword: `${authApiPath}/reset-password`,
   signInWithGithub: `${authApiPath}/github/authorize`,

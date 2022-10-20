@@ -8,19 +8,19 @@ from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
+from fastapi import status
 
+from constants.invitations import InvitationStatuses
 from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
+from exceptions.common import CommonException
+from exceptions.db import RecordNotFoundException
 from managers.invitations import InvitationManager
 from managers.invitations import get_invitation_manager
-from managers.users import UserManager
-from managers.users import get_user_manager
 from models.user import User
-from schemas.users import UserCreate
 
 from ..schemas.invitations import CreateSchema
 from ..schemas.invitations import InvitationResponseSchema
-from ..schemas.invitations import UseSchema
 
 
 logger = logging.getLogger(__name__)
@@ -58,6 +58,26 @@ async def list_invitations(
     return await invitation_manager.list_invitations(user.organization)
 
 
+@router.get('/{invitation_id}/email', response_model=str)
+async def get_invited_user_email(
+    invitation_id: UUID = Path(title='The ID user invitation.'),
+    invitation_manager: InvitationManager = Depends(get_invitation_manager)
+):
+    """
+    Returns email of invited user.
+    """
+    try:
+        invitation_record = await invitation_manager.get_invitation_by_id(
+            invitation_id,
+            status=InvitationStatuses.pending
+        )
+    except RecordNotFoundException:
+        # Erasing details from error message.
+        raise CommonException('Invitation not found', status_code=status.HTTP_404_NOT_FOUND)
+
+    return invitation_record.email
+
+
 @router.delete(
     '/{invitation_id}',
     response_model=list[InvitationResponseSchema],
@@ -75,28 +95,6 @@ async def delete_invitaion(
     await invitation_manager.delete_invitation(invitation_record)
 
     return await invitation_manager.list_invitations(user.organization)
-
-
-@router.post('/{invitation_id}/use', dependencies=[Depends(AuthorizedUser())])
-async def use_invitaion(
-    invitation_id: UUID = Path(title='The ID user invitation.'),
-    data: UseSchema = Body(description='User creation data'),
-    invitation_manager: InvitationManager = Depends(get_invitation_manager),
-    user_manager: UserManager = Depends(get_user_manager)
-):
-    """
-    Creates new user that used invitation.
-    """
-    invitation_record = await invitation_manager.get_invitation_by_id(invitation_id)
-    invitation_manager.is_valid(invitation_record)
-    new_user = UserCreate(
-        email=invitation_record.email,
-        password=data.password,
-        is_verified=True,
-        organization_id=invitation_record.organization.id
-    )
-    new_user_record = await user_manager.create(new_user)
-    await invitation_manager.use(invitation_record, new_user_record)
 
 
 @router.post('/{invitation_id}/send-email', dependencies=[Depends(AuthorizedUser())])

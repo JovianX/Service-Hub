@@ -28,13 +28,6 @@ class CreateSchema(BaseModel):
     )
 
 
-class UseSchema(BaseModel):
-    """
-    User registration by invitation request schema.
-    """
-    password: str = Field(description='User password.')
-
-
 class InvitationResponseSchema(BaseModel):
     """
     User registration by invitation request schema.

@@ -5,6 +5,7 @@ import {
   getInvitationsList as getInvitationsListAPI,
   addInvitation as addInvitationAPI,
   deleteInvitation as deleteInvitationAPI,
+  getInvitedUserEmail as getInvitedUserEmailAPI,
 } from '../api';
 
 export const getInvitationsList = createAsyncThunk('invitations/getInvitationsList', async () => {
@@ -51,6 +52,15 @@ export const sendInvitation = createAsyncThunk('invitations/sendInvitation', asy
       text: e.response.data.message,
       status: 'error',
     };
+  }
+});
+
+export const getInvitedUserEmail = createAsyncThunk('invitations/getInvitedUserEmail', async (id) => {
+  try {
+    const response = await getInvitedUserEmailAPI(id);
+    return response.data;
+  } catch (e) {
+    console.log(e);
   }
 });
 
