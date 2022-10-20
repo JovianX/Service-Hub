@@ -12,6 +12,8 @@
 
 JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
+[Documentation Folder](documentation/README.md) containes complete product documentation.
+
 # Sign up / Create an account
 
 When creating a new account with Serivce Hub, a new organization is created. Your user account is a member of the newly created organization.
