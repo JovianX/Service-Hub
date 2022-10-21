@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import { useState, useEffect } from 'react';
 
@@ -45,115 +45,55 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
     }
   }, [list]);
 
-  const handleClose = () => {
-    setDialogValue({
-      name: '',
-      status: '',
-    });
-
-    toggleOpen(false);
-  };
-
-  const [dialogValue, setDialogValue] = useState({
-    name: '',
-    status: '',
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setNamespace({
-      name: dialogValue.name,
-      status: dialogValue.status,
-    });
-
-    handleClose();
-  };
-
   return (
-    <>
-      <Autocomplete
-        margin='normal'
-        fullWidth
-        value={namespace}
-        onChange={(event, newValue) => {
-          if (typeof newValue === 'string') {
-            setTimeout(() => {
-              toggleOpen(true);
-              setDialogValue({
-                name: newValue,
-                status: 'Active',
-              });
-            });
-          } else if (newValue && newValue.inputValue) {
-            toggleOpen(true);
-            setDialogValue({
-              name: newValue.inputValue,
-              status: 'Active',
-            });
-          } else {
-            setNamespace(newValue);
-          }
-        }}
-        filterOptions={(options, params) => {
-          const filtered = filter(options, params);
-
-          if (params.inputValue !== '') {
-            filtered.push({
-              inputValue: params.inputValue,
-              name: `Add "${params.inputValue}"`,
-            });
-          }
-
-          return filtered;
-        }}
-        id='namespace'
-        options={list}
-        getOptionLabel={(option) => {
-          if (typeof option === 'string') {
-            return option;
-          }
-          if (option.inputValue) {
-            return option.inputValue;
-          }
-          return option.name;
-        }}
-        selectOnFocus
-        clearOnBlur
-        handleHomeEndKeys
-        renderOption={(props, option) => <li {...props}>{option.name}</li>}
-        sx={{ marginTop: 1.4 }}
-        freeSolo
-        renderInput={(params) => <TextField {...params} required label='Namespace' />}
-      />
-      <Dialog open={open} onClose={handleClose}>
-        <form onSubmit={handleSubmit}>
-          <DialogTitle>Create a new namespace</DialogTitle>
-          <DialogContent>
-            {/* <DialogContentText>Create a new Namespace</DialogContentText> */}
-            <TextField
-              fullWidth
-              autoFocus
-              margin='dense'
-              id='name'
-              value={dialogValue.title}
-              onChange={(event) =>
-                setDialogValue({
-                  ...dialogValue,
-                  name: event.target.value,
-                })
-              }
-              label='Namespace name'
-              type='text'
-              variant='standard'
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button type='submit'>Add</Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-    </>
+    <Autocomplete
+      margin='normal'
+      fullWidth
+      value={namespace}
+      onChange={(event, newValue) => {
+        if (typeof newValue === 'string') {
+          setNamespace({
+            name: newValue,
+          });
+        } else if (newValue && newValue.inputValue) {
+          setNamespace({
+            name: newValue.inputValue,
+          });
+        } else {
+          setNamespace(newValue);
+        }
+      }}
+      filterOptions={(options, params) => {
+        const filtered = filter(options, params);
+        const { inputValue } = params;
+        const isExisting = options.some((option) => inputValue === option.title);
+        if (inputValue !== '' && !isExisting) {
+          filtered.push({
+            inputValue,
+            name: `Add "${inputValue}"`,
+          });
+        }
+        return filtered;
+      }}
+      id='namespace'
+      options={list}
+      getOptionLabel={(option) => {
+        if (typeof option === 'string') {
+          return option;
+        }
+        if (option.inputValue) {
+          return option.inputValue;
+        }
+        return option.name;
+      }}
+      selectOnFocus
+      clearOnBlur
+      handleHomeEndKeys
+      renderOption={(props, option) => <li {...props}>{option.name}</li>}
+      sx={{ marginTop: 1.4 }}
+      freeSolo
+      renderInput={(params) => <TextField {...params} required label='Namespace' />}
+    />
   );
 };
 
