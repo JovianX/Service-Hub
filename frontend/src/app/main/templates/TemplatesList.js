@@ -136,7 +136,7 @@ const TemplatesList = () => {
       setModalInfo({
         action: 'EDIT',
         title: `Edit ${template.name}`,
-        confirmText: 'Edit',
+        confirmText: 'Save',
         template,
       });
       setOpenModal(true);
@@ -152,8 +152,8 @@ const TemplatesList = () => {
     setInfoMessageError('');
     setModalInfo({
       action: 'CREATE',
-      title: 'Create new template',
-      confirmText: 'Create',
+      title: 'New template',
+      confirmText: 'Add',
     });
     setOpenModal(true);
   };

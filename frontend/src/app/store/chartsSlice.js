@@ -41,7 +41,7 @@ export const getDefaultValues = createAsyncThunk(
       }
       return {
         status: 'error',
-        message: 'error when getting values',
+        message: 'Error while getting values.',
       };
     }
   },

@@ -1,5 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
+import applications from './applicationsSlice';
 import charts from './chartsSlice';
 import clusters from './clustersSlice';
 import dashboard from './dashboardSlice';
@@ -21,6 +22,7 @@ const createReducer = (asyncReducers) => (state, action) => {
     invitations,
     users,
     templates,
+    applications,
     dashboard,
     releases,
     charts,

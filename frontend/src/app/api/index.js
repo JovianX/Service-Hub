@@ -7,4 +7,5 @@ export * from './clusters';
 export * from './kubernetes';
 export * from './invitations';
 export * from './users';
+export * from './applications';
 export * from './templates';

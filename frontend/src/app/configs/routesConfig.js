@@ -5,6 +5,7 @@ import FuseUtils from '@fuse/utils';
 import settingsConfig from 'app/configs/settingsConfig';
 
 import Error404Page from '../main/404/Error404Page';
+import ApplicationsConfig from '../main/applications/ApplicationsConfig';
 import ChartsConfig from '../main/charts/ChartsConfig';
 import ClustersConfig from '../main/clusters/ClustersConfig';
 import DashboardConfig from '../main/dashboard/DashboardConfig';
@@ -23,6 +24,7 @@ const routeConfigs = [
   RepositoriesConfig,
   ServicesConfig,
   ChartsConfig,
+  ApplicationsConfig,
   ReleasesConfig,
   DashboardConfig,
   ExampleConfig,

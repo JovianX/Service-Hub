@@ -58,6 +58,14 @@ const navigationConfig = [
     url: 'templates',
   },
   {
+    id: 'applications-component',
+    title: 'Applications',
+    translate: 'APPLICATIONS',
+    type: 'item',
+    icon: 'material-outline:apps',
+    url: 'applications',
+  },
+  {
     id: 'settings-component',
     title: 'Settings',
     translate: 'SETTINGS',
@@ -80,7 +88,7 @@ const navigationConfig = [
         icon: 'heroicons-outline:users',
         url: 'users',
       },
-    ]
+    ],
   },
 ];
 

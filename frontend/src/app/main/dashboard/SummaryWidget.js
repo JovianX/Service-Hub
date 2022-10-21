@@ -13,7 +13,7 @@ const Spinner = () => (
   </Box>
 );
 
-const SummaryWidget = ({ dataKey, dataValue, textColor = 'text-blue-500' }) => {
+const SummaryWidget = ({ dataKey, dataKeyTitle, dataValue, textColor = 'text-blue-500' }) => {
   return (
     <Paper className='flex flex-col flex-auto shadow rounded-2xl overflow-hidden h-full  min-h-[150px]'>
       <div className='text-center py-10 items-center flex flex-col h-full spinner-container justify-center'>
@@ -26,7 +26,7 @@ const SummaryWidget = ({ dataKey, dataValue, textColor = 'text-blue-500' }) => {
                 className='px-16 text-md font-medium tracking-tight leading-6 truncate'
                 color='text.secondary'
               >
-                {dataKey}
+                {dataKeyTitle || dataKey}
               </Typography>
             </div>
 
