@@ -6,11 +6,15 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useSearchParams } from 'react-router-dom';
 import * as yup from 'yup';
 
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import _ from '@lodash';
+import { getInvitedUserEmail } from 'app/store/invitationsSlice';
 
 import history from '../../../@history/@history';
 import jwtService from '../../auth/services/jwtService';
@@ -24,24 +28,48 @@ const schema = yup.object().shape({
   passwordConfirm: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
 });
 
-const defaultValues = {
-  email: '',
-  password: '',
-  passwordConfirm: '',
-};
-
 function SignUpPage() {
-  const { control, formState, handleSubmit, setError } = useForm({
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const inviteId = searchParams.get('invite_id');
+  const [invitedEmail, setInvitedEmail] = useState('');
+
+  const defaultValues = {
+    email: '',
+    password: '',
+    passwordConfirm: '',
+  };
+
+  const { control, formState, handleSubmit, setError, setValue } = useForm({
     mode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema),
   });
 
+  useEffect(() => {
+    if (invitedEmail) {
+      setValue('email', invitedEmail, {
+        shouldValidate: false,
+        shouldDirty: false,
+      });
+    }
+  }, [invitedEmail]);
+
+  useEffect(() => {
+    if (inviteId) {
+      const fetchData = async () => {
+        const data = await dispatch(getInvitedUserEmail(inviteId));
+        setInvitedEmail(data.payload);
+      };
+      fetchData();
+    }
+  }, [dispatch]);
+
   const { isValid, dirtyFields, errors } = formState;
 
   const onSubmit = async ({ password, email }) => {
     try {
-      await jwtService.createUser({
+      await jwtService.createUser(inviteId || '', {
         password,
         email,
       });
@@ -53,6 +81,21 @@ function SignUpPage() {
       setError('email', {
         type: 'manual',
         message: errors?.response?.data?.detail,
+      });
+    }
+  };
+
+  const onGithubSignUp = async () => {
+    try {
+      const url = await jwtService.signInWithGithub();
+      if (inviteId) {
+        localStorage.setItem('inviteId', inviteId);
+      }
+      history.push(url);
+    } catch (errors) {
+      setError('email', {
+        type: 'manual',
+        message: 'Failed to sign in with GitHub',
       });
     }
   };
@@ -91,6 +134,7 @@ function SignUpPage() {
                   variant='outlined'
                   required
                   fullWidth
+                  disabled={!!invitedEmail}
                 />
               )}
             />
@@ -143,6 +187,20 @@ function SignUpPage() {
               Create account
             </Button>
           </form>
+          <div className='flex items-center mt-32'>
+            <div className='flex-auto mt-px border-t' />
+            <Typography className='mx-8' color='text.secondary'>
+              Or create account with
+            </Typography>
+            <div className='flex-auto mt-px border-t' />
+          </div>
+          <div className='flex items-center mt-32 space-x-16'>
+            <Button variant='outlined' className='flex-auto' onClick={onGithubSignUp}>
+              <FuseSvgIcon size={20} color='action'>
+                feather:github
+              </FuseSvgIcon>
+            </Button>
+          </div>
         </div>
       </Paper>
 
@@ -196,7 +254,7 @@ function SignUpPage() {
 
         <div className='z-10 relative w-full max-w-2xl'>
           <div className='text-7xl font-bold leading-none text-gray-100'>
-          <img src="assets/images/logo-white.png" width={"130px"} />
+            <img src='assets/images/logo-white.png' width='130px' />
             <div>Service Hub</div>
           </div>
           <div className='mt-24 text-lg tracking-tight leading-6 text-gray-400'>
