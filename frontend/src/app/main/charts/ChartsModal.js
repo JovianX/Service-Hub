@@ -12,21 +12,34 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/system';
 import MonacoEditor from '@uiw/react-monacoeditor';
 import yaml from 'js-yaml';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { chartInstall, selectCharts } from 'app/store/chartsSlice';
+import { chartInstall, getDefaultValues, selectCharts } from 'app/store/chartsSlice';
 import { getContextList, selectContexts } from 'app/store/clustersSlice';
 
 import NamespacesSelect from './NamespacesSelect';
 
+const useStyles = makeStyles({
+  button: {
+    border: '2px solid transparent',
+    borderRadius: 'none',
+    '&:hover': {
+      borderBottom: '2px solid #000',
+    },
+  },
+});
+
 const ChartsModal = ({ chartName, openModal }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [loadingDefaultValues, setLoadingDefaultValues] = useState(false);
   const [open, setOpen] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
@@ -35,6 +48,8 @@ const ChartsModal = ({ chartName, openModal }) => {
   const [namespace, setNamespace] = useState('');
   const [chart, setChart] = useState({});
   const [configYamlText, setConfigYamlText] = useState('');
+  const [defaultValuesParam, setDefaultValuesParam] = useState('');
+  const [editorHeight, setEditorHeight] = useState('150px');
 
   const chartData = useSelector(selectCharts);
   const clusterData = useSelector(selectContexts);
@@ -49,10 +64,47 @@ const ChartsModal = ({ chartName, openModal }) => {
     setChart(data);
     setCluster(clusterData[0]?.name);
     openModal.setOpenModal(false);
+    setConfigYamlText('');
+    setEditorHeight('150px');
   }, [openModal.openModal]);
+
+  useEffect(() => {
+    if (chart?.name) {
+      setDefaultValuesParam(chart.name);
+    }
+  }, [chart]);
 
   const getValue = (newValue) => {
     setConfigYamlText(newValue);
+  };
+
+  const onChangeDefaultValuesParam = (e) => {
+    setDefaultValuesParam(e.target.value);
+  };
+
+  const handleGetDefaultValues = () => {
+    if (defaultValuesParam) {
+      if (showMessage) {
+        setShowMessage(false);
+      }
+      setLoadingDefaultValues(true);
+      const nameList = defaultValuesParam.split('/');
+      const fetchData = async () => {
+        await dispatch(getDefaultValues({ repository_name: nameList[0], application_name: nameList[1] })).then(
+          (res) => {
+            if (res.payload?.status === 'error') {
+              setShowMessage(true);
+              setInfoMessageError(res.payload.message);
+            } else {
+              setConfigYamlText(res.payload);
+              setEditorHeight('300px');
+            }
+            setLoadingDefaultValues(false);
+          },
+        );
+      };
+      fetchData();
+    }
   };
 
   // modal actions
@@ -175,6 +227,7 @@ const ChartsModal = ({ chartName, openModal }) => {
                 margin='normal'
                 fullWidth
                 defaultValue={chart.name}
+                onChange={onChangeDefaultValuesParam}
               />
               <TextField
                 name='version'
@@ -210,14 +263,24 @@ const ChartsModal = ({ chartName, openModal }) => {
                 handleGetNamespace={(value) => handleGetNamespace(value)}
               />
 
-              <div className='mt-24'>
+              <div className='mt-24 flex items-end flex-col'>
+                <LoadingButton
+                  className={`${classes.button} p-0 pb-2 mb-4 hover:bg-inherit rounded-none  min-h-[20px] h-[20px]`}
+                  onClick={handleGetDefaultValues}
+                  loading={loadingDefaultValues}
+                >
+                  Load values from chart
+                </LoadingButton>
+
                 <MonacoEditor
-                  height='150px'
+                  value={configYamlText}
+                  height={editorHeight}
                   width='100%'
                   name='values'
                   language='yaml'
                   theme='vs-dark'
                   onChange={getValue.bind(this)}
+                  options={{ automaticLayout: true }}
                 />
               </div>
             </DialogContent>
@@ -241,6 +304,7 @@ const ChartsModal = ({ chartName, openModal }) => {
                   loadingPosition='start'
                   startIcon={<CloudUploadIcon />}
                   variant='contained'
+                  disabled={loadingDefaultValues}
                 >
                   Deploy
                 </LoadingButton>

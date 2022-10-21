@@ -12,10 +12,11 @@
 
 JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
-<div align="center">
-<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">⭐ Star the project if you like it 🤩</a></td><td><a href="https://discord.gg/CmFvFJDXZv">💬 Join our Discord</a></td></tr></tbody></table>
-</div>
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
 
+![Discord](https://img.shields.io/discord/1014893148599754894)
+
+<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">⭐ Star the project if you like it 🤩</a></td><td>👍 <a href="https://github.com/JovianX/Service-Hub/pulls">PRs are welcome</a></td><td><a href="https://discord.gg/CmFvFJDXZv">💬 Join Discord</a></td></tr></tbody></table>
 
 ---
 
@@ -23,26 +24,27 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 # 🦄 Features:
 
-- **Helm Manager**
-  - Manage Helm Releases, Monitor application Health, Set Releases TTL, Update release values, Upgrade versions, Manage repositories, etc'
-  - Helm Restful API - Full restful API for Helm
-  - Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
-- **Login with GitHub**
-- **Basic RBAC**
+*   **Helm Manager**
+    *   Manage Helm Releases, Monitor application Health, Set Releases TTL, Update release values, Upgrade versions, Manage repositories, etc'
+    *   Helm Restful API - Full restful API for Helm
+    *   Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
+*   **Login with GitHub**
+*   **Basic RBAC**
 
-## 🚀 Roadmap (WIP)
+## 🚀 Roadmap
 
-- **Application Templates**
-  - Create application templates and reversion
-  - Allow operators to create applications from templates
-- **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc')
-- **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
-- **RBAC** - Role-based access control
-- **Login with Google**
+*   **Application Templates**
+    *   Create application templates and reversion
+    *   Allow operators to create applications from templates
+*   **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc')
+*   **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
+*   **RBAC** - Role-based access control
+*   **Login with Google**
+*   **Instal the project via Helm Chart** 
 
 # 👷 Installation
 
-<table><tbody><tr><td> Service-Hub SaaS at👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a> 🌎 </td></tr></tbody></table>
+<table><tbody><tr><td>🌎 &nbsp;Service-Hub SaaS at &nbsp; &nbsp;👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a>&nbsp;</td></tr></tbody></table>
 
 ### OR
 
@@ -58,7 +60,13 @@ Change directory to `service-hub`
 cd service-hub
 ```
 
-Start the project
+Build the project Docker images 
+
+```
+make build
+```
+
+Start the project(starts Docker-compose)
 
 ```
 make up
@@ -71,6 +79,7 @@ xdg-open 'http://localhost:3000'
 ```
 
 # 🤽‍♀️ Getting Strated - Usage
+
 1.  Sign up
 2.  Add your cluster
 

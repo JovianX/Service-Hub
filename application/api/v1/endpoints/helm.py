@@ -93,6 +93,25 @@ async def list_charts_in_repsitories(
     return charts
 
 
+@router.get(
+    '/chart/default-values',
+    response_model=str,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def get_chart_default_values(
+    chart_name: str = Query(description='Chart name in format `<repository-name>/<application name>`.'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Returns default chart values(content of values.yaml file).
+    """
+    helm_manager = HelmManager(organization_manager)
+    values_file_content = await helm_manager.chart_defaults(user.organization, chart_name)
+
+    return values_file_content
+
+
 @router.get('/chart/available', response_model=list[ChartListItemSchema], dependencies=[Depends(AuthorizedUser())])
 async def list_available_for_application_charts(
     application_name: str = Query(description='Name of application for which chart requested'),

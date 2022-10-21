@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getChartList as getChartListAPI, chartInstall as chartInstallAPI } from '../api';
+import {
+  getChartList as getChartListAPI,
+  chartInstall as chartInstallAPI,
+  getDefaultValues as getDefaultValuesAPI,
+} from '../api';
 
 export const getChartList = createAsyncThunk('charts/getChartList', async () => {
   try {
@@ -21,6 +25,27 @@ export const chartInstall = createAsyncThunk('charts/chartInstall', async (chart
     return e.response.data;
   }
 });
+
+export const getDefaultValues = createAsyncThunk(
+  'charts/getDefaultValues',
+  async ({ application_name, repository_name }) => {
+    try {
+      const response = await getDefaultValuesAPI({ application_name, repository_name });
+      return response.data;
+    } catch (e) {
+      if (e?.response?.data?.message) {
+        return {
+          status: 'error',
+          message: e.response.data.message,
+        };
+      }
+      return {
+        status: 'error',
+        message: 'error when getting values',
+      };
+    }
+  },
+);
 
 const chartsSlice = createSlice({
   name: 'charts/chartsList',
