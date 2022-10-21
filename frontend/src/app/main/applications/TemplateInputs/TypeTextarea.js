@@ -7,6 +7,7 @@ const TypeTextarea = ({ item, onChangeInputs }) => {
     <FormControl fullWidth margin='normal'>
       <TextField
         label={item.label}
+        name='textarea'
         required
         multiline
         minRows={2}

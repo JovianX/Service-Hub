@@ -71,7 +71,12 @@ const Dashboard = () => {
               <SummaryWidget dataKey='Unhealthy' dataValue={unhealthy} textColor='text-red-500' />
             </motion.div>
             <motion.div variants={item}>
-              <SummaryWidget dataKey='Releases' dataValue={releases} textColor='text-amber-500' />
+              <SummaryWidget
+                dataKey='Releases'
+                dataKeyTitle='Releases'
+                dataValue={releases}
+                textColor='text-amber-500'
+              />
             </motion.div>
             <motion.div variants={item}>
               <SummaryWidget dataKey='Charts' dataValue={charts} textColor='text-teal-500' />

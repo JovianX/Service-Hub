@@ -7,6 +7,7 @@ const TypeText = ({ item, onChangeInputs }) => {
     <FormControl fullWidth margin='normal'>
       <TextField
         type='text'
+        name='text'
         required
         label={item.label}
         value={item.default}

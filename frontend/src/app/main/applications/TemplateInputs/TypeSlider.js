@@ -9,6 +9,7 @@ const TypeSlider = ({ item, onChangeInputs }) => {
         key={item.name}
         label={item.label}
         type='number'
+        name='slider'
         required
         value={item.default}
         onChange={(e) => onChangeInputs(e, item)}

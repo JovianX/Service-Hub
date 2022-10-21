@@ -50,12 +50,28 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, s
   const handleClickSaveButton = (e) => {
     e.preventDefault();
     clearMessages();
+    setLoading(true);
+    if (e.target.form) {
+      const { context_name, template_id, number, slider, text, textarea } = e.target.form;
+      if (
+        !context_name.value ||
+        !template_id.value ||
+        !number.value ||
+        !slider.value ||
+        !text.value ||
+        !textarea.value
+      ) {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+
     inputRef.current.click();
   };
 
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
-    setLoading(true);
     const { context_name, template_id } = e.target;
     const application = {
       template_id: template_id.value,

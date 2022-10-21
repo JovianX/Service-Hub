@@ -59,8 +59,8 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
     status: '',
   });
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
     setNamespace({
       name: dialogValue.name,
       status: dialogValue.status,

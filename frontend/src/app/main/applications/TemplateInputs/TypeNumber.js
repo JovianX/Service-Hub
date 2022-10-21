@@ -9,6 +9,7 @@ const TypeNumber = ({ item, onChangeInputs }) => {
         key={item.name}
         label={item.label}
         type='number'
+        name='number'
         required
         value={item.default}
         onChange={(e) => onChangeInputs(e, item)}
