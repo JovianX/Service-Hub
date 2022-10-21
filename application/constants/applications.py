@@ -13,3 +13,11 @@ class ApplicationStatuses(StrEnum):
     starting = 'starting'
     running = 'running'
     updating = 'updating'
+
+
+class ApplicationHealthStatuses(StrEnum):
+    """
+    Application health statuses.
+    """
+    healthy = 'healthy'
+    unhealthy = 'unhealthy'
