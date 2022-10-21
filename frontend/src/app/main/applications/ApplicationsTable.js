@@ -55,7 +55,7 @@ const ApplicationsTable = () => {
     <div className='w-full flex flex-col min-h-full'>
       <div className='m-24 flex justify-end items-center'>
         <Button variant='contained' color='primary' startIcon={<AddIcon />} onClick={() => setOpenModal(true)}>
-          Create Applications
+          Deploy Application
         </Button>
       </div>
       <Paper className='h-full mx-24 rounded'>
