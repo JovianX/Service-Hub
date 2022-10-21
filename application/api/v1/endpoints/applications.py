@@ -127,7 +127,7 @@ async def list_applications(
 
 
 @router.get(
-    '/{application_id}/health-status',
+    '/{application_id}/health',
     response_model=ApplicationHealthStatuses,
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
@@ -137,7 +137,7 @@ async def get_application_health_status(
     application_manager: ApplicationManager = Depends(get_application_manager)
 ):
     """
-    Returns application health status.
+    Returns application health condition.
     """
     application = await application_manager.get_organization_application(application_id, user.organization)
     return await application_manager.get_application_health_status(application)
