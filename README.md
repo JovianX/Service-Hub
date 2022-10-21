@@ -91,4 +91,4 @@ For product documentation refer to the [Documentation Folder](documentation/READ
 Copyright 2022 JovianX Ltd.
 
 Licensed under GNU AFFERO GENERAL PUBLIC LICENSE(AGPL).
-![JovianX](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png =250x)
+![JovianX](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png)
