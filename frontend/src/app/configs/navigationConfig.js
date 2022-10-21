@@ -17,14 +17,14 @@ const navigationConfig = [
     icon: 'heroicons-outline:chart-pie',
     url: 'dashboard',
   },
-  {
-    id: 'services-component',
-    title: 'services',
-    translate: 'SERVICES',
-    type: 'item',
-    icon: 'developer_board',
-    url: 'services',
-  },
+  // {
+  //   id: 'services-component',
+  //   title: 'services',
+  //   translate: 'SERVICES',
+  //   type: 'item',
+  //   icon: 'developer_board',
+  //   url: 'services',
+  // },
   {
     id: 'releases-component',
     title: 'Releases',
