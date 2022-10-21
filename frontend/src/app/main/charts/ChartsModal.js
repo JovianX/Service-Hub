@@ -97,7 +97,7 @@ const ChartsModal = ({ chartName, openModal }) => {
               setInfoMessageError(res.payload.message);
             } else {
               setConfigYamlText(res.payload);
-              setEditorHeight('450px');
+              setEditorHeight('300px');
             }
             setLoadingDefaultValues(false);
           },
@@ -269,7 +269,7 @@ const ChartsModal = ({ chartName, openModal }) => {
                   onClick={handleGetDefaultValues}
                   loading={loadingDefaultValues}
                 >
-                  Load default value
+                  Load values from chart
                 </LoadingButton>
 
                 <MonacoEditor
