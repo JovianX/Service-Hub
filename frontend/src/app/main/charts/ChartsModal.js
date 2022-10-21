@@ -1,5 +1,4 @@
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
   InputLabel,
@@ -250,18 +249,12 @@ const ChartsModal = ({ chartName, openModal }) => {
               />
 
               <div className='mt-24 flex items-end flex-col'>
-                <LoadingButton
-                  className='mb-6'
-                  color='primary'
-                  onClick={handleGetDefaultValues}
-                  loading={loadingDefaultValues}
-                  variant='outlined'
-                >
-                  <FileDownloadIcon />
-                </LoadingButton>
+                <Button className='p-0 hover:bg-inherit' onClick={handleGetDefaultValues}>
+                  Load default value
+                </Button>
                 <MonacoEditor
                   value={configYamlText}
-                  height='150px'
+                  height='450px'
                   width='100%'
                   name='values'
                   language='yaml'
