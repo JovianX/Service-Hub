@@ -6,6 +6,7 @@ from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
 
+from constants.applications import ApplicationHealthStatuses
 from core.authentication import AuthorizedUser
 from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
@@ -123,3 +124,20 @@ async def list_applications(
     Returns list of organization's applications.
     """
     return await application_manager.list_applications(user.organization)
+
+
+@router.get(
+    '/{application_id}/health',
+    response_model=ApplicationHealthStatuses,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def get_application_health_status(
+    application_id: int = Path(title='The ID of the application to check'),
+    user: User = Depends(current_active_user),
+    application_manager: ApplicationManager = Depends(get_application_manager)
+):
+    """
+    Returns application health condition.
+    """
+    application = await application_manager.get_organization_application(application_id, user.organization)
+    return await application_manager.get_application_health_status(application)
