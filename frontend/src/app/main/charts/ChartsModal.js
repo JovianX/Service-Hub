@@ -12,6 +12,7 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { Box } from '@mui/system';
 import MonacoEditor from '@uiw/react-monacoeditor';
 import yaml from 'js-yaml';
@@ -23,7 +24,18 @@ import { getContextList, selectContexts } from 'app/store/clustersSlice';
 
 import NamespacesSelect from './NamespacesSelect';
 
+const useStyles = makeStyles({
+  button: {
+    border: '2px solid transparent',
+    borderRadius: 'none',
+    '&:hover': {
+      borderBottom: '2px solid #000',
+    },
+  },
+});
+
 const ChartsModal = ({ chartName, openModal }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -37,6 +49,7 @@ const ChartsModal = ({ chartName, openModal }) => {
   const [chart, setChart] = useState({});
   const [configYamlText, setConfigYamlText] = useState('');
   const [defaultValuesParam, setDefaultValuesParam] = useState('');
+  const [editorHeight, setEditorHeight] = useState('150px');
 
   const chartData = useSelector(selectCharts);
   const clusterData = useSelector(selectContexts);
@@ -52,6 +65,7 @@ const ChartsModal = ({ chartName, openModal }) => {
     setCluster(clusterData[0]?.name);
     openModal.setOpenModal(false);
     setConfigYamlText('');
+    setEditorHeight('150px');
   }, [openModal.openModal]);
 
   useEffect(() => {
@@ -83,6 +97,7 @@ const ChartsModal = ({ chartName, openModal }) => {
               setInfoMessageError(res.payload.message);
             } else {
               setConfigYamlText(res.payload);
+              setEditorHeight('450px');
             }
             setLoadingDefaultValues(false);
           },
@@ -249,17 +264,23 @@ const ChartsModal = ({ chartName, openModal }) => {
               />
 
               <div className='mt-24 flex items-end flex-col'>
-                <Button className='p-0 hover:bg-inherit' onClick={handleGetDefaultValues}>
+                <LoadingButton
+                  className={`${classes.button} p-0 pb-2 mb-4 hover:bg-inherit rounded-none  min-h-[20px] h-[20px]`}
+                  onClick={handleGetDefaultValues}
+                  loading={loadingDefaultValues}
+                >
                   Load default value
-                </Button>
+                </LoadingButton>
+
                 <MonacoEditor
                   value={configYamlText}
-                  height='450px'
+                  height={editorHeight}
                   width='100%'
                   name='values'
                   language='yaml'
                   theme='vs-dark'
                   onChange={getValue.bind(this)}
+                  options={{ automaticLayout: true }}
                 />
               </div>
             </DialogContent>
