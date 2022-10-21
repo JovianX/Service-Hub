@@ -266,7 +266,7 @@ const SignInPage = () => {
             </AvatarGroup>
 
             <div className='ml-16 font-medium tracking-tight text-gray-400'>
-              More than 1k DevOps engineers are using Service Hub, now it's your turn.
+              More than 1k Platform engineers are using Service Hub, now it's your turn.
             </div>
           </div>
         </div>

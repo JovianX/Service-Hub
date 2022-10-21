@@ -100,7 +100,7 @@ const Dashboard = () => {
               <SummaryWidget dataKey='Services' dataValue={services} />
             </motion.div>
             <motion.div variants={item}>
-              <SummaryWidget dataKey='Contexts' dataValue={contexts} textColor='text-green-500' />
+              <SummaryWidget dataKey='Clusters' dataValue={contexts} textColor='text-green-500' />
             </motion.div>
           </motion.div>
         </div>
