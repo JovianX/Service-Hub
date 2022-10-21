@@ -9,13 +9,14 @@
 
                 Create X-as-a-Service on Kubernetes with Helm
 ```
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
-![Discord](https://img.shields.io/discord/1014893148599754894)
-
 
 JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
-<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">⭐ Star the project if you like it 🤩</a></td><td> 👍 <a href="https://github.com/JovianX/Service-Hub/pulls">PRs are welcome</a> </td><td><a href="https://discord.gg/CmFvFJDXZv">💬 Join Discord</a></td></tr></tbody></table>
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
+
+![Discord](https://img.shields.io/discord/1014893148599754894)
+
+<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">⭐ Star the project if you like it 🤩</a></td><td>👍 <a href="https://github.com/JovianX/Service-Hub/pulls">PRs are welcome</a></td><td><a href="https://discord.gg/CmFvFJDXZv">💬 Join Discord</a></td></tr></tbody></table>
 
 ---
 
@@ -30,7 +31,7 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 *   **Login with GitHub**
 *   **Basic RBAC**
 
-## 🚀 Roadmap (WIP)
+## 🚀 Roadmap
 
 *   **Application Templates**
     *   Create application templates and reversion
@@ -39,10 +40,11 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 *   **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
 *   **RBAC** - Role-based access control
 *   **Login with Google**
+*   **Instal the project via Helm Chart** 
 
 # 👷 Installation
 
-<table><tbody><tr><td>Service-Hub SaaS at👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a> 🌎</td></tr></tbody></table>
+<table><tbody><tr><td>🌎 &nbsp;Service-Hub SaaS at &nbsp; &nbsp;👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a>&nbsp;</td></tr></tbody></table>
 
 ### OR
 
@@ -58,7 +60,13 @@ Change directory to `service-hub`
 cd service-hub
 ```
 
-Start the project
+Build the project Docker images 
+
+```
+make build
+```
+
+Start the project(starts Docker-compose)
 
 ```
 make up
