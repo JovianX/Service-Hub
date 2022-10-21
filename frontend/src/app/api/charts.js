@@ -14,3 +14,9 @@ export const getChartList = async () => await axios.get(`${CHART_API_PATH}/list`
 export const chartInstall = async (chart) => await axios.post(`${CHART_API_PATH}/install`, chart, config);
 export const getNamespacesList = async (param) =>
   await axios.get(`${KUBERNETES_API_NAMESPACE}/list?context_name=${param}`);
+
+export const getDefaultValues = async (chartName) => {
+  const { application_name, repository_name } = chartName;
+
+  return await axios.get(`${CHART_API_PATH}/default-values?chart_name=${repository_name}/${application_name}`);
+};
