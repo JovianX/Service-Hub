@@ -95,8 +95,10 @@ xdg-open 'http://localhost:3000'
 
 
 
-[<img src="" width="50%">](https://www.youtube.com/watch?v=gkUHn_gnS1c "Now in Android: 55")
 
+[![Now in Android: 55]          // Title
+(https://i.ytimg.com/vi/Hc79sDi3f0U/maxresdefault.jpg)] // Thumbnail
+([https://www.youtube.com/watch?v=Hc79sDi3f0U](https://www.youtube.com/watch?v=gkUHn_gnS1c) "Now in Android: 55")    // Video Link
 
 
 # Documentation
