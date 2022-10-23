@@ -10,18 +10,23 @@
                 Create X-as-a-Service on Kubernetes with Helm
 ```
 
-[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua) 
+![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
+
+  
+ 
+
 ![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub) ![Discord](https://img.shields.io/discord/1014893148599754894) 
+
+  
+ 
+
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
+
+![Discord](https://img.shields.io/discord/1014893148599754894)
 
 JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
-<div align="center">
-
 <table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">⭐ Star the project if you like it 🤩</a></td><td>👍 <a href="https://github.com/JovianX/Service-Hub/pulls">PRs are welcome</a></td><td><a href="https://discord.gg/CmFvFJDXZv">💬 Join Discord</a></td></tr></tbody></table>
-</div>
-
-
 
 ---
 
@@ -35,18 +40,17 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
     *   Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
 *   **Application Templates**
     *   Create application templates and reversion
-    *   Allow operators to create applications from templates    
+    *   Allow operators to create applications from templates
 *   **Login with GitHub**
 *   **Basic RBAC**
 
 ## 🚀 Roadmap
 
-
 *   **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc')
 *   **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
 *   **RBAC** - Role-based access control
 *   **Login with Google**
-*   **Instal the project via Helm Chart** 
+*   **Instal the project via Helm Chart**
 
 # 👷 Installation
 
@@ -86,8 +90,14 @@ xdg-open 'http://localhost:3000'
 
 # 🤽‍♀️ Getting Strated - Usage
 
-1.  Sign up
+1.  Sign up 
 2.  Add your cluster
+
+
+
+[<img src="" width="50%">](https://www.youtube.com/watch?v=gkUHn_gnS1c "Now in Android: 55")
+
+
 
 # Documentation
 
@@ -97,6 +107,6 @@ For product documentation refer to the [Documentation Folder](documentation/READ
 
 Copyright 2022 JovianX Ltd.
 
-Licensed under GNU AFFERO GENERAL PUBLIC LICENSE(AGPL). 
+Licensed under GNU AFFERO GENERAL PUBLIC LICENSE(AGPL).
 
 ![JovianX](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png)
