@@ -1,6 +1,7 @@
+# JovianX Serivce-Hub
 
-# JovianX Serivce-Hub 
 ![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
+
 ```
        JovianX
          _____                         _                   _    _           _
@@ -13,12 +14,17 @@
                 Create X-as-a-Service on Kubernetes with Helm
 ```
 
-
-
 ![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
-![Discord](https://img.shields.io/discord/1014893148599754894)
 
+  
+ 
+
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
+
+  
+ 
+
+![Discord](https://img.shields.io/discord/1014893148599754894)
 
 JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
@@ -85,10 +91,10 @@ xdg-open 'http://localhost:3000'
 ```
 
 # 🤽‍♀️ Getting Strated - Usage
+1. Create account with email/Password or GitHub login
+2. Add your Kubernetes cluster
 
-
-[<img src="https://i.ytimg.com/vi/gkUHn_gnS1c/maxresdefault.jpg" width="100%">](https://www.youtube.com/watch?v=gkUHn_gnS1c "Getting Started")
-
+![](https://i.ytimg.com/vi/gkUHn_gnS1c/maxresdefault.jpg)
 
 # Documentation
 
