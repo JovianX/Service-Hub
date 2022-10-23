@@ -87,8 +87,9 @@ xdg-open 'http://localhost:3000'
 2. Add your Kubernetes cluster
 
 
-[![Watch the video](https://raw.githubusercontent.com/JovianX/Service-Hub/main/documentation/JovianX_Service_Hub_Getting_Started.gif)](https://www.youtube.com/watch?v=gkUHn_gnS1c)
+![](https://raw.githubusercontent.com/JovianX/Service-Hub/main/documentation/JovianX_Service_Hub_Getting_Started.gif)
 
+https://www.youtube.com/watch?v=gkUHn_gnS1c
 
 # Documentation
 
