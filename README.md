@@ -1,4 +1,5 @@
 
+# JovianX Serivce-Hub 
 ![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
 ```
        JovianX
@@ -87,10 +88,7 @@ xdg-open 'http://localhost:3000'
 
 
 
-[![Watch the video](https://img.youtube.com/vi/gkUHn_gnS1c/default.jpg)](https://youtu.be/gkUHn_gnS1c)
-
-
-
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/gkUHn_gnS1c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 # Documentation
