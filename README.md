@@ -85,7 +85,11 @@ xdg-open 'http://localhost:3000'
 
 # 🤽‍♀️ Getting Strated - Usage
 
-[![Watch the video][(https://img.youtube.com/vi/gkUHn_gnS1c/default.jpg)](https://www.youtube.com/watch?v=gkUHn_gnS1c)
+
+
+[![Watch the video](https://img.youtube.com/vi/gkUHn_gnS1c/default.jpg)](https://youtu.be/gkUHn_gnS1c)
+
+
 
 
 
