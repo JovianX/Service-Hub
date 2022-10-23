@@ -1,6 +1,7 @@
 # JovianX Serivce-Hub
+JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
-![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
+
 
 ```
        JovianX
@@ -17,8 +18,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
 ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
 ![Discord](https://img.shields.io/discord/1014893148599754894)
-
-JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
+![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
 
 <table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers">⭐ Star the project if you like it 🤩</a></td><td>👍 <a href="https://github.com/JovianX/Service-Hub/pulls">PRs are welcome</a></td><td><a href="https://discord.gg/CmFvFJDXZv">💬 Join Discord</a></td></tr></tbody></table>
 
