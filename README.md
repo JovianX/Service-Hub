@@ -57,29 +57,9 @@ Clone the repo locally
 
 ```
 git clone https://github.com/JovianX/service-hub.git
-```
-
-Change directory to `service-hub`
-
-```
 cd service-hub
-```
-
-Build the project Docker images 
-
-```
 make build
-```
-
-Start the project(starts Docker-compose)
-
-```
 make up
-```
-
-Open your browser and go to `localhost:3000` :
-
-```
 xdg-open 'http://localhost:3000'
 ```
 
