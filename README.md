@@ -80,6 +80,6 @@ For product documentation refer to the [Documentation Folder](documentation/READ
 
 Copyright 2022 JovianX Ltd.
 
-Licensed under GNU AFFERO GENERAL PUBLIC LICENSE(AGPL).
+Licensed under the Apache License, Version 2.0 (the "License");
 
 ![JovianX](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png)
