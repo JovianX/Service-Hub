@@ -16,7 +16,6 @@ export const setUser = createAsyncThunk('user/setUser', async (user, { dispatch,
   if (user.loginRedirectUrl) {
     settingsConfig.loginRedirectUrl = user.loginRedirectUrl; // for example 'apps/academy'
   }
-
   return user;
 });
 
@@ -40,25 +39,19 @@ export const updateUserShortcuts = createAsyncThunk(
         shortcuts,
       },
     };
-
     dispatch(updateUserData(newUser));
-
     return newUser;
   },
 );
 
 export const logoutUser = () => async (dispatch, getState) => {
   const { user } = getState();
-
   // if (!user.role || user.role.length === 0) {
   //   // is guest
   //   return null;
   // }
-
   history.push({ pathname: '/sign-in' });
-
   dispatch(setInitialSettings());
-
   return dispatch(userLoggedOut());
 };
 
@@ -67,7 +60,6 @@ export const updateUserData = (user) => async (dispatch, getState) => {
     // is guest
     return;
   }
-
   jwtService
     .updateUserData(user)
     .then(() => {

@@ -5,6 +5,7 @@ import {
   getUsersList as getUsersListAPI,
   activateUser as activateUserAPi,
   deactivateUser as deactivateUserAPI,
+  changeUserRole as changeUserRoleAPI,
 } from '../api';
 
 export const getUsersList = createAsyncThunk('users/getUsersList', async () => {
@@ -45,6 +46,27 @@ export const deactivateUser = createAsyncThunk('users/deactivateUser', async (id
     return data;
   } catch (e) {
     console.log(e);
+  }
+});
+
+export const changeUserRole = createAsyncThunk('users/changeUserRole', async (userData) => {
+  try {
+    const response = await changeUserRoleAPI(userData);
+    return {
+      status: 'success',
+      data: response.data,
+    };
+  } catch (e) {
+    if (e.response.data?.message) {
+      return {
+        status: 'error',
+        message: e.response.data.message,
+      };
+    }
+    return {
+      status: 'error',
+      message: 'Failed to change role',
+    };
   }
 });
 
