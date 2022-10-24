@@ -30,6 +30,7 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 *   **Helm Manager**
     *   Manage Helm Releases, Monitor application Health, Set Releases TTL, Update release values, Upgrade versions, Manage repositories, etc'
+    *   Manage Helm Releases across multiple clusters.
     *   Helm Restful API - Full restful API for Helm
     *   Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
 *   **Application Templates**
