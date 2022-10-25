@@ -1,4 +1,4 @@
-# JovianX Serivce-Hub
+# JovianX Service-Hub
 
 JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
 
@@ -34,9 +34,10 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 *   Manage template changes and reversions.
 *   Allow operators to create applications from templates.
 
-| Application Templates | Self-Service Deployment  |
+| Application Templates | Self-Service Deployment |
 | --- | --- |
 | 
+
 ![](https://user-images.githubusercontent.com/2787296/197898326-c2057c4f-5b8c-4c76-a34e-1296dfa311d1.png)
 
  | 
@@ -45,13 +46,16 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
  |
 
+|
+
+|
+
 **Helm Manager**
 
 *   Manage Helm Releases, Monitor application Health, Set Releases TTL, Update release values, Upgrade versions, Manage repositories, etc'
 *   Manage Helm Releases across multiple clusters.
 *   Helm Restful API - Full restful API for Helm
-*   Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.  
-     
+*   Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
 
 ![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
 
