@@ -26,7 +26,7 @@ const ReleaseTable = ({ release, ttl, health }) => {
             </TableHead>
 
             <TableBody>
-              <TableRow key={release.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableRow>
                 <TableCell align='left'>{release.name}</TableCell>
                 <TableCell align='left'>
                   <Stack>

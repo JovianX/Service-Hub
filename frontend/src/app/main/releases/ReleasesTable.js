@@ -191,20 +191,25 @@ const ReleasesTable = () => {
 
               <TableBody>
                 {releases?.map((row, index) => (
-                  <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell
-                      align='left'
-                      onClick={() => {
-                        navigate(row.name, {
-                          state: {
-                            release: row,
-                            ttl: ttls[index],
-                            health: healthRows[index],
-                          },
-                        });
-                      }}
-                    >
-                      <div className='hover:cursor-pointer underline'>{row.name}</div>
+                  <TableRow
+                    key={`${row.namespace}-${row.name}`}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell align='left'>
+                      <div
+                        className='hover:cursor-pointer underline'
+                        onClick={() => {
+                          navigate(`${row.namespace}-${row.name}`, {
+                            state: {
+                              release: row,
+                              ttl: ttls[index],
+                              health: healthRows[index],
+                            },
+                          });
+                        }}
+                      >
+                        {row.name}
+                      </div>
                     </TableCell>
 
                     <TableCell align='left'>
@@ -224,9 +229,7 @@ const ReleasesTable = () => {
                     <TableCell align='left'>{checkTrimString(row.context_name, 50, 15)}</TableCell>
                     <TableCell align='left'>{row.chart}</TableCell>
                     <TableCell align='left'>{row.application_version}</TableCell>
-                    <TableCell align='left'>
-                      <TableCell align='left'>{getPresent(row.updated)}</TableCell>
-                    </TableCell>
+                    <TableCell align='left'>{getPresent(row.updated)}</TableCell>
                     <TableCell lign='left'>{ttls[index] ? getPresent(ttls[index]) : ''}</TableCell>
                     <TableCell align='left'>{row.revision}</TableCell>
                     <TableCell align='left'>
