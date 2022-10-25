@@ -42,8 +42,7 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 ![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
 
-\*\*Login with GitHub or email/password \*\*
-
+**Login with GitHub or email/password **
 **Basic RBAC**
 
 ## 🚀 Roadmap
