@@ -14,6 +14,7 @@ import {
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
@@ -23,13 +24,21 @@ import DialogModal from 'app/shared-components/DialogModal';
 import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
 
 import { getReleaseHealth, getReleaseTtl } from '../../api';
-import { checkTrimString, getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
+import {
+  checkTrimString,
+  getSelectItemsFromArray,
+  getUniqueKeysFromTableData,
+  getColorForStatus,
+  getPresent,
+} from '../../uitls';
 
 import ReleasesFilters from './ReleasesFilters';
 import TtlModal from './ttlModal';
 
 const ReleasesTable = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [namespaces, setNamespaces] = useState([]);
   const [clusters, setClusters] = useState([]);
   const [releases, setReleases] = useState([]);
@@ -140,27 +149,6 @@ const ReleasesTable = () => {
     await dispatch(getReleases());
   };
 
-  const handleStatusColor = (color) => {
-    if (
-      color === 'unknown' ||
-      color === 'uninstalling' ||
-      color === 'pending_install' ||
-      color === 'pending_upgrade' ||
-      color === 'pending_rollback'
-    ) {
-      return 'warning';
-    }
-    if (color === 'uninstalled' || color === 'superseded' || color === 'failed' || color === 'unhealthy') {
-      return 'error';
-    }
-    if (color === 'deployed') {
-      return 'info';
-    }
-    if (color === 'healthy') {
-      return 'success';
-    }
-  };
-
   if (isLoading) {
     return (
       <div className='w-full flex flex-col min-h-full'>
@@ -204,14 +192,28 @@ const ReleasesTable = () => {
               <TableBody>
                 {releases?.map((row, index) => (
                   <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell align='left'>{row.name}</TableCell>
+                    <TableCell
+                      align='left'
+                      onClick={() => {
+                        navigate(row.name, {
+                          state: {
+                            release: row,
+                            ttl: ttls[index],
+                            health: healthRows[index],
+                          },
+                        });
+                      }}
+                    >
+                      <div className='hover:cursor-pointer underline'>{row.name}</div>
+                    </TableCell>
+
                     <TableCell align='left'>
                       {healthRows[index] ? (
                         <Stack>
                           <Chip
                             className='capitalize'
                             label={healthRows[index]}
-                            color={handleStatusColor(healthRows[index])}
+                            color={getColorForStatus(healthRows[index])}
                           />
                         </Stack>
                       ) : (
@@ -223,17 +225,13 @@ const ReleasesTable = () => {
                     <TableCell align='left'>{row.chart}</TableCell>
                     <TableCell align='left'>{row.application_version}</TableCell>
                     <TableCell align='left'>
-                      {new Date(+row.updated * 1000).toLocaleString().replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1')}
+                      <TableCell align='left'>{getPresent(row.updated)}</TableCell>
                     </TableCell>
-                    <TableCell lign='left'>
-                      {ttls[index]
-                        ? new Date(+ttls[index] * 1000).toLocaleString().replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1')
-                        : ''}
-                    </TableCell>
+                    <TableCell lign='left'>{ttls[index] ? getPresent(ttls[index]) : ''}</TableCell>
                     <TableCell align='left'>{row.revision}</TableCell>
                     <TableCell align='left'>
                       <Stack>
-                        <Chip label={row.status} color={handleStatusColor(row.status)} />
+                        <Chip label={row.status} color={getColorForStatus(row.status)} />
                       </Stack>
                     </TableCell>
                     <TableCell align='left'>

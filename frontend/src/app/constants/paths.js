@@ -6,6 +6,7 @@ export const PATHS = {
   CLUSTERS: 'clusters',
   DASHBOARD: 'dashboard',
   RELEASES: 'releases',
+  RELEASE_DETAILS: 'releases/:id',
   REPOSITORIES: 'repositories',
   TEMPLATES: 'templates',
   SIGN_IN: 'sign-in',
