@@ -46,7 +46,7 @@ const navigationConfig = [
     title: 'Helm',
     translate: 'HELM',
     type: 'group',
-    icon: 'heroicons-outline:chart-pie',
+    icon: 'heroicons-outline:view-grid-add',
     children: [
       {
         id: 'releases-component',
@@ -86,7 +86,7 @@ const navigationConfig = [
         title: 'Clusters',
         translate: 'CLUSTERS',
         type: 'item',
-        icon: 'heroicons-outline:collection',
+        icon: 'material-outline:anchor',
         url: 'clusters',
       },
       {
