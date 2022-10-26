@@ -6,6 +6,8 @@ from uuid import UUID
 from pydantic import BaseModel
 from pydantic import Field
 
+from constants.roles import Roles
+
 
 class UserResponseSchema(BaseModel):
     """
@@ -15,6 +17,7 @@ class UserResponseSchema(BaseModel):
     email: str = Field(description='User email')
     is_active: bool = Field(description='Is user currently active')
     is_verified: bool = Field(description='Was user email verified')
+    role: Roles = Field(description='User role')
 
     class Config:
         orm_mode = True
