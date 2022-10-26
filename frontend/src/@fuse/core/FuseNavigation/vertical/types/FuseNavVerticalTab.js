@@ -81,9 +81,8 @@ function FuseNavVerticalTab(props) {
             selectedId === item.id && 'active',
             'fuse-list-item flex flex-col items-center justify-center p-12',
           )}
-          onClick={() => onItemClick && onItemClick(item)}
+          onMouseOver={() => onItemClick && onItemClick(item)}
           role='button'
-          // disabled={item.disabled}
         >
           {dense ? (
             <Tooltip title={item.title || ''} placement='right'>
