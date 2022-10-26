@@ -45,11 +45,37 @@ const UsersTable = () => {
   const handleDeleteUser = (id) => {
     dispatch(deleteUser(id));
   };
-  const handleActivate = (id) => {
-    dispatch(activateUser(id));
+  const handleActivate = async (id) => {
+    await dispatch(activateUser(id)).then((res) => {
+      setUsers((users) => {
+        users = users.map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              is_active: !item.isActive,
+            };
+          }
+          return item;
+        });
+        return users;
+      });
+    });
   };
-  const handleDeactivate = (id) => {
-    dispatch(deactivateUser(id));
+  const handleDeactivate = async (id) => {
+    await dispatch(deactivateUser(id)).then((res) => {
+      setUsers((users) => {
+        users = users.map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              is_active: false,
+            };
+          }
+          return item;
+        });
+        return users;
+      });
+    });
   };
 
   useEffect(() => {
@@ -116,7 +142,6 @@ const UsersTable = () => {
                                 <Button
                                   className='ml-5'
                                   onClick={() => {
-                                    setDeleteId(row.id);
                                     setOpenDeactivateModal(!openDeactivateModal);
                                   }}
                                   variant='text'
@@ -146,7 +171,7 @@ const UsersTable = () => {
                                   {openActivateModal && (
                                     <UserDialogModal
                                       options={{
-                                        id: deleteId,
+                                        id: row.id,
                                         isOpenModal: true,
                                         title: 'Activate user',
                                         confirmText: 'Activate',
@@ -157,12 +182,19 @@ const UsersTable = () => {
                                 </Button>
                               )}
                             </div>
-                            <Button onClick={() => setOpenDeleteModal(!openDeleteModal)} variant='text' color='error'>
+                            <Button
+                              onClick={() => {
+                                setDeleteId(row.id);
+                                setOpenDeleteModal(!openDeleteModal);
+                              }}
+                              variant='text'
+                              color='error'
+                            >
                               <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                               {openDeleteModal && (
                                 <UserDialogModal
                                   options={{
-                                    id: row.id,
+                                    id: deleteId,
                                     isOpenModal: true,
                                     title: 'Delete user',
                                     confirmText: 'Delete',
