@@ -11,8 +11,7 @@ import {
 export const getInvitationsList = createAsyncThunk('invitations/getInvitationsList', async () => {
   try {
     const response = await getInvitationsListAPI();
-    const data = await response.data;
-    return data;
+    return response.data;
   } catch (e) {
     console.log(e);
     return [];
@@ -22,21 +21,36 @@ export const getInvitationsList = createAsyncThunk('invitations/getInvitationsLi
 export const addInvitation = createAsyncThunk('invitations/addInvitation', async ({ user }) => {
   try {
     const response = await addInvitationAPI(user);
-    const data = await response.data;
-    return data;
+    return response.data;
   } catch (e) {
-    console.log(e);
-    return [];
+    if (e?.response.data.message) {
+      return {
+        status: 'error',
+        message: e.response.data.message,
+      };
+    }
+    return {
+      status: 'error',
+      message: 'Failed to add invite',
+    };
   }
 });
 
 export const deleteInvitation = createAsyncThunk('invitations/deleteInvitation', async (id) => {
   try {
     const response = await deleteInvitationAPI(id);
-    const data = await response.data;
-    return data;
+    return response.data;
   } catch (e) {
-    console.log(e);
+    if (e?.response.data.message) {
+      return {
+        status: 'error',
+        message: e.response.data.message,
+      };
+    }
+    return {
+      status: 'error',
+      message: 'Failed to delete invite',
+    };
   }
 });
 
@@ -44,13 +58,19 @@ export const sendInvitation = createAsyncThunk('invitations/sendInvitation', asy
   try {
     await sendInvitationAPI(id);
     return {
-      text: 'Invitation sent successfully',
       status: 'success',
+      message: 'Invitation sent successfully',
     };
   } catch (e) {
+    if (e?.response.data.message) {
+      return {
+        status: 'error',
+        message: e.response.data.message,
+      };
+    }
     return {
-      text: e.response.data.message,
       status: 'error',
+      message: 'Failed to send invite',
     };
   }
 });
@@ -69,10 +89,6 @@ const invitationsSlice = createSlice({
   initialState: {
     isLoading: false,
     invitations: [],
-    infoMessage: {
-      text: ' ',
-      status: ' ',
-    },
   },
   reducers: {},
   extraReducers: {
@@ -88,42 +104,40 @@ const invitationsSlice = createSlice({
       ...state,
       isLoading: false,
     }),
-    [addInvitation.fulfilled]: (state, { payload }) => ({
-      invitations: [...state.invitations, payload],
+    [addInvitation.fulfilled]: (state) => ({
+      ...state,
       isLoading: false,
     }),
-    [addInvitation.pending]: (state, { payload }) => ({
+    [addInvitation.pending]: (state) => ({
       ...state,
       isLoading: true,
     }),
-    [addInvitation.rejected]: (state, { payload }) => ({
+    [addInvitation.rejected]: (state) => ({
       ...state,
       isLoading: false,
     }),
-    [deleteInvitation.fulfilled]: (state, { payload }) => ({
-      invitations: payload,
+    [deleteInvitation.fulfilled]: (state) => ({
+      ...state,
       isLoading: false,
     }),
-    [deleteInvitation.pending]: (state, { payload }) => ({
+    [deleteInvitation.pending]: (state) => ({
       ...state,
       isLoading: true,
     }),
-    [deleteInvitation.rejected]: (state, { payload }) => ({
+    [deleteInvitation.rejected]: (state) => ({
       ...state,
       isLoading: false,
     }),
-    [sendInvitation.fulfilled]: (state, { payload }) => ({
+    [sendInvitation.fulfilled]: (state) => ({
       ...state,
-      infoMessage: payload,
+      isLoading: false,
     }),
-    [sendInvitation.pending]: (state, { payload }) => ({
+    [sendInvitation.pending]: (state) => ({
       ...state,
-      infoMessage: {},
     }),
   },
 });
 
-export const selectInfoMessage = ({ invitations }) => invitations.infoMessage;
 export const selectInvitation = ({ invitations }) => invitations.invitations;
 export const selectIsInvitationsLoading = ({ invitations }) => invitations.isLoading;
 

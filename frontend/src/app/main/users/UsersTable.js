@@ -1,3 +1,4 @@
+import { Chip } from '@mui/material';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -14,6 +15,7 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { selectIsInvitationsLoading } from 'app/store/invitationsSlice';
+import { selectUser } from 'app/store/userSlice';
 import {
   getUsersList,
   activateUser,
@@ -23,14 +25,19 @@ import {
   selectIsUsersLoading,
 } from 'app/store/usersSlice';
 
+import ChangeRoleSelect from './ChangeRoleSelect';
 import UserDialogModal from './UserDialogModal';
 
-const InvitationsTable = () => {
+const UsersTable = () => {
   const dispatch = useDispatch();
   const usersData = useSelector(selectUsers);
   const isLoading = useSelector(selectIsUsersLoading);
   const isTableLoading = useSelector(selectIsInvitationsLoading);
+  const user = useSelector(selectUser);
 
+  const [userId, setUserId] = useState('');
+  const [users, setUsers] = useState([]);
+  const [deleteId, setDeleteId] = useState('');
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openDeactivateModal, setOpenDeactivateModal] = useState(false);
   const [openActivateModal, setOpenActivateModal] = useState(false);
@@ -38,12 +45,46 @@ const InvitationsTable = () => {
   const handleDeleteUser = (id) => {
     dispatch(deleteUser(id));
   };
-  const handleActivate = (id) => {
-    dispatch(activateUser(id));
+  const handleActivate = async (id) => {
+    await dispatch(activateUser(id)).then((res) => {
+      setUsers((users) => {
+        users = users.map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              is_active: !item.isActive,
+            };
+          }
+          return item;
+        });
+        return users;
+      });
+    });
   };
-  const handleDeactivate = (id) => {
-    dispatch(deactivateUser(id));
+  const handleDeactivate = async (id) => {
+    await dispatch(deactivateUser(id)).then((res) => {
+      setUsers((users) => {
+        users = users.map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              is_active: false,
+            };
+          }
+          return item;
+        });
+        return users;
+      });
+    });
   };
+
+  useEffect(() => {
+    setUsers(usersData);
+  }, [usersData]);
+
+  useEffect(() => {
+    setUserId(user.id);
+  }, [user]);
 
   useEffect(() => {
     dispatch(getUsersList());
@@ -64,7 +105,7 @@ const InvitationsTable = () => {
   return (
     <>
       <div className='w-full flex flex-col mt-[50px]'>
-        {usersData.length ? (
+        {users.length ? (
           <Typography variant='h4' component='h4' className='mx-24'>
             Active Users
           </Typography>
@@ -73,30 +114,36 @@ const InvitationsTable = () => {
         )}
         <Paper className='h-full mx-24 rounded mt-12'>
           <FuseScrollbars className='grow overflow-x-auto'>
-            {usersData.length && (
+            {users.length ? (
               <TableContainer>
                 <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
                   <TableHead>
                     <TableRow>
                       <TableCell>Email</TableCell>
                       <TableCell>Status</TableCell>
+                      <TableCell align='center'>Role</TableCell>
                       <TableCell align='center' className='w-1/5'>
                         Actions
                       </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {usersData.map((row) => (
+                    {users.map((row) => (
                       <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                         <TableCell align='left'>{row.email}</TableCell>
                         <TableCell align='left'>{row.is_active ? 'Active' : 'Not active'}</TableCell>
+                        <TableCell align='center'>
+                          {row.id === userId ? <Chip label={row.role} /> : <ChangeRoleSelect user={row} />}
+                        </TableCell>
                         <TableCell align='right'>
                           <div className='flex justify-end'>
                             <div className='text-left w-[90px]'>
                               {row.is_active ? (
                                 <Button
                                   className='ml-5'
-                                  onClick={() => setOpenDeactivateModal(!openDeactivateModal)}
+                                  onClick={() => {
+                                    setOpenDeactivateModal(!openDeactivateModal);
+                                  }}
                                   variant='text'
                                   color='error'
                                 >
@@ -135,12 +182,19 @@ const InvitationsTable = () => {
                                 </Button>
                               )}
                             </div>
-                            <Button onClick={() => setOpenDeleteModal(!openDeleteModal)} variant='text' color='error'>
+                            <Button
+                              onClick={() => {
+                                setDeleteId(row.id);
+                                setOpenDeleteModal(!openDeleteModal);
+                              }}
+                              variant='text'
+                              color='error'
+                            >
                               <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                               {openDeleteModal && (
                                 <UserDialogModal
                                   options={{
-                                    id: row.id,
+                                    id: deleteId,
                                     isOpenModal: true,
                                     title: 'Delete user',
                                     confirmText: 'Delete',
@@ -156,6 +210,8 @@ const InvitationsTable = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+            ) : (
+              ''
             )}
           </FuseScrollbars>
         </Paper>
@@ -164,4 +220,4 @@ const InvitationsTable = () => {
   );
 };
 
-export default InvitationsTable;
+export default UsersTable;

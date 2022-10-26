@@ -6,9 +6,7 @@ const NavLinkAdapter = forwardRef(({ activeClassName, activeStyle, ...props }, r
     <BaseNavLink
       ref={ref}
       {...props}
-      className={({ isActive }) =>
-        [props.className, isActive ? activeClassName : null].filter(Boolean).join(' ')
-      }
+      className={({ isActive }) => [props.className, isActive ? activeClassName : null].filter(Boolean).join(' ')}
       style={({ isActive }) => ({
         ...props.style,
         ...(isActive ? activeStyle : null),

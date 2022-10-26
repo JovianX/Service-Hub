@@ -5,6 +5,7 @@ import {
   getUsersList as getUsersListAPI,
   activateUser as activateUserAPi,
   deactivateUser as deactivateUserAPI,
+  changeUserRole as changeUserRoleAPI,
 } from '../api';
 
 export const getUsersList = createAsyncThunk('users/getUsersList', async () => {
@@ -31,8 +32,7 @@ export const deleteUser = createAsyncThunk('users/deleteUser', async (id) => {
 export const activateUser = createAsyncThunk('users/activateUser', async (id) => {
   try {
     const response = await activateUserAPi(id);
-    const data = await response.data;
-    return data;
+    return response.data;
   } catch (e) {
     console.log(e);
   }
@@ -41,10 +41,30 @@ export const activateUser = createAsyncThunk('users/activateUser', async (id) =>
 export const deactivateUser = createAsyncThunk('users/deactivateUser', async (id) => {
   try {
     const response = await deactivateUserAPI(id);
-    const data = await response.data;
-    return data;
+    return response.data;
   } catch (e) {
     console.log(e);
+  }
+});
+
+export const changeUserRole = createAsyncThunk('users/changeUserRole', async (userData) => {
+  try {
+    const response = await changeUserRoleAPI(userData);
+    return {
+      status: 'success',
+      data: response.data,
+    };
+  } catch (e) {
+    if (e.response.data?.message) {
+      return {
+        status: 'error',
+        message: e.response.data.message,
+      };
+    }
+    return {
+      status: 'error',
+      message: 'Failed to change role',
+    };
   }
 });
 
@@ -65,23 +85,29 @@ const usersSlice = createSlice({
     [getUsersList.rejected]: (state) => ({
       ...state,
     }),
-    [deactivateUser.fulfilled]: (state, { payload }) => ({
-      users: payload,
+    [deactivateUser.fulfilled]: (state) => ({
+      ...state,
       isLoading: false,
     }),
-    [deactivateUser.pending]: (state, { payload }) => ({
+    [deactivateUser.pending]: (state) => ({
       ...state,
       isLoading: true,
     }),
-    [deactivateUser.rejected]: (state, { payload }) => ({
+    [deactivateUser.rejected]: (state) => ({
       ...state,
       isLoading: false,
     }),
-    [activateUser.fulfilled]: (state, { payload }) => ({
+    [activateUser.fulfilled]: (state) => ({
       ...state,
+      isLoading: false,
     }),
-    [deactivateUser.fulfilled]: (state, { payload }) => ({
+    [activateUser.pending]: (state) => ({
       ...state,
+      isLoading: true,
+    }),
+    [activateUser.rejected]: (state) => ({
+      ...state,
+      isLoading: false,
     }),
   },
 });
