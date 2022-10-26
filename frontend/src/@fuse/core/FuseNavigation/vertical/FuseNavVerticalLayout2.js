@@ -1,17 +1,16 @@
 import List from '@mui/material/List';
 import { styled, useTheme } from '@mui/material/styles';
 import clsx from 'clsx';
+
 import FuseNavVerticalTab from './types/FuseNavVerticalTab';
 
 const StyledList = styled(List)(({ theme }) => ({
   '& .fuse-list-item': {
     '&:hover': {
-      backgroundColor:
-        theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0,0,0,.04)',
+      backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0,0,0,.04)',
     },
     '&:focus:not(.active)': {
-      backgroundColor:
-        theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0,0,0,.05)',
+      backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0,0,0,.05)',
     },
   },
   '& .fuse-list-item-text-primary': {
@@ -27,8 +26,7 @@ const StyledList = styled(List)(({ theme }) => ({
 }));
 
 function FuseNavVerticalLayout2(props) {
-  const { navigation, layout, active, dense, className, onItemClick, firstLevel, selectedId } =
-    props;
+  const { navigation, layout, active, dense, className, onItemClick, firstLevel, selectedId } = props;
   const theme = useTheme();
 
   function handleItemClick(item) {
@@ -41,7 +39,7 @@ function FuseNavVerticalLayout2(props) {
         'navigation whitespace-nowrap items-center flex flex-col',
         `active-${active}-list`,
         dense && 'dense',
-        className
+        className,
       )}
     >
       {navigation.map((_item) => (

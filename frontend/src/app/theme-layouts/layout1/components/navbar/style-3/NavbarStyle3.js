@@ -11,7 +11,7 @@ import NavbarStyle3Content from './NavbarStyle3Content';
 
 const navbarWidth = 120;
 const navbarWidthDense = 64;
-const panelWidth = 280;
+const panelWidth = 180;
 
 const StyledNavBar = styled('div')(({ theme, dense, open, folded, position }) => ({
   minWidth: navbarWidth,
@@ -77,7 +77,7 @@ const StyledNavBarMobile = styled(SwipeableDrawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
     '& #fuse-navbar-side-panel': {
       minWidth: 'auto',
-      wdith: 'auto',
+      width: 'auto',
     },
     '& #fuse-navbar-panel': {
       opacity: '1!important',

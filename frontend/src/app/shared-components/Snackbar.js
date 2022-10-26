@@ -7,7 +7,7 @@ const SnackbarMessage = ({ status, message, showMessage, setShowMessage }) => {
   };
 
   return (
-    <Snackbar open={showMessage} autoHideDuration={6000} onClose={handleClose}>
+    <Snackbar open={showMessage} autoHideDuration={6000} onClose={handleClose} className='left-[177px]'>
       <Alert onClose={handleClose} severity={status === 'error' ? 'error' : 'success'} sx={{ width: '100%' }}>
         {message}
       </Alert>
