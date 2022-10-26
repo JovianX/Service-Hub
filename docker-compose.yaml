@@ -8,6 +8,7 @@ services:
       args:
         HELM_VERSION: ${HELM_VERSION}
         KUBECTL_VERSION: ${KUBECTL_VERSION}
+    image: back-end
     volumes:
       - ./application:/home/app/hub
       - ./credentials:/home/app/hub/credentials
@@ -25,6 +26,27 @@ services:
       ENV_FILE: .env
     depends_on:
       - postgres
+
+  task-executor:
+    image: back-end
+    command: ./start-task-executor.sh
+    volumes:
+      - ./application:/home/app/hub
+      - ./credentials:/home/app/hub/credentials
+      - ./.env:/home/app/hub/.env
+    networks:
+      - service-network
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
+      TEST_DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
+      FILE_STORAGE_ROOT: /tmp
+      SECRETS_DIRECTORY: credentials
+      UI_HOST: http://localhost:3000
+      ENV_FILE: .env
+      PYTHONPATH: .
+    depends_on:
+      - postgres
+      - application
 
   frontend:
     build:

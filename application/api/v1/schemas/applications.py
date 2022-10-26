@@ -7,6 +7,7 @@ from typing import Any
 from pydantic import BaseModel
 from pydantic import Field
 
+from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
 
 from .common import OrganizationResponseSchema
@@ -78,7 +79,8 @@ class ApplicationResponseSchema(BaseModel):
     name: str = Field(description='Name of application')
     description: str | None = Field(description='Application description')
     manifest: str = Field(description='Rendered template with which application was deployed or upgraded')
-    status: ApplicationStatuses = Field(description='Application condition statuses')
+    status: ApplicationStatuses = Field(description='Application condition status')
+    health: ApplicationHealthStatuses = Field(description='Application application health condition')
     context_name: str = Field(description='')
     namespace: str = Field(description='')
     user_inputs: dict = Field(description='')
