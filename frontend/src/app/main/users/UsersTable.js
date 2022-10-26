@@ -36,6 +36,8 @@ const UsersTable = () => {
   const user = useSelector(selectUser);
 
   const [userId, setUserId] = useState('');
+  const [users, setUsers] = useState([]);
+  const [deleteId, setDeleteId] = useState('');
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openDeactivateModal, setOpenDeactivateModal] = useState(false);
   const [openActivateModal, setOpenActivateModal] = useState(false);
@@ -49,6 +51,10 @@ const UsersTable = () => {
   const handleDeactivate = (id) => {
     dispatch(deactivateUser(id));
   };
+
+  useEffect(() => {
+    setUsers(usersData);
+  }, [usersData]);
 
   useEffect(() => {
     setUserId(user.id);
@@ -73,7 +79,7 @@ const UsersTable = () => {
   return (
     <>
       <div className='w-full flex flex-col mt-[50px]'>
-        {usersData.length ? (
+        {users.length ? (
           <Typography variant='h4' component='h4' className='mx-24'>
             Active Users
           </Typography>
@@ -82,7 +88,7 @@ const UsersTable = () => {
         )}
         <Paper className='h-full mx-24 rounded mt-12'>
           <FuseScrollbars className='grow overflow-x-auto'>
-            {usersData.length ? (
+            {users.length ? (
               <TableContainer>
                 <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
                   <TableHead>
@@ -96,7 +102,7 @@ const UsersTable = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {usersData.map((row) => (
+                    {users.map((row) => (
                       <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                         <TableCell align='left'>{row.email}</TableCell>
                         <TableCell align='left'>{row.is_active ? 'Active' : 'Not active'}</TableCell>
@@ -109,7 +115,10 @@ const UsersTable = () => {
                               {row.is_active ? (
                                 <Button
                                   className='ml-5'
-                                  onClick={() => setOpenDeactivateModal(!openDeactivateModal)}
+                                  onClick={() => {
+                                    setDeleteId(row.id);
+                                    setOpenDeactivateModal(!openDeactivateModal);
+                                  }}
                                   variant='text'
                                   color='error'
                                 >
@@ -137,7 +146,7 @@ const UsersTable = () => {
                                   {openActivateModal && (
                                     <UserDialogModal
                                       options={{
-                                        id: row.id,
+                                        id: deleteId,
                                         isOpenModal: true,
                                         title: 'Activate user',
                                         confirmText: 'Activate',

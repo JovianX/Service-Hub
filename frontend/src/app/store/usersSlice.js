@@ -32,8 +32,7 @@ export const deleteUser = createAsyncThunk('users/deleteUser', async (id) => {
 export const activateUser = createAsyncThunk('users/activateUser', async (id) => {
   try {
     const response = await activateUserAPi(id);
-    const data = await response.data;
-    return data;
+    return response.data;
   } catch (e) {
     console.log(e);
   }
@@ -42,8 +41,7 @@ export const activateUser = createAsyncThunk('users/activateUser', async (id) =>
 export const deactivateUser = createAsyncThunk('users/deactivateUser', async (id) => {
   try {
     const response = await deactivateUserAPI(id);
-    const data = await response.data;
-    return data;
+    return response.data;
   } catch (e) {
     console.log(e);
   }
@@ -87,23 +85,29 @@ const usersSlice = createSlice({
     [getUsersList.rejected]: (state) => ({
       ...state,
     }),
-    [deactivateUser.fulfilled]: (state, { payload }) => ({
-      users: payload,
+    [deactivateUser.fulfilled]: (state) => ({
+      ...state,
       isLoading: false,
     }),
-    [deactivateUser.pending]: (state, { payload }) => ({
+    [deactivateUser.pending]: (state) => ({
       ...state,
       isLoading: true,
     }),
-    [deactivateUser.rejected]: (state, { payload }) => ({
+    [deactivateUser.rejected]: (state) => ({
       ...state,
       isLoading: false,
     }),
-    [activateUser.fulfilled]: (state, { payload }) => ({
+    [activateUser.fulfilled]: (state) => ({
       ...state,
+      isLoading: false,
     }),
-    [deactivateUser.fulfilled]: (state, { payload }) => ({
+    [activateUser.pending]: (state) => ({
       ...state,
+      isLoading: true,
+    }),
+    [activateUser.rejected]: (state) => ({
+      ...state,
+      isLoading: false,
     }),
   },
 });
