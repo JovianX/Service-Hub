@@ -90,6 +90,7 @@ class ApplicationManager:
                 'description': '',
                 'manifest': manifest,
                 'status': ApplicationStatuses.running,
+                'health': ApplicationHealthStatuses.unhealthy,
                 'context_name': context_name,
                 'namespace': namespace,
                 'user_inputs': inputs,
@@ -317,6 +318,12 @@ class ApplicationManager:
         Returns list of organization's application records.
         """
         return await self.db.list(organization_id=organization.id)
+
+    async def list_all_applications(self) -> list[Application]:
+        """
+        Returns list of all application records.
+        """
+        return await self.db.list()
 
 
 async def get_application_manager(
