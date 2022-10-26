@@ -81,7 +81,7 @@ async def delete_user(
         await user_manager.delete(user_record)
 
 
-@router.post('/roles/set', dependencies=[Depends(AuthorizedUser())])
+@router.post('/role/set', dependencies=[Depends(AuthorizedUser())])
 async def set_user_role(
     data: SetUserRoleRequestSchema = Body(description='User role data'),
     user: User = Depends(current_active_user),

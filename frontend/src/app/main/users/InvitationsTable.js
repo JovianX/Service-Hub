@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import SnackbarMessage from 'app/shared-components/Snackbar';
 import {
   sendInvitation,
   deleteInvitation,
@@ -24,7 +25,6 @@ import {
   getInvitationsList,
   selectIsInvitationsLoading,
   selectInvitation,
-  selectInfoMessage,
 } from 'app/store/invitationsSlice';
 
 import UserDialogModal from './UserDialogModal';
@@ -41,22 +41,51 @@ const InvitationsTable = () => {
   const emailInputRef = useRef();
   const dispatch = useDispatch();
   const invitationsData = useSelector(selectInvitation);
-  const infoMessage = useSelector(selectInfoMessage);
   const isLoading = useSelector(selectIsInvitationsLoading);
 
+  const [deleteId, setDeleteId] = useState('');
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [snackbarInfo, setSnackbarInfo] = useState({
+    status: '',
+    message: '',
+  });
+  const [showMessage, setShowMessage] = useState(false);
+  const [invitations, setInvitations] = useState([]);
 
-  const handleDeleteUser = (id) => {
-    dispatch(deleteInvitation(id));
+  useEffect(() => {
+    setInvitations(invitationsData);
+  }, [invitationsData]);
+
+  const handleDeleteUser = async (id) => {
+    await dispatch(deleteInvitation(id)).then((res) => {
+      setShowMessage(true);
+      if (res.payload.status === 'error') {
+        setSnackbarInfo({ status: res.payload.status, message: res.payload.message });
+      } else {
+        setInvitations((invitations) => [...invitations.filter((item) => item.id !== id)]);
+        setSnackbarInfo({ status: 'success', message: 'Invite successfully deleted' });
+      }
+    });
   };
-  const handleInvite = (id) => {
-    dispatch(sendInvitation(id));
+  const handleInvite = async (id) => {
+    await dispatch(sendInvitation(id)).then((res) => {
+      setShowMessage(true);
+      setSnackbarInfo({ status: res.payload.status, message: res.payload.message });
+    });
   };
 
-  const handleSubmitCreate = (e) => {
+  const handleSubmitCreate = async (e) => {
     e.preventDefault();
     const user = { email: e.target.email.value, expiration_period: +e.target.expiration_period.value };
-    dispatch(addInvitation({ user }));
+    await dispatch(addInvitation({ user })).then((res) => {
+      setShowMessage(true);
+      if (res.payload.status === 'error') {
+        setSnackbarInfo({ status: res.payload.status, message: res.payload.message });
+      } else {
+        setInvitations((invitations) => [...invitations, res.payload]);
+        setSnackbarInfo({ status: 'success', message: 'Invite successfully added' });
+      }
+    });
   };
 
   useEffect(() => {
@@ -73,12 +102,7 @@ const InvitationsTable = () => {
 
   return (
     <>
-      <div className='min-h-[70px] m-12 flex justify-between items-center'>
-        {infoMessage?.status === 'success' ? (
-          <div className='py-[20px] ml-[20px] text-l text-green-400'>{infoMessage?.text}</div>
-        ) : (
-          <div className='py-[20px] ml-[20px] text-l text-red-400'>{infoMessage?.text}</div>
-        )}
+      <div className='min-h-[70px] m-12 flex justify-end items-center'>
         <form onSubmit={handleSubmitCreate} className='flex justify-center items-center'>
           <TextField
             inputRef={emailInputRef}
@@ -110,7 +134,7 @@ const InvitationsTable = () => {
       </div>
 
       <div className='w-full flex flex-col'>
-        {invitationsData.length ? (
+        {invitations.length ? (
           <Typography variant='h4' component='h4' className='mx-24'>
             Invites
           </Typography>
@@ -119,7 +143,7 @@ const InvitationsTable = () => {
         )}
         <Paper className='h-full mx-24 rounded mt-12'>
           <FuseScrollbars className='grow overflow-x-auto'>
-            {invitationsData.length ? (
+            {invitations.length ? (
               <TableContainer>
                 <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
                   <TableHead>
@@ -135,7 +159,7 @@ const InvitationsTable = () => {
                   </TableHead>
 
                   <TableBody>
-                    {invitationsData.map(
+                    {invitations.map(
                       (row) =>
                         row.status === 'pending' && (
                           <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -164,7 +188,10 @@ const InvitationsTable = () => {
                                   </Button>
                                 </div>
                                 <Button
-                                  onClick={() => setOpenDeleteModal(!openDeleteModal)}
+                                  onClick={() => {
+                                    setDeleteId(row.id);
+                                    setOpenDeleteModal(!openDeleteModal);
+                                  }}
                                   variant='text'
                                   color='error'
                                 >
@@ -172,7 +199,7 @@ const InvitationsTable = () => {
                                   {openDeleteModal && (
                                     <UserDialogModal
                                       options={{
-                                        id: row.id,
+                                        id: deleteId,
                                         isOpenModal: true,
                                         title: 'Delete user',
                                         confirmText: 'Delete',
@@ -209,6 +236,12 @@ const InvitationsTable = () => {
           </FuseScrollbars>
         </Paper>
       </div>
+      <SnackbarMessage
+        status={snackbarInfo?.status}
+        message={snackbarInfo?.message}
+        showMessage={showMessage}
+        setShowMessage={setShowMessage}
+      />
     </>
   );
 };

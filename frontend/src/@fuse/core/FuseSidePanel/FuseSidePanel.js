@@ -1,13 +1,15 @@
-import FuseScrollbars from '@fuse/core/FuseScrollbars';
-import { styled } from '@mui/material/styles';
 import Fab from '@mui/material/Fab';
 import Hidden from '@mui/material/Hidden';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import { memo, useState } from 'react';
+
+import FuseScrollbars from '@fuse/core/FuseScrollbars';
+
 import FuseSvgIcon from '../FuseSvgIcon';
 
 const Root = styled('div')(({ theme }) => ({
@@ -78,13 +80,10 @@ const Root = styled('div')(({ theme }) => ({
       '& .FuseSidePanel-button': {
         backgroundColor: theme.palette.background.paper,
         borderRadius: 38,
-        transition: theme.transitions.create(
-          ['background-color', 'border-radius', 'width', 'min-width', 'padding'],
-          {
-            easing: theme.transitions.easing.easeInOut,
-            duration: theme.transitions.duration.shorter,
-          }
-        ),
+        transition: theme.transitions.create(['background-color', 'border-radius', 'width', 'min-width', 'padding'], {
+          easing: theme.transitions.easing.easeInOut,
+          duration: theme.transitions.duration.shorter,
+        }),
         width: 24,
         '&:hover': {
           width: 52,
@@ -141,13 +140,10 @@ const Root = styled('div')(({ theme }) => ({
     borderRadius: 38,
     padding: 8,
     backgroundColor: theme.palette.background.paper,
-    transition: theme.transitions.create(
-      ['background-color', 'border-radius', 'width', 'min-width', 'padding'],
-      {
-        easing: theme.transitions.easing.easeInOut,
-        duration: theme.transitions.duration.shorter,
-      }
-    ),
+    transition: theme.transitions.create(['background-color', 'border-radius', 'width', 'min-width', 'padding'], {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.shorter,
+    }),
     '&:hover': {
       width: 52,
       paddingLeft: 8,
@@ -193,28 +189,16 @@ function FuseSidePanel(props) {
             props.className,
             opened ? 'opened' : 'closed',
             props.position,
-            'shadow-lg'
+            'shadow-lg',
           )}
           square
         >
-          <FuseScrollbars className={clsx('content', 'FuseSidePanel-content')}>
-            {props.children}
-          </FuseScrollbars>
+          <FuseScrollbars className={clsx('content', 'FuseSidePanel-content')}>{props.children}</FuseScrollbars>
 
-          <div className="FuseSidePanel-buttonWrapper">
-            <Tooltip
-              title="Toggle side panel"
-              placement={props.position === 'left' ? 'right' : 'right'}
-            >
-              <IconButton
-                className="FuseSidePanel-button"
-                onClick={toggleOpened}
-                disableRipple
-                size="large"
-              >
-                <FuseSvgIcon className="FuseSidePanel-buttonIcon">
-                  heroicons-outline:chevron-left
-                </FuseSvgIcon>
+          <div className='FuseSidePanel-buttonWrapper'>
+            <Tooltip title='Toggle side panel' placement={props.position === 'left' ? 'right' : 'right'}>
+              <IconButton className='FuseSidePanel-button' onClick={toggleOpened} disableRipple size='large'>
+                <FuseSvgIcon className='FuseSidePanel-buttonIcon'>heroicons-outline:chevron-left</FuseSvgIcon>
               </IconButton>
             </Tooltip>
           </div>
@@ -231,20 +215,16 @@ function FuseSidePanel(props) {
           onClose={toggleMobileDrawer}
           disableSwipeToOpen
         >
-          <FuseScrollbars className={clsx('content', 'FuseSidePanel-content')}>
-            {props.children}
-          </FuseScrollbars>
+          <FuseScrollbars className={clsx('content', 'FuseSidePanel-content')}>{props.children}</FuseScrollbars>
         </SwipeableDrawer>
 
-        <Tooltip title="Hide side panel" placement={props.position === 'left' ? 'right' : 'right'}>
+        <Tooltip title='Hide side panel' placement={props.position === 'left' ? 'right' : 'right'}>
           <Fab
             className={clsx('FuseSidePanel-mobileButton', props.position)}
             onClick={toggleMobileDrawer}
             disableRipple
           >
-            <FuseSvgIcon className="FuseSidePanel-buttonIcon">
-              heroicons-outline:chevron-right
-            </FuseSvgIcon>
+            <FuseSvgIcon className='FuseSidePanel-buttonIcon'>heroicons-outline:chevron-right</FuseSvgIcon>
           </Fab>
         </Tooltip>
       </Hidden>
