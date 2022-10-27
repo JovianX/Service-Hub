@@ -66,10 +66,10 @@ const ApplicationsTable = () => {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Status</TableCell>
-                  <TableCell>Template Name</TableCell>
-                  <TableCell>Template Reversion</TableCell>
-                  <TableCell>Creator email</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell>Template</TableCell>
+                  <TableCell>Reversion</TableCell>
+                  <TableCell>Created By</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
 

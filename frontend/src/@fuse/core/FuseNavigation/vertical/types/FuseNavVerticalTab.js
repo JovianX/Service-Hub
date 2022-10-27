@@ -70,7 +70,7 @@ function FuseNavVerticalTab(props) {
 
   return useMemo(
     () => (
-      <Root sx={item.sx}>
+      <Root sx={item.sx} onMouseEnter={() => onItemClick && onItemClick(item)}>
         <ListItem
           component={item.url && NavLinkAdapter}
           to={item.url}
@@ -81,9 +81,7 @@ function FuseNavVerticalTab(props) {
             selectedId === item.id && 'active',
             'fuse-list-item flex flex-col items-center justify-center p-12',
           )}
-          onClick={() => onItemClick && onItemClick(item)}
           role='button'
-          // disabled={item.disabled}
         >
           {dense ? (
             <Tooltip title={item.title || ''} placement='right'>
@@ -131,19 +129,23 @@ function FuseNavVerticalTab(props) {
             </>
           )}
         </ListItem>
-        {!firstLevel &&
-          item.children &&
-          item.children.map((_item) => (
-            <NavVerticalTab
-              key={_item.id}
-              type={`vertical-${_item.type}`}
-              item={_item}
-              nestedLevel={0}
-              onItemClick={onItemClick}
-              dense={dense}
-              selectedId={selectedId}
-            />
-          ))}
+        <div className='hidden group-hover:block'>
+          {!firstLevel &&
+            item.children &&
+            item.children.map((_item) => (
+              <>
+                <NavVerticalTab
+                  key={_item.id}
+                  type={`vertical-${_item.type}`}
+                  item={_item}
+                  nestedLevel={0}
+                  onItemClick={onItemClick}
+                  dense={dense}
+                  selectedId={selectedId}
+                />
+              </>
+            ))}
+        </div>
       </Root>
     ),
     [firstLevel, item, onItemClick, dense, selectedId],

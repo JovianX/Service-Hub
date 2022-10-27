@@ -17,19 +17,16 @@ const StyledNavBar = styled('div')(({ theme, dense, open, folded, position }) =>
   minWidth: navbarWidth,
   width: navbarWidth,
   maxWidth: navbarWidth,
-
   ...(dense && {
     minWidth: navbarWidthDense,
     width: navbarWidthDense,
     maxWidth: navbarWidthDense,
-
     ...(!open && {
       ...(position === 'left' && { marginLeft: -navbarWidthDense }),
 
       ...(position === 'right' && { marginRight: -navbarWidthDense }),
     }),
   }),
-
   ...(!folded && {
     minWidth: dense ? navbarWidthDense + panelWidth : navbarWidth + panelWidth,
     width: dense ? navbarWidthDense + panelWidth : navbarWidth + panelWidth,
@@ -39,18 +36,15 @@ const StyledNavBar = styled('div')(({ theme, dense, open, folded, position }) =>
       opacity: '1!important',
       pointerEvents: 'initial!important',
     },
-
     ...(!open && {
       ...(position === 'left' && {
         marginLeft: -(dense ? navbarWidthDense + panelWidth : navbarWidth + panelWidth),
       }),
-
       ...(position === 'right' && {
         marginRight: -(dense ? navbarWidthDense + panelWidth : navbarWidth + panelWidth),
       }),
     }),
   }),
-
   ...(!open && {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
@@ -59,12 +53,10 @@ const StyledNavBar = styled('div')(({ theme, dense, open, folded, position }) =>
     ...(position === 'left' && {
       marginLeft: -(dense ? navbarWidthDense : navbarWidth),
     }),
-
     ...(position === 'right' && {
       marginRight: -(dense ? navbarWidthDense : navbarWidth),
     }),
   }),
-
   ...(open && {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
