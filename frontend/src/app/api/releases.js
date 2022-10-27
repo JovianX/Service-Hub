@@ -42,3 +42,11 @@ export const deleteReleaseTtl = async (context_name, namespase, release_name) =>
       namespase,
     },
   });
+
+export const getTubValues = async (context_name, namespase, release_name, values_name) =>
+  await axios.get(`/api/v1/helm/release/${release_name}/${values_name}`, {
+    params: {
+      context_name,
+      namespase,
+    },
+  });

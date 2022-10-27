@@ -1,10 +1,51 @@
 import { Chip, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { useState, useEffect } from 'react';
 
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 
+import { getReleaseHealth, getReleaseTtl } from '../../../api';
 import { checkTrimString, getColorForStatus, getPresent } from '../../../uitls';
 
 const ReleaseTable = ({ release, ttl, health }) => {
+  const [releaseData, setReleaseData] = useState({});
+  const [ttlData, setTtlData] = useState('');
+  const [healthData, setHealthData] = useState('');
+
+  useEffect(() => {
+    setReleaseData({
+      context_name: release.context_name,
+      namespace: release.namespace,
+      name: release.name,
+    });
+  }, [release]);
+
+  useEffect(() => {
+    setTtlData(ttl);
+  }, [ttl]);
+
+  useEffect(() => {
+    setHealthData(health);
+  }, [health]);
+
+  useEffect(() => {
+    if (!ttlData && releaseData?.name) {
+      const fetchData = async () => {
+        await getReleaseTtl(releaseData.context_name, releaseData.namespace, releaseData.name).then((res) => {
+          setTtlData(res.data.scheduled_time);
+        });
+      };
+      fetchData();
+    }
+    if (!healthData && releaseData?.name) {
+      const fetchData = async () => {
+        await getReleaseHealth(releaseData.context_name, releaseData.namespace, releaseData.name).then((res) => {
+          setHealthData(res.data.status);
+        });
+      };
+      fetchData();
+    }
+  }, [releaseData]);
+
   return (
     <Paper className='h-100 rounded mt-12'>
       <FuseScrollbars className='grow overflow-x-auto'>
@@ -30,7 +71,11 @@ const ReleaseTable = ({ release, ttl, health }) => {
                 <TableCell align='left'>{release.name}</TableCell>
                 <TableCell align='left'>
                   <Stack>
-                    <Chip className='capitalize' label={health} color={getColorForStatus(health)} />
+                    {healthData ? (
+                      <Chip className='capitalize' label={healthData} color={getColorForStatus(healthData)} />
+                    ) : (
+                      ''
+                    )}
                   </Stack>
                 </TableCell>
                 <TableCell align='left'>{checkTrimString(release.namespace, 50, 15)}</TableCell>
@@ -38,7 +83,7 @@ const ReleaseTable = ({ release, ttl, health }) => {
                 <TableCell align='left'>{release.chart}</TableCell>
                 <TableCell align='left'>{release.application_version}</TableCell>
                 <TableCell align='left'>{getPresent(release.updated)}</TableCell>
-                <TableCell lign='left'>{ttl ? getPresent(ttl) : ''}</TableCell>
+                <TableCell lign='left'>{ttlData ? getPresent(ttlData) : ''}</TableCell>
                 <TableCell align='left'>{release.revision}</TableCell>
                 <TableCell align='left'>
                   <Stack>

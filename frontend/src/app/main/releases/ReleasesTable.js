@@ -20,8 +20,7 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import withRouter from '@fuse/core/withRouter';
-import DialogModal from 'app/shared-components/DialogModal';
-import { deleteRelease, getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
+import { getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
 
 import { getReleaseHealth, getReleaseTtl } from '../../api';
 import {
@@ -32,6 +31,7 @@ import {
   getPresent,
 } from '../../uitls';
 
+import ReleasesDeleteModal from './ReleasesDeleteModal';
 import ReleasesFilters from './ReleasesFilters';
 import TtlModal from './ttlModal';
 
@@ -44,14 +44,14 @@ const ReleasesTable = () => {
   const [releases, setReleases] = useState([]);
   const [selectedNamespace, setSelectedNamespace] = useState('all');
   const [selectedCluster, setSelectedCluster] = useState('all');
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [releaseToDelete, setReleaseToDelete] = useState(null);
   const [healthRows, setHealthRows] = useState({});
   const [ttls, setTtls] = useState({});
   const [selectedParameters, setSelectedParameters] = useState({});
   const [refresh, setRefresh] = useState(false);
-
   const [openModal, setOpenModal] = useState(false);
+
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openDeleteInfo, setOpenDeleteInfo] = useState({});
 
   const releasesData = useSelector(selectReleases);
   const isLoading = useSelector(selectIsReleasesLoading);
@@ -115,38 +115,12 @@ const ReleasesTable = () => {
     }
   }
 
-  const handleSelectedNamespace = (event) => {
-    setSelectedNamespace(event.target.value);
+  const handleSelectedNamespace = (e) => {
+    setSelectedNamespace(e.target.value);
   };
 
-  const handleSelectedCluster = (event) => {
-    setSelectedCluster(event.target.value);
-  };
-
-  const toggleDeleteModalOpen = () => {
-    setIsDeleteModalOpen(!isDeleteModalOpen);
-  };
-
-  const handleDeleteRelease = ({ namespace, context_name, name }) => {
-    setReleaseToDelete({
-      namespace,
-      context_name,
-      name,
-    });
-
-    toggleDeleteModalOpen();
-  };
-
-  const handleDeleteCancel = () => {
-    toggleDeleteModalOpen();
-    setReleaseToDelete(null);
-  };
-
-  const handleDeleteConfirm = async () => {
-    await dispatch(deleteRelease(releaseToDelete));
-    toggleDeleteModalOpen();
-    setReleaseToDelete(null);
-    await dispatch(getReleases());
+  const handleSelectedCluster = (e) => {
+    setSelectedCluster(e.target.value);
   };
 
   if (isLoading) {
@@ -192,14 +166,14 @@ const ReleasesTable = () => {
               <TableBody>
                 {releases?.map((row, index) => (
                   <TableRow
-                    key={`${row.namespace}-${row.name}`}
+                    key={`${row.namespace}-${row.name}-${row.context_name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell align='left'>
                       <div
                         className='hover:cursor-pointer underline'
                         onClick={() => {
-                          navigate(`${row.namespace}-${row.name}`, {
+                          navigate(`${row.namespace}-${row.name}-${row.context_name}`, {
                             state: {
                               release: row,
                               ttl: ttls[index],
@@ -255,7 +229,18 @@ const ReleasesTable = () => {
                         >
                           <AutoDeleteOutlinedIcon />
                         </Button>
-                        <Button variant='text' color='error' onClick={() => handleDeleteRelease(row)}>
+                        <Button
+                          variant='text'
+                          color='error'
+                          onClick={() => {
+                            setOpenDeleteModal(true);
+                            setOpenDeleteInfo({
+                              name: row.name,
+                              namespace: row.namespace,
+                              context_name: row.context_name,
+                            });
+                          }}
+                        >
                           <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                         </Button>
                       </ButtonGroup>
@@ -274,17 +259,18 @@ const ReleasesTable = () => {
         </FuseScrollbars>
       </Paper>
 
-      <DialogModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleDeleteCancel}
-        title={`Delete release ${releaseToDelete?.name}`}
-        text='Are you sure you want to proceed?'
-        onCancel={handleDeleteCancel}
-        cancelText='Cancel'
-        onConfirm={handleDeleteConfirm}
-        confirmText='Delete'
-        fullWidth
-      />
+      {openDeleteModal && (
+        <ReleasesDeleteModal
+          options={{
+            title: `Delete release ${openDeleteInfo.name}?`,
+            text: 'Are you sure you want to proceed',
+            confirmText: 'Delete',
+          }}
+          openDeleteModal={openDeleteModal}
+          setOpenDeleteModal={setOpenDeleteModal}
+          openDeleteInfo={openDeleteInfo}
+        />
+      )}
     </div>
   );
 };

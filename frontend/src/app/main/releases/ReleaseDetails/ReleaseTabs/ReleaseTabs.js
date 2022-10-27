@@ -4,8 +4,7 @@ import Tabs from '@mui/material/Tabs';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 
-import HelmReleaseDetailsTab from './HelmReleaseDetailsTab';
-import KubernetesResourcesTab from './KubernetesResources/KubernetesResourcesTab';
+import HelmReleaseDetails from './HelmReleaseDetails';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -36,7 +35,7 @@ function a11yProps(index) {
   };
 }
 
-const ReleaseTabs = () => {
+const ReleaseTabs = ({ release }) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -47,15 +46,11 @@ const ReleaseTabs = () => {
     <Box sx={{ width: '100%', marginTop: 4 }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label='basic tabs example'>
-          <Tab label='Kubernetes resources' {...a11yProps(0)} />
-          <Tab label='Helm release details' {...a11yProps(1)} />
+          <Tab label='Helm release details' {...a11yProps(0)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <KubernetesResourcesTab />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <HelmReleaseDetailsTab />
+        <HelmReleaseDetails release={release} />
       </TabPanel>
     </Box>
   );
