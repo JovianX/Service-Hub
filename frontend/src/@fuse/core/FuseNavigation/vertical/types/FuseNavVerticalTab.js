@@ -70,14 +70,7 @@ function FuseNavVerticalTab(props) {
 
   return useMemo(
     () => (
-      <Root
-        sx={item.sx}
-        onMouseEnter={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          return onItemClick && onItemClick(item);
-        }}
-      >
+      <Root sx={item.sx} onMouseEnter={() => onItemClick && onItemClick(item)}>
         <ListItem
           component={item.url && NavLinkAdapter}
           to={item.url}
@@ -136,19 +129,23 @@ function FuseNavVerticalTab(props) {
             </>
           )}
         </ListItem>
-        {!firstLevel &&
-          item.children &&
-          item.children.map((_item) => (
-            <NavVerticalTab
-              key={_item.id}
-              type={`vertical-${_item.type}`}
-              item={_item}
-              nestedLevel={0}
-              onItemClick={onItemClick}
-              dense={dense}
-              selectedId={selectedId}
-            />
-          ))}
+        <div className='hidden group-hover:block'>
+          {!firstLevel &&
+            item.children &&
+            item.children.map((_item) => (
+              <>
+                <NavVerticalTab
+                  key={_item.id}
+                  type={`vertical-${_item.type}`}
+                  item={_item}
+                  nestedLevel={0}
+                  onItemClick={onItemClick}
+                  dense={dense}
+                  selectedId={selectedId}
+                />
+              </>
+            ))}
+        </div>
       </Root>
     ),
     [firstLevel, item, onItemClick, dense, selectedId],

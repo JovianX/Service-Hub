@@ -105,11 +105,10 @@ function NavbarStyle3Content(props) {
 
   return (
     <ClickAwayListener onClickAway={() => setPanelOpen(false)}>
-      <Root className={clsx('flex flex-auto flex h-full', props.className)}>
+      <Root className={clsx('flex flex-auto flex h-full group', props.className)}>
         <ThemeProvider theme={contrastTheme}>
-          <div id='fuse-navbar-side-panel' className='flex shrink-0 flex-col items-center'>
+          <div id='fuse-navbar-side-panel' className='flex shrink-0 flex-col items-center '>
             <img className='w-44 my-32' src='assets/images/logo-mini-white.png' alt='logo' />
-
             <FuseScrollbars
               className='flex flex-1 min-h-0 justify-center w-full overflow-y-auto overflow-x-hidden'
               option={{ suppressScrollX: true, wheelPropagation: false }}
@@ -128,19 +127,28 @@ function NavbarStyle3Content(props) {
         </ThemeProvider>
 
         {selectedNavigation.length > 0 && (
-          <StyledPanel
-            id='fuse-navbar-panel'
-            opened={panelOpen}
-            className={clsx('shadow-5 overflow-y-auto overflow-x-hidden flex flex-col justify-center')}
-            option={{ suppressScrollX: true, wheelPropagation: false }}
+          <div
+            onMouseLeave={() => {
+              setSelectedNavigation([]);
+              setPanelOpen(false);
+            }}
           >
-            <FuseNavigation
-              className={clsx('navigation')}
-              navigation={selectedNavigation}
-              layout='vertical'
-              onItemClick={handleChildItemClick}
-            />
-          </StyledPanel>
+            <StyledPanel
+              id='fuse-navbar-panel'
+              opened={panelOpen}
+              className={clsx(
+                'shadow-5 overflow-y-auto overflow-x-hidden flex flex-col justify-center hidden group-hover:flex',
+              )}
+              option={{ suppressScrollX: true, wheelPropagation: false }}
+            >
+              <FuseNavigation
+                className={clsx('navigation')}
+                navigation={selectedNavigation}
+                layout='vertical'
+                onItemClick={handleChildItemClick}
+              />
+            </StyledPanel>
+          </div>
         )}
       </Root>
     </ClickAwayListener>
