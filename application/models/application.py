@@ -3,6 +3,7 @@ Application model
 """
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -11,8 +12,15 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
+from constants.applications import ApplicationHealthStatuses
 from db.base_class import Base
 from db.fields import MutableJSON
+
+
+HealthStatus = Enum(
+    ApplicationHealthStatuses,
+    values_callable=lambda enum: [item.value for item in enum]
+)
 
 
 class Application(Base):
@@ -25,6 +33,7 @@ class Application(Base):
     description = Column(String, nullable=False, default='')
     manifest = Column(Text, nullable=False)
     status = Column(String, nullable=False)
+    health = Column(HealthStatus, nullable=False)
     context_name = Column(String, nullable=False)
     namespace = Column(String, nullable=False)
     user_inputs = Column(MutableJSON, nullable=False, default={})
