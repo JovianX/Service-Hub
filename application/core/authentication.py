@@ -59,7 +59,7 @@ class CustomPayloadJWTStrategy(JWTStrategy):
         return decode_jwt(token, self.decode_key, self.token_audience, algorithms=[self.algorithm])
 
 
-github_client = GitHubOAuth2(settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET)
+github_client = GitHubOAuth2(settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET, scopes=['user:email'])
 google_client = GoogleOAuth2(settings.GOOGLE_CLIENT_ID, settings.GOOGLE_CLIENT_SECRET)
 bearer_transport = BearerTransport(tokenUrl='api/v1/auth/jwt/login')
 
