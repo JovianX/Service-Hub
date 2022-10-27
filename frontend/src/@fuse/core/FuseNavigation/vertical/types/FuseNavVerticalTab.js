@@ -70,7 +70,14 @@ function FuseNavVerticalTab(props) {
 
   return useMemo(
     () => (
-      <Root sx={item.sx}>
+      <Root
+        sx={item.sx}
+        onMouseEnter={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          return onItemClick && onItemClick(item);
+        }}
+      >
         <ListItem
           component={item.url && NavLinkAdapter}
           to={item.url}
@@ -81,7 +88,6 @@ function FuseNavVerticalTab(props) {
             selectedId === item.id && 'active',
             'fuse-list-item flex flex-col items-center justify-center p-12',
           )}
-          onMouseOver={() => onItemClick && onItemClick(item)}
           role='button'
         >
           {dense ? (
