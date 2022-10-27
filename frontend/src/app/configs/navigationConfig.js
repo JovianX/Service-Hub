@@ -66,8 +66,8 @@ const navigationConfig = [
       },
       {
         id: 'repositories-component',
-        title: 'Repositories',
-        translate: 'REPOSITORIES',
+        title: 'Repos',
+        translate: 'REPOS',
         type: 'item',
         icon: 'heroicons-outline:archive',
         url: 'repositories',
@@ -86,7 +86,7 @@ const navigationConfig = [
         title: 'Clusters',
         translate: 'CLUSTERS',
         type: 'item',
-        icon: 'material-outline:anchor',
+        icon: 'heroicons-outline:collection',
         url: 'clusters',
       },
       {
