@@ -55,6 +55,7 @@ const ReleasesTable = () => {
 
   const releasesData = useSelector(selectReleases);
   const isLoading = useSelector(selectIsReleasesLoading);
+
   useEffect(() => {
     setReleases(releasesData);
     getHealthRows(releasesData);

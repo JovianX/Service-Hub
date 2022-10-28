@@ -1,15 +1,38 @@
-import { Chip, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
+import {
+  Button,
+  Chip,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { useState, useEffect } from 'react';
 
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
 import { getReleaseHealth, getReleaseTtl } from '../../../api';
 import { checkTrimString, getColorForStatus, getPresent } from '../../../uitls';
+import ReleasesDeleteModal from '../ReleasesDeleteModal';
+import TtlModal from '../ttlModal';
 
 const ReleaseTable = ({ release, ttl, health }) => {
   const [releaseData, setReleaseData] = useState({});
   const [ttlData, setTtlData] = useState('');
   const [healthData, setHealthData] = useState('');
+
+  const [refresh, setRefresh] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  const [selectedParameters, setSelectedParameters] = useState({});
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openDeleteInfo, setOpenDeleteInfo] = useState({});
 
   useEffect(() => {
     setReleaseData({
@@ -46,6 +69,17 @@ const ReleaseTable = ({ release, ttl, health }) => {
     }
   }, [releaseData]);
 
+  useEffect(() => {
+    if (releaseData?.name) {
+      const fetchData = async () => {
+        await getReleaseTtl(releaseData.context_name, releaseData.namespace, releaseData.name).then((res) => {
+          setTtlData(res.data.scheduled_time);
+        });
+      };
+      fetchData();
+    }
+  }, [refresh]);
+
   return (
     <Paper className='h-100 rounded mt-12'>
       <FuseScrollbars className='grow overflow-x-auto'>
@@ -63,6 +97,7 @@ const ReleaseTable = ({ release, ttl, health }) => {
                 <TableCell>TTL</TableCell>
                 <TableCell>Revision</TableCell>
                 <TableCell align='center'>Status</TableCell>
+                <TableCell align='center' />
               </TableRow>
             </TableHead>
 
@@ -90,11 +125,63 @@ const ReleaseTable = ({ release, ttl, health }) => {
                     <Chip label={release.status} color={getColorForStatus(release.status)} />
                   </Stack>
                 </TableCell>
+                <TableCell align='left'>
+                  <ButtonGroup aria-label='primary button group'>
+                    <Button
+                      variant='text'
+                      color='error'
+                      onClick={() => {
+                        setSelectedParameters({
+                          currentDate: ttlData,
+                          context_name: release.context_name,
+                          namespace: release.namespace,
+                          name: release.name,
+                        });
+                        setOpenModal(true);
+                      }}
+                    >
+                      <AutoDeleteOutlinedIcon />
+                    </Button>
+                    <Button
+                      variant='text'
+                      color='error'
+                      onClick={() => {
+                        setOpenDeleteModal(true);
+                        setOpenDeleteInfo({
+                          name: release.name,
+                          namespace: release.namespace,
+                          context_name: release.context_name,
+                        });
+                      }}
+                    >
+                      <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                    </Button>
+                  </ButtonGroup>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
+        <TtlModal
+          refresh={refresh}
+          setRefresh={setRefresh}
+          parameters={selectedParameters}
+          openModal={{ openModal, setOpenModal }}
+        />
       </FuseScrollbars>
+      {openDeleteModal && (
+        <ReleasesDeleteModal
+          options={{
+            title: `Delete release ${openDeleteInfo.name}?`,
+            text: 'Are you sure you want to proceed',
+            confirmText: 'Delete',
+            is_release_page: true,
+          }}
+          openDeleteModal={openDeleteModal}
+          setOpenDeleteModal={setOpenDeleteModal}
+          openDeleteInfo={openDeleteInfo}
+        />
+      )}
     </Paper>
   );
 };

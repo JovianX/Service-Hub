@@ -2,21 +2,21 @@ import MonacoEditor from '@uiw/react-monacoeditor';
 import YAML from 'json-to-pretty-yaml';
 import { useEffect, useState } from 'react';
 
-const ManifestsValue = ({ manifests }) => {
-  const [manifestsToString, setManifestsToString] = useState('');
+const HelmHooksValue = ({ helmHooks }) => {
+  const [helmHooksValue, setHelmHooksValue] = useState('');
 
   useEffect(() => {
-    setManifestsToString(YAML.stringify(manifests));
-  }, [manifests]);
+    setHelmHooksValue(YAML.stringify(helmHooks));
+  }, [helmHooks]);
 
   return (
     <MonacoEditor
-      height='627px'
-      value={manifestsToString || ''}
+      height='400px'
+      value={helmHooksValue || ''}
       language='yaml'
       options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
     />
   );
 };
 
-export default ManifestsValue;
+export default HelmHooksValue;

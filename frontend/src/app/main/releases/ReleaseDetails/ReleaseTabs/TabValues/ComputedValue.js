@@ -2,21 +2,21 @@ import MonacoEditor from '@uiw/react-monacoeditor';
 import YAML from 'json-to-pretty-yaml';
 import { useEffect, useState } from 'react';
 
-const ManifestsValue = ({ manifests }) => {
-  const [manifestsToString, setManifestsToString] = useState('');
+const ComputedValue = ({ computedValues }) => {
+  const [computedValuesValue, setComputedValuesValue] = useState('');
 
   useEffect(() => {
-    setManifestsToString(YAML.stringify(manifests));
-  }, [manifests]);
+    setComputedValuesValue(YAML.stringify(computedValues));
+  }, [computedValues]);
 
   return (
     <MonacoEditor
-      height='627px'
-      value={manifestsToString || ''}
+      height='350px'
+      value={computedValuesValue || ''}
       language='yaml'
       options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
     />
   );
 };
 
-export default ManifestsValue;
+export default ComputedValue;
