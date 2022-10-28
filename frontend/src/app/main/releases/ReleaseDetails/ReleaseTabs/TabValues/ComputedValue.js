@@ -6,7 +6,11 @@ const ComputedValue = ({ computedValues }) => {
   const [computedValuesValue, setComputedValuesValue] = useState('');
 
   useEffect(() => {
-    setComputedValuesValue(YAML.stringify(computedValues));
+    if (computedValues === undefined) {
+      setComputedValuesValue('Loading data...');
+    } else {
+      setComputedValuesValue(YAML.stringify(computedValues));
+    }
   }, [computedValues]);
 
   return (

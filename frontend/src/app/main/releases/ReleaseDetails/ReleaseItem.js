@@ -2,7 +2,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate, Navigate } from 'react-router-dom';
 
 import ReleaseTable from './ReleaseTable';
 import ReleaseTabs from './ReleaseTabs/ReleaseTabs';
@@ -22,6 +22,10 @@ const ReleaseItem = () => {
       setHealth(location.state.health);
     }
   }, [location]);
+
+  if (!location?.state?.release?.name) {
+    return <Navigate to='/404' />;
+  }
 
   return (
     <Box className='h-full m-24 rounded'>

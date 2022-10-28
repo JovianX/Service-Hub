@@ -6,7 +6,11 @@ const UserSuppliedValue = ({ userSupplied }) => {
   const [userSuppliedValue, setUserSuppliedValue] = useState('');
 
   useEffect(() => {
-    setUserSuppliedValue(YAML.stringify(userSupplied));
+    if (userSupplied === undefined) {
+      setUserSuppliedValue('Loading data...');
+    } else {
+      setUserSuppliedValue(YAML.stringify(userSupplied));
+    }
   }, [userSupplied]);
 
   return (

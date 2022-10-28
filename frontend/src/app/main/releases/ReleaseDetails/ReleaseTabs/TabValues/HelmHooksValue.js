@@ -6,7 +6,11 @@ const HelmHooksValue = ({ helmHooks }) => {
   const [helmHooksValue, setHelmHooksValue] = useState('');
 
   useEffect(() => {
-    setHelmHooksValue(YAML.stringify(helmHooks));
+    if (helmHooks === undefined) {
+      setHelmHooksValue('Loading data...');
+    } else {
+      setHelmHooksValue(YAML.stringify(helmHooks));
+    }
   }, [helmHooks]);
 
   return (

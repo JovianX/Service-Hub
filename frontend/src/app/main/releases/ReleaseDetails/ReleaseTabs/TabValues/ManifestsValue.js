@@ -6,13 +6,17 @@ const ManifestsValue = ({ manifests }) => {
   const [manifestsToString, setManifestsToString] = useState('');
 
   useEffect(() => {
-    setManifestsToString(YAML.stringify(manifests));
+    if (manifests === undefined) {
+      setManifestsToString('Loading data...');
+    } else {
+      setManifestsToString(YAML.stringify(manifests));
+    }
   }, [manifests]);
 
   return (
     <MonacoEditor
       height='627px'
-      value={manifestsToString || ''}
+      value={manifestsToString}
       language='yaml'
       options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
     />
