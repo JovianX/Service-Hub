@@ -35,7 +35,7 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 - Manage template changes and reversions.
 - Allow operators to create applications from templates.
 
-<table><tbody><tr><td>Application Template Reversioning</td><td>Developer Self-Service Experience</td></tr><tr><td><img src="https://user-images.githubusercontent.com/2787296/197898326-c2057c4f-5b8c-4c76-a34e-1296dfa311d1.png"></td><td><img src="https://user-images.githubusercontent.com/2787296/197898363-e82ae5dd-edf0-4a27-beae-ef8f558341c0.png"></td></tr></tbody></table>
+<table><tbody><tr><td>Application Templates</td><td>Self-Service</td></tr><tr><td><img src="https://user-images.githubusercontent.com/2787296/197898326-c2057c4f-5b8c-4c76-a34e-1296dfa311d1.png"></td><td><img src="https://user-images.githubusercontent.com/2787296/197898363-e82ae5dd-edf0-4a27-beae-ef8f558341c0.png"></td></tr></tbody></table>
 
 **Helm Manager**
 
