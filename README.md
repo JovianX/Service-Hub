@@ -1,6 +1,6 @@
 # JovianX Service-Hub
 
-JovianX **Service Hub** is a tool to create and manage on-demand services using Helm and Kubernetes (commonly used by Platform Engineers).
+JovianX **Service Hub** is a tool to create and manage on-demand services using Helm and Kubernetes (used by Platform Engineers).
 
 ```
        JovianX
