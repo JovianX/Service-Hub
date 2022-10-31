@@ -43,9 +43,9 @@ const HelmReleaseDetails = ({ release }) => {
   return (
     <Box>
       <Box className='my-12'>
-        <Accordion className='pb-8' expanded>
+        <Accordion className='pb-8' >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Notes:</Typography>
+            <Typography>Notes</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <NotesValue notes={tabValues?.notes} />
@@ -56,9 +56,9 @@ const HelmReleaseDetails = ({ release }) => {
       <Box sx={{ minHeight: 500 }} display='flex' gap='12px' className='mt-12'>
         <Box sx={{ width: '50%' }}>
           <Box className='mt-12'>
-            <Accordion className='pb-8' expanded>
+            <Accordion className='pb-8' defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography> User-Supplied Values:</Typography>
+                <Typography> User-Supplied Values</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <UserSuppliedValue userSupplied={tabValues?.user_supplied_values} />
@@ -69,7 +69,7 @@ const HelmReleaseDetails = ({ release }) => {
           <Box className='mt-12'>
             <Accordion className='pb-8'>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>Helm Hooks:</Typography>
+                <Typography>Helm Hooks</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <HelmHooksValue helmHooks={tabValues?.detailed_hooks} />
@@ -79,9 +79,9 @@ const HelmReleaseDetails = ({ release }) => {
         </Box>
         <Box sx={{ width: '50%' }}>
           <Box className='mt-12'>
-            <Accordion className='pb-8' expanded>
+            <Accordion className='pb-8' defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>Computed Values:</Typography>
+                <Typography>Computed Values</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <ComputedValue computedValues={tabValues?.computed_values} />
@@ -92,7 +92,7 @@ const HelmReleaseDetails = ({ release }) => {
           <Box className='mt-12'>
             <Accordion className='pb-8'>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>Manifests:</Typography>
+                <Typography>Manifests</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <ManifestsValue manifests={tabValues?.detailed_manifest} />
