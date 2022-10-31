@@ -151,10 +151,17 @@ components:                                     # Required. Application componen
 #     post_upgrade:
 #         Executed after successful application template change.
 #
+<<<<<<< HEAD
 #     pre_terminate:
 #         Executed before application termination.
 #
 #     post_terminate:
+=======
+#     pre_delete:
+#         Executed before application termination.
+#
+#     post_delete:
+>>>>>>> 7b75ff4 (Updated template documentation with description of hook examples.)
 #         Executed after successful application termination.
 hooks:
   pre_install:
