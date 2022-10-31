@@ -42,16 +42,30 @@ const HelmReleaseDetails = ({ release }) => {
 
   return (
     <Box>
+      <Box className='my-12'>
+        <Accordion className='pb-8' expanded>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Notes:</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <NotesValue notes={tabValues?.notes} />
+          </AccordionDetails>
+        </Accordion>
+      </Box>
+
       <Box sx={{ minHeight: 500 }} display='flex' gap='12px' className='mt-12'>
         <Box sx={{ width: '50%' }}>
-          <Box sx={[BoxStyles, { height: '220px' }]}>
-            <Typography variant='subtitle1'> User-Supplied Values:</Typography>
-            <UserSuppliedValue userSupplied={tabValues?.user_supplied_values} />
+          <Box className='mt-12'>
+            <Accordion className='pb-8' expanded>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography> User-Supplied Values:</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <UserSuppliedValue userSupplied={tabValues?.user_supplied_values} />
+              </AccordionDetails>
+            </Accordion>
           </Box>
-          <Box sx={[BoxStyles, { height: '420px' }]} className='mt-12'>
-            <Typography variant='subtitle1'>Computed Values:</Typography>
-            <ComputedValue computedValues={tabValues?.computed_values} />
-          </Box>
+
           <Box className='mt-12'>
             <Accordion className='pb-8'>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -64,10 +78,17 @@ const HelmReleaseDetails = ({ release }) => {
           </Box>
         </Box>
         <Box sx={{ width: '50%' }}>
-          <Box sx={[BoxStyles, { height: '425px' }]}>
-            <Typography variant='subtitle1'>Notes:</Typography>
-            <NotesValue notes={tabValues?.notes} />
+          <Box className='mt-12'>
+            <Accordion className='pb-8' expanded>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>Computed Values:</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <ComputedValue computedValues={tabValues?.computed_values} />
+              </AccordionDetails>
+            </Accordion>
           </Box>
+
           <Box className='mt-12'>
             <Accordion className='pb-8'>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>

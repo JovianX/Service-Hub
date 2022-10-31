@@ -15,7 +15,7 @@ const UserSuppliedValue = ({ userSupplied }) => {
 
   return (
     <MonacoEditor
-      height='150px'
+      height='250px'
       value={userSuppliedValue}
       language='yaml'
       options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}

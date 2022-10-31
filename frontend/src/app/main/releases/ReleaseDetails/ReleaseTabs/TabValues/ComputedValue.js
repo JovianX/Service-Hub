@@ -15,7 +15,7 @@ const ComputedValue = ({ computedValues }) => {
 
   return (
     <MonacoEditor
-      height='350px'
+      height='250px'
       value={computedValuesValue || ''}
       language='yaml'
       options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
