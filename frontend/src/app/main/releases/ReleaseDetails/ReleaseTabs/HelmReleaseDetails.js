@@ -1,3 +1,5 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
@@ -41,7 +43,7 @@ const HelmReleaseDetails = ({ release }) => {
   return (
     <Box>
       <Box sx={{ minHeight: 500 }} display='flex' gap='12px' className='mt-12'>
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '50%' }}>
           <Box sx={[BoxStyles, { height: '220px' }]}>
             <Typography variant='subtitle1'> User-Supplied Values:</Typography>
             <UserSuppliedValue userSupplied={tabValues?.user_supplied_values} />
@@ -50,19 +52,31 @@ const HelmReleaseDetails = ({ release }) => {
             <Typography variant='subtitle1'>Computed Values:</Typography>
             <ComputedValue computedValues={tabValues?.computed_values} />
           </Box>
-          <Box sx={[BoxStyles, { height: '470px' }]} className='mt-12'>
-            <Typography variant='subtitle1'>Helm Hooks:</Typography>
-            <HelmHooksValue helmHooks={tabValues?.detailed_hooks} />
+          <Box className='mt-12'>
+            <Accordion className='pb-8'>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>Helm Hooks:</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <HelmHooksValue helmHooks={tabValues?.detailed_hooks} />
+              </AccordionDetails>
+            </Accordion>
           </Box>
         </Box>
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '50%' }}>
           <Box sx={[BoxStyles, { height: '425px' }]}>
             <Typography variant='subtitle1'>Notes:</Typography>
             <NotesValue notes={tabValues?.notes} />
           </Box>
-          <Box sx={[BoxStyles, { height: '697px' }]} className='mt-12'>
-            <Typography variant='subtitle1'>Manifests:</Typography>
-            <ManifestsValue manifests={tabValues?.detailed_manifest} />
+          <Box className='mt-12'>
+            <Accordion className='pb-8'>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>Manifests:</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <ManifestsValue manifests={tabValues?.detailed_manifest} />
+              </AccordionDetails>
+            </Accordion>
           </Box>
         </Box>
       </Box>
