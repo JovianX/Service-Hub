@@ -16,7 +16,6 @@ from managers.templates import TemplateManager
 from managers.templates import get_template_manager
 from models.user import User
 
-from ..schemas.applications import ApplicationInstallResponseSchema
 from ..schemas.applications import ApplicationResponseSchema
 from ..schemas.applications import ApplicationUpgradeResponseSchema
 from ..schemas.applications import InstallRequestBodySchema
@@ -29,7 +28,7 @@ router = APIRouter()
 
 @router.post(
     '/install',
-    response_model=ApplicationInstallResponseSchema,
+    response_model=ApplicationResponseSchema,
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def install_application(

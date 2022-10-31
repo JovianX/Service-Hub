@@ -95,14 +95,6 @@ class ApplicationResponseSchema(BaseModel):
         }
 
 
-class ApplicationInstallResponseSchema(BaseModel):
-    """
-    Response body of application installation.
-    """
-    application: ApplicationResponseSchema | None = Field(description='Application database record')
-    results: dict[str, dict] = Field(description='Application installation result for each release')
-
-
 class ApplicationUpgradeResponseSchema(BaseModel):
     """
     Response body of application upgrade.
