@@ -3,7 +3,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 
-const steps = ['Create Account', 'Add a Kubernetes cluster'];
+const steps = ['Create Account', 'Add Kubernetes Cluster'];
 
 const ModalStepper = () => {
   return (
