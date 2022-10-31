@@ -1,10 +1,11 @@
 import AddIcon from '@mui/icons-material/Add';
-import {CardActions, CardContent, Chip, InputLabel} from '@mui/material';
+import { CardActions, CardContent, Chip } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -23,6 +24,8 @@ import ClusterModal from './ClusterModal';
 
 const ClustersBlocks = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const contextData = useSelector(selectContexts);
   const isLoading = useSelector(selectIsContextsLoading);
@@ -31,6 +34,13 @@ const ClustersBlocks = () => {
   useEffect(() => {
     dispatch(getContextList());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (location?.state?.openModal) {
+      setOpenModal(true);
+      navigate('', {});
+    }
+  }, [location]);
 
   const [contextToDelete, setContextToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

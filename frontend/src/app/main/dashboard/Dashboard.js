@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -14,11 +14,13 @@ import {
 } from 'app/store/dashboardSlice';
 
 import DashboardHeader from './DashboardHeader';
+import WelcomeModal from './DashboardModal/WelcomeModal';
 import SummaryWidget from './SummaryWidget';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const dashboardData = useSelector(selectCounts);
+  const [openModal, setOpenModal] = useState(false);
 
   const { releases, repositories, charts, contexts, unhealthy, services } = dashboardData;
 
@@ -30,6 +32,12 @@ const Dashboard = () => {
     dispatch(getUnhealthyCount());
     dispatch(getServicesCount());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (contexts === '-') {
+      setOpenModal(true);
+    }
+  }, [contexts]);
 
   const container = {
     show: {
@@ -109,6 +117,7 @@ const Dashboard = () => {
             </motion.div>
           </motion.div>
         </div>
+        {contexts === '-' ? <WelcomeModal openModal={openModal} setOpenModal={setOpenModal} /> : null}
       </div>
     );
   };
