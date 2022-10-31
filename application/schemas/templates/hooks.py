@@ -5,10 +5,13 @@ from pydantic import BaseModel
 from pydantic import Extra
 from pydantic import Field
 from pydantic import conlist
+from pydantic import validator
 
 from constants.templates import HookOnFailureBehavior
 from constants.templates import HookTypes
 from schemas.common_types import K8sSubdomainNameString
+
+from .validators import unique_names
 
 
 class K8sEnvironmentVariable(BaseModel):
@@ -90,3 +93,12 @@ class Hooks(BaseModel):
 
     class Config:
         extra = Extra.forbid
+
+    _unique_pre_install_hook_names = validator('pre_install', allow_reuse=True)(unique_names)
+    _unique_post_install_hook_names = validator('post_install', allow_reuse=True)(unique_names)
+
+    _unique_pre_upgrade_hook_names = validator('pre_upgrade', allow_reuse=True)(unique_names)
+    _unique_post_upgrade_hook_names = validator('post_upgrade', allow_reuse=True)(unique_names)
+
+    _unique_pre_delete_hook_names = validator('pre_delete', allow_reuse=True)(unique_names)
+    _unique_post_delete_hook_names = validator('post_delete', allow_reuse=True)(unique_names)
