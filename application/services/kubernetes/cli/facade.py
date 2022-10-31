@@ -1,5 +1,6 @@
 from .subcommands.cluster_info import KubectlClusterInformation
 from .subcommands.configuration import KubectlConfig
+from .subcommands.logs import KubectlLogs
 
 
 class KubectlCLI:
@@ -14,3 +15,4 @@ class KubectlCLI:
         """
         self.cluster_information: KubectlClusterInformation = KubectlClusterInformation(kubernetes_configuration)
         self.configuration: KubectlConfig = KubectlConfig(kubernetes_configuration)
+        self.logs: KubectlLogs = KubectlLogs(kubernetes_configuration)

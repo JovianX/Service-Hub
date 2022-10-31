@@ -16,7 +16,7 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 # 🍱 Application template example:
 
-```
+```yaml
 name: my-new-service                            # Required. Name of service.
 
 # List of applicatoin components.
@@ -38,7 +38,32 @@ components:                                     # Required. Application componen
     version: 17.0.6                             # Optional. Chart version to install.
     values:                                     # Optional. Helm chart values to install/update.
       - db:
-          username: {{ inputs.username }}       # Example of usage dynamic tempalte variables.
+          username: {{ inputs.text_example }}   # Example of usage dynamic tempalte variables.
+
+hooks:
+  pre_install:
+    - name: pre-install-hook
+      namespace: some-namespace
+      on_failure: stop
+      timeout: 120
+      type: kubernetes_job
+      image: 'alpine'
+      command: ['/bin/sh', '-c']
+      args:
+        - env; sleep 1;
+      env:
+        - name: JX_ENV_KEY
+          value: "Hello World"
+        - name: CUSTOMER_ACCOUNT_NAME
+          value: "{{ account://end_company }}"
+
+  post_install:
+    - name: post-install-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub;
 
 # List of user inputs. These inputs allow collect data from user before
 # application launch.
@@ -80,7 +105,7 @@ components:                                     # Required. Application componen
 #             Input with textarea widget. Suitable for long multi-line string,
 #             some description for example.
 inputs:                                         # Optional. User input list.
-  - name: text_example                              # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
+  - name: text_example                          # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
     type: text                                  # Required. Input type.
     label: 'User Name'                          # Optional. User friendly short input title.
     default: 'John Connor'                      # Optional. Default input value. Used if was no input from user.

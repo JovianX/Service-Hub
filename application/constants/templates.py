@@ -41,4 +41,4 @@ class HookTypes(StrEnum):
     """
     Template application hook types.
     """
-    kubernetes_pod = 'kubernetes_pod'
+    kubernetes_job = 'kubernetes_job'

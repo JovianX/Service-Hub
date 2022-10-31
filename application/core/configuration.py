@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     HELM_HOME_ARCHIVE_SIZE_LIMIT: int | float = 300 * 1024  # 300KiB in bytes
     INVITATION_EMAIL_SENDING_BLOCK: int = 60  # In seconds.
     UI_HOST: AnyHttpUrl = 'http://localhost:3000'
+    APPLICATION_COMPONENTS_INSTALL_TIMEOUT: int = 3600  # One hour in seconds.
 
     class Config:
         env_file = os.environ.get('ENV_FILE', '.env')

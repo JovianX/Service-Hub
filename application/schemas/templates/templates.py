@@ -10,6 +10,7 @@ from pydantic import validator
 
 from .components import Component
 from .inputs import Input
+from .hooks import Hooks
 from .validators import unique_names
 
 
@@ -18,10 +19,11 @@ class TemplateSchema(BaseModel):
     Template schema.
     """
     name: constr(min_length=1, strip_whitespace=True) = Field(
-        description='Name of application which describes this template',
+        description='Name of application which describes this template.',
         example='My Application'
     )
     components: conlist(Component, min_items=1) = Field(description='Application components.')
+    hooks: Hooks | None = Field(description='Application actions.')
     inputs: list[Input] | None = Field(description='Input that should be provided by user.', default=[])
 
     class Config:
