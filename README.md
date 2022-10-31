@@ -1,6 +1,20 @@
-# JovianX Service-Hub
+<div align=center>
 
-JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
+![image](https://user-images.githubusercontent.com/2787296/198906916-9904da29-3005-49e6-a109-b4238dc9ace1.png)
+
+# JovianX Service Hub
+<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Your STAR is highly appreciated! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub/pulls">PRs are welcome 👍 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Join Discord 💬 </a></td></tr></tbody></table>
+
+![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
+![Discord](https://img.shields.io/discord/1014893148599754894)
+![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
+</div>
+
+
+JovianX **Service Hub** is a tool to create and manage on-demand services using Helm and Kubernetes (used by Platform Engineers).
+
+
 
 ```
        JovianX
@@ -13,16 +27,6 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
                 Create X-as-a-Service on Kubernetes with Helm
 ```
-
-<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> ⭐🤩 Your STAR is highly appreciated! </a></td><td>👍 <a href="https://github.com/JovianX/Service-Hub/pulls">PRs are welcome</a></td><td><a href="https://discord.gg/CmFvFJDXZv">💬 Join Discord</a></td></tr></tbody></table>
-
-![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
-![Discord](https://img.shields.io/discord/1014893148599754894)
-![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
-
----
-
 # 🦄 Features:
 
 **Application Templates**
@@ -31,7 +35,18 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 - Manage template changes and reversions.
 - Allow operators to create applications from templates.
 
-<table><tbody><tr><td>Application Template Reversioning</td><td>Developer Self-Service Experience</td></tr><tr><td><img src="https://user-images.githubusercontent.com/2787296/197898326-c2057c4f-5b8c-4c76-a34e-1296dfa311d1.png"></td><td><img src="https://user-images.githubusercontent.com/2787296/197898363-e82ae5dd-edf0-4a27-beae-ef8f558341c0.png"></td></tr></tbody></table>
+<table><tbody>
+
+<tr align=center>
+<td><b>Application Templates</b></td><td><b>Self-Service</b></td>
+</tr>
+<tr><td colspan=2>
+<img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png">
+</td></tr>
+</tbody></table>
+
+
+
 
 **Helm Manager**
 
