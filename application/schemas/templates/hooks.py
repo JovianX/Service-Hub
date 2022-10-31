@@ -25,6 +25,7 @@ class Hook(BaseModel):
     """
     name: str = Field(description='Unique across all event hooks hook name.')
     type: HookTypes = Field(description='Hook type.')
+    enabled: bool | None = Field(description='Is hook must be executed.', default=True)
     namespace: K8sSubdomainNameString | None = Field(
         description='Optional namespace. If skipped used application namespace.'
     )

@@ -59,7 +59,8 @@ async def execute_pre_install_hooks(application_id: int, dry_run: bool = False):
         manifest: TemplateSchema = load_template(application.manifest)
         try:
             await asyncio.gather(*[
-                application_manager.execute_hook(application, hook) for hook in manifest.hooks.pre_install
+                application_manager.execute_hook(application, hook)
+                for hook in manifest.hooks.pre_install if hook.enabled
             ])
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
             logger.error(
@@ -86,13 +87,14 @@ async def install_applicatoin_components(application_id: int, dry_run: bool = Fa
         try:
             await asyncio.gather(*[
                 application_manager.install_component(application, component, dry_run=dry_run)
-                for component in manifest.components
+                for component in manifest.components if component.enabled
             ])
         except ApplicationComponentInstallException:
             application.status = ApplicationStatuses.error
             await application_manager.db.save(application)
             await asyncio.gather(*[
-                application_manager.uninstall_component(application, component) for component in manifest.components
+                application_manager.uninstall_component(application, component)
+                for component in manifest.components if component.enabled
             ])
             raise
         application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT)
@@ -123,7 +125,8 @@ async def execute_post_install_hooks(application_id: int):
         manifest: TemplateSchema = load_template(application.manifest)
         try:
             await asyncio.gather(*[
-                application_manager.execute_hook(application, hook) for hook in manifest.hooks.post_install
+                application_manager.execute_hook(application, hook)
+                for hook in manifest.hooks.post_install if hook.enabled
             ])
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
             logger.error(
