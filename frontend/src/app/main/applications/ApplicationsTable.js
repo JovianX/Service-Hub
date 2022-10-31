@@ -10,8 +10,8 @@ import { getApplicationsList, selectApplications, selectIsApplicationsLoading } 
 import { getContextList, selectContexts } from 'app/store/clustersSlice';
 import { getTemplatesList } from 'app/store/templatesSlice';
 
-import ApplicationDeleteDialogModal from './ApplicationDeleteDialogModal';
 import ApplicationsModal from './ApplicationsModal';
+import DeleteApplicationModal from './DeleteApplicationModal';
 
 const ApplicationsTable = () => {
   const dispatch = useDispatch();
@@ -69,7 +69,7 @@ const ApplicationsTable = () => {
                   <TableCell>Template</TableCell>
                   <TableCell>Reversion</TableCell>
                   <TableCell>Created By</TableCell>
-                  <TableCell></TableCell>
+                  <TableCell />
                 </TableRow>
               </TableHead>
 
@@ -114,7 +114,7 @@ const ApplicationsTable = () => {
         </FuseScrollbars>
       </Paper>
       {openDeleteModal && (
-        <ApplicationDeleteDialogModal
+        <DeleteApplicationModal
           options={{
             id: openDeleteInfo.id,
             isOpenModal: true,

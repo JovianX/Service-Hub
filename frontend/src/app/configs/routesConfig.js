@@ -10,6 +10,7 @@ import ChartsConfig from '../main/charts/ChartsConfig';
 import ClustersConfig from '../main/clusters/ClustersConfig';
 import DashboardConfig from '../main/dashboard/DashboardConfig';
 import ExampleConfig from '../main/example/ExampleConfig';
+import ReleaseDetailsConfig from '../main/releases/ReleaseDetails/ReleaseDetailsConfig';
 import ReleasesConfig from '../main/releases/ReleasesConfig';
 import RepositoriesConfig from '../main/repositories/RepositoriesConfig';
 import ServicesConfig from '../main/services/ServicesConfig';
@@ -26,6 +27,7 @@ const routeConfigs = [
   ChartsConfig,
   ApplicationsConfig,
   ReleasesConfig,
+  ReleaseDetailsConfig,
   DashboardConfig,
   ExampleConfig,
   SignOutConfig,
