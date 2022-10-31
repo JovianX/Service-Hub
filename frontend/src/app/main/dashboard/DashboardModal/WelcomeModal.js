@@ -31,7 +31,7 @@ const WelcomeModal = ({ openModal, setOpenModal, children, onClose, ...other }) 
     <div>
       <Dialog open={open} onClose={handleClose} maxWidth='sm' fullWidth>
         <DialogTitle className='bg-primary text-center text-white'>
-          Activate your account
+          Activate Account
           <IconButton
             aria-label='close'
             onClick={handleClose}
@@ -48,9 +48,8 @@ const WelcomeModal = ({ openModal, setOpenModal, children, onClose, ...other }) 
         <DialogContent className='p-0 overflow-y-hidden min-h-[250px] flex flex-col justify-around'>
           <ModalStepper />
           <div className='text-center pb-24 px-24'>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam aliquid culpa doloremque ea enim illo
-              inventore.
+            <Typography  variant="h6">
+              Hi 👋, welcome to JovianX ServiceHub!  <br /> Activate your account by adding a Kubernetes cluster.
             </Typography>
           </div>
         </DialogContent>
