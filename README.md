@@ -74,8 +74,6 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 
 ### OR
 
-Clone the repo locally
-
 ```
 git clone https://github.com/JovianX/service-hub.git
 cd service-hub
