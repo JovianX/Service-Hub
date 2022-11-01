@@ -1,6 +1,7 @@
 """
 Applications management.
 """
+import asyncio
 import logging
 from datetime import datetime
 from datetime import timedelta
@@ -56,7 +57,7 @@ class ApplicationManager:
         self.helm_manager = HelmManager(organization_manager)
 
     async def install(self, context_name: str, namespace: str, user: User, template: TemplateRevision, inputs: dict,
-                      dry_run: bool = False) -> Application:
+                      dry_run: bool = False) -> Application | dict[str, dict]:
         """
         Installs application from provided manifest.
         """
@@ -64,25 +65,40 @@ class ApplicationManager:
         manifest = render_template(template.template, inputs=inputs)
         manifest_schema = load_template(manifest)
 
-        application = {
-            'name': manifest_schema.name,
-            'description': '',
-            'manifest': manifest,
-            'status': ApplicationStatuses.deploy_requested,
-            'health': ApplicationHealthStatuses.unhealthy,
-            'context_name': context_name,
-            'namespace': namespace,
-            'user_inputs': inputs,
-            'template_id': template.id,
-            'creator_id': str(user.id),
-            'organization_id': user.organization.id
-        }
-        application_record = await self.db.create(application)
+        if dry_run:
+            components = [component for component in manifest_schema.components if component.enabled]
+            outputs = await asyncio.gather(*[
+                self.install_component(
+                    component,
+                    organization=user.organization,
+                    context_name=context_name,
+                    namespace=namespace,
+                    dry_run=dry_run
+                )
+                for component in components
+            ])
 
-        from services.procrastinate.tasks.application import execute_pre_install_hooks
-        await execute_pre_install_hooks.defer_async(application_id=application_record.id, dry_run=dry_run)
+            return {component.name: output for component, output in zip(components, outputs)}
+        else:
+            application = {
+                'name': manifest_schema.name,
+                'description': '',
+                'manifest': manifest,
+                'status': ApplicationStatuses.deploy_requested,
+                'health': ApplicationHealthStatuses.unhealthy,
+                'context_name': context_name,
+                'namespace': namespace,
+                'user_inputs': inputs,
+                'template_id': template.id,
+                'creator_id': str(user.id),
+                'organization_id': user.organization.id
+            }
+            application_record = await self.db.create(application)
 
-        return application_record
+            from services.procrastinate.tasks.application import execute_pre_install_hooks
+            await execute_pre_install_hooks.defer_async(application_id=application_record.id, dry_run=dry_run)
+
+            return application_record
 
     async def upgrade(self, application: Application, template: TemplateRevision, dry_run: bool = False) -> None:
         """
@@ -286,15 +302,26 @@ class ApplicationManager:
         else:
             return ApplicationHealthStatuses.unhealthy
 
-    async def install_component(self, application: Application, component: Component, dry_run: bool = False) -> str:
+    async def install_component(self, component: Component, application: Application | None = None,
+                                organization: Organization | None = None, context_name: str | None = None,
+                                namespace: str | None = None, dry_run: bool = False) -> str:
         """
         Installs application component.
         """
+        if application is not None:
+            organization = application.organization
+            context_name = application.context_name
+            namespace = application.namespace
+        if not all([organization is not None, context_name, namespace]):
+            raise ValueError(
+                'Application instance or organization and context_name and namespace must be provided to install '
+                'application component.'
+            )
         try:
             return await self.helm_manager.install_chart(
-                organization=application.organization,
-                context_name=application.context_name,
-                namespace=application.namespace,
+                organization=organization,
+                context_name=context_name,
+                namespace=namespace,
                 release_name=component.name,
                 chart_name=component.chart,
                 version=component.version,
