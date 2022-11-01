@@ -191,6 +191,22 @@ hooks:
       args:
         - curl https://www.google.com/search?q=service_hub;
 
+  pre_terminate:
+    - name: pre-terminate-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub__pre_terminate;
+
+  post_terminate:
+    - name: post-terminate-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub__post_terminate;
+
 # List of user inputs. These inputs allow collect data from user before
 # application launch.
 # Each input must have unique name. That name is used in dynamic template
