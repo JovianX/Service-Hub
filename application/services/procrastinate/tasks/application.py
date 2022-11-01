@@ -54,7 +54,7 @@ async def execute_pre_install_hooks(application_id: int, dry_run: bool = False):
     async with session_maker() as session:
         application_manager = _get_application_manager(session)
         application = await application_manager.get_application(application_id)
-        application.status = ApplicationStatuses.starting
+        application.status = ApplicationStatuses.deploying
         await application_manager.db.save(application)
         manifest: TemplateSchema = load_template(application.manifest)
         try:

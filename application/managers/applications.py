@@ -68,7 +68,7 @@ class ApplicationManager:
             'name': manifest_schema.name,
             'description': '',
             'manifest': manifest,
-            'status': ApplicationStatuses.created,
+            'status': ApplicationStatuses.deploy_requested,
             'health': ApplicationHealthStatuses.unhealthy,
             'context_name': context_name,
             'namespace': namespace,
