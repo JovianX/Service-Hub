@@ -82,11 +82,11 @@ class Hooks(BaseModel):
         default_factory=list
     )
 
-    pre_delete: list[Hook] | None = Field(
+    pre_terminate: list[Hook] | None = Field(
         description='Hooks which is executing before application deletion.',
         default_factory=list
     )
-    post_delete: list[Hook] | None = Field(
+    post_terminate: list[Hook] | None = Field(
         description='Hooks which is executing after application deletion.',
         default_factory=list
     )
@@ -100,5 +100,5 @@ class Hooks(BaseModel):
     _unique_pre_upgrade_hook_names = validator('pre_upgrade', allow_reuse=True)(unique_names)
     _unique_post_upgrade_hook_names = validator('post_upgrade', allow_reuse=True)(unique_names)
 
-    _unique_pre_delete_hook_names = validator('pre_delete', allow_reuse=True)(unique_names)
-    _unique_post_delete_hook_names = validator('post_delete', allow_reuse=True)(unique_names)
+    _unique_pre_terminate_hook_names = validator('pre_terminate', allow_reuse=True)(unique_names)
+    _unique_post_terminate_hook_names = validator('post_terminate', allow_reuse=True)(unique_names)
