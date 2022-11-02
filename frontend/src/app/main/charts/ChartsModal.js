@@ -47,7 +47,8 @@ const ChartsModal = ({ chartName, openModal }) => {
   const [cluster, setCluster] = useState('');
   const [namespace, setNamespace] = useState('');
   const [chart, setChart] = useState({});
-  const [configYamlText, setConfigYamlText] = useState('');
+  const [configYamlText, setConfigYamlText] = useState(null);
+  const [defaultConfigYamlText, setDefaultConfigYamlText] = useState(null);
   const [defaultValuesParam, setDefaultValuesParam] = useState('');
   const [editorHeight, setEditorHeight] = useState('150px');
 
@@ -64,7 +65,8 @@ const ChartsModal = ({ chartName, openModal }) => {
     setChart(data);
     setCluster(clusterData[0]?.name);
     openModal.setOpenModal(false);
-    setConfigYamlText('');
+    setConfigYamlText(null);
+    setDefaultConfigYamlText(null);
     setEditorHeight('150px');
   }, [openModal.openModal]);
 
@@ -83,6 +85,7 @@ const ChartsModal = ({ chartName, openModal }) => {
   };
 
   const handleGetDefaultValues = () => {
+    setDefaultConfigYamlText(configYamlText);
     if (defaultValuesParam) {
       if (showMessage) {
         setShowMessage(false);
@@ -96,7 +99,7 @@ const ChartsModal = ({ chartName, openModal }) => {
               setShowMessage(true);
               setInfoMessageError(res.payload.message);
             } else {
-              setConfigYamlText(res.payload);
+              setDefaultConfigYamlText(res.payload);
               setEditorHeight('300px');
             }
             setLoadingDefaultValues(false);
@@ -273,14 +276,11 @@ const ChartsModal = ({ chartName, openModal }) => {
                 </LoadingButton>
 
                 <MonacoEditor
-                  value={configYamlText}
+                  value={defaultConfigYamlText || this}
                   height={editorHeight}
-                  width='100%'
-                  name='values'
                   language='yaml'
-                  theme='vs-dark'
                   onChange={getValue.bind(this)}
-                  options={{ automaticLayout: true }}
+                  options={{ automaticLayout: true, theme: 'vs-dark' }}
                 />
               </div>
             </DialogContent>
