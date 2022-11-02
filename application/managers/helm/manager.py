@@ -70,7 +70,7 @@ class HelmManager:
 
     async def install_chart(
         self, organization: Organization, context_name: str, namespace: str, release_name: str, chart_name: str,
-        values: list[dict] | None = None, version: str | None = None, description: str | None = None,
+        values: list[dict] | dict | None = None, version: str | None = None, description: str | None = None,
         dry_run: bool = False
     ) -> str:
         """
@@ -79,6 +79,8 @@ class HelmManager:
         debug = False
         if dry_run:
             debug = True
+        if isinstance(values, dict):
+            values = [values]
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
