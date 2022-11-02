@@ -106,9 +106,7 @@ class ApplicationManager:
         """
         # Extending of user inputs with defaults from new template.
         new_template_schema = load_template(template.template)
-        input_defaults = {
-            input.name: input.default for input in new_template_schema.inputs if 'default' in input.__fields_set__
-        }
+        input_defaults = new_template_schema.inputs_defaults
         user_inputs = {**input_defaults, **application.user_inputs}
 
         rendered_template = render_template(template.template, user_inputs)
