@@ -29,6 +29,7 @@ import {
   selectRepositories,
   selectErrorsInfo,
 } from 'app/store/repositorySlice';
+import { selectUser } from 'app/store/userSlice';
 
 const RepositoriesTable = () => {
   const inputRef = useRef(null);
@@ -36,7 +37,7 @@ const RepositoriesTable = () => {
   const repositoryData = useSelector(selectRepositories);
   const isLoading = useSelector(selectIsRepositoriesLoading);
   const errorsInfo = useSelector(selectErrorsInfo);
-
+  const user = useSelector(selectUser);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [repositoryToDelete, setRepositoryToDelete] = useState(null);
@@ -113,13 +114,21 @@ const RepositoriesTable = () => {
 
   return (
     <div className='w-full flex flex-col min-h-full'>
-      <div className='min-h-[70px] m-12 flex justify-end items-center'>
-        <Button className='mx-16' onClick={handleClickOpen} variant='contained' color='primary' startIcon={<AddIcon />}>
-          Add repository
-        </Button>
-      </div>
+      {user?.role === 'admin' ? (
+        <div className='min-h-[70px] m-12 flex justify-end items-center'>
+          <Button
+            className='mx-16'
+            onClick={handleClickOpen}
+            variant='contained'
+            color='primary'
+            startIcon={<AddIcon />}
+          >
+            Add repository
+          </Button>
+        </div>
+      ) : null}
       <div className='w-full flex flex-col min-h-full'>
-        <Paper className='h-full mx-24 rounded mt-12'>
+        <Paper className={`h-full mx-24 rounded ${user?.role === 'admin' ? 'mt-12' : 'mt-24'}`}>
           <FuseScrollbars className='grow overflow-x-auto'>
             {repositoryData.length ? (
               <TableContainer>
@@ -128,7 +137,7 @@ const RepositoriesTable = () => {
                     <TableRow>
                       <TableCell>Name</TableCell>
                       <TableCell>URL</TableCell>
-                      <TableCell align='right'>Actions</TableCell>
+                      {user?.role === 'admin' ? <TableCell align='right'>Actions</TableCell> : null}
                     </TableRow>
                   </TableHead>
 
@@ -137,11 +146,13 @@ const RepositoriesTable = () => {
                       <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                         <TableCell align='left'>{row.name}</TableCell>
                         <TableCell align='left'>{row.url}</TableCell>
-                        <TableCell align='right'>
-                          <Button onClick={() => handleDeleteRepository(row.name)} variant='text' color='error'>
-                            <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                          </Button>
-                        </TableCell>
+                        {user?.role === 'admin' ? (
+                          <TableCell align='right'>
+                            <Button onClick={() => handleDeleteRepository(row.name)} variant='text' color='error'>
+                              <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                            </Button>
+                          </TableCell>
+                        ) : null}
                       </TableRow>
                     ))}
                   </TableBody>

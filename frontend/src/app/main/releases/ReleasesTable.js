@@ -23,6 +23,7 @@ import withRouter from '@fuse/core/withRouter';
 import { getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
 
 import { getReleaseHealth, getReleaseTtl } from '../../api';
+import { selectUser } from '../../store/userSlice';
 import {
   checkTrimString,
   getSelectItemsFromArray,
@@ -53,6 +54,7 @@ const ReleasesTable = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openDeleteInfo, setOpenDeleteInfo] = useState({});
 
+  const user = useSelector(selectUser);
   const releasesData = useSelector(selectReleases);
   const isLoading = useSelector(selectIsReleasesLoading);
 
@@ -212,40 +214,43 @@ const ReleasesTable = () => {
                         <Chip label={row.status} color={getColorForStatus(row.status)} />
                       </Stack>
                     </TableCell>
-                    <TableCell align='left'>
-                      <ButtonGroup aria-label='primary button group'>
-                        <Button
-                          variant='text'
-                          color='error'
-                          onClick={() => {
-                            setSelectedParameters({
-                              ttlCellIndex: index,
-                              currentDate: ttls[index],
-                              context_name: row.context_name,
-                              namespace: row.namespace,
-                              name: row.name,
-                            });
-                            setOpenModal(true);
-                          }}
-                        >
-                          <AutoDeleteOutlinedIcon />
-                        </Button>
-                        <Button
-                          variant='text'
-                          color='error'
-                          onClick={() => {
-                            setOpenDeleteModal(true);
-                            setOpenDeleteInfo({
-                              name: row.name,
-                              namespace: row.namespace,
-                              context_name: row.context_name,
-                            });
-                          }}
-                        >
-                          <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                        </Button>
-                      </ButtonGroup>
-                    </TableCell>
+
+                    {user?.role === 'admin' ? (
+                      <TableCell align='left'>
+                        <ButtonGroup aria-label='primary button group'>
+                          <Button
+                            variant='text'
+                            color='error'
+                            onClick={() => {
+                              setSelectedParameters({
+                                ttlCellIndex: index,
+                                currentDate: ttls[index],
+                                context_name: row.context_name,
+                                namespace: row.namespace,
+                                name: row.name,
+                              });
+                              setOpenModal(true);
+                            }}
+                          >
+                            <AutoDeleteOutlinedIcon />
+                          </Button>
+                          <Button
+                            variant='text'
+                            color='error'
+                            onClick={() => {
+                              setOpenDeleteModal(true);
+                              setOpenDeleteInfo({
+                                name: row.name,
+                                namespace: row.namespace,
+                                context_name: row.context_name,
+                              });
+                            }}
+                          >
+                            <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                          </Button>
+                        </ButtonGroup>
+                      </TableCell>
+                    ) : null}
                   </TableRow>
                 ))}
               </TableBody>

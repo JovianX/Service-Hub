@@ -22,10 +22,13 @@ import TemplatesConfig from '../main/templates/TemplatesConfig';
 import UsersConfig from '../main/users/UsersConfig';
 
 const access_token = localStorage.getItem('jwt_access_token');
-const userInfo = jwtDecode(access_token);
+let userInfo = {};
+if (access_token) {
+  userInfo = jwtDecode(access_token);
+}
 
 let routeConfigs = [];
-if (userInfo.user_role === 'admin') {
+if (userInfo?.user_role === 'admin') {
   routeConfigs = [
     ClustersConfig,
     RepositoriesConfig,
@@ -45,6 +48,8 @@ if (userInfo.user_role === 'admin') {
 } else {
   routeConfigs = [
     ApplicationsConfig,
+    ChartsConfig,
+    RepositoriesConfig,
     ReleasesConfig,
     ReleaseDetailsConfig,
     DashboardConfig,
