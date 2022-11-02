@@ -1,5 +1,7 @@
 import i18next from 'i18next';
 
+import { authRoles } from '../auth';
+
 import ar from './navigation-i18n/ar';
 import en from './navigation-i18n/en';
 import tr from './navigation-i18n/tr';
@@ -16,6 +18,7 @@ const navigationConfig = [
     type: 'item',
     icon: 'heroicons-outline:chart-pie',
     url: 'dashboard',
+    auth: authRoles.staff,
   },
   // {
   //   id: 'services-component',
@@ -24,6 +27,7 @@ const navigationConfig = [
   //   type: 'item',
   //   icon: 'developer_board',
   //   url: 'services',
+  //   auth : authRoles.admin,
   // },
   {
     id: 'applications-component',
@@ -32,6 +36,7 @@ const navigationConfig = [
     type: 'item',
     icon: 'material-outline:apps',
     url: 'applications',
+    auth: authRoles.staff,
   },
   {
     id: 'templates-component',
@@ -40,6 +45,7 @@ const navigationConfig = [
     type: 'item',
     icon: 'heroicons-outline:template',
     url: 'templates',
+    auth: authRoles.admin,
   },
   {
     id: 'helm-component',
@@ -47,6 +53,7 @@ const navigationConfig = [
     translate: 'HELM',
     type: 'group',
     icon: 'heroicons-outline:view-grid-add',
+    auth: authRoles.staff,
     children: [
       {
         id: 'releases-component',
@@ -55,6 +62,7 @@ const navigationConfig = [
         type: 'item',
         icon: 'heroicons-outline:cube-transparent',
         url: 'releases',
+        auth: authRoles.staff,
       },
       {
         id: 'charts-component',
@@ -63,6 +71,7 @@ const navigationConfig = [
         type: 'item',
         icon: 'heroicons-outline:cube',
         url: 'charts',
+        auth: authRoles.staff,
       },
       {
         id: 'repositories-component',
@@ -71,8 +80,9 @@ const navigationConfig = [
         type: 'item',
         icon: 'heroicons-outline:archive',
         url: 'repositories',
+        auth: authRoles.staff,
       },
-    ]
+    ],
   },
   {
     id: 'settings-component',
@@ -80,6 +90,7 @@ const navigationConfig = [
     translate: 'SETTINGS',
     type: 'group',
     icon: 'heroicons-outline:cog',
+    auth: authRoles.admin,
     children: [
       {
         id: 'clusters-component',

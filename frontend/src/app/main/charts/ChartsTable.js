@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import { getChartList, selectIsChartsLoading, selectCharts } from 'app/store/chartsSlice';
+import { selectUser } from 'app/store/userSlice';
 
 import { getSelectItemsFromArray, getUniqueKeysFromTableData } from '../../uitls';
 
@@ -23,6 +24,7 @@ const ChartsTable = () => {
 
   const chartData = useSelector(selectCharts);
   const isLoading = useSelector(selectIsChartsLoading);
+  const user = useSelector(selectUser);
 
   useEffect(() => {
     dispatch(getChartList());
@@ -98,7 +100,7 @@ const ChartsTable = () => {
                   <TableCell>App Version</TableCell>
                   <TableCell>Repository Name</TableCell>
                   <TableCell>Description</TableCell>
-                  <TableCell>Actions</TableCell>
+                  {user?.role === 'admin' ? <TableCell>Actions</TableCell> : null}
                 </TableRow>
               </TableHead>
 
@@ -111,20 +113,22 @@ const ChartsTable = () => {
                     <TableCell align='left'>{row.application_version}</TableCell>
                     <TableCell align='left'>{row.repository_name}</TableCell>
                     <TableCell align='left'>{row.description}</TableCell>
-                    <TableCell align='right'>
-                      <Button
-                        type='submit'
-                        className='mx-12'
-                        variant='contained'
-                        color='primary'
-                        onClick={() => {
-                          setChartName(row.name);
-                          setOpenModal(true);
-                        }}
-                      >
-                        Deploy
-                      </Button>
-                    </TableCell>
+                    {user?.role === 'admin' ? (
+                      <TableCell align='right'>
+                        <Button
+                          type='submit'
+                          className='mx-12'
+                          variant='contained'
+                          color='primary'
+                          onClick={() => {
+                            setChartName(row.name);
+                            setOpenModal(true);
+                          }}
+                        >
+                          Deploy
+                        </Button>
+                      </TableCell>
+                    ) : null}
                   </TableRow>
                 ))}
               </TableBody>
