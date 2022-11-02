@@ -13,9 +13,11 @@ import {
 } from '@mui/material';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import { selectUser } from 'app/store/userSlice';
 
 import { getReleaseHealth, getReleaseTtl } from '../../../api';
 import { checkTrimString, getColorForStatus, getPresent } from '../../../uitls';
@@ -33,6 +35,8 @@ const ReleaseTable = ({ release, ttl, health }) => {
   const [selectedParameters, setSelectedParameters] = useState({});
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openDeleteInfo, setOpenDeleteInfo] = useState({});
+
+  const user = useSelector(selectUser);
 
   useEffect(() => {
     setReleaseData({
@@ -125,39 +129,41 @@ const ReleaseTable = ({ release, ttl, health }) => {
                     <Chip label={release.status} color={getColorForStatus(release.status)} />
                   </Stack>
                 </TableCell>
-                <TableCell align='left'>
-                  <ButtonGroup aria-label='primary button group'>
-                    <Button
-                      variant='text'
-                      color='error'
-                      onClick={() => {
-                        setSelectedParameters({
-                          currentDate: ttlData,
-                          context_name: release.context_name,
-                          namespace: release.namespace,
-                          name: release.name,
-                        });
-                        setOpenModal(true);
-                      }}
-                    >
-                      <AutoDeleteOutlinedIcon />
-                    </Button>
-                    <Button
-                      variant='text'
-                      color='error'
-                      onClick={() => {
-                        setOpenDeleteModal(true);
-                        setOpenDeleteInfo({
-                          name: release.name,
-                          namespace: release.namespace,
-                          context_name: release.context_name,
-                        });
-                      }}
-                    >
-                      <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                    </Button>
-                  </ButtonGroup>
-                </TableCell>
+                {user?.role === 'admin' ? (
+                  <TableCell align='left'>
+                    <ButtonGroup aria-label='primary button group'>
+                      <Button
+                        variant='text'
+                        color='error'
+                        onClick={() => {
+                          setSelectedParameters({
+                            currentDate: ttlData,
+                            context_name: release.context_name,
+                            namespace: release.namespace,
+                            name: release.name,
+                          });
+                          setOpenModal(true);
+                        }}
+                      >
+                        <AutoDeleteOutlinedIcon />
+                      </Button>
+                      <Button
+                        variant='text'
+                        color='error'
+                        onClick={() => {
+                          setOpenDeleteModal(true);
+                          setOpenDeleteInfo({
+                            name: release.name,
+                            namespace: release.namespace,
+                            context_name: release.context_name,
+                          });
+                        }}
+                      >
+                        <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                      </Button>
+                    </ButtonGroup>
+                  </TableCell>
+                ) : null}
               </TableRow>
             </TableBody>
           </Table>

@@ -71,7 +71,7 @@ const navigationConfig = [
         type: 'item',
         icon: 'heroicons-outline:cube',
         url: 'charts',
-        auth: authRoles.admin,
+        auth: authRoles.staff,
       },
       {
         id: 'repositories-component',
@@ -80,7 +80,7 @@ const navigationConfig = [
         type: 'item',
         icon: 'heroicons-outline:archive',
         url: 'repositories',
-        auth: authRoles.admin,
+        auth: authRoles.staff,
       },
     ],
   },
