@@ -4,7 +4,7 @@ then
     i=0
     while [ $i -le 5 ]; do
 
-    alembic upgrade head
+    alembic upgrade head && break
 
     let i=i+1
     sleep 2
