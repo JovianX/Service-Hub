@@ -7,10 +7,13 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import * as yup from 'yup';
 
 import _ from '@lodash';
+
+import jwtService from '../../auth/services/jwtService';
+import { getErrorMessage } from '../sign-in/utils';
 
 /**
  * Form Validation Schema
@@ -28,8 +31,12 @@ const defaultValues = {
   passwordConfirm: '',
 };
 
-function ClassicResetPasswordPage() {
-  const { control, formState, handleSubmit, reset } = useForm({
+function ResetPasswordPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const token = searchParams.get('token');
+
+  const { control, formState, handleSubmit, reset, setError } = useForm({
     mode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema),
@@ -37,8 +44,21 @@ function ClassicResetPasswordPage() {
 
   const { isValid, dirtyFields, errors } = formState;
 
-  function onSubmit() {
+  const onSubmit = async ({ password }) => {
+    try {
+      await jwtService.resetPassword(password, token);
+      navigate('/sign-in');
+    } catch (error) {
+      setError('email', {
+        type: 'manual',
+        message: getErrorMessage(error),
+      });
+    }
     reset(defaultValues);
+  };
+
+  if (!token) {
+    return <Navigate to='404' />;
   }
 
   return (
@@ -189,4 +209,4 @@ function ClassicResetPasswordPage() {
   );
 }
 
-export default ClassicResetPasswordPage;
+export default ResetPasswordPage;
