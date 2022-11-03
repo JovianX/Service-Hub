@@ -20,7 +20,13 @@ import { applicationInstall } from 'app/store/applicationsSlice';
 import NamespacesSelect from './NamespacesSelect';
 import TemplateInputs from './TemplateInputs/TemplateInputs';
 
-const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, setApplications }) => {
+const ApplicationsModal = ({
+  openModal,
+  setOpenModal,
+  kubernetesConfiguration,
+  setApplications,
+  setAllApplications,
+}) => {
   const dispatch = useDispatch();
   const inputRef = useRef();
   const [open, setOpen] = useState(false);
@@ -87,6 +93,7 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, s
     } else {
       setInfoMessageSuccess('Application was successfully created');
       setApplications((applications) => [...applications, data.payload.application]);
+      setAllApplications((applications) => [...applications, data.payload.application]);
       setTimeout(() => {
         setOpen(false);
         clearMessages();
