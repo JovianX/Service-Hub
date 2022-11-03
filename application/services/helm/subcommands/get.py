@@ -14,7 +14,7 @@ class HelmGet(HelmBase):
 
     subcommand = 'get'
 
-    async def user_supplied_values(self, context_name: str, namespace: str, release_name: str) -> dict:
+    async def user_supplied_values(self, context_name: str, namespace: str, release_name: str) -> dict | list | None:
         """
         Returns list of values provided by user.
 
@@ -27,7 +27,7 @@ class HelmGet(HelmBase):
 
         return yaml.safe_load(output)
 
-    async def computed_values(self, context_name: str, namespace: str, release_name: str) -> dict:
+    async def computed_values(self, context_name: str, namespace: str, release_name: str) -> dict | list | None:
         """
         Returns list of evalueted values.
 
