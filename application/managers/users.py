@@ -23,6 +23,7 @@ from models.invitation import UserInvitation
 from models.organization import Organization
 from models.user import User
 from schemas.users import UserCreate
+from utils.email import send_email
 
 
 logger = logging.getLogger(__name__)
@@ -178,7 +179,12 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             await self.invitation_manager.use(self.invitation_record, user)
 
     async def on_after_forgot_password(self, user: User, token: str, request: Request | None = None):
-        pass
+        link = f'{settings.UI_HOST}/reset-password?token={token}'
+        await send_email(
+            user.email,
+            f'Password reset request',
+            f'To reset forgotten password click following link: {link}'
+        )
 
     async def on_after_request_verify(self, user: User, token: str, request: Request | None = None):
         pass

@@ -121,7 +121,7 @@ class InvitationManager:
         await send_email(
             invitation.email,
             f'You have been invited to join "{invitation.organization.title}" organization!',
-            f'To to join organization\'s team click following link: {link}'
+            f'To join organization\'s team click following link: {link}'
         )
         invitation.email_sent_at = datetime.now()
         await self.db.save(invitation)

@@ -6,37 +6,37 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import * as yup from 'yup';
 
-import FuseLoading from '@fuse/core/FuseLoading';
-import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import history from '@history';
 import _ from '@lodash';
 
 import jwtService from '../../auth/services/jwtService';
+import { getErrorMessage } from '../sign-in/utils';
 
-import { getErrorMessage } from './utils';
-
+/**
+ * Form Validation Schema
+ */
 const schema = yup.object().shape({
-  email: yup.string().email('You must enter a valid email').required('You must enter a email'),
   password: yup
     .string()
     .required('Please enter your password.')
-    .min(4, 'Password is too short - must be at least 4 chars.'),
+    .min(8, 'Password is too short - should be 8 chars minimum.'),
+  passwordConfirm: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
 });
 
 const defaultValues = {
-  email: '',
   password: '',
+  passwordConfirm: '',
 };
 
-const SignInPage = () => {
-  const [isLoading, setIsLoading] = useState(false);
+function ResetPasswordPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const token = searchParams.get('token');
 
-  const { control, formState, handleSubmit, setError } = useForm({
+  const { control, formState, handleSubmit, reset, setError } = useForm({
     mode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema),
@@ -44,114 +44,40 @@ const SignInPage = () => {
 
   const { isValid, dirtyFields, errors } = formState;
 
-  const loginWithCode = async () => {
-    const inviteId = localStorage.getItem('inviteId');
-    const url = new URL(window.location.href);
-
-    const authCode = url.searchParams.get('code');
-    const state = url.searchParams.get('state');
-
-    if (authCode) {
-      setIsLoading(true);
-      const newUrl = url.href.split('?code=');
-      if (inviteId) {
-        window.history.pushState({}, null, `${newUrl[0]}?invite_id=${inviteId}`);
-      } else {
-        window.history.pushState({}, null, newUrl[0]);
-      }
-
-      const requestData = {
-        code: authCode,
-        invite_id: inviteId,
-        state,
-      };
-
-      try {
-        await jwtService.getTokenWithGithubCode(requestData);
-        history.push('/');
-      } catch (errors) {
-        setError('email', {
-          type: 'manual',
-          message: errors?.response?.data?.detail,
-        });
-      }
-    }
-  };
-
-  useEffect(() => {
-    loginWithCode();
-  }, []);
-
-  const onSubmit = async ({ email, password }) => {
+  const onSubmit = async ({ password }) => {
     try {
-      await jwtService.signInWithEmailAndPassword(email, password);
-
-      history.push('/');
+      await jwtService.resetPassword(password, token);
+      navigate('/sign-in');
     } catch (error) {
       setError('email', {
         type: 'manual',
         message: getErrorMessage(error),
       });
     }
+    reset(defaultValues);
   };
 
-  const onGithubSignIn = async () => {
-    setIsLoading(true);
-    try {
-      const url = await jwtService.signInWithGithub();
-
-      history.push(url);
-    } catch (errors) {
-      setError('email', {
-        type: 'manual',
-        message: 'Failed to sign in with GitHub',
-      });
-
-      setIsLoading(false);
-    }
-  };
-
-  if (isLoading) {
-    return <FuseLoading />;
+  if (!token) {
+    return <Navigate to='404' />;
   }
 
   return (
     <div className='flex flex-col sm:flex-row items-center md:items-start sm:justify-center md:justify-start flex-1 min-w-0'>
       <Paper className='h-full sm:h-auto md:flex md:items-center md:justify-end w-full sm:w-auto md:h-full md:w-1/2 py-8 px-16 sm:p-48 md:p-64 sm:rounded-2xl md:rounded-none sm:shadow md:shadow-none ltr:border-r-1 rtl:border-l-1'>
         <div className='w-full max-w-320 sm:w-320 mx-auto sm:mx-0'>
-          <Typography className='mt-32 text-4xl font-extrabold tracking-tight leading-tight'>Sign in</Typography>
-          <div className='flex items-baseline mt-2 font-medium'>
-            <Typography>Don't have an account?</Typography>
-            <Link className='ml-4' to='/sign-up'>
-              Sign up
-            </Link>
-          </div>
+          <img className='w-[100px]' src='assets/images/logo.png' alt='logo' />
+
+          <Typography className='mt-32 text-4xl font-extrabold tracking-tight leading-tight'>
+            Reset your password
+          </Typography>
+          <Typography className='font-medium'>Create a new password for your account</Typography>
 
           <form
-            name='loginForm'
+            name='registerForm'
             noValidate
             className='flex flex-col justify-center w-full mt-32'
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Controller
-              name='email'
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  className='mb-24'
-                  label='Email'
-                  autoFocus
-                  type='email'
-                  error={!!errors.email}
-                  helperText={errors?.email?.message}
-                  variant='outlined'
-                  required
-                  fullWidth
-                />
-              )}
-            />
-
             <Controller
               name='password'
               control={control}
@@ -170,41 +96,45 @@ const SignInPage = () => {
               )}
             />
 
+            <Controller
+              name='passwordConfirm'
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  className='mb-24'
+                  label='Password (Confirm)'
+                  type='password'
+                  error={!!errors.passwordConfirm}
+                  helperText={errors?.passwordConfirm?.message}
+                  variant='outlined'
+                  required
+                  fullWidth
+                />
+              )}
+            />
+
             <Button
               variant='contained'
               color='secondary'
-              className=' w-full mt-16'
-              aria-label='Sign in'
+              className=' w-full mt-4'
+              aria-label='Register'
               disabled={_.isEmpty(dirtyFields) || !isValid}
               type='submit'
               size='large'
             >
-              Sign in
+              Reset your password
             </Button>
 
-            <div className='flex items-center mt-32'>
-              <div className='flex-auto mt-px border-t' />
-              <Typography className='mx-8' color='text.secondary'>
-                Or continue with
-              </Typography>
-              <div className='flex-auto mt-px border-t' />
-            </div>
-            <div className='flex items-center mt-32 space-x-16'>
-              <Button variant='outlined' className='flex-auto' onClick={onGithubSignIn}>
-                <FuseSvgIcon size={20} color='action'>
-                  feather:github
-                </FuseSvgIcon>
-              </Button>
-            </div>
-            <div className='flex items-center mt-32 mx-auto space-x-16'>
-              <Link className='ml-4' to='/forgot-password'>
-                Forgot my password
+            <Typography className='mt-32 text-md font-medium' color='text.secondary'>
+              <span>Return to</span>
+              <Link className='ml-4' to='/sign-in'>
+                sign in
               </Link>
-            </div>
+            </Typography>
           </form>
         </div>
       </Paper>
-
       <Box
         className='relative hidden md:flex flex-auto items-center justify-center h-full p-64 lg:px-112 overflow-hidden'
         sx={{ backgroundColor: 'primary.main' }}
@@ -277,6 +207,6 @@ const SignInPage = () => {
       </Box>
     </div>
   );
-};
+}
 
-export default SignInPage;
+export default ResetPasswordPage;
