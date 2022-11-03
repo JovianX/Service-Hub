@@ -4,15 +4,16 @@ import AvatarGroup from '@mui/material/AvatarGroup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
 import _ from '@lodash';
 
-import history from '../../../@history/@history';
 import jwtService from '../../auth/services/jwtService';
 import { getErrorMessage } from '../sign-in/utils';
 
@@ -28,6 +29,7 @@ const defaultValues = {
 };
 
 function ForgotPasswordPage() {
+  const [open, setOpen] = useState(false);
   const { control, formState, handleSubmit, reset, setError } = useForm({
     mode: 'onChange',
     defaultValues,
@@ -39,7 +41,7 @@ function ForgotPasswordPage() {
   const onSubmit = async ({ email }) => {
     try {
       await jwtService.forgotPassword(email);
-      history.push('/reset-password');
+      setOpen(true);
     } catch (error) {
       setError('email', {
         type: 'manual',
@@ -177,6 +179,13 @@ function ForgotPasswordPage() {
           </div>
         </div>
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={() => setOpen(false)}
+        message='A password reset link has been sent to your email'
+      />
     </div>
   );
 }
