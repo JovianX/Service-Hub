@@ -201,6 +201,11 @@ function SignUpPage() {
               </FuseSvgIcon>
             </Button>
           </div>
+          <div className='flex items-center mt-32 ml-[25%] space-x-16'>
+            <Link className='ml-4' to='/forgot-password'>
+              Forgot my password
+            </Link>
+          </div>
         </div>
       </Paper>
 

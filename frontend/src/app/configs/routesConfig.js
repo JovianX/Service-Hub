@@ -11,9 +11,11 @@ import ChartsConfig from '../main/charts/ChartsConfig';
 import ClustersConfig from '../main/clusters/ClustersConfig';
 import DashboardConfig from '../main/dashboard/DashboardConfig';
 import ExampleConfig from '../main/example/ExampleConfig';
+import ForgotPasswordConfig from '../main/forgot-password/ForgotPasswordConfig';
 import ReleaseDetailsConfig from '../main/releases/ReleaseDetails/ReleaseDetailsConfig';
 import ReleasesConfig from '../main/releases/ReleasesConfig';
 import RepositoriesConfig from '../main/repositories/RepositoriesConfig';
+import ResetPasswordConfig from '../main/reset-password/ResetPasswordConfig';
 import ServicesConfig from '../main/services/ServicesConfig';
 import SignInConfig from '../main/sign-in/SignInConfig';
 import SignOutConfig from '../main/sign-out/SignOutConfig';
@@ -44,6 +46,8 @@ if (userInfo?.user_role === 'admin') {
     SignUpConfig,
     UsersConfig,
     TemplatesConfig,
+    ForgotPasswordConfig,
+    ResetPasswordConfig,
   ];
 } else {
   routeConfigs = [
@@ -56,6 +60,8 @@ if (userInfo?.user_role === 'admin') {
     SignOutConfig,
     SignInConfig,
     SignUpConfig,
+    ForgotPasswordConfig,
+    ResetPasswordConfig,
   ];
 }
 
