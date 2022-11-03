@@ -165,7 +165,7 @@ class HelmManager:
 
     async def get_user_supplied_values(
         self, organization: Organization, context_name: str, namespace: str, release_name: str
-    ) -> dict:
+    ) -> dict | list | None:
         """
         Returns release values supplied by user during chart install.
         """
@@ -180,7 +180,7 @@ class HelmManager:
 
     async def get_computed_values(
         self, organization: Organization, context_name: str, namespace: str, release_name: str
-    ) -> dict:
+    ) -> dict | list | None:
         """
         Returns release final release values.
         """

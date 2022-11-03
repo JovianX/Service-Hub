@@ -199,7 +199,7 @@ async def release_health_status(
 
 @router.get(
     '/release/{release_name}/user-supplied-values',
-    response_model=dict,
+    response_model=dict | list | None,
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def release_user_supplied_values(
@@ -222,7 +222,7 @@ async def release_user_supplied_values(
 
 @router.get(
     '/release/{release_name}/computed-values',
-    response_model=dict,
+    response_model=dict | list | None,
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def release_computed_values(
