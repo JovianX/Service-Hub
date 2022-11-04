@@ -124,6 +124,28 @@ components:                                     # Required. Application componen
     values:                                     # Optional. Helm chart values to install/update.
       - db:
           username: {{ inputs.text_example }}   # Example of usage dynamic tempalte variables.
+      - replica:
+          serviceAccount:
+            create: false
+      - master:
+          serviceAccount:
+            create: false
+
+  - name: mongodb
+    type: helm_chart
+    chart: bitnami/mongodb
+    version: 13.4.1
+    values:
+      - auth:
+          rootPassword: {{ inputs.text_example }}
+
+  - name: rabbitmq
+    type: helm_chart
+    chart: bitnami/rabbitmq
+    version: 11.1.1
+    values:
+      - db:
+          username: {{ inputs.text_example }}
 
 # List of application hooks.
 #
@@ -190,6 +212,22 @@ hooks:
       command: ['/bin/sh', '-c']
       args:
         - curl https://www.google.com/search?q=service_hub;
+
+  pre_upgrade:
+    - name: pre-upgrade-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub__pre_upgrade;
+
+  post_upgrade:
+    - name: post-upgrade-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub__post_upgrade;
 
   pre_terminate:
     - name: pre-terminate-hook

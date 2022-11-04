@@ -304,6 +304,8 @@ class HelmManager:
         debug = False
         if dry_run:
             debug = True
+        if isinstance(values, dict):
+            values = [values]
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
@@ -327,7 +329,7 @@ class HelmManager:
                     namespace=namespace,
                     release_name=release_name,
                     chart=chart,
-                    values=[values],
+                    values=values,
                     debug=debug,
                     dry_run=dry_run
                 )

@@ -1,14 +1,12 @@
 import asyncio
 import logging
-from datetime import datetime
-from datetime import timedelta
 
-from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
 from core.configuration import settings
 from db.session import session_maker
 from exceptions.application import ApplicationComponentInstallException
 from exceptions.application import ApplicationComponentUninstallException
+from exceptions.application import ApplicationComponentUpdateException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
 from exceptions.application import ApplicationLaunchTimeoutException
@@ -26,21 +24,6 @@ from .utils import get_template_manager
 logger = logging.getLogger(__name__)
 
 
-def render_new_application_manifest(application: Application, new_template: TemplateRevision) -> TemplateSchema:
-    """
-    Helper that renders new application's manifest using existing user input.
-    """
-    # Extending existing user inputs with defaults from new template.
-    new_template_schema = load_template(new_template.template)
-    input_defaults = new_template_schema.inputs_defaults
-    user_inputs = {**input_defaults, **application.user_inputs}
-
-    manifest_yaml = render_template(new_template.template, user_inputs)
-    manifest = load_template(manifest_yaml)
-
-    return manifest
-
-
 @procrastinate.task(name='application__run_pre_upgrade_hooks')
 async def execute_pre_upgrade_hooks(application_id: int, new_template_id: int):
     """
@@ -52,7 +35,7 @@ async def execute_pre_upgrade_hooks(application_id: int, new_template_id: int):
         template_manager = get_template_manager(session)
         application = await application_manager.get_application(application_id)
         new_template = await template_manager.get_organization_template(new_template_id, application.organization)
-        manifest = render_new_application_manifest(application, new_template)
+        manifest = load_template(application_manager.render_manifest(new_template, application=application))
         await application_manager.set_state_status(application, ApplicationStatuses.upgrading)
         try:
             await asyncio.gather(*[
@@ -81,61 +64,38 @@ async def upgrade_applicatoin_components(application_id: int, new_template_id: i
         template_manager = get_template_manager(session)
         application = await application_manager.get_application(application_id)
         new_template = await template_manager.get_organization_template(new_template_id, application.organization)
-        new_manifest = render_new_application_manifest(application, new_template)
-        old_manifest: TemplateSchema = load_template(application.manifest)
-
-        new_components_names = new_manifest.components_mapping.keys()
-        old_components_names = old_manifest.components_mapping.keys()
-        components_to_install = [
-            new_manifest.components_mapping[component_name]
-            for component_name in new_components_names - old_components_names
-        ]
-        components_to_remove = [
-            old_manifest.components_mapping[component_name]
-            for component_name in old_components_names - new_components_names
-        ]
-        components_to_update = [
-            new_manifest.components_mapping[component_name]
-            for component_name in old_components_names & new_components_names
-        ]
         try:
-            await asyncio.gather(*[
-                application_manager.install_component(component, application, dry_run=dry_run)
-                for component in manifest.components if component.enabled
-            ])
-        except ApplicationComponentInstallException:
+            await application_manager.upgrade_components(application, new_template)
+        except (ApplicationComponentInstallException,
+                ApplicationComponentUpdateException,
+                ApplicationComponentUninstallException):
             await application_manager.set_state_status(application, ApplicationStatuses.error)
-            await asyncio.gather(*[
-                application_manager.uninstall_component(application, component)
-                for component in manifest.components if component.enabled
-            ])
             raise
-        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT)
-        while datetime.now() < application_deadline:
-            status = await application_manager.get_application_health_status(application)
-            await application_manager.set_health_status(application, status)
-            if status == ApplicationHealthStatuses.healthy:
-                break
-        else:
+        try:
+            await application_manager.await_healthy_state(application)
+        except ApplicationLaunchTimeoutException:
             logger.error(
-                f'Failed to launch <Applicaton ID="{application.id}"> in '
-                f'{settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT} seconds.'
+                f'Failed to upgrate <Applicaton ID="{application.id}">. Reached deadline of awaiting application to '
+                f'become healthy.'
             )
             await application_manager.set_state_status(application, ApplicationStatuses.error)
-            raise ApplicationLaunchTimeoutException(f'Failed to start application in time.', application=application)
+            raise
 
-    await execute_post_upgrade_hooks.defer_async(application_id=application_id)
+    await execute_post_upgrade_hooks.defer_async(application_id=application_id, new_template_id=new_template_id)
 
 
 @procrastinate.task(name='application__run_post_upgrade_hooks')
-async def execute_post_upgrade_hooks(application_id: int):
+async def execute_post_upgrade_hooks(application_id: int, new_template_id: int):
     """
     Executes application post-upgrade hooks.
     """
     async with session_maker() as session:
         application_manager = get_application_manager(session)
+        template_manager = get_template_manager(session)
         application = await application_manager.get_application(application_id)
-        manifest: TemplateSchema = load_template(application.manifest)
+        new_template = await template_manager.get_organization_template(new_template_id, application.organization)
+        raw_manifest = application_manager.render_manifest(new_template, application=application)
+        manifest = load_template(raw_manifest)
         try:
             await asyncio.gather(*[
                 application_manager.execute_hook(application, hook)
@@ -149,3 +109,7 @@ async def execute_post_upgrade_hooks(application_id: int):
             await application_manager.set_state_status(application, ApplicationStatuses.error)
             return
         await application_manager.set_state_status(application, ApplicationStatuses.deployed)
+        application.manifest = raw_manifest
+        application.template = new_template
+        application.user_inputs = application_manager.get_inputs(new_template, application=application)
+        await application_manager.db.save(application)

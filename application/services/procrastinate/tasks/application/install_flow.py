@@ -73,19 +73,15 @@ async def install_applicatoin_components(application_id: int, dry_run: bool = Fa
                 for component in manifest.components if component.enabled
             ])
             raise
-        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT)
-        while datetime.now() < application_deadline:
-            status = await application_manager.get_application_health_status(application)
-            await application_manager.set_health_status(application, status)
-            if status == ApplicationHealthStatuses.healthy:
-                break
-        else:
+        try:
+            await application_manager.await_healthy_state(application)
+        except ApplicationLaunchTimeoutException:
             logger.error(
-                f'Failed to launch <Applicaton ID="{application.id}"> in '
-                f'{settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT} seconds.'
+                f'Failed to install <Applicaton ID="{application.id}">. Reached deadline of awaiting application to '
+                f'become healthy.'
             )
             await application_manager.set_state_status(application, ApplicationStatuses.error)
-            raise ApplicationLaunchTimeoutException(f'Failed to start application in time.', application=application)
+            raise
 
     await execute_post_install_hooks.defer_async(application_id=application_id)
 

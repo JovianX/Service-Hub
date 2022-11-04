@@ -67,7 +67,7 @@ async def install_application(
 
 @router.post(
     '/{application_id}/upgrade',
-    response_model=ApplicationUpgradeResponseSchema,
+    response_model=ApplicationUpgradeResponseSchema | None,
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def upgrade_application(
