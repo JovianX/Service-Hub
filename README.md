@@ -29,7 +29,7 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 ```
 # 🦄 Features:
 
-**Application Templates**
+**Application Templates** ([Docs](documentation/templates.md))
 
 - Create application templates from Helm Charts.
 - Manage template changes and reversions.
