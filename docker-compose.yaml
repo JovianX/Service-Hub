@@ -2,13 +2,7 @@ version: '3.9'
 
 services:
   application:
-    build:
-      context: application
-      dockerfile: Dockerfile
-      args:
-        HELM_VERSION: ${HELM_VERSION}
-        KUBECTL_VERSION: ${KUBECTL_VERSION}
-    image: back-end
+    image: jovianx/service-hub_application
     volumes:
       - ./application:/home/app/hub
       - ./credentials:/home/app/hub/credentials
@@ -28,7 +22,7 @@ services:
       - postgres
 
   task-executor:
-    image: back-end
+    image: jovianx/service-hub_application
     command: ./start-task-executor.sh
     volumes:
       - ./application:/home/app/hub
@@ -49,9 +43,7 @@ services:
       - application
 
   frontend:
-    build:
-      context: frontend
-      dockerfile: Dockerfile
+    image: jovianx/service-hub_frontend
     networks:
       - service-network
     ports:
