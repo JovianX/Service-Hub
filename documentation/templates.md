@@ -16,7 +16,7 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 # 🍱 Application template example:
 
-```
+```yaml
 name: my-new-service                            # Required. Name of service.
 
 # List of applicatoin components.
