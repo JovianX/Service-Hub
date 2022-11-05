@@ -64,21 +64,21 @@ db_revision: ## Does revision of database and models and creates migration if ne
 	fi
 
 build: ## Build all Docker images.
-	docker-compose build --no-cache --force-rm
+	docker-compose -f docker-compose-dev.yaml build --no-cache --force-rm
 
 up: ## Launch dockerized infrastructure.
-	docker-compose up --detach
+	docker-compose  -f docker-compose-dev.yaml up  --detach
 
 down: ## Shutdown dockerized infrastructure.
 	docker-compose down
 
 serve_be: ## Run only infrastructure containers required by back-end.
-	docker-compose up --no-deps --detach postgres
-	docker-compose up --no-deps --detach frontend
+	docker-compose -f docker-compose-dev.yaml up --no-deps --detach postgres
+	docker-compose -f docker-compose-dev.yaml up --no-deps --detach frontend
 
 serve_fe: ## Run only infrastructure containers required by front-end.
-	docker-compose up --no-deps --detach postgres
-	docker-compose up --no-deps --detach application
+	docker-compose -f docker-compose-dev.yaml up --no-deps --detach postgres
+	docker-compose -f docker-compose-dev.yaml up --no-deps --detach application
 	cd frontend; npm start
 
 logs: ## Show contaiters logs.
