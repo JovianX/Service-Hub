@@ -75,10 +75,8 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 ### OR
 
 ```
-git clone https://github.com/JovianX/service-hub.git
-cd service-hub
-make build
-make up
+curl https://raw.githubusercontent.com/JovianX/Service-Hub/main/docker-compose.yaml -o docker-compose.yaml
+docker-compose up
 xdg-open 'http://localhost:3000'
 ```
 
