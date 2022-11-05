@@ -3,10 +3,6 @@ version: '3.9'
 services:
   application:
     image: jovianx/service-hub_application
-    volumes:
-      - ./application:/home/app/hub
-      - ./credentials:/home/app/hub/credentials
-      - ./.env:/home/app/hub/.env
     networks:
       - service-network
     ports:
@@ -24,10 +20,6 @@ services:
   task-executor:
     image: jovianx/service-hub_application
     command: ./start-task-executor.sh
-    volumes:
-      - ./application:/home/app/hub
-      - ./credentials:/home/app/hub/credentials
-      - ./.env:/home/app/hub/.env
     networks:
       - service-network
     environment:
@@ -51,15 +43,9 @@ services:
     depends_on:
       - application
 
-
   ###
   postgres:
     image: postgres:14.4
-    # command: [
-    #   'postgres',
-    #   '-c', 'log_statement=all',
-    #   '-c', 'log_duration=true'
-    # ]
     environment:
       - POSTGRES_USER=postgres_user
       - POSTGRES_PASSWORD=super_secret_password
