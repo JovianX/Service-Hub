@@ -16,27 +16,17 @@
 
 ### Feature Overview
 
-Application Templates allow users (Developers, DevOps, SREs, or other team members) to deploy applications via a simple Self-Service.
+Application Templates allow users (Developers, DevOps, SREs, or other members) to deploy applications via a simple Self-Service web UI.  Application Templates allow creating a self-service experience for software.
 
-<table><tbody>
-<tr align=center>
-<td><b>Application Templates</b></td><td><b>Self-Service</b></td>
-</tr>
-<tr><td colspan=2>
-<img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png">
-</td></tr>
-</tbody></table>
+<table><tbody><tr><td><strong>Application Templates</strong></td><td><strong>Self-Service</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
 
+Users (with the `Admin` role) can create application templates. An application template defines its `components` (Helm Charts), and `inputs` we expect the user to provide when deploying the application. 
 
-Admins can create application tempaltes. users, with `Operator role` can deploy applications. 
+The `components`  in the template are the definitions of Helm Chats, and all values that are set by default when deploying the application.
 
+The `inputs` definition creates a UI that asks the user to provide values when deploying the application. We support the following  `inputs` types: `text`, `textarea`, `number`, `select` , `radio_select`  , `switch` , `checkbox`, `slider`.
 
-
-Application Templates allow you to create a self-service experience for your software. An application template consists of component definitions with user input definitions. Or in other words, you can define what components 
-
-An application template defines the helm chart 
-
- A template consists of one or more components and user input definitions. 
+Users (with the `Operator` or `Admin` roles) can deploy applications via the Self-Service console.
 
 **Creating a new template**
 
