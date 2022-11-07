@@ -36,7 +36,6 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 - Allow operators to create applications from templates.
 
 <table><tbody>
-
 <tr align=center>
 <td><b>Application Templates</b></td><td><b>Self-Service</b></td>
 </tr>
