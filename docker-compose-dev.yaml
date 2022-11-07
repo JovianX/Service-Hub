@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   application:
+
     build:
       context: application
       dockerfile: Dockerfile
@@ -52,6 +53,7 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
+
     networks:
       - service-network
     ports:
@@ -81,3 +83,4 @@ services:
 networks:
   service-network:
     name: service-network
+

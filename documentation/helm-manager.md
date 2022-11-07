@@ -1,4 +1,4 @@
-```
+```shell
        JovianX
          _____                         _                   _    _           _
         / ____|                       (_)                 | |  | |         | |
@@ -10,17 +10,6 @@
                 Create X-as-a-Service on Kubernetes with Helm
 ```
 
-JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
+[\<\< Back to the documentation](README.md)
 
-# Features
-
-[Create account / Signup](signup.md)
-
-[Application Templates](templates.md)
-
-[Helm Manager](helm-manager.md)
-
-Connecting to Kubernetes clusters
-
-[Service-Hub vs Alternatives](service_hub-vs-alternatives.md)
-
+# Helm Manager

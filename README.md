@@ -17,7 +17,6 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 
 
 ```
-       JovianX
          _____                         _                   _    _           _
         / ____|                       (_)                 | |  | |         | |
        | (___     ___   _ __  __   __  _    ___    ___    | |__| |  _   _  | |__
@@ -29,14 +28,13 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 ```
 # 🦄 Features:
 
-**Application Templates**
+**Application Templates** ([Docs](documentation/templates.md))
 
 - Create application templates from Helm Charts.
 - Manage template changes and reversions.
 - Allow operators to create applications from templates.
 
 <table><tbody>
-
 <tr align=center>
 <td><b>Application Templates</b></td><td><b>Self-Service</b></td>
 </tr>
@@ -57,7 +55,7 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 
 ![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
 
-**Login with GitHub or email/password **
+**Login with GitHub or email/password**
 **Basic RBAC**
 
 ## 🚀 Roadmap
@@ -66,7 +64,7 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 - **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
 - **RBAC** - Role-based access control
 - **Login with Google**
-- **Instal the project via Helm Chart**
+- **Installation via Helm Chart**
 
 # 👷 Installation
 
@@ -75,10 +73,8 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 ### OR
 
 ```
-git clone https://github.com/JovianX/service-hub.git
-cd service-hub
-make build
-make up
+curl https://raw.githubusercontent.com/JovianX/Service-Hub/main/docker-compose.yaml -o docker-compose.yaml
+docker-compose up
 xdg-open 'http://localhost:3000'
 ```
 
