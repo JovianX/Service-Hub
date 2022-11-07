@@ -18,7 +18,7 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 [Application Templates](templates.md)
 
-Helm manager
+[Helm manager](helm_manager.md)
 
 Connecting to Kubernetes clusters
 
