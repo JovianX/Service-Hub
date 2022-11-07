@@ -28,7 +28,42 @@ The `inputs` definition creates a UI that asks the user to provide values when d
 
 Users (with the `Operator` or `Admin` roles) can deploy applications via the Self-Service console.
 
-**Creating a new template**
+### **Creating a new template**
+
+1.  Navigate to Templates in the side menu. 
+2.  Click on "Add Template"
+
+![](https://user-images.githubusercontent.com/2787296/200311033-990e852e-9194-49e4-9340-3c86098710bc.png)
+
+3\. Set a description for the template, which is a free text describing the purpose of the template, or the specific change you added.
+
+4\. Add a template 
+
+![](https://user-images.githubusercontent.com/2787296/200311419-e6c3100e-41bc-4306-92a9-045c01e0a9e7.png)
+
+**Simple Template example:** 
+
+```yaml
+# Template reference and documentation at https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
+
+name: my-new-service                            # Required. Name of service.
+
+components:                                     # Required. Application components list.
+  - name: redis                                 # Required. Component name.
+    type: helm_chart                            # Required. Component type.
+    chart: bitnami/redis                        # Required. Chart name in format `<repository name>/<application name>`.
+    version: 17.0.6                             # Optional. Chart version to install.
+    values:                                     # Optional. Helm chart values to install/update.
+      - db:
+          username: {{ inputs.username }}       # Example of usage dynamic tempalte variables.
+
+inputs:                                         # Optional. User input list.
+  - name: username                              # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
+    type: text                                  # Required. Input type.
+    label: 'User Name'                          # Optional. User friendly short input title.
+    default: 'John Connor'                      # Optional. Default input value. Used if was no input from user.
+    description: 'Enter app username'           # Optional. Valuable for user description of this input.
+```
 
 **Managing Reversions**
 
@@ -180,3 +215,7 @@ inputs:                                         # Optional. User input list.
     max: 10                                     # Optional. Maximal value.
     default: 5
 ```
+
+The comprehensive example would produce the following: 
+
+![](https://user-images.githubusercontent.com/2787296/200312035-a296071a-d841-47dd-9e7d-8abbacef73b7.png)
