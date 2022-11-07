@@ -19,7 +19,7 @@ JovianX Serivce-Hub offers a very simply way to create Self-Serivce experience f
 
 With Service-Hub you can create applicaiton tempaltes, and provide them as Self-Service applications to users (technical or non-technical), no extra DevOps magic glue reuqired to get started.
 
-We love all of the alternatives/proxy tools in our space, and there are plenty. Our focus is on simplicitly, very short time-to-value. 
+We love all of the alternatives/proxy tools in our space, and there are plenty. Our focus is on simplicitly, great developer experience, and a very short time-to-value. 
 
 
 ### 🍱 Service-Hub vs. Helmfile
