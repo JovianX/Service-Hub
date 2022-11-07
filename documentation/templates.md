@@ -20,13 +20,13 @@ Application Templates allow the creation of a self-service experience for softwa
 
 <table><tbody><tr><td><strong>Application Templates - Admin defines components and user inputs</strong></td><td><strong>Self-Service - Operator deploys the app</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
 
-Users (with the `Admin` role) can create application templates. An application template defines its `components` (Helm Charts), and `inputs` we expect the user to provide when deploying the application. 
+Admins (users with the `Admin` role) can create application templates. An application template defines the `components` (Helm Charts) that should be deployed, and `inputs` expected from the user to provide when deploying the application. We can use `inputs` to configure `components` settings.
 
-The `components`  in the template are the definitions of Helm Chats, and all values that are set by default when deploying the application.
+The `components`  in the template are the definitions of Helm Chats, and the values that are set by default when deploying the application.
 
-The `inputs` definition creates a UI that asks the user to provide values when deploying the application. We support the following  `inputs` types: `text`, `textarea`, `number`, `select` , `radio_select`  , `switch` , `checkbox`, `slider`.
+The `inputs` definition creates a UI that asks the user to provide values when deploying the application. The values provided by the user when deploying the application can be used to configure the application. The following are supported  `inputs` types: `text`, `textarea`, `number`, `select` , `radio_select`  , `switch` , `checkbox`, `slider`.
 
-Users (with the `Operator` or `Admin` roles) can deploy applications via the Self-Service console.
+Users (with the `Operator` or `Admin` roles) can deploy applications via the Self-Service web UI (or RESTful API).
 
 ### **Creating a new template**
 
@@ -35,13 +35,13 @@ Users (with the `Operator` or `Admin` roles) can deploy applications via the Sel
 
 ![](https://user-images.githubusercontent.com/2787296/200311033-990e852e-9194-49e4-9340-3c86098710bc.png)
 
-3\. Set a description for the template, which is a free text describing the purpose of the template, or the specific change you added.
+3\. Set a description for the template, which is a free text describing the purpose of the template, or the purpose of a specific change added.
 
-4\. Add a template 
+4\. Add the application template:
 
 ![](https://user-images.githubusercontent.com/2787296/200311419-e6c3100e-41bc-4306-92a9-045c01e0a9e7.png)
 
-**Simple Template example:**
+**Here's a simple template example:**
 
 ```yaml
 # Template reference and documentation at https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
@@ -66,6 +66,8 @@ inputs:                                         # Optional. User input list.
 ```
 
 **Managing Reversions**
+
+**Every change, edit, or update of a template creates a new template reversion.** 
 
 **Settingh Default Template**
 
