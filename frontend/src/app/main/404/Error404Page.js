@@ -3,6 +3,8 @@ import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
+const access_token = localStorage.getItem('jwt_access_token');
+
 function Error404Page() {
   return (
     <div className='flex flex-col flex-1 items-center justify-center p-16'>
@@ -222,7 +224,6 @@ function Error404Page() {
             </defs>
           </Box>
         </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{
@@ -238,7 +239,6 @@ function Error404Page() {
             Ooops... 404!
           </Typography>
         </motion.div>
-
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{
@@ -255,10 +255,15 @@ function Error404Page() {
             The page you requested could not be found.
           </Typography>
         </motion.div>
-
-        <Link className='block font-normal mt-48' to='/'>
-          Back to Dashboard
-        </Link>
+        {access_token ? (
+          <Link className='block font-normal mt-48' to='/'>
+            Back to Dashboard
+          </Link>
+        ) : (
+          <Link className='block font-normal mt-48' to='/sign-in'>
+            Back to Sign In
+          </Link>
+        )}
       </div>
     </div>
   );

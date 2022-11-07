@@ -10,7 +10,7 @@ import BrowserRouter from '@fuse/core/BrowserRouter';
 import FuseAuthorization from '@fuse/core/FuseAuthorization';
 import FuseLayout from '@fuse/core/FuseLayout';
 import FuseTheme from '@fuse/core/FuseTheme';
-import { adminRoutes, operatorRoutes } from 'app/configs/routesConfig';
+import { initialRoutes, adminRoutes, operatorRoutes } from 'app/configs/routesConfig';
 import settingsConfig from 'app/configs/settingsConfig';
 import { selectMainTheme } from 'app/store/fuse/settingsSlice';
 import { selectCurrentLanguageDirection } from 'app/store/i18nSlice';
@@ -44,9 +44,8 @@ const App = () => {
   const langDirection = useSelector(selectCurrentLanguageDirection);
   const mainTheme = useSelector(selectMainTheme);
 
-  const access_token = localStorage.getItem('jwt_access_token');
   let userInfo = {};
-
+  const access_token = localStorage.getItem('jwt_access_token');
   if (access_token) {
     userInfo = jwtDecode(access_token);
   }
@@ -55,7 +54,10 @@ const App = () => {
     if (userInfo.user_role === 'operator') {
       return operatorRoutes;
     }
-    return adminRoutes;
+    if (userInfo.user_role === 'admin') {
+      return adminRoutes;
+    }
+    return initialRoutes;
   };
 
   return (
