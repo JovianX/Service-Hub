@@ -22,4 +22,5 @@ JovianX **Service Hub** is a Platform Engineering tool to create and manage on-d
 
 Connecting to Kubernetes clusters
 
+[Service-Hub vs Alternatives](service_hub-vs-alternatives.md)
 
