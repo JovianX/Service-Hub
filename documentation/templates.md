@@ -1,4 +1,4 @@
-```
+```shell
        JovianX
          _____                         _                   _    _           _
         / ____|                       (_)                 | |  | |         | |
@@ -10,11 +10,47 @@
                 Create X-as-a-Service on Kubernetes with Helm
 ```
 
-JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
+[\<\< Back to the documentation](README.md)
 
-[Documentation Folder](README.md) containes complete product documentation.
+# 🍱 Application Templates
 
-# 🍱 Application template example:
+### Feature Overview 
+
+Application Templates allow users (Developers, DevOps, SREs, or other team members) to deploy applications via a simple Self-Service. The admin 
+
+Application Templates allow you to create a self-service experience for your software. An application template consists of component definitions with user input definitions. Or in other words, you can define what components 
+
+An application template defines the helm chart 
+
+ A template consists of one or more components and user input definitions. 
+
+**Creating a new template** 
+
+**Managing Reversions** 
+
+**Default Template** 
+
+**Deploying an application from a template** 
+
+When writing a template you can defined what 
+
+You can provide a Self-Service experience 
+
+**Application TemplatesSelf-Service** 
+
+Application templates can be deployed by you or other team members 
+
+Self-Service experience 
+
+### Template Reference 
+
+To get the complete template reference
+
+```shell
+curl -X 'GET'   'https://api.hub.jovianx.app/api/v1/template/schema?format=yaml'   -H 'accept: application/json'  | sed 's/\\n/\n/g' 
+```
+
+### Complete Template Example
 
 ```yaml
 name: my-new-service                            # Required. Name of service.
