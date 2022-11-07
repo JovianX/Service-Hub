@@ -16,9 +16,9 @@
 
 ### Feature Overview
 
-Application Templates allow users (Developers, DevOps, SREs, or other members) to deploy applications via a simple Self-Service web UI.  Application Templates allow creating a self-service experience for software.
+Application Templates allow the creation of a self-service experience for software, so users (Developers, DevOps, SREs, or other members) cloud very easily deploy applications via a simple Self-Service web UI.  
 
-<table><tbody><tr><td><strong>Application Templates</strong></td><td><strong>Self-Service</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
+<table><tbody><tr><td><strong>Application Templates (Admin defines components and user inputs)</strong></td><td><strong>Self-Service (Operator) Deploys the app</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
 
 Users (with the `Admin` role) can create application templates. An application template defines its `components` (Helm Charts), and `inputs` we expect the user to provide when deploying the application. 
 
@@ -41,7 +41,7 @@ Users (with the `Operator` or `Admin` roles) can deploy applications via the Sel
 
 ![](https://user-images.githubusercontent.com/2787296/200311419-e6c3100e-41bc-4306-92a9-045c01e0a9e7.png)
 
-**Simple Template example:** 
+**Simple Template example:**
 
 ```yaml
 # Template reference and documentation at https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
@@ -216,6 +216,6 @@ inputs:                                         # Optional. User input list.
     default: 5
 ```
 
-The comprehensive example would produce the following: 
+The comprehensive example would produce the following:
 
 ![](https://user-images.githubusercontent.com/2787296/200312035-a296071a-d841-47dd-9e7d-8abbacef73b7.png)
