@@ -17,7 +17,6 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 
 
 ```
-       JovianX
          _____                         _                   _    _           _
         / ____|                       (_)                 | |  | |         | |
        | (___     ___   _ __  __   __  _    ___    ___    | |__| |  _   _  | |__
