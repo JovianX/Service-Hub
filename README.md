@@ -64,7 +64,7 @@ JovianX **Service Hub** is a tool to create and manage on-demand services using 
 - **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
 - **RBAC** - Role-based access control
 - **Login with Google**
-- **Instal the project via Helm Chart**
+- **Installation via Helm Chart**
 
 # 👷 Installation
 
