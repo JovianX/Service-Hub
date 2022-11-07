@@ -66,28 +66,33 @@ inputs:                                         # Optional. User input list.
     description: 'Enter app username'           # Optional. Valuable for user description of this input.
 ```
 
-**Managing Reversions**
-Every change, edit, or update of a template creates a new template reversion. You can upgrade or rollback an application to match a reversion. 
+**Managing Reversions**  
+Every change, edit, or update of a template creates a new template reversion. You can upgrade or roll back an application to match a reversion.
 
-**Default Template**W
-When deploying an application, the default template is automatically selected, 
+**Default Template**  
+When deploying an application, the default template is automatically selected,
 
-**Setting a Default Template**
-To set the default template, hover over a onon default tempalte, and click on the "Default" button that apears.
+**Setting a Default Template**  
+To set the default template, hover over a non-default template, and click on the "Default" button that appears.  
+ 
+
 ![image](https://user-images.githubusercontent.com/2787296/200361559-a3b0f2e7-70da-4135-86cb-1c0150353f74.png)
 
-
 **Deploying an application from a template**
-1. To deploy a new application navigate to the applications menu 
-2. Click on "Deploy Application"
+
+1.  To deploy a new application navigate to the applications menu
+2.  Click on "Deploy Application"
 
 ![image](https://user-images.githubusercontent.com/2787296/200362320-3683c0ee-f64a-46d0-b87c-1f8d007edd75.png)
 
-3. Select the Tempalte and reversion
-4. Fill inputs 
-5. Seelct target cluster, and namespace, and Click on "Deploy"
+1.  Select the Template and reversion
+2.  Fill inputs
+3.  Select the target cluster, and namespace, and Click on "Deploy"
+
+![](https://user-images.githubusercontent.com/2787296/200364569-5337d5a2-6f08-4fb3-9dd2-0a48fbc13142.png)
 
 ### Template Reference
+
 To get the complete template reference
 
 ```shell
