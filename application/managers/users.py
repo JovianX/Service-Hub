@@ -15,10 +15,13 @@ from core.configuration import settings
 from crud.users import UserDatabase
 from crud.users import get_user_db
 from exceptions.organization import DifferentOrganizationException
+from managers.helm.manager import HelmManager
 from managers.invitations import InvitationManager
 from managers.invitations import get_invitation_manager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
+from managers.templates import TemplateManager
+from managers.templates import get_template_manager
 from models.invitation import UserInvitation
 from models.organization import Organization
 from models.user import User
@@ -35,10 +38,13 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     invitation_record: UserInvitation | None = None
 
     def __init__(
-        self, user_db: UserDatabase, organizations: OrganizationManager, invitation_manager: InvitationManager
+        self, user_db: UserDatabase, organizations: OrganizationManager, invitation_manager: InvitationManager,
+        template_manager: TemplateManager
     ):
         self.organizations = organizations
         self.invitation_manager = invitation_manager
+        self.helm_manager = HelmManager(organizations)
+        self.template_manager = template_manager
         super().__init__(user_db)
 
     async def create(self, user_create: UserCreate, safe: bool = False, request: Request | None = None) -> User:
@@ -168,6 +174,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         user['organization_id'] = organization.id
 
     async def on_after_register(self, user: User, request: Request | None = None):
+        # Setting user role
         users = await self.user_db.list(organization_id=user.organization.id)
         if len(users) > 1:
             user.role = Roles.operator
@@ -177,6 +184,18 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
         if self.invitation_record:
             await self.invitation_manager.use(self.invitation_record, user)
+
+        # Creating initial organization's repository and template.
+        await self.helm_manager.add_repository(
+            user.organization, 'Bitnami', settings.INITIAL_ORGANIZATION_REPOSITORY_URL
+        )
+        if settings.INITIAL_ORGANIZATION_TEMPLATE:
+            await self.template_manager.create_template(
+                user,
+                settings.INITIAL_ORGANIZATION_TEMPLATE,
+                description='Template example.',
+                enabled=True
+            )
 
     async def on_after_forgot_password(self, user: User, token: str, request: Request | None = None):
         link = f'{settings.UI_HOST}/reset-password?token={token}'
@@ -218,6 +237,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 async def get_user_manager(
     user_db=Depends(get_user_db),
     organization_manager=Depends(get_organization_manager),
-    invitation_manager=Depends(get_invitation_manager)
+    invitation_manager=Depends(get_invitation_manager),
+    template_manager=Depends(get_template_manager)
 ):
-    yield UserManager(user_db, organization_manager, invitation_manager)
+    yield UserManager(user_db, organization_manager, invitation_manager, template_manager)
