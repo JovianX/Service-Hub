@@ -22,12 +22,12 @@ With Service-Hub you can create applicaiton tempaltes, and provide them as Self-
 We love all of the alternatives/proxy tools in our space, and there are plenty. Our focus is on simplicitly, great developer experience, and a very short time-to-value. 
 
 
-### 🍱 Service-Hub vs. Helmfile
+### Service-Hub vs. Helmfile
 
-### 🍱 Service-Hub vs. Helmsman
+### Service-Hub vs. Helmsman
 
-### 🍱 Service-Hub vs. Helm Dashboard
+### Service-Hub vs. Helm Dashboard
 
-### 🍱 Service-Hub vs. Kubevela
+### Service-Hub vs. Kubevela
 
-### 🍱 Service-Hub vs. Kubeapps
+### Service-Hub vs. Kubeapps
