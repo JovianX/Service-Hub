@@ -18,7 +18,7 @@
 
 Application Templates allow the creation of a self-service experience for software, so users (Developers, DevOps, SREs, or other members) cloud very easily deploy applications via a simple Self-Service web UI.  
 
-<table><tbody><tr><td><strong>Application Templates - Admin defines components and user inputs</strong></td><td><strong>Self-Service - Operator deploys the app</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
+<table><tbody><tr><td><strong>Application Templates - Admin defines components and user inputs</strong></td><td><strong>Self-Service - Operators can deploy the app</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
 
 Admins (users with the `Admin` role) can create application templates. An application template defines the `components` (Helm Charts) that should be deployed, and `inputs` expected from the user to provide when deploying the application. We can use `inputs` to configure `components` settings.
 
@@ -33,18 +33,19 @@ Users (with the `Operator` or `Admin` roles) can deploy applications via the Sel
 1.  Navigate to Templates in the side menu. 
 2.  Click on "Add Template"
 
-![](https://user-images.githubusercontent.com/2787296/200311033-990e852e-9194-49e4-9340-3c86098710bc.png)
+![](https://user-images.githubusercontent.com/2787296/200358986-792846c5-dd12-48af-99c9-0823f89750e5.png)
 
 3\. Set a description for the template, which is a free text describing the purpose of the template, or the purpose of a specific change added.
 
-4\. Add the application template:
+4\. Add the application template, and click on "Add".
 
 ![](https://user-images.githubusercontent.com/2787296/200311419-e6c3100e-41bc-4306-92a9-045c01e0a9e7.png)
 
 **Here's a simple template example:**
 
 ```yaml
-# Template reference and documentation at https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
+# Template reference and documentation at 
+# https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
 
 name: my-new-service                            # Required. Name of service.
 
@@ -66,23 +67,27 @@ inputs:                                         # Optional. User input list.
 ```
 
 **Managing Reversions**
+Every change, edit, or update of a template creates a new template reversion. You can upgrade or rollback an application to match a reversion. 
 
-**Every change, edit, or update of a template creates a new template reversion.** 
+**Default Template**W
+When deploying an application, the default template is automatically selected, 
 
-**Settingh Default Template**
+**Setting a Default Template**
+To set the default template, hover over a onon default tempalte, and click on the "Default" button that apears.
+![image](https://user-images.githubusercontent.com/2787296/200361559-a3b0f2e7-70da-4135-86cb-1c0150353f74.png)
+
 
 **Deploying an application from a template**
+1. To deploy a new application navigate to the applications menu 
+2. Click on "Deploy Application"
 
-When writing a template you can defined what 
+![image](https://user-images.githubusercontent.com/2787296/200362320-3683c0ee-f64a-46d0-b87c-1f8d007edd75.png)
 
-You can provide a Self-Service experience 
-
-Application templates can be deployed by you or other team members 
-
-Self-Service experience 
+3. Select the Tempalte and reversion
+4. Fill inputs 
+5. Seelct target cluster, and namespace, and Click on "Deploy"
 
 ### Template Reference
-
 To get the complete template reference
 
 ```shell
@@ -218,6 +223,6 @@ inputs:                                         # Optional. User input list.
     default: 5
 ```
 
-The comprehensive example would produce the following:
+The comprehensive example would produce the following inputs:
 
 ![](https://user-images.githubusercontent.com/2787296/200312035-a296071a-d841-47dd-9e7d-8abbacef73b7.png)
