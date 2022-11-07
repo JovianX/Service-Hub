@@ -1,4 +1,3 @@
-import jwtDecode from 'jwt-decode';
 import { Navigate } from 'react-router-dom';
 
 import FuseLoading from '@fuse/core/FuseLoading';
@@ -23,50 +22,36 @@ import SignUpConfig from '../main/sign-up/SignUpConfig';
 import TemplatesConfig from '../main/templates/TemplatesConfig';
 import UsersConfig from '../main/users/UsersConfig';
 
-const access_token = localStorage.getItem('jwt_access_token');
-let userInfo = {};
-if (access_token) {
-  userInfo = jwtDecode(access_token);
-}
+const initialRouteConfigs = [SignInConfig, SignUpConfig, SignOutConfig, ForgotPasswordConfig, ResetPasswordConfig];
 
-let routeConfigs = [];
-if (userInfo?.user_role === 'admin') {
-  routeConfigs = [
-    ClustersConfig,
-    RepositoriesConfig,
-    ServicesConfig,
-    ChartsConfig,
-    ApplicationsConfig,
-    ReleasesConfig,
-    ReleaseDetailsConfig,
-    DashboardConfig,
-    ExampleConfig,
-    SignOutConfig,
-    SignInConfig,
-    SignUpConfig,
-    UsersConfig,
-    TemplatesConfig,
-    ForgotPasswordConfig,
-    ResetPasswordConfig,
-  ];
-} else {
-  routeConfigs = [
-    ApplicationsConfig,
-    ChartsConfig,
-    RepositoriesConfig,
-    ReleasesConfig,
-    ReleaseDetailsConfig,
-    DashboardConfig,
-    SignOutConfig,
-    SignInConfig,
-    SignUpConfig,
-    ForgotPasswordConfig,
-    ResetPasswordConfig,
-  ];
-}
+const adminRouteConfigs = [
+  SignOutConfig,
+  SignInConfig,
+  ClustersConfig,
+  RepositoriesConfig,
+  ServicesConfig,
+  ChartsConfig,
+  ApplicationsConfig,
+  ReleasesConfig,
+  ReleaseDetailsConfig,
+  DashboardConfig,
+  ExampleConfig,
+  UsersConfig,
+  TemplatesConfig,
+];
+const operatorRouteConfigs = [
+  SignOutConfig,
+  SignInConfig,
+  ApplicationsConfig,
+  ChartsConfig,
+  RepositoriesConfig,
+  ReleasesConfig,
+  ReleaseDetailsConfig,
+  DashboardConfig,
+];
 
-const routes = [
-  ...FuseUtils.generateRoutesFromConfigs(routeConfigs, settingsConfig.defaultAuth),
+const initialRoutes = [
+  ...FuseUtils.generateRoutesFromConfigs(initialRouteConfigs, settingsConfig.defaultAuth),
   {
     path: '/',
     element: <Navigate to='/dashboard' />,
@@ -86,4 +71,46 @@ const routes = [
   },
 ];
 
-export default routes;
+const adminRoutes = [
+  ...FuseUtils.generateRoutesFromConfigs(adminRouteConfigs, settingsConfig.defaultAuth),
+  {
+    path: '/',
+    element: <Navigate to='/dashboard' />,
+    // auth: settingsConfig.defaultAuth,
+  },
+  {
+    path: 'loading',
+    element: <FuseLoading />,
+  },
+  {
+    path: '404',
+    element: <Error404Page />,
+  },
+  {
+    path: '*',
+    element: <Navigate to='404' />,
+  },
+];
+
+const operatorRoutes = [
+  ...FuseUtils.generateRoutesFromConfigs(operatorRouteConfigs, settingsConfig.defaultAuth),
+  {
+    path: '/',
+    element: <Navigate to='/dashboard' />,
+    // auth: settingsConfig.defaultAuth,
+  },
+  {
+    path: 'loading',
+    element: <FuseLoading />,
+  },
+  {
+    path: '404',
+    element: <Error404Page />,
+  },
+  {
+    path: '*',
+    element: <Navigate to='404' />,
+  },
+];
+
+export { initialRoutes, adminRoutes, operatorRoutes };

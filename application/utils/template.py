@@ -1,16 +1,21 @@
 """
 Templates related helpers.
 """
+import logging
 import re
 
 import pystache
 import yaml
 from pydantic import ValidationError
 from pydantic.error_wrappers import display_errors
+from yaml import YAMLError
 
 from exceptions.templates import InvalidTemplateException
 from exceptions.templates import InvalidUserInputsException
 from schemas.templates import TemplateSchema
+
+
+logger = logging.getLogger(__name__)
 
 
 START_DELIMITER = re.compile(r'''(?<!['"])\{\{''')
@@ -59,7 +64,11 @@ def load_template(raw_template: str) -> TemplateSchema:
     """
     Parses raw template YAML and validates it.
     """
-    parsed_template_data = parse_template(raw_template)
+    try:
+        parsed_template_data = parse_template(raw_template)
+    except YAMLError as error:
+        logger.exception(f'Invalid template. Failed to parse template. {error}')
+        raise InvalidTemplateException(f'Failed to parse template. {error}')
 
     return validate_template(parsed_template_data)
 
