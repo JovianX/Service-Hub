@@ -18,7 +18,7 @@
 
 Application Templates allow the creation of a self-service experience for software, so users (Developers, DevOps, SREs, or other members) cloud very easily deploy applications via a simple Self-Service web UI.  
 
-<table><tbody><tr><td><strong>Application Templates (Admin defines components and user inputs)</strong></td><td><strong>Self-Service (Operator) Deploys the app</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
+<table><tbody><tr><td><strong>Application Templates - Admin defines components and user inputs</strong></td><td><strong>Self-Service - Operator deploys the app</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
 
 Users (with the `Admin` role) can create application templates. An application template defines its `components` (Helm Charts), and `inputs` we expect the user to provide when deploying the application. 
 
