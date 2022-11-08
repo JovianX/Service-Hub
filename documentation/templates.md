@@ -1,4 +1,4 @@
-```
+```shell
        JovianX
          _____                         _                   _    _           _
         / ____|                       (_)                 | |  | |         | |
@@ -10,13 +10,98 @@
                 Create X-as-a-Service on Kubernetes with Helm
 ```
 
-JovianX **Service Hub** is a Platform Engineering tool to create and manage on-demand services using Helm and Kubernetes.
+[\<\< Back to the documentation](README.md)
 
-[Documentation Folder](README.md) containes complete product documentation.
+# 🍱 Application Templates
 
-# 🍱 Application template example:
+### Feature Overview
 
+Application Templates allow the creation of a self-service experience for software, so users (Developers, DevOps, SREs, or other members) cloud very easily deploy applications via a simple Self-Service web UI.  
+
+<table><tbody><tr><td><strong>Application Templates - Admin defines components and user inputs</strong></td><td><strong>Self-Service - Operators can deploy the app</strong></td></tr><tr><td colspan="2"><figure class="image"><img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png"></figure></td></tr></tbody></table>
+
+Admins (users with the `Admin` role) can create application templates. An application template defines the `components` (Helm Charts) that should be deployed, and `inputs` expected from the user to provide when deploying the application. We can use `inputs` to configure `components` settings.
+
+The `components`  in the template are the definitions of Helm Chats, and the values that are set by default when deploying the application.
+
+The `inputs` definition creates a UI that asks the user to provide values when deploying the application. The values provided by the user when deploying the application can be used to configure the application. The following are supported  `inputs` types: `text`, `textarea`, `number`, `select` , `radio_select`  , `switch` , `checkbox`, `slider`.
+
+Users (with the `Operator` or `Admin` roles) can deploy applications via the Self-Service web UI (or RESTful API).
+
+### **Creating a new template**
+
+1.  Navigate to Templates in the side menu. 
+2.  Click on "Add Template"
+
+![](https://user-images.githubusercontent.com/2787296/200358986-792846c5-dd12-48af-99c9-0823f89750e5.png)
+
+3\. Set a description for the template, which is a free text describing the purpose of the template, or the purpose of a specific change added.
+
+4\. Add the application template, and click on "Add".
+
+![](https://user-images.githubusercontent.com/2787296/200311419-e6c3100e-41bc-4306-92a9-045c01e0a9e7.png)
+
+**Here's a simple template example:**
+
+```yaml
+# Template reference and documentation at 
+# https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
+
+name: my-new-service                            # Required. Name of service.
+
+components:                                     # Required. Application components list.
+  - name: redis                                 # Required. Component name.
+    type: helm_chart                            # Required. Component type.
+    chart: bitnami/redis                        # Required. Chart name in format `<repository name>/<application name>`.
+    version: 17.0.6                             # Optional. Chart version to install.
+    values:                                     # Optional. Helm chart values to install/update.
+      - db:
+          username: {{ inputs.username }}       # Example of usage dynamic tempalte variables.
+
+inputs:                                         # Optional. User input list.
+  - name: username                              # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
+    type: text                                  # Required. Input type.
+    label: 'User Name'                          # Optional. User friendly short input title.
+    default: 'John Connor'                      # Optional. Default input value. Used if was no input from user.
+    description: 'Enter app username'           # Optional. Valuable for user description of this input.
 ```
+
+**Managing Reversions**  
+Every change, edit, or update of a template creates a new template reversion. You can upgrade or roll back an application to match a reversion.
+
+**Default Template**  
+When deploying an application, the default template is automatically selected,
+
+**Setting a Default Template**  
+To set the default template, hover over a non-default template, and click on the "Default" button that appears.  
+ 
+
+![image](https://user-images.githubusercontent.com/2787296/200361559-a3b0f2e7-70da-4135-86cb-1c0150353f74.png)
+
+**Deploying an application from a template**
+
+1.  To deploy a new application navigate to the applications menu
+2.  Click on "Deploy Application"
+
+![image](https://user-images.githubusercontent.com/2787296/200362320-3683c0ee-f64a-46d0-b87c-1f8d007edd75.png)
+
+1.  Select the Template and reversion
+2.  Fill inputs
+3.  Select the target cluster, and namespace, and Click on "Deploy"
+
+![](https://user-images.githubusercontent.com/2787296/200364569-5337d5a2-6f08-4fb3-9dd2-0a48fbc13142.png)
+
+### Template Reference
+
+To get the complete template reference
+
+```shell
+curl -X 'GET'   'https://api.hub.jovianx.app/api/v1/template/schema?format=yaml'   -H 'accept: application/json'  | sed 's/\\n/\n/g' 
+```
+
+### Complete Template Example
+
+```yaml
 name: my-new-service                            # Required. Name of service.
 
 # List of applicatoin components.
@@ -142,3 +227,7 @@ inputs:                                         # Optional. User input list.
     max: 10                                     # Optional. Maximal value.
     default: 5
 ```
+
+The comprehensive example would produce the following inputs:
+
+![](https://user-images.githubusercontent.com/2787296/200312035-a296071a-d841-47dd-9e7d-8abbacef73b7.png)
