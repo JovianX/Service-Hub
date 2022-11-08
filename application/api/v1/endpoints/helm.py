@@ -18,6 +18,7 @@ from ..schemas.helm import ChartListItemSchema
 from ..schemas.helm import InstallChartBodySchema
 from ..schemas.helm import ReleaseHealthStatusResponseBodySchema
 from ..schemas.helm import ReleaseListItemSchema
+from ..schemas.helm import ReleaseRollbackRequestSchema
 from ..schemas.helm import ReleaseTTLResponseSchema
 from ..schemas.helm import ReleaseUpdateRequestSchema
 from ..schemas.helm import SetReleaseTTLRequestSchema
@@ -337,7 +338,7 @@ async def create_release_chart(
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def update_release(
-    release_name: str = Path(description='Name of relase to get details'),
+    release_name: str = Path(description='Name of relase'),
     body: ReleaseUpdateRequestSchema = Body(description='Release update parameters'),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
@@ -353,6 +354,31 @@ async def update_release(
         release_name=release_name,
         chart=body.chart_name,
         values=body.values,
+        dry_run=body.dry_run
+    )
+
+
+@router.post(
+    '/release/{release_name}/rollback',
+    response_model=str,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def rollback_release(
+    release_name: str = Path(description='Name of relase'),
+    body: ReleaseRollbackRequestSchema = Body(description='Release revision rollback parameters.'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Updates release's values.
+    """
+    helm_manager = HelmManager(organization_manager)
+    return await helm_manager.rollback_release_revision(
+        organization=user.organization,
+        context_name=body.context_name,
+        namespace=body.namespase,
+        release_name=release_name,
+        revision_number=body.revision,
         dry_run=body.dry_run
     )
 
