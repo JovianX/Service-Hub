@@ -119,28 +119,6 @@ class HelmManager:
     # Releases
     ############################################################################
 
-    async def list_releases(self, organization: Organization, namespace: str | None = None) -> list[dict]:
-        """
-        List releases in namespace if it is present otherwise in all namespaces
-        using default context in kubernetes configuration.
-        """
-        items = []
-        kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)
-        with kubernetes_configuration as k8s_config_path:
-            async with HelmArchive(organization, self.organization_manager) as helm_home:
-                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
-                for context_name in kubernetes_configuration.contexts:
-                    try:
-                        releases = await helm_service.list.releases(context_name, namespace)
-                    except ClusterUnreachableException:
-                        continue
-                    for release in releases:
-                        item = release.dict()
-                        item['context_name'] = context_name
-                        items.append(item)
-
-        return items
-
     async def releases_count(self, organization: Organization) -> int:
         """
         Returns count of releases for all available clusters in all namespaces.
@@ -256,6 +234,28 @@ class HelmManager:
 
         return health_status
 
+    async def list_releases(self, organization: Organization, namespace: str | None = None) -> list[dict]:
+        """
+        List releases in namespace if it is present otherwise in all namespaces
+        using default context in kubernetes configuration.
+        """
+        items = []
+        kubernetes_configuration = self.organization_manager.get_kubernetes_configuration(organization)
+        with kubernetes_configuration as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                for context_name in kubernetes_configuration.contexts:
+                    try:
+                        releases = await helm_service.list.releases(context_name, namespace)
+                    except ClusterUnreachableException:
+                        continue
+                    for release in releases:
+                        item = release.dict()
+                        item['context_name'] = context_name
+                        items.append(item)
+
+        return items
+
     async def list_unhealthy_releases(self, organization: Organization) -> list[dict]:
         """
         Returns list of unhealthy releases.
@@ -291,6 +291,28 @@ class HelmManager:
                 return await helm_service.history.get(
                     context_name=context_name, namespace=namespace, release_name=release_name
                 )
+
+    async def get_release_chart(self, organization: Organization, context_name: str, namespace: str, release_name: str):
+        """
+        Creates chart for existing release.
+        """
+        destination = organization_home(organization) / 'dumped_charts' / str(uuid4())
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                chart_directory = await helm_service.release.create_chart(
+                    context_name,
+                    namespace,
+                    release_name,
+                    destination
+                )
+        archive = await tar(chart_directory)
+        shutil.rmtree(destination)
+
+        return {
+            'filename': f'{chart_directory.name}.tar.gz',
+            'archive': base64.b64encode(archive)
+        }
 
     async def update_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str,
@@ -332,27 +354,21 @@ class HelmManager:
                     dry_run=dry_run
                 )
 
-    async def get_release_chart(self, organization: Organization, context_name: str, namespace: str, release_name: str):
+    async def rollback_release_revision(self, organization: Organization, context_name: str, namespace: str,
+                                        release_name: str, revision_number: int | None = None, dry_run: bool = False):
         """
-        Creates chart for existing release.
+        Rollbacks release to specified revision number.
         """
-        destination = organization_home(organization) / 'dumped_charts' / str(uuid4())
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
-                chart_directory = await helm_service.release.create_chart(
-                    context_name,
-                    namespace,
-                    release_name,
-                    destination
+                return await helm_service.rollback.revision(
+                    context_name=context_name,
+                    namespace=namespace,
+                    release_name=release_name,
+                    revision=revision_number,
+                    dry_run=dry_run
                 )
-        archive = await tar(chart_directory)
-        shutil.rmtree(destination)
-
-        return {
-            'filename': f'{chart_directory.name}.tar.gz',
-            'archive': base64.b64encode(archive)
-        }
 
     async def uninstall_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str, dry_run: bool = False
