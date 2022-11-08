@@ -22,11 +22,12 @@ import SignUpConfig from '../main/sign-up/SignUpConfig';
 import TemplatesConfig from '../main/templates/TemplatesConfig';
 import UsersConfig from '../main/users/UsersConfig';
 
-const initialRouteConfigs = [SignInConfig, SignUpConfig, SignOutConfig, ForgotPasswordConfig, ResetPasswordConfig];
-
 const adminRouteConfigs = [
-  SignOutConfig,
   SignInConfig,
+  SignUpConfig,
+  SignOutConfig,
+  ForgotPasswordConfig,
+  ResetPasswordConfig,
   ClustersConfig,
   RepositoriesConfig,
   ServicesConfig,
@@ -40,35 +41,17 @@ const adminRouteConfigs = [
   TemplatesConfig,
 ];
 const operatorRouteConfigs = [
-  SignOutConfig,
   SignInConfig,
+  SignUpConfig,
+  SignOutConfig,
+  ForgotPasswordConfig,
+  ResetPasswordConfig,
   ApplicationsConfig,
   ChartsConfig,
   RepositoriesConfig,
   ReleasesConfig,
   ReleaseDetailsConfig,
   DashboardConfig,
-];
-
-const initialRoutes = [
-  ...FuseUtils.generateRoutesFromConfigs(initialRouteConfigs, settingsConfig.defaultAuth),
-  {
-    path: '/',
-    element: <Navigate to='/dashboard' />,
-    // auth: settingsConfig.defaultAuth,
-  },
-  {
-    path: 'loading',
-    element: <FuseLoading />,
-  },
-  {
-    path: '404',
-    element: <Error404Page />,
-  },
-  {
-    path: '*',
-    element: <Navigate to='404' />,
-  },
 ];
 
 const adminRoutes = [
@@ -113,4 +96,4 @@ const operatorRoutes = [
   },
 ];
 
-export { initialRoutes, adminRoutes, operatorRoutes };
+export { adminRoutes, operatorRoutes };
