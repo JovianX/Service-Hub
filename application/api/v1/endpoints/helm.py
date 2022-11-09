@@ -95,6 +95,33 @@ async def list_charts_in_repsitories(
 
 
 @router.get(
+    '/chart/versions',
+    response_model=list[ChartListItemSchema],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def list_chart_versions(
+    chart_name: str = Query(description='Name of chart to search versions.'),
+    include_development_versions: bool | None = Query(description='Should unstable versions be included in results.',
+                                                      default=False),
+    version_filter: str | None = Query(description='Chart version filter.'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    List chart's versions.
+    """
+    helm_manager = HelmManager(organization_manager)
+    charts = await helm_manager.list_chart_versions(
+        user.organization,
+        chart_name=chart_name,
+        include_unstable=include_development_versions,
+        version_filter=version_filter
+    )
+
+    return charts
+
+
+@router.get(
     '/chart/default-values',
     response_model=str,
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
