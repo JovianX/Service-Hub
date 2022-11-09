@@ -102,7 +102,22 @@ class HelmManager:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 await helm_service.repository.update()
-                return await helm_service.search.repositories()
+                return await helm_service.search.charts()
+
+    async def list_chart_versions(self, organization: Organization, chart_name: str, include_unstable: bool = False,
+                                  version_filter: str | None = None) -> list[ChartSchema]:
+        """
+        List versions of chart.
+        """
+        async with HelmArchive(organization, self.organization_manager) as helm_home:
+            helm_service = HelmService(kubernetes_configuration='', helm_home=helm_home)
+            await helm_service.repository.update()
+            return await helm_service.search.charts(
+                chart_name,
+                list_versions=True,
+                show_development_versions=include_unstable,
+                version_filter=version_filter
+            )
 
     async def chart_defaults(self, organization: Organization, chart_name: str) -> str:
         """

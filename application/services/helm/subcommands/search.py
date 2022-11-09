@@ -9,17 +9,33 @@ from .base import HelmBase
 class HelmSearch(HelmBase):
     """
     Class responsible for working with `search` helm subcommand.
+
     """
 
     subcommand = 'search'
 
-    async def repositories(self) -> list[ChartSchema]:
+    async def charts(self, chart_name: str | None = None, show_development_versions: bool = False,
+                     version_filter: str | None = None, list_versions: bool = False) -> list[ChartSchema]:
         """
-        Searches for repositories and displays charts detailed information.
+        Searches for chart across all repositories.
 
         Full description: https://helm.sh/docs/helm/helm_search_repo/
         """
-        command = self._formup_command('repo', output='yaml')
+        args = [
+            'repo',
+        ]
+        if chart_name is not None:
+            args.append(chart_name)
+        if show_development_versions:
+            args.append('--devel')
+        if list_versions:
+            args.append('--versions')
+        kwargs = {
+            'output': 'yaml'
+        }
+        if version_filter:
+            kwargs['version'] = version_filter
+        command = self._formup_command(*args, **kwargs)
 
         try:
             output = await self._run_command(command)
