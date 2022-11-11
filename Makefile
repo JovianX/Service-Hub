@@ -77,16 +77,10 @@ serve_be: ## Run only infrastructure containers required by back-end.
 	docker-compose -f docker-compose-dev.yaml up --no-deps --detach frontend
 
 serve_fe: ## Run only infrastructure containers required by front-end.
-<<<<<<< HEAD
 	docker-compose -f docker-compose-dev.yaml up --no-deps --detach postgres
 	docker-compose -f docker-compose-dev.yaml up --no-deps --detach application
-  docker-compose -f docker-compose-dev.yaml up --no-deps --detach task-executor
+	docker-compose -f docker-compose-dev.yaml up --no-deps --detach task-executor
 
-=======
-	docker-compose up --no-deps --detach postgres
-	docker-compose up --no-deps --detach application
-	docker-compose up --no-deps --detach task-executor
->>>>>>> 423e0c0 (Application install flow with pre and post install hooks.)
 	cd frontend; npm start
 
 logs: ## Show contaiters logs.
