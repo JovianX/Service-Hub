@@ -4,8 +4,22 @@ import { useEffect, useState } from 'react';
 
 import { getVersionsList as getVersionsListAPI } from '../../api';
 
-const VersionsSelect = ({ chartName, chartVersion, setChartVersion }) => {
+const VersionsSelect = ({ chartName, chartVersion, setChartVersion, startVersion, setStartVersion }) => {
   const [versionsList, setVersionsList] = useState([]);
+
+  useEffect(() => {
+    if (chartVersion && !startVersion) {
+      setStartVersion(chartVersion);
+    }
+  }, [chartVersion]);
+
+  useEffect(() => {
+    if (chartVersion) {
+      if (startVersion === chartVersion) {
+        setVersionsList((list) => [...list, startVersion]);
+      }
+    }
+  }, [startVersion]);
 
   useEffect(() => {
     let canceled = false;
@@ -49,12 +63,13 @@ const VersionsSelect = ({ chartName, chartVersion, setChartVersion }) => {
       <FormControl margin='normal' fullWidth required>
         <InputLabel id='version'>Versions</InputLabel>
         <Select
-          name='context_name'
+          name='version'
           labelId='version'
           value={chartVersion}
           required
           label='Versions'
           onChange={handleChangeSelect}
+          MenuProps={{ PaperProps: { sx: { maxHeight: 400 } } }}
         >
           {versionsList.map((version) => (
             <MenuItem key={version} value={version}>

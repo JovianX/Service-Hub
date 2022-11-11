@@ -48,6 +48,7 @@ const ChartsModal = ({ chartName, openModal }) => {
   const [cluster, setCluster] = useState('');
   const [namespace, setNamespace] = useState('');
   const [chartVersion, setChartVersion] = useState('');
+  const [startVersion, setStartVersion] = useState('');
   const [chart, setChart] = useState({});
   const [defaultValuesParam, setDefaultValuesParam] = useState('');
   const [configYamlText, setConfigYamlText] = useState(null);
@@ -120,8 +121,8 @@ const ChartsModal = ({ chartName, openModal }) => {
     setInfoMessageSuccess('');
     setLoading(true);
     if (e.target.form) {
-      const { chart_name, description, release_name } = e.target.form;
-      if (!chart_name.value || !description.value || !release_name.value || !configYamlText) {
+      const { chart_name, description, release_name, context_name } = e.target.form;
+      if (!chart_name.value || !description.value || !release_name.value || !configYamlText || !context_name.value) {
         setLoading(false);
       }
     } else {
@@ -134,7 +135,7 @@ const ChartsModal = ({ chartName, openModal }) => {
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const { chart_name, description, release_name } = e.target;
+    const { chart_name, description, release_name, context_name } = e.target;
     try {
       const chart = {
         chart_name: chart_name.value,
@@ -142,7 +143,7 @@ const ChartsModal = ({ chartName, openModal }) => {
         description: description.value,
         release_name: release_name.value,
         values: yaml.load(configYamlText, { json: true }),
-        context_name: cluster,
+        context_name: context_name.value,
         namespace,
       };
       if (showMessage) {
@@ -166,8 +167,7 @@ const ChartsModal = ({ chartName, openModal }) => {
         await setShowMessage(true);
         await setLoading(false);
         setTimeout(() => {
-          setOpen(false);
-          setShowMessage(false);
+          handleClose();
         }, 2000);
       }
     } catch (e) {
@@ -181,6 +181,13 @@ const ChartsModal = ({ chartName, openModal }) => {
     setShowMessage(false);
     setOpen(false);
     setLoading(false);
+    if (chartVersion) {
+      setChartVersion('');
+    }
+    if (startVersion) {
+      setStartVersion('');
+    }
+    setChart(null);
   };
 
   const handleChangeSelect = (e) => {
@@ -227,7 +234,13 @@ const ChartsModal = ({ chartName, openModal }) => {
                 defaultValue={chart.name}
                 onChange={onChangeDefaultValuesParam}
               />
-              <VersionsSelect chartName={chart.name} chartVersion={chartVersion} setChartVersion={setChartVersion} />
+              <VersionsSelect
+                chartName={chart.name}
+                chartVersion={chartVersion}
+                setChartVersion={setChartVersion}
+                setStartVersion={setStartVersion}
+                startVersion={startVersion}
+              />
               <Box sx={{ minWidth: 120 }}>
                 <FormControl margin='normal' fullWidth required>
                   <InputLabel id='cluster'>Cluster</InputLabel>
