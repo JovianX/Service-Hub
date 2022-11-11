@@ -24,9 +24,15 @@ export const createTemplate = createAsyncThunk('templates/createTemplate', async
     const response = await createTemplateAPI(template);
     return response.data;
   } catch (e) {
+    if (e?.response?.data?.message) {
+      return {
+        status: 'error',
+        message: e.response.data.message,
+      };
+    }
     return {
       status: 'error',
-      message: e.response.data.message,
+      message: 'Failed to create template',
     };
   }
 });
@@ -51,7 +57,7 @@ export const deleteTemplate = createAsyncThunk('templates/deleteTemplate', async
       message: 'template was successfully deleted',
     };
   } catch (e) {
-    if (e?.response.data.message) {
+    if (e?.response?.data?.message) {
       return {
         status: 'error',
         message: e.response.data.message,

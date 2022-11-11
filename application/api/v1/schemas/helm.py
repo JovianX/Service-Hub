@@ -8,7 +8,6 @@ from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import PositiveInt
 from pydantic import constr
-from pydantic import root_validator
 
 from constants.helm import ReleaseHealthStatuses
 from constants.helm import ReleaseStatuses

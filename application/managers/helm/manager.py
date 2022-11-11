@@ -17,6 +17,7 @@ from managers.organizations.manager import OrganizationManager
 from models.organization import Organization
 from services.helm.facade import HelmService
 from services.helm.schemas import ChartSchema
+from services.helm.schemas import ReleaseRevisionSchema
 from services.kubernetes.schemas import K8sEntitySchema
 from utils.achive import tar
 from utils.helm import HelmArchive
@@ -40,29 +41,26 @@ class HelmManager:
         """
         Adds user charts repository.
         """
-        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
-            async with HelmArchive(organization, self.organization_manager) as helm_home:
-                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
-                await helm_service.repository.add(name, url)
+        async with HelmArchive(organization, self.organization_manager) as helm_home:
+            helm_service = HelmService(kubernetes_configuration='', helm_home=helm_home)
+            await helm_service.repository.add(name, url)
 
     async def list_repositories(self, organization: Organization) -> list[dict]:
         """
         Lists repositories added user.
         """
-        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
-            async with HelmArchive(organization, self.organization_manager) as helm_home:
-                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+        async with HelmArchive(organization, self.organization_manager) as helm_home:
+            helm_service = HelmService(kubernetes_configuration='', helm_home=helm_home)
 
-                return await helm_service.repository.list()
+            return await helm_service.repository.list()
 
     async def delete_repository(self, organization: Organization, name: str) -> None:
         """
         Removes Helm repository.
         """
-        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
-            async with HelmArchive(organization, self.organization_manager) as helm_home:
-                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
-                await helm_service.repository.remove(name)
+        async with HelmArchive(organization, self.organization_manager) as helm_home:
+            helm_service = HelmService(kubernetes_configuration='', helm_home=helm_home)
+            await helm_service.repository.remove(name)
 
     ############################################################################
     # Charts
@@ -281,6 +279,18 @@ class HelmManager:
                         unhealthy_releases.append(release)
 
         return unhealthy_releases
+
+    async def get_release_revisions(self, organization: Organization, context_name: str, namespace: str,
+                                    release_name: str) -> list[ReleaseRevisionSchema]:
+        """
+        Returns history of release revisions.
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                return await helm_service.history.get(
+                    context_name=context_name, namespace=namespace, release_name=release_name
+                )
 
     async def update_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str,

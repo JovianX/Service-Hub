@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     INVITATION_EMAIL_SENDING_BLOCK: int = 60  # In seconds.
     UI_HOST: AnyHttpUrl = 'http://localhost:3000'
     APPLICATION_COMPONENTS_INSTALL_TIMEOUT: int = 3600  # One hour in seconds.
+    INITIAL_ORGANIZATION_TEMPLATE: str | None = None
+    INITIAL_ORGANIZATION_REPOSITORY_URL: str | None = 'https://charts.bitnami.com/bitnami'
 
     class Config:
         env_file = os.environ.get('ENV_FILE', '.env')

@@ -1,7 +1,9 @@
 """
 Helm schemas.
 """
+import re
 from datetime import datetime
+from datetime import timedelta
 from datetime import timezone
 
 from pydantic import BaseModel
@@ -9,6 +11,17 @@ from pydantic import Field
 from pydantic import root_validator
 
 from constants.helm import ReleaseStatuses
+
+
+# Helm date formats patters.
+UTC_TIME_FORMAT = re.compile(
+    r'(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2}) '
+    r'(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2}).(?P<microsecond>\d{6})\d* (?P<utc_offset>[+-]\d{4}).*'
+)
+ZULU_TIME_FORMAT = re.compile(
+    r'(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})'
+    r'T(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2}).(?P<microsecond>\d{6})\d*Z'
+)
 
 
 class helm_datetime(datetime):
@@ -21,21 +34,71 @@ class helm_datetime(datetime):
         """
         Parses date time that sends us helm.
 
-        Values example: '2022-06-01 12:46:15.24955073 +0000 UTC'
-                        '2022-06-07 16:13:40.907107 +0300 +0300'
+        Helm is production ready crap so you can meet next date formats:
+            UTC:
+                '2022-06-01 12:46:15.24955073 +0000 UTC'
+                '2022-06-07 16:13:40.907107 +0300 +0300'
+                '2022-05-04 17:09:15.459564582 +0200 CEST'
+            Zulu:
+                '2022-11-03T15:00:34.133003395Z'
         """
-        # Reducing microseconds count to 6 by cutting redundant digits.
-        # Helm returns time with 8 digits in microseconds Python supports only 6.
-        date_parts = list(value.split())
-        date_parts[1] = date_parts[1][:15]
-        # Removing time zone. Sometimes date contains Time zone as UTC sometimes
-        # as +0300. It breaks parsing of date.
-        fixed_value = ' '.join(date_parts[:-1])
+        if isinstance(value, datetime):
+            # During rendering we trying to parse same instance of datetime again.
+            return value
 
-        parsed_datetime = datetime.strptime(fixed_value, '%Y-%m-%d %H:%M:%S.%f %z')
-        # Setting UTC time zone manually.
-        parsed_datetime.replace(tzinfo=timezone.utc)
-        return parsed_datetime
+        if (match := UTC_TIME_FORMAT.search(value)) is not None:
+            utc_time = match.groupdict()
+
+            # Converting UTC offset to seconds.
+            sign = utc_time['utc_offset'][:1]
+            hour = int(utc_time['utc_offset'][1:3])
+            minute = int(utc_time['utc_offset'][3:5])
+            seconds = (hour * 3600) + (minute * 60)
+
+            return datetime(
+                year=int(utc_time['year']),
+                month=int(utc_time['month']),
+                day=int(utc_time['day']),
+                hour=int(utc_time['hour']),
+                minute=int(utc_time['minute']),
+                second=int(utc_time['second']),
+                microsecond=int(utc_time['microsecond']),
+                tzinfo=timezone(timedelta(seconds=int(f'{sign}{seconds}')))
+            )
+        elif (match := ZULU_TIME_FORMAT.search(value)) is not None:
+            utc_time = match.groupdict()
+
+            return datetime(
+                year=int(utc_time['year']),
+                month=int(utc_time['month']),
+                day=int(utc_time['day']),
+                hour=int(utc_time['hour']),
+                minute=int(utc_time['minute']),
+                second=int(utc_time['second']),
+                microsecond=int(utc_time['microsecond']),
+                tzinfo=timezone.utc
+            )
+        else:
+            raise ValueError(f'Failed to recognize Helm date time format for: "{value}".')
+
+
+def parse_chart_name(cls, values: dict) -> dict:
+    """
+    Root validator that extracts application name and chart version from chart
+    name.
+    Schema must have `chart` attribute as source and value of this attribute
+    must have next format: `<application-name>-<version>`. For instance:
+    `mongodb-13.4.1`.
+    Schema also must have `application_name` and `chart_version` fields.
+    """
+    chart_name = values.get('chart')
+    if not chart_name:
+        raise ValueError(f'No chart name was provided.')
+    *splited_name, chart_version = chart_name.split('-')
+    values['application_name'] = '-'.join(splited_name)
+    values['chart_version'] = chart_version
+
+    return values
 
 
 class ReleaseSchema(BaseModel):
@@ -50,24 +113,12 @@ class ReleaseSchema(BaseModel):
     namespace: str = Field(description='Namespace')
     revision: str = Field(description='Revision number')
     status: ReleaseStatuses = Field(description='Status')
-    updated: helm_datetime = Field(description='Release last update date')
+    updated: helm_datetime = Field(description='Release last deploy date')
 
     class Config:
         allow_population_by_field_name = True
 
-    @root_validator(pre=True, skip_on_failure=True)
-    def parse_chart_name(cls, values: dict) -> dict:
-        """
-        Extracts repository and application name from chart name.
-        """
-        chart_name = values.get('chart')
-        if not chart_name:
-            raise ValueError(f'No chart name was provided.')
-        *splited_name, chart_version = chart_name.split('-')
-        values['application_name'] = '-'.join(splited_name)
-        values['chart_version'] = chart_version
-
-        return values
+    _parse_chart = root_validator(pre=True, skip_on_failure=True, allow_reuse=True)(parse_chart_name)
 
 
 class ManifestMetaSchema(BaseModel):
@@ -124,3 +175,27 @@ class ChartSchema(BaseModel):
     def dict(self, *args, **kwargs):
         kwargs['by_alias'] = False
         return super().dict(*args, **kwargs)
+
+
+class ReleaseRevisionSchema(BaseModel):
+    """
+    Helm release revision schema.
+    """
+    application_name: str = Field(description='Application name')
+    application_version: str = Field(
+        description='Version of application deployed with this release.',
+        alias='app_version'
+    )
+    chart: str = Field(description='Chart name and version.')
+    chart_version: str = Field(description='Used chart version')
+    revision: int = Field(description='Release revision.')
+    status: ReleaseStatuses = Field(description='Release status.')
+    description: str = Field(description='Chart description')
+    updated: helm_datetime = Field(description='Release last deploy date.')
+
+    _parse_chart = root_validator(pre=True, skip_on_failure=True, allow_reuse=True)(parse_chart_name)
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.timestamp(),
+        }

@@ -50,3 +50,11 @@ export const getTubValues = async (context_name, namespase, release_name, values
       namespase,
     },
   });
+
+export const getHemlReleaseHistory = async (context_name, namespase, release_name) =>
+  await axios.get(`/api/v1/helm/release/${release_name}/history`, {
+    params: {
+      context_name,
+      namespase,
+    },
+  });
