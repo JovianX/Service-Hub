@@ -1,8 +1,8 @@
 import asyncio
 import logging
 
+from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
-from core.configuration import settings
 from db.session import session_maker
 from exceptions.application import ApplicationComponentInstallException
 from exceptions.application import ApplicationComponentUninstallException
@@ -10,12 +10,8 @@ from exceptions.application import ApplicationComponentUpdateException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
 from exceptions.application import ApplicationLaunchTimeoutException
-from models.application import Application
-from models.template import TemplateRevision
-from schemas.templates import TemplateSchema
 from services.procrastinate.application import procrastinate
 from utils.template import load_template
-from utils.template import render_template
 
 from .utils import get_application_manager
 from .utils import get_template_manager
@@ -72,7 +68,12 @@ async def upgrade_applicatoin_components(application_id: int, new_template_id: i
             await application_manager.set_state_status(application, ApplicationStatuses.error)
             raise
         try:
+            # Setting temporary new template manifest. We need to check application health with new(not old) manifest.
+            # But later must be executed old post hooks not new.
+            raw_manifest = application_manager.render_manifest(new_template, application=application)
+            application.manifest = raw_manifest
             await application_manager.await_healthy_state(application)
+            await application_manager.set_health_status(application, ApplicationHealthStatuses.healthy)
         except ApplicationLaunchTimeoutException:
             logger.error(
                 f'Failed to upgrate <Applicaton ID="{application.id}">. Reached deadline of awaiting application to '
