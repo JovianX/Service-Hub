@@ -93,7 +93,6 @@ async def list_charts_in_repsitories(
 
     return charts
 
-
 @router.get(
     '/chart/versions',
     response_model=list[ChartListItemSchema],
@@ -103,7 +102,7 @@ async def list_chart_versions(
     chart_name: str = Query(description='Name of chart to search versions.'),
     include_development_versions: bool | None = Query(description='Should unstable versions be included in results.',
                                                       default=False),
-    version_filter: str | None = Query(description='Chart version filter.'),
+    version_filter: str = Query(description='Chart version filter.', default=None),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager)
 ):
