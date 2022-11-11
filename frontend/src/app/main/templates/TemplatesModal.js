@@ -32,15 +32,27 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
     }
   }, [modalInfo.template]);
 
+  useEffect(() => {
+    if (infoMessageError) {
+      setInfoMessageError('');
+    }
+  }, [configYamlText]);
+
   const getValue = (newValue) => {
     setConfigYamlText(newValue);
   };
 
   const onChangeInputDescription = (e) => {
     setInputDescription(e.target.value);
+    if (infoMessageError) {
+      setInfoMessageError('');
+    }
   };
 
   const handleSubmitTemplate = async (e) => {
+    if (infoMessageError) {
+      setInfoMessageError('');
+    }
     e.preventDefault();
     setLoading(true);
     const { description } = e.target;
@@ -74,7 +86,6 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
       }
       setLoading(false);
       setTimeout(() => {
-        setInfoMessageError('');
         setInfoMessageSuccess('');
       }, 2000);
     } catch (e) {
