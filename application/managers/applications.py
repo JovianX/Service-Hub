@@ -100,7 +100,7 @@ class ApplicationManager:
             application_record = await self.db.create(application)
 
             from services.procrastinate.tasks.application import execute_pre_install_hooks
-            await execute_pre_install_hooks.defer_async(application_id=application_record.id, dry_run=dry_run)
+            await execute_pre_install_hooks.defer_async(application_id=application_record.id)
 
             return application_record
 
@@ -262,7 +262,6 @@ class ApplicationManager:
         application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT)
         while datetime.now() < application_deadline:
             status = await self.get_application_health_status(application)
-            await self.set_health_status(application, status)
             if status == ApplicationHealthStatuses.healthy:
                 return
         else:

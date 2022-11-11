@@ -1,11 +1,8 @@
 import asyncio
 import logging
-from datetime import datetime
-from datetime import timedelta
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
-from core.configuration import settings
 from db.session import session_maker
 from exceptions.application import ApplicationComponentInstallException
 from exceptions.application import ApplicationHookLaunchException
@@ -25,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Application install flow.
 ################################################################################
 @procrastinate.task(name='application__run_pre_install_hooks')
-async def execute_pre_install_hooks(application_id: int, dry_run: bool = False):
+async def execute_pre_install_hooks(application_id: int):
     """
     Executes application pre-install hooks. Then runs application components
     install task.
@@ -48,11 +45,11 @@ async def execute_pre_install_hooks(application_id: int, dry_run: bool = False):
             await application_manager.set_state_status(application, ApplicationStatuses.error)
             return
 
-    await install_applicatoin_components.defer_async(application_id=application_id, dry_run=dry_run)
+    await install_applicatoin_components.defer_async(application_id=application_id)
 
 
 @procrastinate.task(name='application__install_components')
-async def install_applicatoin_components(application_id: int, dry_run: bool = False):
+async def install_applicatoin_components(application_id: int):
     """
     Installs application components. When application's components become
     operational runs post-install hooks.
@@ -63,7 +60,7 @@ async def install_applicatoin_components(application_id: int, dry_run: bool = Fa
         manifest: TemplateSchema = load_template(application.manifest)
         try:
             await asyncio.gather(*[
-                application_manager.install_component(component, application, dry_run=dry_run)
+                application_manager.install_component(component, application)
                 for component in manifest.components if component.enabled
             ])
         except ApplicationComponentInstallException:
@@ -75,6 +72,7 @@ async def install_applicatoin_components(application_id: int, dry_run: bool = Fa
             raise
         try:
             await application_manager.await_healthy_state(application)
+            await application_manager.set_health_status(application, ApplicationHealthStatuses.healthy)
         except ApplicationLaunchTimeoutException:
             logger.error(
                 f'Failed to install <Applicaton ID="{application.id}">. Reached deadline of awaiting application to '
