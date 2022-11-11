@@ -31,7 +31,7 @@ async def list_namespaces(
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(user.organization)
     with kubernetes_configuration as k8s_config_path:
         k8s_manager = K8sManager(k8s_config_path)
-        namespaces = await k8s_manager.list(context_name, K8sKinds.namespace)
+        namespaces = await k8s_manager.get_list(context_name, K8sKinds.namespace)
     return [
         {
             'name': namespace.metadata['name'],
@@ -53,7 +53,7 @@ async def list_ingresses(
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(user.organization)
     with kubernetes_configuration as k8s_config_path:
         k8s_manager = K8sManager(k8s_config_path)
-        ingresses = await k8s_manager.list(context_name, K8sKinds.ingress)
+        ingresses = await k8s_manager.get_list(context_name, K8sKinds.ingress)
     return [
         {
             'name': ingress.metadata['name'],
@@ -75,7 +75,7 @@ async def list_services(
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(user.organization)
     with kubernetes_configuration as k8s_config_path:
         k8s_manager = K8sManager(k8s_config_path)
-        services = await k8s_manager.list(context_name, K8sKinds.service)
+        services = await k8s_manager.get_list(context_name, K8sKinds.service)
     return [
         {
             'name': service.metadata['name'],

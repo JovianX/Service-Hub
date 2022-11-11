@@ -453,9 +453,9 @@ class HelmManager:
                 name=resource.metadata.name
             ))
             for resource in resources if resource.kind in kinds_to_fetch
-        ])
+        ], return_exceptions=True)
 
-        return [item for item in resources_details if item is not None]
+        return [item for item in resources_details if isinstance(item, K8sEntitySchema)]
 
     async def _get_detailed_hooks(
         self,
@@ -482,9 +482,9 @@ class HelmManager:
                 name=resource.metadata.name
             ))
             for resource in resources if resource.kind in kinds_to_fetch
-        ])
+        ], return_exceptions=True)
 
-        return [item for item in resources_details if item is not None]
+        return [item for item in resources_details if isinstance(item, K8sEntitySchema)]
 
     async def _release_health_status(
         self, helm_service: HelmService, k8s_manager: K8sManager, context_name: str, namespace: str, release_name: str

@@ -1,7 +1,6 @@
 """
-Templates schemas.
+Template inputs schemas.
 """
-from collections import Counter
 from typing import Annotated
 from typing import Any
 from typing import Literal
@@ -14,43 +13,9 @@ from pydantic import constr
 from pydantic import root_validator
 from pydantic import validator
 
-from constants.templates import ComponentTypes
 from constants.templates import InputTypes
 
-
-def unique_names(items: list) -> dict:
-    """
-    Ensures that all items have unique names.
-    """
-    chart_names = [item.name for item in items]
-    duplicate_names = [name for name, count in Counter(chart_names).items() if count > 1]
-    if duplicate_names:
-        raise ValueError(f'Dublicating name(s) found: {", ".join(duplicate_names)}')
-
-    return items
-
-
-class Component(BaseModel):
-    """
-    Application component schema.
-    """
-    name: constr(min_length=1, strip_whitespace=True) = Field(description='Helm release name', example='vault')
-    type: ComponentTypes = Field(description='Type of applicatoin component.', example=ComponentTypes.helm_chart)
-    chart: constr(min_length=1, strip_whitespace=True) = Field(
-        description='Helm chart name.',
-        example='roboll/vault-secret-manager'
-    )
-    version: constr(min_length=1, strip_whitespace=True) | None = Field(
-        description='Helm chart version.',
-        example='1.24.1'
-    )
-    values: list[dict] | None = Field(
-        description='Helm values that will be provided during chart install/upgrade. The later element in the list has '
-                    'a higher priority.',
-    )
-
-    class Config:
-        extra = Extra.forbid
+from .validators import unique_names
 
 
 class BaseInput(BaseModel):
@@ -246,35 +211,3 @@ Input = Annotated[CheckboxInput |
                   TextareaInput |
                   TextInput,
                   Field(discriminator='type')]
-
-
-class TemplateSchema(BaseModel):
-    """
-    Template schema.
-    """
-    name: constr(min_length=1, strip_whitespace=True) = Field(
-        description='Name of application which describes this template',
-        example='My Application'
-    )
-    components: conlist(Component, min_items=1) = Field(description='Application components.')
-    inputs: list[Input] | None = Field(description='Input that should be provided by user.', default=[])
-
-    class Config:
-        extra = Extra.forbid
-
-    _unique_components = validator('components', allow_reuse=True)(unique_names)
-    _unique_inputs = validator('inputs', allow_reuse=True)(unique_names)
-
-    @property
-    def components_mapping(self) -> dict[str, Component]:
-        """
-        Mapping of application component name and component itself.
-        """
-        return {chart.name: chart for chart in self.components}
-
-    @property
-    def inputs_mapping(self) -> dict[str, BaseInput]:
-        """
-        Mapping of input placeholder name and input itself.
-        """
-        return {item.name: item for item in self.inputs}

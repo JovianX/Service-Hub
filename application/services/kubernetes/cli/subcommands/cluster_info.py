@@ -34,6 +34,9 @@ class KubectlClusterInformation(KubectlBase):
                 if len(splited_row) == 2:
                     cluster_info[splited_row[0]] = splited_row[1]
         except NonZeroStatusException as error:
-            raise KubectlException(error.stderr_message)
+            raise KubectlException(
+                f'Failed to fetch cluster information.',
+                command=command, stderr=error.stderr_message, exit_code=error.status_code
+            )
 
         return cluster_info
