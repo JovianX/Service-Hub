@@ -14,4 +14,3 @@ procrastinate = App(
     ),
     import_paths=['services.procrastinate.tasks.application']
 )
-procrastinate.open()

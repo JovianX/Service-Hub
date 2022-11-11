@@ -100,7 +100,6 @@ curl -X 'GET'   'https://api.hub.jovianx.app/api/v1/template/schema?format=yaml'
 ```
 
 ### Complete Template Example
-
 ```yaml
 name: my-new-service                            # Required. Name of service.
 
@@ -119,11 +118,78 @@ name: my-new-service                            # Required. Name of service.
 components:                                     # Required. Application components list.
   - name: redis                                 # Required. Component name.
     type: helm_chart                            # Required. Component type.
+    enabled: true                               # Optional. If false, component will be skipped installation or upgrade. Default: true.
     chart: bitnami/redis                        # Required. Chart name in format `<repository name>/<application name>`.
     version: 17.0.6                             # Optional. Chart version to install.
     values:                                     # Optional. Helm chart values to install/update.
       - db:
-          username: {{ inputs.username }}       # Example of usage dynamic tempalte variables.
+          username: {{ inputs.text_example }}   # Example of usage dynamic tempalte variables.
+
+# List of application hooks.
+#
+# Available hooks types:
+#     kubernetes_job:
+#         Hook that creates Kubernetes Job and execute arbitrary command there.
+#
+# For now available next hook's triggers:
+#     pre_install:
+#         Executed before installing of application's components.
+#
+#     post_install:
+#         Executed after successful application's components installation.
+#
+#     pre_upgrade:
+#         Executed before installing(if any) or updating(if any) or
+#         deleting(if any) of application's components.
+#
+#         Application can be upgraded with new version of template. During this
+#         upgrade some application components will appear in new template so they
+#         must be installed. Some other components can stay but change so they
+#         must be updated. Other components can disappear in new template so they
+#         must be uninstalled.
+#
+#     post_upgrade:
+#         Executed after successful application template change.
+#
+#     pre_terminate:
+#         Executed before application termination.
+#
+#     post_terminate:
+#         Executed after successful application termination.
+hooks:
+  pre_install:
+    - name: pre-install-hook                    # Required. Hook name. Must be unique for trigger type.
+      type: kubernetes_job                      # Required. Hook type. Currently can be only `kubernetes_job`.
+      enabled: true                             # Optional. Enables of disables hook execution. Default is true.
+      image: 'alpine'                           # Required if type is `kubernetes_job`. Name of Docker image to use
+                                                # during Job creation.
+      namespace: some-namespace                 # Optional. Used with type `kubernetes_job`. Namespace where to create
+                                                # Job.
+      on_failure: stop                          # Optional. Used with type `kubernetes_job`. Describes what to do with
+                                                # application installation or upgrade if hook execution fails(or reached
+                                                # timeout). Can have next options: `stop` or `continue`. `stop` -
+                                                # application install/upgrade considered as failed. `continue` - hook
+                                                # execution will have no influance on application install/upgrade.
+      timeout: 120                              # Optional. Hook execution deadline in seconds. If hook did namage to
+                                                # finish execution in specified time hook considered as failed(timeout).
+                                                # Default value is 300(5 minutes).
+      command: ['/bin/sh', '-c']                # Required if type is `kubernetes_job`. Container command.
+      args:                                     # Required if type is `kubernetes_job`. Container command arguments.
+        - env; sleep 1;
+      env:                                      # Optional. Used with type `kubernetes_job`. Container environment
+                                                # variables to set in container.
+        - name: JX_ENV_KEY
+          value: "Hello World"
+        - name: CUSTOMER_ACCOUNT_NAME
+          value: "{{ account://end_company }}"
+
+  post_install:
+    - name: post-install-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub;
 
 # List of user inputs. These inputs allow collect data from user before
 # application launch.
@@ -165,7 +231,7 @@ components:                                     # Required. Application componen
 #             Input with textarea widget. Suitable for long multi-line string,
 #             some description for example.
 inputs:                                         # Optional. User input list.
-  - name: text_example                              # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
+  - name: text_example                          # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
     type: text                                  # Required. Input type.
     label: 'User Name'                          # Optional. User friendly short input title.
     default: 'John Connor'                      # Optional. Default input value. Used if was no input from user.

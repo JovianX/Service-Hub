@@ -17,6 +17,7 @@ from managers.organizations.manager import OrganizationManager
 from models.organization import Organization
 from services.helm.facade import HelmService
 from services.helm.schemas import ChartSchema
+from services.helm.schemas import ReleaseRevisionSchema
 from services.kubernetes.schemas import K8sEntitySchema
 from utils.achive import tar
 from utils.helm import HelmArchive
@@ -294,6 +295,18 @@ class HelmManager:
 
         return unhealthy_releases
 
+    async def get_release_revisions(self, organization: Organization, context_name: str, namespace: str,
+                                    release_name: str) -> list[ReleaseRevisionSchema]:
+        """
+        Returns history of release revisions.
+        """
+        with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
+            async with HelmArchive(organization, self.organization_manager) as helm_home:
+                helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                return await helm_service.history.get(
+                    context_name=context_name, namespace=namespace, release_name=release_name
+                )
+
     async def update_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str,
         values: dict, chart: str | None = None, dry_run: bool = False
@@ -455,9 +468,9 @@ class HelmManager:
                 name=resource.metadata.name
             ))
             for resource in resources if resource.kind in kinds_to_fetch
-        ])
+        ], return_exceptions=True)
 
-        return [item for item in resources_details if item is not None]
+        return [item for item in resources_details if isinstance(item, K8sEntitySchema)]
 
     async def _get_detailed_hooks(
         self,
@@ -484,9 +497,9 @@ class HelmManager:
                 name=resource.metadata.name
             ))
             for resource in resources if resource.kind in kinds_to_fetch
-        ])
+        ], return_exceptions=True)
 
-        return [item for item in resources_details if item is not None]
+        return [item for item in resources_details if isinstance(item, K8sEntitySchema)]
 
     async def _release_health_status(
         self, helm_service: HelmService, k8s_manager: K8sManager, context_name: str, namespace: str, release_name: str

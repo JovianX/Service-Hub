@@ -1,22 +1,40 @@
 """
 Client to interact with Kubernetes cluster.
 """
+import logging
 from typing import Any
 
-from fastapi import status
 from kubernetes_asyncio.client import AppsV1Api
 from kubernetes_asyncio.client import BatchV1Api
 from kubernetes_asyncio.client import CoreV1Api
 from kubernetes_asyncio.client import NetworkingV1Api
 from kubernetes_asyncio.client import PolicyV1beta1Api
 from kubernetes_asyncio.client import RbacAuthorizationV1Api
+from kubernetes_asyncio.client import V1Container
+from kubernetes_asyncio.client import V1EnvVar
+from kubernetes_asyncio.client import V1Job
+from kubernetes_asyncio.client import V1JobSpec
+from kubernetes_asyncio.client import V1JobStatus
+from kubernetes_asyncio.client import V1Namespace
+from kubernetes_asyncio.client import V1ObjectMeta
+from kubernetes_asyncio.client import V1PodSpec
+from kubernetes_asyncio.client import V1PodTemplate
+from kubernetes_asyncio.client import V1PodTemplateSpec
 from kubernetes_asyncio.client.exceptions import ApiException
 from kubernetes_asyncio.config import new_client_from_config
 
 from constants.kubernetes import K8sKinds
+from exceptions.kubernetes import K8sAlreadyExistsException
+from exceptions.kubernetes import K8sEntityDoesNotExistException
+from exceptions.kubernetes import KubernetesClientException
+from exceptions.kubernetes import KubernetesException
 from exceptions.kubernetes import ProxyRequestException
+from schemas.templates.hooks import K8sEnvironmentVariable
 
 from .schemas import K8sEntitySchema
+
+
+logger = logging.getLogger(__name__)
 
 
 class K8sClient:
@@ -28,11 +46,86 @@ class K8sClient:
     def __init__(self, configuration_path):
         self.configuration_file_path = configuration_path
 
-    def is_not_foud(self, error: ApiException) -> bool:
-        if error.status == status.HTTP_404_NOT_FOUND and error.reason == 'Not Found':
-            return True
+    async def create_job(
+        self, context_name: str, namespace: str, job_name: str, image: str, command: list[str], args: list[str],
+        env: list[K8sEnvironmentVariable], container_name: str, ttl_after_finished: int = 120,
+        service_account_name='default'
+    ):
+        """
+        Create job to execute some command.
 
-        return False
+        context_name - name of context from Kubernetes configuratoin.
+        namespace - namespace where to create job.
+        job_name - name of the job. Must be unique in namespace.
+        image - name of container image. For instance `alpine`.
+        command - command to execute. For instance `['/bin/sh', '-c']`.
+        args - command arguments. For instance `['sleep 1']`.
+        env - list of environment variables to set in container in form of
+              dictionary with `name` and `value` keys.
+              For instance:
+              ```
+              [
+                {'name': 'SOME_VARIABLE_NAME_1', 'value': 'SOME_VARIABLE_VALUE_1'},
+                {'name': 'SOME_VARIABLE_NAME_2', 'value': 'SOME_VARIABLE_VALUE_2'},
+              ]
+              ```.
+        container_name - name of container where job is running.
+        ttl_after_finished - Time to live of job in seconds after execution finish. Default is 120 seconds.
+        service_account_name - name of Kubernetes service account to use during job creation.
+        """
+        # Job body creation.
+        body = V1Job(api_version='batch/v1', kind='Job')
+        body.metadata = V1ObjectMeta(namespace=namespace, name=job_name)
+        body.status = V1JobStatus()
+        template = V1PodTemplate()
+        template.template = V1PodTemplateSpec()
+        template.template.spec = V1PodSpec(
+            containers=[
+                V1Container(
+                    name=container_name,
+                    image=image,
+                    command=command,
+                    args=args,
+                    env=[V1EnvVar(name=variable.name, value=variable.value) for variable in env]
+                )
+            ],
+            restart_policy='Never',
+            service_account_name=service_account_name
+        )
+        body.spec = V1JobSpec(
+            ttl_seconds_after_finished=ttl_after_finished,
+            template=template.template
+        )
+        async with await new_client_from_config(self.configuration_file_path, context_name) as client:
+            api = BatchV1Api(client)
+            try:
+                entity = await api.create_namespaced_job(namespace, body)
+
+                return K8sEntitySchema.parse_obj(entity.to_dict())
+            except ApiException as error:
+                logger.exception(
+                    f'Failed to create <Job name="{job_name}", namespace="{namespace}" context_name="{context_name}">. '
+                    f'{error.message}'
+                )
+                raise KubernetesException(error.message)
+
+    async def create_namespace(self, context_name: str, name: str) -> None:
+        """
+        Creates namespace in cluster.
+        """
+        async with await new_client_from_config(self.configuration_file_path, context_name) as client:
+            api = CoreV1Api(client)
+            body = V1Namespace(metadata=V1ObjectMeta(name=name))
+            try:
+                entity = await api.create_namespace(body)
+
+                return K8sEntitySchema.parse_obj(entity.to_dict())
+            except ApiException as error:
+                K8sAlreadyExistsException.check_and_raise(error)
+                raise KubernetesClientException(
+                    f'Failed to create namespace "{name}".',
+                    details=error.details, api_response_code=error.code, reason=error.reason
+                )
 
     async def list_namespaces(self, context_name: str) -> list[K8sEntitySchema]:
         """
@@ -122,6 +215,12 @@ class K8sClient:
         """
         return await self._get_details(BatchV1Api, 'read_namespaced_job', context_name, namespace=namespace, name=name)
 
+    async def get_namespace_details(self, context_name: str, name: str) -> K8sEntitySchema:
+        """
+        Returns namespace details.
+        """
+        return await self._get_details(CoreV1Api, 'read_namespace', context_name, name=name)
+
     async def get_persistent_volume_claim_details(
         self, context_name: str, namespace: str, name: str
     ) -> K8sEntitySchema:
@@ -136,14 +235,9 @@ class K8sClient:
         """
         Returns pod details.
         """
-        try:
-            return await self._get_details(
-                CoreV1Api, 'read_namespaced_pod', context_name, namespace=namespace, name=name
-            )
-        except ApiException as error:
-            if self.is_not_foud(error):
-                return
-            raise
+        return await self._get_details(
+            CoreV1Api, 'read_namespaced_pod', context_name, namespace=namespace, name=name
+        )
 
     async def get_pod_security_policy_details(self, context_name: str, name: str) -> K8sEntitySchema:
         """
@@ -275,7 +369,10 @@ class K8sClient:
         """
         async with await new_client_from_config(self.configuration_file_path, context_name) as client:
             method = getattr(api_class(client), method_name)
-            entity = await method(**kwargs)
+            try:
+                entity = await method(**kwargs)
+            except ApiException as error:
+                K8sEntityDoesNotExistException.check_and_raise(error)
 
         return K8sEntitySchema.parse_obj(entity.to_dict())
 
