@@ -258,24 +258,12 @@ class ApplicationManager:
 
     async def terminate(self, application: Application) -> None:
         """
-        Terminates application. Removes all resources related with application.
+        Starts application termination flow.
         """
-        manifest_schema = load_template(application.manifest)
-        for chart in manifest_schema.components:
-            try:
-                await self.helm_manager.uninstall_release(
-                    organization=application.organization,
-                    context_name=application.context_name,
-                    namespace=application.namespace,
-                    release_name=chart.name
-                )
-            except HelmException:
-                logging.exception(
-                    f'Failed to remove release "{chart.name}" during application termination. '
-                    f'<Organization: id={application.organization.id}> <Template: id={application.template.id}>'
-                )
-                pass
-        await self.db.delete(id=application.id)
+        await self.set_state_status(application, ApplicationStatuses.termination_requested)
+
+        from services.procrastinate.tasks.application import execute_pre_terminate_hooks
+        await execute_pre_terminate_hooks.defer_async(application_id=application.id)
 
     async def get_application_health_status(self, application: Application) -> ApplicationHealthStatuses:
         """
@@ -347,7 +335,7 @@ class ApplicationManager:
                 release_name=component.name
             )
         except ReleaseNotFoundException:
-            logging.exception(f'Failed to uninstall component "{component.name}". Such Helm release does not exist.')
+            logging.warning(f'Failed to uninstall component "{component.name}". No corresponding Helm release found.')
         except HelmException as error:
             logging.exception(f'Failed to uninstall component "{component.name}". {error.message}')
             raise ApplicationComponentUninstallException(
@@ -427,6 +415,34 @@ class ApplicationManager:
         Returns list of all application records.
         """
         return await self.db.list()
+
+    async def set_state_status(self, application: Application, status: ApplicationStatuses) -> None:
+        """
+        Sets application state status.
+        """
+        if status not in ApplicationStatuses:
+            raise ValueError(f'Unknown application state status "{status}".')
+
+        if application.status != status:
+            application.status = status
+            await self.db.save(application)
+
+    async def set_health_status(self, application: Application, status: ApplicationHealthStatuses) -> None:
+        """
+        Sets application health status.
+        """
+        if status not in ApplicationHealthStatuses:
+            raise ValueError(f'Unknown application health status "{status}".')
+
+        if application.health != status:
+            application.health = status
+            await self.db.save(application)
+
+    async def delete_application(self, application_id: int):
+        """
+        Deletes application record from DB.
+        """
+        await self.db.delete(id=application_id)
 
 
 async def get_application_manager(

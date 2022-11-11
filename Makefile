@@ -79,7 +79,7 @@ serve_be: ## Run only infrastructure containers required by back-end.
 serve_fe: ## Run only infrastructure containers required by front-end.
 	docker-compose -f docker-compose-dev.yaml up --no-deps --detach postgres
 	docker-compose -f docker-compose-dev.yaml up --no-deps --detach application
-  docker-compose -f docker-compose-dev.yaml up --no-deps --detach task-executor
+	docker-compose -f docker-compose-dev.yaml up --no-deps --detach task-executor
 
 	cd frontend; npm start
 
