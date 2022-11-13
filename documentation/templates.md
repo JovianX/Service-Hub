@@ -44,7 +44,7 @@ Users (with the `Operator` or `Admin` roles) can deploy applications via the Sel
 **Here's a simple template example:**
 
 ```yaml
-# Template reference and documentation at 
+# Template reference and documentation at
 # https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
 
 name: my-new-service                            # Required. Name of service.
@@ -66,14 +66,14 @@ inputs:                                         # Optional. User input list.
     description: 'Enter app username'           # Optional. Valuable for user description of this input.
 ```
 
-**Managing Reversions**  
+**Managing Reversions**
 Every change, edit, or update of a template creates a new template reversion. You can upgrade or roll back an application to match a reversion.
 
-**Default Template**  
+**Default Template**
 When deploying an application, the default template is automatically selected,
 
-**Setting a Default Template**  
-To set the default template, hover over a non-default template, and click on the "Default" button that appears.  
+**Setting a Default Template**
+To set the default template, hover over a non-default template, and click on the "Default" button that appears.
  
 
 ![image](https://user-images.githubusercontent.com/2787296/200361559-a3b0f2e7-70da-4135-86cb-1c0150353f74.png)
@@ -96,7 +96,7 @@ To set the default template, hover over a non-default template, and click on the
 To get the complete template reference
 
 ```shell
-curl -X 'GET'   'https://api.hub.jovianx.app/api/v1/template/schema?format=yaml'   -H 'accept: application/json'  | sed 's/\\n/\n/g' 
+curl -X 'GET'   'https://api.hub.jovianx.app/api/v1/template/schema?format=yaml'   -H 'accept: application/json'  | sed 's/\\n/\n/g'
 ```
 
 ### Complete Template Example
@@ -124,6 +124,28 @@ components:                                     # Required. Application componen
     values:                                     # Optional. Helm chart values to install/update.
       - db:
           username: {{ inputs.text_example }}   # Example of usage dynamic tempalte variables.
+      - replica:
+          serviceAccount:
+            create: false
+      - master:
+          serviceAccount:
+            create: false
+
+  - name: mongodb
+    type: helm_chart
+    chart: bitnami/mongodb
+    version: 13.4.1
+    values:
+      - auth:
+          rootPassword: {{ inputs.text_example }}
+
+  - name: rabbitmq
+    type: helm_chart
+    chart: bitnami/rabbitmq
+    version: 11.1.1
+    values:
+      - db:
+          username: {{ inputs.text_example }}
 
 # List of application hooks.
 #
@@ -190,6 +212,38 @@ hooks:
       command: ['/bin/sh', '-c']
       args:
         - curl https://www.google.com/search?q=service_hub;
+
+  pre_upgrade:
+    - name: pre-upgrade-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub__pre_upgrade;
+
+  post_upgrade:
+    - name: post-upgrade-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub__post_upgrade;
+
+  pre_terminate:
+    - name: pre-terminate-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub__pre_terminate;
+
+  post_terminate:
+    - name: post-terminate-hook
+      type: kubernetes_job
+      image: 'appropriate/curl'
+      command: ['/bin/sh', '-c']
+      args:
+        - curl https://www.google.com/search?q=service_hub__post_terminate;
 
 # List of user inputs. These inputs allow collect data from user before
 # application launch.
