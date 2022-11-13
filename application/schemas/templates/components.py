@@ -16,10 +16,7 @@ class Component(BaseModel):
     name: constr(min_length=1, strip_whitespace=True) = Field(description='Helm release name', example='vault')
     type: ComponentTypes = Field(description='Type of applicatoin component.', example=ComponentTypes.helm_chart)
     enabled: bool | None = Field(description='Is component must be installed.', default=True)
-    chart: constr(min_length=1, strip_whitespace=True) = Field(
-        description='Helm chart name.',
-        example='roboll/vault-secret-manager'
-    )
+    chart: constr(min_length=1, strip_whitespace=True) = Field(description='Helm chart name.', example='bitnami/redis')
     version: constr(min_length=1, strip_whitespace=True) | None = Field(
         description='Helm chart version.',
         example='1.24.1'
