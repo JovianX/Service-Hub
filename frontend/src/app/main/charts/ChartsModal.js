@@ -23,6 +23,7 @@ import { chartInstall, getDefaultValues, selectCharts } from 'app/store/chartsSl
 import { getContextList, selectContexts } from 'app/store/clustersSlice';
 
 import NamespacesSelect from './NamespacesSelect';
+import VersionsSelect from './VersionsSelect';
 
 const useStyles = makeStyles({
   button: {
@@ -46,10 +47,12 @@ const ChartsModal = ({ chartName, openModal }) => {
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [cluster, setCluster] = useState('');
   const [namespace, setNamespace] = useState('');
+  const [chartVersion, setChartVersion] = useState('');
+  const [startVersion, setStartVersion] = useState('');
   const [chart, setChart] = useState({});
+  const [defaultValuesParam, setDefaultValuesParam] = useState('');
   const [configYamlText, setConfigYamlText] = useState(null);
   const [defaultConfigYamlText, setDefaultConfigYamlText] = useState(null);
-  const [defaultValuesParam, setDefaultValuesParam] = useState('');
   const [editorHeight, setEditorHeight] = useState('150px');
 
   const chartData = useSelector(selectCharts);
@@ -73,6 +76,7 @@ const ChartsModal = ({ chartName, openModal }) => {
   useEffect(() => {
     if (chart?.name) {
       setDefaultValuesParam(chart.name);
+      setChartVersion(chart.version);
     }
   }, [chart]);
 
@@ -117,16 +121,8 @@ const ChartsModal = ({ chartName, openModal }) => {
     setInfoMessageSuccess('');
     setLoading(true);
     if (e.target.form) {
-      const { chart_name, version, description, release_name, context_name } = e.target.form;
-
-      if (
-        !chart_name.value ||
-        !version.value ||
-        !description.value ||
-        !release_name.value ||
-        !configYamlText ||
-        !context_name.value
-      ) {
+      const { chart_name, description, release_name, context_name } = e.target.form;
+      if (!chart_name.value || !description.value || !release_name.value || !configYamlText || !context_name.value) {
         setLoading(false);
       }
     } else {
@@ -139,11 +135,11 @@ const ChartsModal = ({ chartName, openModal }) => {
   const handleSubmitInstall = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const { chart_name, version, description, release_name, context_name } = e.target;
+    const { chart_name, description, release_name, context_name } = e.target;
     try {
       const chart = {
         chart_name: chart_name.value,
-        version: version.value,
+        version: chartVersion,
         description: description.value,
         release_name: release_name.value,
         values: yaml.load(configYamlText, { json: true }),
@@ -153,26 +149,25 @@ const ChartsModal = ({ chartName, openModal }) => {
       if (showMessage) {
         setShowMessage(false);
       }
-      const data = await dispatch(chartInstall(chart));
-      if (data.payload?.message) {
+      const { payload } = await dispatch(chartInstall(chart));
+      if (payload?.message) {
         await setLoading(false);
         await setShowMessage(true);
-        await setInfoMessageError(data.payload.message);
+        await setInfoMessageError(payload.message);
         return;
       }
-      if (data.payload?.detail) {
+      if (payload?.detail) {
         await setLoading(false);
         await setShowMessage(true);
-        await setInfoMessageError(`${data.payload.detail[0].loc[1]}: ${data.payload.detail[0].msg}`);
+        await setInfoMessageError(`${payload.detail[0].loc[1]}: ${payload.detail[0].msg}`);
         return;
       }
-      if (data.payload.info.status) {
+      if (payload?.info.status) {
         await setInfoMessageSuccess('Helm chart installation was successful');
         await setShowMessage(true);
         await setLoading(false);
         setTimeout(() => {
-          setOpen(false);
-          setShowMessage(false);
+          handleClose();
         }, 2000);
       }
     } catch (e) {
@@ -186,6 +181,13 @@ const ChartsModal = ({ chartName, openModal }) => {
     setShowMessage(false);
     setOpen(false);
     setLoading(false);
+    if (chartVersion) {
+      setChartVersion('');
+    }
+    if (startVersion) {
+      setStartVersion('');
+    }
+    setChart(null);
   };
 
   const handleChangeSelect = (e) => {
@@ -232,14 +234,12 @@ const ChartsModal = ({ chartName, openModal }) => {
                 defaultValue={chart.name}
                 onChange={onChangeDefaultValuesParam}
               />
-              <TextField
-                name='version'
-                type='text'
-                id='outlined-required'
-                label='Chart Version'
-                margin='normal'
-                fullWidth
-                defaultValue={chart.version}
+              <VersionsSelect
+                chartName={chart.name}
+                chartVersion={chartVersion}
+                setChartVersion={setChartVersion}
+                setStartVersion={setStartVersion}
+                startVersion={startVersion}
               />
               <Box sx={{ minWidth: 120 }}>
                 <FormControl margin='normal' fullWidth required>
