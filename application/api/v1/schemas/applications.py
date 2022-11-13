@@ -107,6 +107,6 @@ class ApplicationUpgradeResponseSchema(BaseModel):
     """
     Response body of application upgrade.
     """
-    installed_releases: dict[str, dict] = Field(description='Mapping of installed release name and Helm output')
-    updated_releases: dict[str, dict] = Field(description='Mapping of updated release name and Helm output')
-    uninstalled_releases: list[str] = Field(description='List of removed releases')
+    install_outputs: dict[str, dict] = Field(description='List of installed components')
+    update_outputs: dict[str, dict] = Field(description='List of updated components')
+    uninstall_outputs: dict[str, dict] = Field(description='List of removed components')

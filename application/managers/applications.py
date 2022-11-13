@@ -15,12 +15,15 @@ from constants.applications import ApplicationStatuses
 from constants.helm import ReleaseHealthStatuses
 from constants.kubernetes import K8sKinds
 from constants.templates import HookOnFailureBehavior
+from core.configuration import settings
 from crud.applications import ApplicationDatabase
 from crud.applications import get_application_db
 from exceptions.application import ApplicationComponentInstallException
 from exceptions.application import ApplicationComponentUninstallException
+from exceptions.application import ApplicationComponentUpdateException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
+from exceptions.application import ApplicationLaunchTimeoutException
 from exceptions.common import CommonException
 from exceptions.helm import HelmException
 from exceptions.helm import ReleaseNotFoundException
@@ -33,6 +36,7 @@ from models.application import Application
 from models.organization import Organization
 from models.template import TemplateRevision
 from models.user import User
+from schemas.templates import TemplateSchema
 from schemas.templates.components import Component
 from schemas.templates.hooks import Hook
 from utils.template import load_template
@@ -62,11 +66,11 @@ class ApplicationManager:
         Installs application from provided manifest.
         """
         validate_inputs(template.template, inputs)
-        manifest = render_template(template.template, inputs=inputs)
-        manifest_schema = load_template(manifest)
+        raw_manifest = self.render_manifest(template, user_inputs=inputs)
+        manifest = load_template(raw_manifest)
 
         if dry_run:
-            components = [component for component in manifest_schema.components if component.enabled]
+            components = [component for component in manifest.components if component.enabled]
             outputs = await asyncio.gather(*[
                 self.install_component(
                     component,
@@ -81,9 +85,9 @@ class ApplicationManager:
             return {component.name: output for component, output in zip(components, outputs)}
         else:
             application = {
-                'name': manifest_schema.name,
+                'name': manifest.name,
                 'description': '',
-                'manifest': manifest,
+                'manifest': raw_manifest,
                 'status': ApplicationStatuses.deploy_requested,
                 'health': ApplicationHealthStatuses.unhealthy,
                 'context_name': context_name,
@@ -96,112 +100,73 @@ class ApplicationManager:
             application_record = await self.db.create(application)
 
             from services.procrastinate.tasks.application import execute_pre_install_hooks
-            await execute_pre_install_hooks.defer_async(application_id=application_record.id, dry_run=dry_run)
+            await execute_pre_install_hooks.defer_async(application_id=application_record.id)
 
             return application_record
 
-    async def upgrade(self, application: Application, template: TemplateRevision, dry_run: bool = False) -> None:
+    async def upgrade(self, application: Application, template: TemplateRevision,
+                      dry_run: bool = False) -> dict[str, dict]:
         """
-        Upgrades application manifest to given template.
+        Upgrades application with new template.
         """
-        # Extending of user inputs with defaults from new template.
-        new_template_schema = load_template(template.template)
-        input_defaults = {
-            input.name: input.default for input in new_template_schema.inputs if 'default' in input.__fields_set__
+        if dry_run:
+            return await self.upgrade_components(application, template, dry_run=dry_run)
+        else:
+            from services.procrastinate.tasks.application import execute_pre_upgrade_hooks
+            await execute_pre_upgrade_hooks.defer_async(application_id=application.id, new_template_id=template.id)
+
+    async def upgrade_components(self, application: Application, new_template: TemplateRevision,
+                                 dry_run: bool = False) -> dict[str, dict]:
+        """
+        Upgrades application components. Determines what components are need to
+        install update delete and does it.
+        """
+        new_manifest = load_template(self.render_manifest(new_template, application=application))
+        old_manifest: TemplateSchema = load_template(application.manifest)
+
+        new_components_names = new_manifest.components_mapping.keys()
+        old_components_names = old_manifest.components_mapping.keys()
+        components_to_install = [
+            new_manifest.components_mapping[component_name]
+            for component_name in new_components_names - old_components_names
+            if new_manifest.components_mapping[component_name].enabled
+        ]
+        components_to_remove = [
+            old_manifest.components_mapping[component_name]
+            for component_name in old_components_names - new_components_names
+            if old_manifest.components_mapping[component_name].enabled
+        ]
+        components_to_update = [
+            new_manifest.components_mapping[component_name]
+            for component_name in old_components_names & new_components_names
+            if new_manifest.components_mapping[component_name].enabled
+        ]
+        results = {
+            'install_outputs': {},
+            'update_outputs': {},
+            'uninstall_outputs': {},
         }
-        user_inputs = {**input_defaults, **application.user_inputs}
 
-        rendered_template = render_template(template.template, user_inputs)
-        new_template_schema = load_template(rendered_template)
-        old_template_schema = load_template(application.manifest)
-
-        new_components_names = new_template_schema.components_mapping.keys()
-        old_components_names = old_template_schema.components_mapping.keys()
-        charts_to_install = new_components_names - old_components_names
-        releases_to_remove = old_components_names - new_components_names
-        releases_to_update = old_components_names & new_components_names
-
-        install_results = {}
-        installed_charts = []
-        for release_name in charts_to_install:
-            chart = new_template_schema.components_mapping[release_name]
-            try:
-                install_results[chart.name] = await self.helm_manager.install_chart(
-                    organization=application.organization,
-                    context_name=application.context_name,
-                    namespace=application.namespace,
-                    release_name=chart.name,
-                    chart_name=chart.chart,
-                    version=chart.version,
-                    values=chart.values,
-                    dry_run=dry_run
-                )
-                installed_charts.append(chart)
-            except HelmException:
-                if not dry_run:
-                    logging.exception(
-                        f'Application upgrade failed. Failed to install Helm chart "{chart.chart}". '
-                        f'<Organization: id={application.organization.id}> <Template: id={template.id}>'
-                    )
-                    for chart in reversed(installed_charts):
-                        try:
-                            await self.helm_manager.uninstall_release(
-                                organization=application.organization,
-                                context_name=application.context_name,
-                                namespace=application.namespace,
-                                release_name=chart.name
-                            )
-                        except HelmException:
-                            logging.exception(
-                                f'Failed to remove release "{chart.name}" during clean up after application upgrade '
-                                f'failure. <Organization: id={application.organization.id}> '
-                                f'<Template: id={template.id}>'
-                            )
-                            pass
-                raise
-
-        update_results = {}
-        for release_name in releases_to_update:
-            chart = new_template_schema.components_mapping[release_name]
-            update_results[release_name] = await self.helm_manager.update_release(
-                organization=application.organization,
-                context_name=application.context_name,
-                namespace=application.namespace,
-                release_name=release_name,
-                chart_name=chart.chart,
-                values=chart.values,
-                dry_run=dry_run
-            )
-
-        for release_name in releases_to_remove:
-            chart = old_template_schema.components_mapping[release_name]
-            try:
-                await self.helm_manager.uninstall_release(
-                    organization=application.organization,
-                    context_name=application.context_name,
-                    namespace=application.namespace,
-                    release_name=chart.name,
-                    dry_run=dry_run
-                )
-            except HelmException:
-                if not dry_run:
-                    logging.exception(
-                        f'Failed to remove release "{chart.name}" during application upgrade. '
-                        f'<Organization: id={application.organization.id}> <Template: id={application.template.id}>'
-                    )
-                pass
-
-        if not dry_run:
-            application.manifest = rendered_template
-            application.template = template
-            application.user_inputs = user_inputs
-            await self.db.save(application)
-
-        return {
-            'installed_releases': install_results,
-            'updated_releases': update_results,
-            'uninstalled_releases': list(releases_to_remove)
+        install_outputs = await asyncio.gather(*[
+            self.install_component(component, application, dry_run=dry_run) for component in components_to_install
+        ])
+        results['install_outputs'] = {
+            component.name: output for component, output in zip(components_to_install, install_outputs)
         }
+        update_outputs = await asyncio.gather(*[
+            self.update_component(application, component, dry_run=dry_run) for component in components_to_update
+        ])
+        results['update_outputs'] = {
+            component.name: output for component, output in zip(components_to_update, update_outputs)
+        }
+        uninstall_outputs = await asyncio.gather(*[
+            self.uninstall_component(application, component, dry_run=dry_run) for component in components_to_remove
+        ])
+        results['uninstall_outputs'] = {
+            component.name: output for component, output in zip(components_to_remove, uninstall_outputs)
+        }
+
+        return results
 
     async def update_user_inputs(self, application: Application, inputs: dict, dry_run: bool = False) -> dict:
         """
@@ -258,24 +223,12 @@ class ApplicationManager:
 
     async def terminate(self, application: Application) -> None:
         """
-        Terminates application. Removes all resources related with application.
+        Starts application termination flow.
         """
-        manifest_schema = load_template(application.manifest)
-        for chart in manifest_schema.components:
-            try:
-                await self.helm_manager.uninstall_release(
-                    organization=application.organization,
-                    context_name=application.context_name,
-                    namespace=application.namespace,
-                    release_name=chart.name
-                )
-            except HelmException:
-                logging.exception(
-                    f'Failed to remove release "{chart.name}" during application termination. '
-                    f'<Organization: id={application.organization.id}> <Template: id={application.template.id}>'
-                )
-                pass
-        await self.db.delete(id=application.id)
+        await self.set_state_status(application, ApplicationStatuses.termination_requested)
+
+        from services.procrastinate.tasks.application import execute_pre_terminate_hooks
+        await execute_pre_terminate_hooks.defer_async(application_id=application.id)
 
     async def get_application_health_status(self, application: Application) -> ApplicationHealthStatuses:
         """
@@ -301,6 +254,18 @@ class ApplicationManager:
             return ApplicationHealthStatuses.healthy
         else:
             return ApplicationHealthStatuses.unhealthy
+
+    async def await_healthy_state(self, application: Application) -> None:
+        """
+        Awaits until application become healthy or rises timeout exception.
+        """
+        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT)
+        while datetime.now() < application_deadline:
+            status = await self.get_application_health_status(application)
+            if status == ApplicationHealthStatuses.healthy:
+                return
+        else:
+            raise ApplicationLaunchTimeoutException(f'Failed to start application in time.', application=application)
 
     async def install_component(self, component: Component, application: Application | None = None,
                                 organization: Organization | None = None, context_name: str | None = None,
@@ -335,7 +300,28 @@ class ApplicationManager:
                 application=application, component=component
             )
 
-    async def uninstall_component(self, application: Application, component: Component) -> str:
+    async def update_component(self, application: Application, component: Component, dry_run: bool = False) -> str:
+        """
+        Updates application component.
+        """
+        try:
+            return await self.helm_manager.update_release(
+                organization=application.organization,
+                context_name=application.context_name,
+                namespace=application.namespace,
+                release_name=component.name,
+                chart=component.chart,
+                values=component.values,
+                dry_run=dry_run
+            )
+        except HelmException as error:
+            logger.error(f'Failed to update application component. {error.message}')
+            raise ApplicationComponentUpdateException(
+                f'Failed to update application component.',
+                application=application, component=component
+            )
+
+    async def uninstall_component(self, application: Application, component: Component, dry_run: bool = False) -> str:
         """
         Uninstalls application component.
         """
@@ -344,10 +330,11 @@ class ApplicationManager:
                 organization=application.organization,
                 context_name=application.context_name,
                 namespace=application.namespace,
-                release_name=component.name
+                release_name=component.name,
+                dry_run=dry_run
             )
         except ReleaseNotFoundException:
-            logging.exception(f'Failed to uninstall component "{component.name}". Such Helm release does not exist.')
+            logging.warning(f'Failed to uninstall component "{component.name}". No corresponding Helm release found.')
         except HelmException as error:
             logging.exception(f'Failed to uninstall component "{component.name}". {error.message}')
             raise ApplicationComponentUninstallException(
@@ -404,6 +391,33 @@ class ApplicationManager:
                     hook=hook
                 )
 
+    def get_inputs(self, template: TemplateRevision, *, application: Application | None = None,
+                   user_inputs: dict | None = None) -> dict:
+        """
+        Returns user inputs extended with defaults from template if need.
+        """
+        if user_inputs is None:
+            user_inputs = {}
+            if application is not None:
+                user_inputs = application.user_inputs
+
+        template_schema = load_template(template.template)
+        input_defaults = template_schema.inputs_defaults
+        user_inputs = {**input_defaults, **user_inputs}
+
+        return user_inputs
+
+    def render_manifest(self, template: TemplateRevision, *, application: Application | None = None,
+                        user_inputs: dict | None = None) -> str:
+        """
+        Renders new application's manifest using existing user input.
+        """
+        inputs = self.get_inputs(template, application=application, user_inputs=user_inputs)
+
+        manifest = render_template(template.template, inputs)
+
+        return manifest
+
     async def get_organization_application(self, application_id: int, organization: Organization) -> Application:
         """
         Returns organization's application record.
@@ -427,6 +441,34 @@ class ApplicationManager:
         Returns list of all application records.
         """
         return await self.db.list()
+
+    async def set_state_status(self, application: Application, status: ApplicationStatuses) -> None:
+        """
+        Sets application state status.
+        """
+        if status not in ApplicationStatuses:
+            raise ValueError(f'Unknown application state status "{status}".')
+
+        if application.status != status:
+            application.status = status
+            await self.db.save(application)
+
+    async def set_health_status(self, application: Application, status: ApplicationHealthStatuses) -> None:
+        """
+        Sets application health status.
+        """
+        if status not in ApplicationHealthStatuses:
+            raise ValueError(f'Unknown application health status "{status}".')
+
+        if application.health != status:
+            application.health = status
+            await self.db.save(application)
+
+    async def delete_application(self, application_id: int):
+        """
+        Deletes application record from DB.
+        """
+        await self.db.delete(id=application_id)
 
 
 async def get_application_manager(

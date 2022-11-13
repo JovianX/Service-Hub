@@ -36,7 +36,7 @@ class ApplicationHookException(ApplicationException):
     def __init__(self, message: str | None = None, status_code: int | None = None, *, application, hook) -> None:
         message = message or 'Application hook malfunction.'
         self.hook = hook
-        super().__init__(message, status_code, application)
+        super().__init__(message, status_code, application=application)
 
 
 class ApplicationHookLaunchException(ApplicationHookException):

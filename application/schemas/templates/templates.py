@@ -1,6 +1,8 @@
 """
 Templates schemas.
 """
+from typing import Any
+
 from pydantic import BaseModel
 from pydantic import Extra
 from pydantic import Field
@@ -9,8 +11,8 @@ from pydantic import constr
 from pydantic import validator
 
 from .components import Component
-from .inputs import Input
 from .hooks import Hooks
+from .inputs import Input
 from .validators import unique_names
 
 
@@ -24,7 +26,7 @@ class TemplateSchema(BaseModel):
     )
     components: conlist(Component, min_items=1) = Field(description='Application components.')
     hooks: Hooks | None = Field(description='Application actions.')
-    inputs: list[Input] | None = Field(description='Input that should be provided by user.', default=[])
+    inputs: list[Input] | None = Field(description='Input that should be provided by user.', default_factory=list)
 
     class Config:
         extra = Extra.forbid
@@ -45,3 +47,12 @@ class TemplateSchema(BaseModel):
         Mapping of input placeholder name and input itself.
         """
         return {item.name: item for item in self.inputs}
+
+    @property
+    def inputs_defaults(self) -> dict[str, Any]:
+        """
+        Returns mapping of input name to its default value.
+        """
+        inputs = [input for input in self.inputs or [] if 'default' in input.__fields_set__]
+
+        return {input.name: input.default for input in inputs}
