@@ -40,12 +40,12 @@ const navigationConfig = [
   },
   {
     id: 'templates-component',
-    title: 'Templates',
-    translate: 'TEMPLATES',
+    title: 'Catalogs',
+    translate: 'CATALOGS',
     type: 'item',
     icon: 'heroicons-outline:template',
     url: 'templates',
-    auth: authRoles.admin,
+    auth: authRoles.staff,
   },
   {
     id: 'helm-component',

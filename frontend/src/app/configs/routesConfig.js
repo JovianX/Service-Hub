@@ -52,6 +52,7 @@ const operatorRouteConfigs = [
   ReleasesConfig,
   ReleaseDetailsConfig,
   DashboardConfig,
+  TemplatesConfig,
 ];
 
 const adminRoutes = [

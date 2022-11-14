@@ -9,7 +9,7 @@ const Templates = () => {
 
   return (
     <FusePageCarded
-      header={<TableHeader title='Templates' />}
+      header={<TableHeader title='Catalogs' />}
       content={<TemplatesList />}
       scroll={isMobile ? 'normal' : 'content'}
       className='px-24'

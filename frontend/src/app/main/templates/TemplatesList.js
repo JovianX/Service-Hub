@@ -12,8 +12,9 @@ import {
   selectIsTemplatesLoading,
   selectTemplates,
 } from 'app/store/templatesSlice';
+import { selectUser } from 'app/store/userSlice';
 
-import CatalogItem from './CatalogsList/CatalogItem';
+import CatalogList from './CatalogsList/CatalogList';
 import TemplatesListItem from './TemplatesListItem';
 import TemplatesModal from './TemplatesModal';
 
@@ -42,6 +43,7 @@ const TemplatesList = () => {
   const templatesData = useSelector(selectTemplates);
   const isLoading = useSelector(selectIsTemplatesLoading);
   const infoMessage = useSelector(selectInfoMessage);
+  const user = useSelector(selectUser);
 
   useEffect(() => {
     dispatch(getTemplatesList());
@@ -172,9 +174,9 @@ const TemplatesList = () => {
     );
   }
   return (
-    <div className='flex justify-between p-24'>
-      <List className='w-5/12 pt-0 h-[70vh] overflow-y-scroll mr-12'>
-        <div className='flex justify-between mb-12'>
+    <div className='p-24'>
+      {user?.role === 'admin' && (
+        <div className='flex justify-between items-center mb-12'>
           <ToggleButtonGroup
             color='primary'
             value={alignment}
@@ -185,81 +187,76 @@ const TemplatesList = () => {
             <ToggleButton value='catalog'>Catalog</ToggleButton>
             <ToggleButton value='templates'>Templates</ToggleButton>
           </ToggleButtonGroup>
-          <Button className='mb-12 mr-12' color='primary' variant='contained' onClick={handleClickAdd}>
+          <Button color='primary' variant='contained' onClick={handleClickAdd}>
             Add templete
           </Button>
         </div>
-        {transformedTemplates?.map((template, index) => {
-          return alignment === 'catalog' ? (
-            <CatalogItem
-              key={template.name}
-              selectedIndex={selectedIndex}
-              mainIndex={index}
-              template={template.templates}
-              setTemplateId={setTemplateId}
-              setSelectedTemplateId={setSelectedTemplateId}
-              setTemplates={setTemplates}
-              alignment={alignment}
-            />
-          ) : (
-            <TemplatesListItem
-              key={template.name}
-              selectedIndex={selectedIndex}
-              mainIndex={index}
-              template={template.templates}
-              setTemplateId={setTemplateId}
-              setSelectedTemplateId={setSelectedTemplateId}
-              setTemplates={setTemplates}
-              alignment={alignment}
-            />
-          );
-        })}
-      </List>
-
-      {alignment === 'templates' && (
-        <div className='w-7/12'>
-          <div style={{ height: 'calc(100vh - 304px)' }}>
-            <MonacoEditor
-              height='100%'
-              value={templateYamlText}
-              language='yaml'
-              onChange={handleOnChangeTemplate.bind(this)}
-              options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
-            />
-          </div>
-          <div className='mt-36 flex justify-between items-center'>
-            <Button size='large' color='error' variant='outlined' onClick={handleDeleteTemplate}>
-              Delete
-            </Button>
-            <div>
-              <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
-              <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
-            </div>
-            <Button size='large' color='primary' variant='outlined' onClick={handleClickEdit}>
-              Edit
-            </Button>
-          </div>
-        </div>
       )}
 
+      {user?.role === 'admin' && alignment === 'templates' ? (
+        <div className='flex justify-between'>
+          <List className='w-5/12 pt-0 h-[70vh] overflow-y-scroll mr-12'>
+            {transformedTemplates?.map((template, index) => (
+              <TemplatesListItem
+                key={template.name}
+                selectedIndex={selectedIndex}
+                mainIndex={index}
+                template={template.templates}
+                setTemplateId={setTemplateId}
+                setSelectedTemplateId={setSelectedTemplateId}
+                setTemplates={setTemplates}
+                alignment={alignment}
+              />
+            ))}
+          </List>
+
+          <div className='w-7/12'>
+            <div style={{ height: 'calc(100vh - 304px)' }}>
+              <MonacoEditor
+                height='100%'
+                value={templateYamlText}
+                language='yaml'
+                onChange={handleOnChangeTemplate.bind(this)}
+                options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
+              />
+            </div>
+            <div className='mt-36 flex justify-between items-center'>
+              <Button size='large' color='error' variant='outlined' onClick={handleDeleteTemplate}>
+                Delete
+              </Button>
+              <div>
+                <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
+                <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
+              </div>
+              <Button size='large' color='primary' variant='outlined' onClick={handleClickEdit}>
+                Edit
+              </Button>
+            </div>
+          </div>
+
+          <DialogModal
+            isOpen={isDeleteModalOpen}
+            onClose={handleDeleteCancel}
+            title='Delete template'
+            text='Are you sure you want to proceed?'
+            onCancel={handleDeleteCancel}
+            cancelText='Cancel'
+            onConfirm={handleDeleteConfirm}
+            confirmText='Delete'
+            fullWidth
+          />
+        </div>
+      ) : (
+        <div className='flex'>
+          <CatalogList transformedTemplates={transformedTemplates} />
+        </div>
+      )}
       <TemplatesModal
         setTemplates={setTemplates}
         openModal={openModal}
         setOpenModal={setOpenModal}
         modalInfo={modalInfo}
         setEditTemplateId={setEditTemplateId}
-      />
-
-      <DialogModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleDeleteCancel}
-        title='Delete template'
-        text='Are you sure you want to proceed?'
-        onCancel={handleDeleteCancel}
-        cancelText='Cancel'
-        onConfirm={handleDeleteConfirm}
-        confirmText='Delete'
-        fullWidth
       />
     </div>
   );
