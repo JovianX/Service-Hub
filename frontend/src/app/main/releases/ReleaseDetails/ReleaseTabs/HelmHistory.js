@@ -1,16 +1,23 @@
 import { Chip, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
+import { selectReleaseHistory } from 'app/store/releaseSlice';
 
 import { getColorForStatus, getPresent } from '../../../../uitls';
 
-const HelmHistory = ({ releaseHistory }) => {
-  const [reversedReleaseHistory, setReversedReleaseHistory] = useState([]);
+import RollbackRelease from './RollbackRelease';
+
+const HelmHistory = ({ release }) => {
+  const [releaseHistory, setReleaseHistory] = useState([]);
+  const releaseHistoryData = useSelector(selectReleaseHistory);
 
   useEffect(() => {
-    setReversedReleaseHistory(releaseHistory.sort((a, b) => b.revision - a.revision));
-  }, [releaseHistory]);
+    if (releaseHistoryData.length) {
+      setReleaseHistory([...releaseHistoryData].sort((a, b) => b.revision - a.revision));
+    }
+  }, [releaseHistoryData]);
 
   return (
     <Paper className='h-100 rounded mt-12'>
@@ -27,11 +34,12 @@ const HelmHistory = ({ releaseHistory }) => {
                 <TableCell> Chart Version</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Description</TableCell>
+                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
-              {reversedReleaseHistory?.map((row) => (
-                <TableRow>
+              {releaseHistory?.map((row) => (
+                <TableRow key={row.revision}>
                   <TableCell align='left'>{row.revision}</TableCell>
                   <TableCell align='left'>{getPresent(row.updated)}</TableCell>
                   <TableCell align='left'>{row.application_name}</TableCell>
@@ -44,6 +52,14 @@ const HelmHistory = ({ releaseHistory }) => {
                     </Stack>
                   </TableCell>
                   <TableCell align='left'>{row.description}</TableCell>
+                  <TableCell align='left'>
+                    <RollbackRelease
+                      revision={row.revision}
+                      namespace={release.namespace}
+                      name={release.name}
+                      contextName={release.context_name}
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
