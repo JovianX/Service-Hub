@@ -23,3 +23,22 @@ class ComponentTypes(StrEnum):
     Template application components types.
     """
     helm_chart = 'helm_chart'
+
+
+class HookOnFailureBehavior(StrEnum):
+    """
+    Template application behavior on hook failure types.
+
+    stop - if hook fails application action fails too.
+    continue - if hook fails skip this failed hook and continue application
+               action execution.
+    """
+    stop = 'stop'
+    skip = 'continue'
+
+
+class HookTypes(StrEnum):
+    """
+    Template application hook types.
+    """
+    kubernetes_job = 'kubernetes_job'

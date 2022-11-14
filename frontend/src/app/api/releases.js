@@ -1,9 +1,11 @@
 import axios from 'axios';
 
-export const getReleasesList = async () => await axios.get('/api/v1/helm/release/list');
+const RELEASE_API_PATH = '/api/v1/helm/release';
+
+export const getReleasesList = async () => await axios.get(`${RELEASE_API_PATH}/list`);
 
 export const deleteRelease = async (context_name, namespase, release_name) =>
-  await axios.delete(`/api/v1/helm/release/${release_name}`, {
+  await axios.delete(`${RELEASE_API_PATH}/${release_name}`, {
     params: {
       context_name,
       namespase,
@@ -11,7 +13,7 @@ export const deleteRelease = async (context_name, namespase, release_name) =>
   });
 
 export const getReleaseHealth = async (context_name, namespase, release_name) =>
-  await axios.get(`/api/v1/helm/release/${release_name}/health-status`, {
+  await axios.get(`${RELEASE_API_PATH}/${release_name}/health-status`, {
     params: {
       context_name,
       namespase,
@@ -19,7 +21,7 @@ export const getReleaseHealth = async (context_name, namespase, release_name) =>
   });
 
 export const getReleaseTtl = async (context_name, namespase, release_name) =>
-  await axios.get(`/api/v1/helm/release/${release_name}/ttl`, {
+  await axios.get(`${RELEASE_API_PATH}/${release_name}/ttl`, {
     params: {
       context_name,
       namespase,
@@ -32,11 +34,11 @@ export const createReleaseTtl = async (context_name, namespase, release_name, mi
     namespase,
   };
   if (minutes > 0) requestBody.minutes = minutes;
-  await axios.post(`/api/v1/helm/release/${release_name}/ttl`, requestBody);
+  await axios.post(`${RELEASE_API_PATH}/${release_name}/ttl`, requestBody);
 };
 
 export const deleteReleaseTtl = async (context_name, namespase, release_name) =>
-  await axios.delete(`/api/v1/helm/release/${release_name}/ttl`, {
+  await axios.delete(`${RELEASE_API_PATH}/${release_name}/ttl`, {
     params: {
       context_name,
       namespase,
@@ -44,9 +46,20 @@ export const deleteReleaseTtl = async (context_name, namespase, release_name) =>
   });
 
 export const getTubValues = async (context_name, namespase, release_name, values_name) =>
-  await axios.get(`/api/v1/helm/release/${release_name}/${values_name}`, {
+  await axios.get(`${RELEASE_API_PATH}/${release_name}/${values_name}`, {
     params: {
       context_name,
       namespase,
     },
   });
+
+export const getHemlReleaseHistory = async ({ context_name, namespase, release_name }) =>
+  await axios.get(`${RELEASE_API_PATH}/${release_name}/history`, {
+    params: {
+      context_name,
+      namespase,
+    },
+  });
+
+export const rollbackRelease = async (release_name, requestBody) =>
+  await axios.post(`${RELEASE_API_PATH}/${release_name}/rollback`, requestBody);

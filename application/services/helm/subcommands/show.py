@@ -3,7 +3,7 @@ from .base import HelmBase
 
 class HelmShow(HelmBase):
     """
-    Class responsible for working with `Show` helm subcommand.
+    Class responsible for working with `show` helm subcommand.
     """
 
     subcommand = 'show'

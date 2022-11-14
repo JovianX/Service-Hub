@@ -1,5 +1,6 @@
 from .subcommands.dependency import HelmDependency
 from .subcommands.get import HelmGet
+from .subcommands.history import HelmHistory
 from .subcommands.install import HelmInstall
 from .subcommands.list import HelmList
 from .subcommands.release import HelmRelease
@@ -24,6 +25,7 @@ class HelmService:
         """
         self.dependency: HelmDependency = HelmDependency(kubernetes_configuration, helm_home)
         self.get: HelmGet = HelmGet(kubernetes_configuration, helm_home)
+        self.history: HelmHistory = HelmHistory(kubernetes_configuration, helm_home)
         self.install: HelmInstall = HelmInstall(kubernetes_configuration, helm_home)
         self.list: HelmList = HelmList(kubernetes_configuration, helm_home)
         self.release: HelmRelease = HelmRelease(kubernetes_configuration, helm_home)

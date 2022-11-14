@@ -3,6 +3,7 @@ Kubernetes manager related functionality.
 """
 from constants.common import HTTPMethods
 from constants.kubernetes import K8sKinds
+from exceptions.kubernetes import K8sAlreadyExistsException
 from exceptions.kubernetes import KubectlException
 from exceptions.kubernetes import ProxyRequestException
 from services.kubernetes.cli.facade import KubectlCLI
@@ -21,7 +22,21 @@ class K8sManager:
         self.client = K8sClient(configuration_path)
         self.cli = KubectlCLI(configuration_path)
 
-    async def list(self, context_name: str, kind: K8sKinds) -> list[K8sEntitySchema]:
+    async def create_namespace(
+        self, context_name: str, name: str, *, exists_ok: bool | None = False
+    ) -> K8sEntitySchema:
+        """
+        Creates namespace in cluster.
+        """
+        try:
+            return await self.client.create_namespace(context_name, name)
+        except K8sAlreadyExistsException:
+            if exists_ok:
+                return
+            else:
+                raise
+
+    async def get_list(self, context_name: str, kind: K8sKinds) -> list[K8sEntitySchema]:
         """
         Returns list of Kubernetes entities.
         """
@@ -36,7 +51,7 @@ class K8sManager:
                 f'Failed to fetch list of Kubernetes entities. Unhandled Kubernetes entity kind: "{kind}".'
             )
 
-    async def get_details(self, context_name: str, namespace: str, kind: K8sKinds, name: str) -> K8sEntitySchema | None:
+    async def get_details(self, context_name: str, namespace: str, kind: K8sKinds, name: str) -> K8sEntitySchema:
         """
         Returns entity details.
         """
@@ -87,6 +102,33 @@ class K8sManager:
         else:
             raise ValueError(f'Failed to fetch Kubernetes entity details. Unhandled Kubernetes entity kind: "{kind}".')
 
+    async def get_namespace_details(self, context_name: str, name: str) -> K8sEntitySchema:
+        """
+        Returns namespace details.
+        """
+        return await self.client.get_namespace_details(context_name=context_name, name=name)
+
+    async def get_log(self, context_name: str, namespace: str, kind: K8sKinds, entity_name: str) -> str:
+        """
+        Returns entity logs.
+        """
+        return await self.cli.logs.get(
+            context_name=context_name, namespace=namespace, kind=kind, entity_name=entity_name
+        )
+
+    async def is_configuration_valid(self, context_name: str):
+        """
+        Validates Kubernetes configuration by attempting to connection to
+        cluster with given context name. If validation fails returns `False`
+        else `True`.
+        """
+        try:
+            await self.cli.cluster_information.get(context_name)
+        except KubectlException:
+            return False
+
+        return True
+
     async def make_service_proxy_request(
         self, context_name: str, namespace: str, service_name: str, method: HTTPMethods, path: str,
         headers: dict | None = None, timeout: int | None = None
@@ -115,21 +157,28 @@ class K8sManager:
         else:
             raise ValueError(f'Unhandled request method "{method}" during service proxy call.')
 
+    async def run_command(
+        self, context_name: str, namespace: str, job_name: str, image: str, command: list[str], args: list[str],
+        env: list[dict], service_account_name: str | None = None
+    ):
+        """
+        Executes command in container by creating Kubernetes job.
+        """
+        service_account_name = service_account_name or 'default'
+        await self.client.create_job(
+            context_name=context_name,
+            namespace=namespace,
+            job_name=job_name,
+            image=image,
+            command=command,
+            args=args,
+            env=env,
+            container_name=f'{job_name}-container',
+            service_account_name=service_account_name
+        )
+
     async def delete_context(self, context_name: str):
         """
         Deletes context from Kubernetes configuration.
         """
         await self.cli.configuration.delete_context(context_name)
-
-    async def is_configuration_valid(self, context_name: str):
-        """
-        Validates Kubernetes configuration by attempting to connection to
-        cluster with given context name. If validation fails returns `False`
-        else `True`.
-        """
-        try:
-            await self.cli.cluster_information.get(context_name)
-        except KubectlException:
-            return False
-
-        return True

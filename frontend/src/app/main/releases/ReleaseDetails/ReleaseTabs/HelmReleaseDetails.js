@@ -2,9 +2,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
-
-import { getTubValues } from '../../../../api';
 
 import ComputedValue from './TabValues/ComputedValue';
 import HelmHooksValue from './TabValues/HelmHooksValue';
@@ -12,38 +9,11 @@ import ManifestsValue from './TabValues/ManifestsValue';
 import NotesValue from './TabValues/NotesValue';
 import UserSuppliedValue from './TabValues/UserSuppliedValue';
 
-const BoxStyles = {
-  border: 1,
-  borderColor: 'divider',
-  padding: 2,
-  paddingBottom: 4,
-};
-
-const APIsList = ['user-supplied-values', 'computed-values', 'detailed-hooks', 'notes', 'detailed-manifest'];
-
-const HelmReleaseDetails = ({ release }) => {
-  const [tabValues, setTabValues] = useState({});
-
-  useEffect(() => {
-    tabValuesRequest();
-  }, [release]);
-
-  function tabValuesRequest() {
-    if (release?.name) {
-      APIsList.map((row) => {
-        getTubValues(release.context_name, release.namespace, release.name, row).then((res) => {
-          const tabValues = {};
-          tabValues[row.replace(/-/gi, '_')] = res.data;
-          setTabValues((value) => ({ ...value, ...tabValues }));
-        });
-      });
-    }
-  }
-
+const HelmReleaseDetails = ({ tabValues }) => {
   return (
     <Box>
       <Box className='my-12'>
-        <Accordion className='pb-8' >
+        <Accordion className='pb-8'>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography>Notes</Typography>
           </AccordionSummary>

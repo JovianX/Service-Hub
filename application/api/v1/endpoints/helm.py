@@ -11,6 +11,7 @@ from managers.helm.manager import HelmManager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
 from models.user import User
+from services.helm.schemas import ReleaseRevisionSchema
 
 from ..schemas.helm import AddHelmRepositoryBodySchema
 from ..schemas.helm import ChartDumpResponseSchema
@@ -330,6 +331,25 @@ async def create_release_chart(
     """
     helm_manager = HelmManager(organization_manager)
     return await helm_manager.get_release_chart(user.organization, context_name, namespase, release_name)
+
+
+@router.get(
+    '/release/{release_name}/history',
+    response_model=list[ReleaseRevisionSchema],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def release_revisions_history(
+    release_name: str = Path(description='Name of target release'),
+    context_name: str = Query(title='Name of context where release located'),
+    namespase: str = Query(title='Name of namespace where release located'),
+    user: User = Depends(current_active_user),
+    organization_manager: OrganizationManager = Depends(get_organization_manager)
+):
+    """
+    Returns history of release's revisions.
+    """
+    helm_manager = HelmManager(organization_manager)
+    return await helm_manager.get_release_revisions(user.organization, context_name, namespase, release_name)
 
 
 @router.patch(
