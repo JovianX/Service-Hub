@@ -26,6 +26,7 @@ const ApplicationsModal = ({
   kubernetesConfiguration,
   setApplications,
   setAllApplications,
+  templateFromCatalog,
 }) => {
   const dispatch = useDispatch();
   const inputRef = useRef();
@@ -92,8 +93,10 @@ const ApplicationsModal = ({
       setInfoMessageError(data.payload.message);
     } else {
       setInfoMessageSuccess('Application was successfully created');
-      setApplications((applications) => [...applications, data.payload.application]);
-      setAllApplications((applications) => [...applications, data.payload.application]);
+      if (setApplications) {
+        setApplications((applications) => [...applications, data.payload.application]);
+        setAllApplications((applications) => [...applications, data.payload.application]);
+      }
       setTimeout(() => {
         setOpen(false);
         clearMessages();
@@ -123,7 +126,11 @@ const ApplicationsModal = ({
           <DialogTitle className='bg-primary text-center text-white'>Deploy Application</DialogTitle>
           <DialogContent className='pb-0  overflow-y-hidden'>
             <div className='mt-24'>Create a new applicaion</div>
-            <TemplateInputs setTemplateFormData={setTemplateFormData} clearMessages={clearMessages} />
+            <TemplateInputs
+              setTemplateFormData={setTemplateFormData}
+              clearMessages={clearMessages}
+              templateFromCatalog={templateFromCatalog}
+            />
             <Box sx={{ minWidth: 120 }}>
               <FormControl margin='normal' fullWidth required>
                 <InputLabel id='cluster'>Cluster</InputLabel>

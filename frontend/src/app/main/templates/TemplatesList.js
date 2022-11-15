@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import DialogModal from 'app/shared-components/DialogModal';
+import { getContextList } from 'app/store/clustersSlice';
 import {
   deleteTemplate,
   getTemplatesList,
@@ -49,6 +50,7 @@ const TemplatesList = () => {
 
   useEffect(() => {
     dispatch(getTemplatesList());
+    dispatch(getContextList());
   }, [dispatch]);
 
   useEffect(() => {
@@ -217,7 +219,7 @@ const TemplatesList = () => {
           </List>
 
           <div className='w-7/12'>
-            <div style={{ height: 'calc(100vh - 304px)' }}>
+            <div style={{ height: 'calc(100vh - 364px)' }}>
               <MonacoEditor
                 height='100%'
                 value={templateYamlText}

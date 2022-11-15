@@ -14,20 +14,25 @@ import TypeSwitch from './TypeSwitch';
 import TypeText from './TypeText';
 import TypeTextarea from './TypeTextarea';
 
-const TemplateInputs = ({ setTemplateFormData, clearMessages }) => {
+const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalog }) => {
   const [templates, setTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
   const [inputs, setInputs] = useState([]);
   const templatesData = useSelector(selectTemplates);
 
   useEffect(() => {
-    templatesData.forEach((item) => {
-      if (item.default) {
-        setTemplateId(item.id);
-      }
-    });
-    setTemplates(templatesData);
-  }, [templatesData]);
+    if (templateFromCatalog?.id) {
+      setTemplates((prevState) => [...prevState, templateFromCatalog]);
+      setTemplateId(templateFromCatalog.id);
+    } else {
+      templatesData.forEach((item) => {
+        if (item.default) {
+          setTemplateId(item.id);
+        }
+      });
+      setTemplates(templatesData);
+    }
+  }, [templatesData, templateFromCatalog]);
 
   useEffect(() => {
     const template = templates.find((item) => item.id === templateId);
