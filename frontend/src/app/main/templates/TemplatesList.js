@@ -1,10 +1,13 @@
-import { Button, List } from '@mui/material';
+import GridViewIcon from '@mui/icons-material/GridView';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import { Button, List, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import MonacoEditor from '@uiw/react-monacoeditor';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import DialogModal from 'app/shared-components/DialogModal';
+import { getContextList } from 'app/store/clustersSlice';
 import {
   deleteTemplate,
   getTemplatesList,
@@ -12,7 +15,9 @@ import {
   selectIsTemplatesLoading,
   selectTemplates,
 } from 'app/store/templatesSlice';
+import { selectUser } from 'app/store/userSlice';
 
+import CatalogList from './CatalogsList/CatalogList';
 import TemplatesListItem from './TemplatesListItem';
 import TemplatesModal from './TemplatesModal';
 
@@ -36,13 +41,16 @@ const TemplatesList = () => {
     template: {},
   });
   const [editTemplateId, setEditTemplateId] = useState('');
+  const [alignment, setAlignment] = useState('catalog');
 
   const templatesData = useSelector(selectTemplates);
   const isLoading = useSelector(selectIsTemplatesLoading);
   const infoMessage = useSelector(selectInfoMessage);
+  const user = useSelector(selectUser);
 
   useEffect(() => {
     dispatch(getTemplatesList());
+    dispatch(getContextList());
   }, [dispatch]);
 
   useEffect(() => {
@@ -158,6 +166,10 @@ const TemplatesList = () => {
     setOpenModal(true);
   };
 
+  const handleChangeAlignment = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+
   if (isLoading) {
     return (
       <div className='w-full flex flex-col min-h-full'>
@@ -166,68 +178,93 @@ const TemplatesList = () => {
     );
   }
   return (
-    <div className='flex justify-between p-24'>
-      <List className='w-5/12 pt-0 h-[70vh] overflow-y-scroll mr-12'>
-        <div className='flex justify-end'>
-          <Button className='mb-12 mr-12' color='primary' variant='contained' onClick={handleClickAdd}>
+    <div className='p-24'>
+      {user?.role === 'admin' && (
+        <div className='flex justify-between items-center mb-12'>
+          <ToggleButtonGroup
+            color='primary'
+            value={alignment}
+            exclusive
+            onChange={handleChangeAlignment}
+            aria-label='Platform'
+          >
+            <ToggleButton value='catalog'>
+              Catalog <GridViewIcon className='ml-6' />
+            </ToggleButton>
+            <ToggleButton value='templates'>
+              Templates <ViewListIcon className='ml-6' />
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <Button color='primary' variant='contained' onClick={handleClickAdd}>
             Add templete
           </Button>
         </div>
-        {transformedTemplates?.map((template, index) => (
-          <TemplatesListItem
-            key={template.name}
-            selectedIndex={selectedIndex}
-            mainIndex={index}
-            template={template.templates}
-            setTemplateId={setTemplateId}
-            setSelectedTemplateId={setSelectedTemplateId}
-            setTemplates={setTemplates}
-          />
-        ))}
-      </List>
+      )}
 
-      <div className='w-7/12'>
-        <div style={{ height: 'calc(100vh - 304px)' }}>
-          <MonacoEditor
-            height='100%'
-            value={templateYamlText}
-            language='yaml'
-            onChange={handleOnChangeTemplate.bind(this)}
-            options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
-          />
-        </div>
-        <div className='mt-36 flex justify-between items-center'>
-          <Button size='large' color='error' variant='outlined' onClick={handleDeleteTemplate}>
-            Delete
-          </Button>
-          <div>
-            <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
-            <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
+      {user?.role === 'admin' && alignment === 'templates' ? (
+        <div className='flex justify-between'>
+          <List className='w-5/12 pt-0 h-[70vh] overflow-y-scroll mr-12'>
+            {transformedTemplates?.map((template, index) => (
+              <TemplatesListItem
+                key={template.name}
+                selectedIndex={selectedIndex}
+                mainIndex={index}
+                template={template.templates}
+                setTemplateId={setTemplateId}
+                setSelectedTemplateId={setSelectedTemplateId}
+                setTemplates={setTemplates}
+                alignment={alignment}
+              />
+            ))}
+          </List>
+
+          <div className='w-7/12'>
+            <div style={{ height: 'calc(100vh - 364px)' }}>
+              <MonacoEditor
+                height='100%'
+                value={templateYamlText}
+                language='yaml'
+                onChange={handleOnChangeTemplate.bind(this)}
+                options={{ theme: 'vs-dark', readOnly: true, automaticLayout: true }}
+              />
+            </div>
+            <div className='mt-36 flex justify-between items-center'>
+              <Button size='large' color='error' variant='outlined' onClick={handleDeleteTemplate}>
+                Delete
+              </Button>
+              <div>
+                <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
+                <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
+              </div>
+              <Button size='large' color='primary' variant='outlined' onClick={handleClickEdit}>
+                Edit
+              </Button>
+            </div>
           </div>
-          <Button size='large' color='primary' variant='outlined' onClick={handleClickEdit}>
-            Edit
-          </Button>
-        </div>
-      </div>
 
+          <DialogModal
+            isOpen={isDeleteModalOpen}
+            onClose={handleDeleteCancel}
+            title='Delete template'
+            text='Are you sure you want to proceed?'
+            onCancel={handleDeleteCancel}
+            cancelText='Cancel'
+            onConfirm={handleDeleteConfirm}
+            confirmText='Delete'
+            fullWidth
+          />
+        </div>
+      ) : (
+        <div className='flex'>
+          <CatalogList transformedTemplates={transformedTemplates} />
+        </div>
+      )}
       <TemplatesModal
         setTemplates={setTemplates}
         openModal={openModal}
         setOpenModal={setOpenModal}
         modalInfo={modalInfo}
         setEditTemplateId={setEditTemplateId}
-      />
-
-      <DialogModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleDeleteCancel}
-        title='Delete template'
-        text='Are you sure you want to proceed?'
-        onCancel={handleDeleteCancel}
-        cancelText='Cancel'
-        onConfirm={handleDeleteConfirm}
-        confirmText='Delete'
-        fullWidth
       />
     </div>
   );
