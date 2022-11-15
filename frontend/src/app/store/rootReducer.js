@@ -7,6 +7,7 @@ import dashboard from './dashboardSlice';
 import fuse from './fuse';
 import i18n from './i18nSlice';
 import invitations from './invitationsSlice';
+import release from './releaseSlice';
 import releases from './releasesSlice';
 import repositories from './repositorySlice';
 import services from './servicesSlice';
@@ -24,6 +25,7 @@ const createReducer = (asyncReducers) => (state, action) => {
     templates,
     applications,
     dashboard,
+    release,
     releases,
     charts,
     services,

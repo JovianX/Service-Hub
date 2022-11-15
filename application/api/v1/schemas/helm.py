@@ -53,6 +53,16 @@ class ReleaseUpdateRequestSchema(BaseModel):
     dry_run: bool | None = Field(description='If `True` release updating will be simulated', default=False)
 
 
+class ReleaseRollbackRequestSchema(BaseModel):
+    """
+    Body of request for rollback release revision.
+    """
+    context_name: str = Field(description='Name of context where release is located.')
+    namespase: str = Field(description='Name of namespace where release is located.')
+    revision: int | None = Field(description='Revision number.')
+    dry_run: bool | None = Field(description='If `True` release updating will be simulated', default=False)
+
+
 class SetReleaseTTLRequestSchema(BaseModel):
     """
     Body of request for update release values.

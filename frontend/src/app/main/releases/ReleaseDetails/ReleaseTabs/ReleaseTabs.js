@@ -4,8 +4,11 @@ import Tabs from '@mui/material/Tabs';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { getHemlReleaseHistory, getTubValues } from '../../../../api';
+import { getHemlReleaseHistory } from 'app/store/releaseSlice';
+
+import { getTubValues } from '../../../../api';
 
 import HelmHistory from './HelmHistory';
 import HelmReleaseDetails from './HelmReleaseDetails';
@@ -42,9 +45,9 @@ function a11yProps(index) {
 const APIsList = ['user-supplied-values', 'computed-values', 'detailed-hooks', 'notes', 'detailed-manifest'];
 
 const ReleaseTabs = ({ release }) => {
+  const dispatch = useDispatch();
   const [value, setValue] = React.useState(0);
   const [tabValues, setTabValues] = useState({});
-  const [releaseHistory, setReleaseHistory] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -52,7 +55,15 @@ const ReleaseTabs = ({ release }) => {
 
   useEffect(() => {
     tabValuesRequest();
-    getHistoryData();
+    if (release?.name) {
+      dispatch(
+        getHemlReleaseHistory({
+          context_name: release.context_name,
+          namespace: release.namespace,
+          release_name: release.name,
+        }),
+      );
+    }
   }, [release]);
 
   function tabValuesRequest() {
@@ -63,14 +74,6 @@ const ReleaseTabs = ({ release }) => {
           tabValues[row.replace(/-/gi, '_')] = res.data;
           setTabValues((value) => ({ ...value, ...tabValues }));
         });
-      });
-    }
-  }
-
-  function getHistoryData() {
-    if (release?.name) {
-      getHemlReleaseHistory(release.context_name, release.namespace, release.name).then((res) => {
-        setReleaseHistory(res.data);
       });
     }
   }
@@ -87,7 +90,7 @@ const ReleaseTabs = ({ release }) => {
         <HelmReleaseDetails tabValues={tabValues} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <HelmHistory releaseHistory={releaseHistory} />
+        <HelmHistory release={release} />
       </TabPanel>
     </Box>
   );

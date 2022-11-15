@@ -24,6 +24,8 @@ import { checkTrimString, getColorForStatus, getPresent } from '../../../uitls';
 import ReleasesDeleteModal from '../ReleasesDeleteModal';
 import TtlModal from '../ttlModal';
 
+import RollbackRelease from './ReleaseTabs/RollbackRelease';
+
 const ReleaseTable = ({ release, ttl, health }) => {
   const [releaseData, setReleaseData] = useState({});
   const [ttlData, setTtlData] = useState('');
@@ -132,6 +134,13 @@ const ReleaseTable = ({ release, ttl, health }) => {
                 {user?.role === 'admin' ? (
                   <TableCell align='left'>
                     <ButtonGroup aria-label='primary button group'>
+                      <RollbackRelease
+                        revision={release.revision}
+                        contextName={release.context_name}
+                        namespace={release.namespace}
+                        name={release.name}
+
+                      />
                       <Button
                         variant='text'
                         color='error'
