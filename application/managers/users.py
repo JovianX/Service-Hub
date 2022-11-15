@@ -10,11 +10,14 @@ from fastapi_users import BaseUserManager
 from fastapi_users import UUIDIDMixin
 from fastapi_users import exceptions
 
+from constants.events import EventCategory
 from constants.roles import Roles
 from core.configuration import settings
 from crud.users import UserDatabase
 from crud.users import get_user_db
 from exceptions.organization import DifferentOrganizationException
+from managers.events import EventManager
+from managers.events import get_event_manager
 from managers.helm.manager import HelmManager
 from managers.invitations import InvitationManager
 from managers.invitations import get_invitation_manager
@@ -25,6 +28,7 @@ from managers.templates import get_template_manager
 from models.invitation import UserInvitation
 from models.organization import Organization
 from models.user import User
+from schemas.events import EventSchema
 from schemas.users import UserCreate
 from utils.email import send_email
 
@@ -37,14 +41,13 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     verification_token_secret = settings.SECRET
     invitation_record: UserInvitation | None = None
 
-    def __init__(
-        self, user_db: UserDatabase, organizations: OrganizationManager, invitation_manager: InvitationManager,
-        template_manager: TemplateManager
-    ):
+    def __init__(self, user_db: UserDatabase, organizations: OrganizationManager, invitation_manager: InvitationManager,
+                 template_manager: TemplateManager, event_manager: EventManager):
         self.organizations = organizations
         self.invitation_manager = invitation_manager
         self.helm_manager = HelmManager(organizations)
         self.template_manager = template_manager
+        self.event_manager = event_manager
         super().__init__(user_db)
 
     async def create(self, user_create: UserCreate, safe: bool = False, request: Request | None = None) -> User:
@@ -170,6 +173,14 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
         if organization is None:
             organization = await self.organizations.create()
+            event = EventSchema(
+                organization_id=organization.id,
+                title='Organization created',
+                message=f'Welcome to Service Hub. Have a lot of fun here!',
+                category=EventCategory.organization,
+                data={'creator_email': user['email']}
+            )
+            await self.event_manager.create(event)
 
         user['organization_id'] = organization.id
 
@@ -238,6 +249,7 @@ async def get_user_manager(
     user_db=Depends(get_user_db),
     organization_manager=Depends(get_organization_manager),
     invitation_manager=Depends(get_invitation_manager),
-    template_manager=Depends(get_template_manager)
+    template_manager=Depends(get_template_manager),
+    event_manager=Depends(get_event_manager),
 ):
-    yield UserManager(user_db, organization_manager, invitation_manager, template_manager)
+    yield UserManager(user_db, organization_manager, invitation_manager, template_manager, event_manager)

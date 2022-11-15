@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from .endpoints import applications
 from .endpoints import authorization
 from .endpoints import dashboard
+from .endpoints import events
 from .endpoints import helm
 from .endpoints import invitations
 from .endpoints import kubernetes
@@ -16,15 +17,17 @@ from .endpoints import users
 router = APIRouter()
 
 
-router.include_router(applications.router, prefix='/application', tags=['application'])
+router.include_router(applications.router, prefix='/application', tags=['applications'])
 
 router.include_router(authorization.router, prefix='/auth', tags=['auth'])
 
 router.include_router(dashboard.router, prefix='/dashboard', tags=['dashboard'])
 
+router.include_router(events.router, prefix='/event', tags=['events'])
+
 router.include_router(helm.router, prefix='/helm', tags=['helm'])
 
-router.include_router(invitations.router, prefix='/invitation', tags=['invitation'])
+router.include_router(invitations.router, prefix='/invitation', tags=['invitations'])
 
 router.include_router(kubernetes.router, prefix='/kubernetes', tags=['kubernetes'])
 
