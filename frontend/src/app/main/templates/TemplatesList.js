@@ -1,3 +1,5 @@
+import GridViewIcon from '@mui/icons-material/GridView';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import { Button, List, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import MonacoEditor from '@uiw/react-monacoeditor';
 import { useEffect, useState } from 'react';
@@ -184,8 +186,12 @@ const TemplatesList = () => {
             onChange={handleChangeAlignment}
             aria-label='Platform'
           >
-            <ToggleButton value='catalog'>Catalog</ToggleButton>
-            <ToggleButton value='templates'>Templates</ToggleButton>
+            <ToggleButton value='catalog'>
+              Catalog <GridViewIcon className='ml-6' />
+            </ToggleButton>
+            <ToggleButton value='templates'>
+              Templates <ViewListIcon className='ml-6' />
+            </ToggleButton>
           </ToggleButtonGroup>
           <Button color='primary' variant='contained' onClick={handleClickAdd}>
             Add templete

@@ -25,18 +25,21 @@ const CatalogList = ({ transformedTemplates }) => {
   return (
     <>
       {enabledTemplates?.map((card) => (
-        <Card key={card.id} className='w-[345px] mr-12'>
-          <CardContent className='p-12'>
-            <Typography gutterBottom variant='h5' component='div'>
+        <Card key={card.id} className='w-[250px] h-[250px] mr-20' sx={{ boxShadow: 3 }}>
+          <CardContent className='p-12 pt-16 h-3/4'>
+            <Typography gutterBottom variant='h6' component='div'>
               {card.name}
             </Typography>
+            <Typography gutterBottom variant='body2'>
+              Reversion {card.revision}
+            </Typography>
             <Typography variant='body2' color='text.secondary'>
-              Last reversion number: {card.revision}
+              {card.description}
             </Typography>
           </CardContent>
           <Divider />
           <CardActions className='justify-end p-12'>
-            <Button size='small' variant='contained' color='primary' onClick={() => {}}>
+            <Button className='mt-[3.5px]' size='small' variant='contained' color='primary'>
               Deploy
             </Button>
           </CardActions>
