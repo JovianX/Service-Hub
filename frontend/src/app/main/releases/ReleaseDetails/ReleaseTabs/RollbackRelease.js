@@ -1,4 +1,6 @@
-import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import ReplyIcon from '@mui/icons-material/Reply';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -47,7 +49,9 @@ const RollbackRelease = ({ revision, contextName, namespace, name }) => {
   return (
     <>
       <LoadingButton variant='text' color='primary' loading={loading} onClick={handleRollbackRelease}>
-        <KeyboardReturnIcon />
+        <FuseSvgIcon>
+          heroicons-outline:reply
+        </FuseSvgIcon>
       </LoadingButton>
 
       <SnackbarMessage
