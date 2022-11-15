@@ -21,3 +21,4 @@ class Organization(Base):
     templates = relationship('TemplateRevision', back_populates='organization', lazy='selectin')
     applications = relationship('Application', back_populates='organization', lazy='selectin')
     invitations = relationship('UserInvitation', back_populates='organization', lazy='selectin')
+    events = relationship('Event', back_populates='organization', lazy='selectin')
