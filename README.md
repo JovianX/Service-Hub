@@ -91,7 +91,7 @@ https://www.youtube.com/watch?v=gkUHn_gnS1c
 
 For product documentation refer to the [Documentation Folder](documentation/README.md).
 
-## Contributors
+# Contributors
 <a href = "https://github.com/JovianX/Service-Hub/graphs/contributors">
   <img src = "https://contrib.rocks/image?repo=JovianX/Service-Hub"/>
 </a>
