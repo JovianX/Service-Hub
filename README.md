@@ -7,6 +7,7 @@
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
 ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
+![GitHub contributors](https://img.shields.io/github/contributors/JovianX/Service-Hub)
 ![Discord](https://img.shields.io/discord/1014893148599754894)
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 </div>
