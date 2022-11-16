@@ -3,7 +3,7 @@
 ![image](https://user-images.githubusercontent.com/2787296/198906916-9904da29-3005-49e6-a109-b4238dc9ace1.png)
 
 # JovianX Service Hub
-<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Thank you dear stargazers! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub/pulls">PRs are welcome 👍 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Join Discord 💬 </a></td></tr></tbody></table>
+<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Thank you dear stargazers! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub/pulls">PRs/Issues are welcome 👍 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Join Discord 💬 </a></td></tr></tbody></table>
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
 ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
