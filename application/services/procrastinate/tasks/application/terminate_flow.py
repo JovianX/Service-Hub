@@ -2,10 +2,12 @@ import asyncio
 import logging
 
 from constants.applications import ApplicationStatuses
+from constants.events import EventCategory
 from db.session import session_maker
 from exceptions.application import ApplicationComponentUninstallException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
+from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
 from services.procrastinate.application import procrastinate
 from utils.template import load_template
@@ -87,4 +89,11 @@ async def execute_post_terminate_hooks(application_id: int):
             await application_manager.set_state_status(application, ApplicationStatuses.error)
             return
 
+        await application_manager.event_manager.create(EventSchema(
+            title='Application application terminated.',
+            message=f'Application was successfully terminated.',
+            organization_id=application.organization.id,
+            category=EventCategory.application,
+            data={'application_id': application.id}
+        ))
         await application_manager.delete_application(application.id)

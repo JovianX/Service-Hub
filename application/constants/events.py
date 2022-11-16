@@ -20,5 +20,5 @@ class EventSeverityLevel(StrEnum):
     """
     debug = 'debug'
     info = 'info'
+    warning = 'warning'
     error = 'error'
-    critical = 'critical'

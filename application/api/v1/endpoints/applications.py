@@ -150,4 +150,6 @@ async def get_application_health_status(
     Returns application health condition.
     """
     application = await application_manager.get_organization_application(application_id, user.organization)
-    return await application_manager.get_application_health_status(application)
+    condition = await application_manager.get_application_health_condition(application)
+
+    return condition['status']
