@@ -1,4 +1,5 @@
 ```shell
+
        JovianX
          _____                         _                   _    _           _
         / ____|                       (_)                 | |  | |         | |
@@ -66,15 +67,14 @@ inputs:                                         # Optional. User input list.
     description: 'Enter app username'           # Optional. Valuable for user description of this input.
 ```
 
-**Managing Reversions**
+**Managing Reversions**  
 Every change, edit, or update of a template creates a new template reversion. You can upgrade or roll back an application to match a reversion.
 
-**Default Template**
+**Default Template**  
 When deploying an application, the default template is automatically selected,
 
-**Setting a Default Template**
-To set the default template, hover over a non-default template, and click on the "Default" button that appears.
- 
+**Setting a Default Template**  
+To set the default template, hover over a non-default template, and click on the "Default" button that appears.  
 
 ![image](https://user-images.githubusercontent.com/2787296/200361559-a3b0f2e7-70da-4135-86cb-1c0150353f74.png)
 
@@ -100,6 +100,7 @@ curl -X 'GET'   'https://api.hub.jovianx.app/api/v1/template/schema?format=yaml'
 ```
 
 ### Complete Template Example
+
 ```yaml
 name: my-new-service                            # Required. Name of service.
 
@@ -351,3 +352,563 @@ inputs:                                         # Optional. User input list.
 The comprehensive example would produce the following inputs:
 
 ![](https://user-images.githubusercontent.com/2787296/200312035-a296071a-d841-47dd-9e7d-8abbacef73b7.png)
+
+## Complete Template Reference
+
+```yaml
+additionalProperties: false
+definitions:
+  CheckboxInput:
+    additionalProperties: false
+    description: Input with checkbox widget.
+    properties:
+      default:
+        description: Default value of input if it was not provided by user.
+        example: true
+        title: Default
+        type: boolean
+      description:
+        description: Input help text for user.
+        title: Description
+        type: string
+      immutable:
+        default: false
+        description: If `True`, value cannot be changed.
+        title: Immutable
+        type: boolean
+      label:
+        description: User friendly name of input.
+        example: User Name
+        minLength: 1
+        title: Label
+        type: string
+      name:
+        description: Name of value that will be used in template.
+        example: username
+        minLength: 1
+        title: Name
+        type: string
+      type:
+        description: Type of form input.
+        enum:
+        - !!python/object/apply:constants.templates.InputTypes
+          - checkbox
+        example: !!python/object/apply:constants.templates.InputTypes
+        - checkbox
+        title: Type
+        type: string
+    required:
+    - name
+    - type
+    title: CheckboxInput
+    type: object
+  Component:
+    additionalProperties: false
+    description: Application component schema.
+    properties:
+      chart:
+        description: Helm chart name.
+        example: roboll/vault-secret-manager
+        minLength: 1
+        title: Chart
+        type: string
+      name:
+        description: Helm release name
+        example: vault
+        minLength: 1
+        title: Name
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/ComponentTypes'
+        description: Type of applicatoin component.
+        example: !!python/object/apply:constants.templates.ComponentTypes
+        - helm_chart
+      values:
+        description: Helm values that will be provided during chart install/upgrade.
+          The later element in the list has a higher priority.
+        items:
+          type: object
+        title: Values
+        type: array
+      version:
+        description: Helm chart version.
+        example: 1.24.1
+        minLength: 1
+        title: Version
+        type: string
+    required:
+    - name
+    - type
+    - chart
+    title: Component
+    type: object
+  ComponentTypes:
+    description: \"\
+    Template application components types.\
+    \"
+    enum:
+    - helm_chart
+    title: ComponentTypes
+    type: string
+  InputOption:
+    description: Input option schema.
+    properties:
+      description:
+        description: Option help text for user.
+        title: Description
+        type: string
+      label:
+        description: User friendly name of option.
+        example: Option 1
+        minLength: 1
+        title: Label
+        type: string
+      name:
+        description: Option name.
+        example: option_a
+        minLength: 1
+        title: Name
+        type: string
+      value:
+        description: Value of option that will put into template dynamic variable.
+        example: option_a_value
+        title: Value
+    required:
+    - name
+    title: InputOption
+    type: object
+  NumberInputs:
+    additionalProperties: false
+    description: Inputs where user can set only integer or float in text field.
+    properties:
+      default:
+        anyOf:
+        - type: integer
+        - type: number
+        description: Default value of input if it was not provided by user.
+        example: 5
+        title: Default
+      description:
+        description: Input help text for user.
+        title: Description
+        type: string
+      immutable:
+        default: false
+        description: If `True`, value cannot be changed.
+        title: Immutable
+        type: boolean
+      label:
+        description: User friendly name of input.
+        example: User Name
+        minLength: 1
+        title: Label
+        type: string
+      max:
+        anyOf:
+        - type: integer
+        - type: number
+        description: Maximal possible input value.
+        example: 10
+        title: Max
+      min:
+        anyOf:
+        - type: integer
+        - type: number
+        description: Minimal possible input value.
+        example: 1
+        title: Min
+      name:
+        description: Name of value that will be used in template.
+        example: username
+        minLength: 1
+        title: Name
+        type: string
+      type:
+        description: Type of form input.
+        enum:
+        - !!python/object/apply:constants.templates.InputTypes
+          - number
+        example: !!python/object/apply:constants.templates.InputTypes
+        - number
+        title: Type
+        type: string
+    required:
+    - name
+    - type
+    title: NumberInputs
+    type: object
+  RadioSelectInput:
+    additionalProperties: false
+    description: 'Inputs where user can choose one option by clicking on radio button
+      of radio
+
+      select widget.'
+    properties:
+      default:
+        description: Default value of input if it was not provided by user.
+        example: option_value_1
+        title: Default
+        type: string
+      description:
+        description: Input help text for user.
+        title: Description
+        type: string
+      immutable:
+        default: false
+        description: If `True`, value cannot be changed.
+        title: Immutable
+        type: boolean
+      label:
+        description: User friendly name of input.
+        example: User Name
+        minLength: 1
+        title: Label
+        type: string
+      name:
+        description: Name of value that will be used in template.
+        example: username
+        minLength: 1
+        title: Name
+        type: string
+      options:
+        description: Set of input options.
+        items:
+          $ref: '#/definitions/InputOption'
+        minItems: 2
+        title: Options
+        type: array
+      type:
+        description: Type of form input.
+        enum:
+        - !!python/object/apply:constants.templates.InputTypes
+          - radio_select
+        example: !!python/object/apply:constants.templates.InputTypes
+        - radio_select
+        title: Type
+        type: string
+    required:
+    - name
+    - type
+    - options
+    title: RadioSelectInput
+    type: object
+  SelectInput:
+    additionalProperties: false
+    description: Inputs where user can choose one option from dropdown list widget.
+    properties:
+      default:
+        description: Default value of input if it was not provided by user.
+        example: option_value_1
+        title: Default
+        type: string
+      description:
+        description: Input help text for user.
+        title: Description
+        type: string
+      immutable:
+        default: false
+        description: If `True`, value cannot be changed.
+        title: Immutable
+        type: boolean
+      label:
+        description: User friendly name of input.
+        example: User Name
+        minLength: 1
+        title: Label
+        type: string
+      name:
+        description: Name of value that will be used in template.
+        example: username
+        minLength: 1
+        title: Name
+        type: string
+      options:
+        description: Set of input options.
+        items:
+          $ref: '#/definitions/InputOption'
+        minItems: 2
+        title: Options
+        type: array
+      type:
+        description: Type of form input.
+        enum:
+        - !!python/object/apply:constants.templates.InputTypes
+          - select
+        example: !!python/object/apply:constants.templates.InputTypes
+        - select
+        title: Type
+        type: string
+    required:
+    - name
+    - type
+    - options
+    title: SelectInput
+    type: object
+  SliderInput:
+    additionalProperties: false
+    description: Inputs where user can set number by moving slider pointer.
+    properties:
+      default:
+        anyOf:
+        - type: integer
+        - type: number
+        description: Default value of input if it was not provided by user.
+        example: 5
+        title: Default
+      description:
+        description: Input help text for user.
+        title: Description
+        type: string
+      immutable:
+        default: false
+        description: If `True`, value cannot be changed.
+        title: Immutable
+        type: boolean
+      label:
+        description: User friendly name of input.
+        example: User Name
+        minLength: 1
+        title: Label
+        type: string
+      max:
+        anyOf:
+        - type: integer
+        - type: number
+        description: Maximal possible input value.
+        example: 10
+        title: Max
+      min:
+        anyOf:
+        - type: integer
+        - type: number
+        description: Minimal possible input value.
+        example: 1
+        title: Min
+      name:
+        description: Name of value that will be used in template.
+        example: username
+        minLength: 1
+        title: Name
+        type: string
+      step:
+        anyOf:
+        - type: integer
+        - type: number
+        description: Step of slider pointer.
+        example: 0.5
+        title: Step
+      type:
+        description: Type of form input.
+        enum:
+        - !!python/object/apply:constants.templates.InputTypes
+          - slider
+        example: !!python/object/apply:constants.templates.InputTypes
+        - slider
+        title: Type
+        type: string
+    required:
+    - name
+    - type
+    - min
+    - max
+    - step
+    title: SliderInput
+    type: object
+  SwitchInput:
+    additionalProperties: false
+    description: Input with toggle widget.
+    properties:
+      default:
+        description: Default value of input if it was not provided by user.
+        example: true
+        title: Default
+        type: boolean
+      description:
+        description: Input help text for user.
+        title: Description
+        type: string
+      immutable:
+        default: false
+        description: If `True`, value cannot be changed.
+        title: Immutable
+        type: boolean
+      label:
+        description: User friendly name of input.
+        example: User Name
+        minLength: 1
+        title: Label
+        type: string
+      name:
+        description: Name of value that will be used in template.
+        example: username
+        minLength: 1
+        title: Name
+        type: string
+      type:
+        description: Type of form input.
+        enum:
+        - !!python/object/apply:constants.templates.InputTypes
+          - switch
+        example: !!python/object/apply:constants.templates.InputTypes
+        - switch
+        title: Type
+        type: string
+    required:
+    - name
+    - type
+    title: SwitchInput
+    type: object
+  TextInput:
+    additionalProperties: false
+    description: User inputs where user can choose one or more option from predefined
+      set.
+    properties:
+      default:
+        description: Default value of input if it was not provided by user.
+        example: some default text
+        title: Default
+        type: string
+      description:
+        description: Input help text for user.
+        title: Description
+        type: string
+      immutable:
+        default: false
+        description: If `True`, value cannot be changed.
+        title: Immutable
+        type: boolean
+      label:
+        description: User friendly name of input.
+        example: User Name
+        minLength: 1
+        title: Label
+        type: string
+      name:
+        description: Name of value that will be used in template.
+        example: username
+        minLength: 1
+        title: Name
+        type: string
+      type:
+        description: Type of form input.
+        enum:
+        - !!python/object/apply:constants.templates.InputTypes
+          - text
+        example: !!python/object/apply:constants.templates.InputTypes
+        - text
+        title: Type
+        type: string
+    required:
+    - name
+    - type
+    title: TextInput
+    type: object
+  TextareaInput:
+    additionalProperties: false
+    description: User inputs where user can choose one or more option from predefined
+      set.
+    properties:
+      default:
+        description: Default value of input if it was not provided by user.
+        example: some default text
+        title: Default
+        type: string
+      description:
+        description: Input help text for user.
+        title: Description
+        type: string
+      immutable:
+        default: false
+        description: If `True`, value cannot be changed.
+        title: Immutable
+        type: boolean
+      label:
+        description: User friendly name of input.
+        example: User Name
+        minLength: 1
+        title: Label
+        type: string
+      name:
+        description: Name of value that will be used in template.
+        example: username
+        minLength: 1
+        title: Name
+        type: string
+      type:
+        description: Type of form input.
+        enum:
+        - !!python/object/apply:constants.templates.InputTypes
+          - textarea
+        example: !!python/object/apply:constants.templates.InputTypes
+        - textarea
+        title: Type
+        type: string
+    required:
+    - name
+    - type
+    title: TextareaInput
+    type: object
+description: Template schema.
+properties:
+  components:
+    description: Application components.
+    items:
+      $ref: '#/definitions/Component'
+    minItems: 1
+    title: Components
+    type: array
+  inputs:
+    default: []
+    description: Input that should be provided by user.
+    items:
+      discriminator:
+        mapping:
+          ? !!python/object/apply:constants.templates.InputTypes
+          - checkbox
+          : '#/definitions/CheckboxInput'
+          ? !!python/object/apply:constants.templates.InputTypes
+          - number
+          : '#/definitions/NumberInputs'
+          ? !!python/object/apply:constants.templates.InputTypes
+          - radio_select
+          : '#/definitions/RadioSelectInput'
+          ? !!python/object/apply:constants.templates.InputTypes
+          - select
+          : '#/definitions/SelectInput'
+          ? !!python/object/apply:constants.templates.InputTypes
+          - slider
+          : '#/definitions/SliderInput'
+          ? !!python/object/apply:constants.templates.InputTypes
+          - switch
+          : '#/definitions/SwitchInput'
+          ? !!python/object/apply:constants.templates.InputTypes
+          - text
+          : '#/definitions/TextInput'
+          ? !!python/object/apply:constants.templates.InputTypes
+          - textarea
+          : '#/definitions/TextareaInput'
+        propertyName: type
+      oneOf:
+      - $ref: '#/definitions/CheckboxInput'
+      - $ref: '#/definitions/NumberInputs'
+      - $ref: '#/definitions/RadioSelectInput'
+      - $ref: '#/definitions/SelectInput'
+      - $ref: '#/definitions/SliderInput'
+      - $ref: '#/definitions/SwitchInput'
+      - $ref: '#/definitions/TextareaInput'
+      - $ref: '#/definitions/TextInput'
+    title: Inputs
+    type: array
+  name:
+    description: Name of application which describes this template
+    example: My Application
+    minLength: 1
+    title: Name
+    type: string
+required:
+- name
+- components
+title: TemplateSchema
+type: object
+```
