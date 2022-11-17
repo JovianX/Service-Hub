@@ -33,6 +33,7 @@ from exceptions.templates import InvalidUserInputsException
 from managers.events import EventManager
 from managers.events import get_event_manager
 from managers.helm.manager import HelmManager
+from managers.helm.manager import get_helm_manager
 from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
@@ -61,11 +62,11 @@ class ApplicationManager:
     helm_manager: HelmManager
     event_manager: EventManager
 
-    def __init__(self, db: ApplicationDatabase, organization_manager: OrganizationManager,
-                 event_manager: EventManager) -> None:
+    def __init__(self, db: ApplicationDatabase, organization_manager: OrganizationManager, event_manager: EventManager,
+                 helm_manager: HelmManager) -> None:
         self.db = db
         self.organization_manager = organization_manager
-        self.helm_manager = HelmManager(organization_manager)
+        self.helm_manager = helm_manager
         self.event_manager = event_manager
 
     async def install(self, context_name: str, namespace: str, user: User, template: TemplateRevision, inputs: dict,
@@ -114,7 +115,7 @@ class ApplicationManager:
                 message='Created deferred task to deploy application.',
                 category=EventCategory.application,
                 organization_id=user.organization.id,
-                data={'application_id': application.id}
+                data={'application_id': application_record.id}
             ))
 
             return application_record
@@ -134,7 +135,10 @@ class ApplicationManager:
                 message='Created deferred task to upgrade application with new template.',
                 category=EventCategory.application,
                 organization_id=application.organization.id,
-                data={'application_id': application.id}
+                data={
+                    'application_id': application.id,
+                    'template_id': template.id
+                }
             ))
 
     async def upgrade_components(self, application: Application, new_template: TemplateRevision,
@@ -571,6 +575,7 @@ class ApplicationManager:
 async def get_application_manager(
     db=Depends(get_application_db),
     organization_manager=Depends(get_organization_manager),
-    event_manager=Depends(get_event_manager)
+    event_manager=Depends(get_event_manager),
+    helm_manager=Depends(get_helm_manager)
 ):
-    yield ApplicationManager(db, organization_manager, event_manager)
+    yield ApplicationManager(db, organization_manager, event_manager, helm_manager)

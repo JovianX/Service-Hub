@@ -11,7 +11,7 @@ class EventCategory(StrEnum):
     application = 'application'
     hook = 'hook'
     organization = 'organization'
-    release = 'release'
+    helm = 'helm'
 
 
 class EventSeverityLevel(StrEnum):
