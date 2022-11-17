@@ -25,7 +25,7 @@ class TemplateSchema(BaseModel):
         example='My Application'
     )
     components: conlist(Component, min_items=1) = Field(description='Application components.')
-    hooks: Hooks | None = Field(description='Application actions.')
+    hooks: Hooks | None = Field(description='Application actions.', default_factory=Hooks)
     inputs: list[Input] | None = Field(description='Input that should be provided by user.', default_factory=list)
 
     class Config:
