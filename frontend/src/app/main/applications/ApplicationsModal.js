@@ -12,7 +12,7 @@ import {
   Select,
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { applicationInstall } from 'app/store/applicationsSlice';
@@ -29,7 +29,6 @@ const ApplicationsModal = ({
   templateFromCatalog,
 }) => {
   const dispatch = useDispatch();
-  const inputRef = useRef();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
@@ -54,31 +53,10 @@ const ApplicationsModal = ({
     setInfoMessageSuccess('');
   };
 
-  const handleClickSaveButton = (e) => {
+  const handleSubmitInstall = async (e) => {
     e.preventDefault();
     clearMessages();
     setLoading(true);
-    if (e.target.form) {
-      const { context_name, template_id, number, slider, text, textarea } = e.target.form;
-      if (
-        !context_name.value ||
-        !template_id.value ||
-        !number.value ||
-        !slider.value ||
-        !text.value ||
-        !textarea.value
-      ) {
-        setLoading(false);
-      }
-    } else {
-      setLoading(false);
-    }
-
-    inputRef.current.click();
-  };
-
-  const handleSubmitInstall = async (e) => {
-    e.preventDefault();
     const { context_name, template_id } = e.target;
     const application = {
       template_id: template_id.value,
@@ -87,15 +65,15 @@ const ApplicationsModal = ({
       namespace,
       dry_run: false,
     };
-    const data = await dispatch(applicationInstall(application));
+    const { payload } = await dispatch(applicationInstall(application));
 
-    if (data.payload.status === 'error') {
-      setInfoMessageError(data.payload.message);
+    if (payload.status === 'error') {
+      setInfoMessageError(payload.message);
     } else {
       setInfoMessageSuccess('Application was successfully created');
       if (setApplications) {
-        setApplications((applications) => [...applications, data.payload.application]);
-        setAllApplications((applications) => [...applications, data.payload.application]);
+        setApplications((applications) => [...applications, payload.application]);
+        setAllApplications((applications) => [...applications, payload.application]);
       }
       setTimeout(() => {
         setOpen(false);
@@ -164,8 +142,8 @@ const ApplicationsModal = ({
                 Cancel
               </Button>
               <LoadingButton
+                type='submit'
                 color='primary'
-                onClick={handleClickSaveButton}
                 loading={loading}
                 loadingPosition='start'
                 startIcon={<AddIcon />}
@@ -173,7 +151,6 @@ const ApplicationsModal = ({
               >
                 Deploy
               </LoadingButton>
-              <input ref={inputRef} type='submit' className='hidden' />
             </div>
           </DialogActions>
         </form>
