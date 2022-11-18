@@ -19,7 +19,7 @@ import { selectUser } from 'app/store/userSlice';
 
 import CatalogList from './CatalogsList/CatalogList';
 import TemplatesListItem from './TemplatesListItem';
-import TemplatesModal from './TemplatesModal';
+import TemplatesModal from './TemplateModal/TemplatesModal';
 
 const TemplatesList = () => {
   const dispatch = useDispatch();

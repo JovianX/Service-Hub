@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 
 import { createTemplate } from 'app/store/templatesSlice';
 
+import TemplatesModalTabs from './TemplatesModalTabs';
+
 const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setEditTemplateId }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -38,15 +40,15 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
     }
   }, [configYamlText]);
 
-  const getValue = (newValue) => {
-    setConfigYamlText(newValue);
-  };
-
   const onChangeInputDescription = (e) => {
     setInputDescription(e.target.value);
     if (infoMessageError) {
       setInfoMessageError('');
     }
+  };
+
+  const handleGetValue = (newValue) => {
+    setConfigYamlText(newValue);
   };
 
   const handleSubmitTemplate = async (e) => {
@@ -116,18 +118,16 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
               margin='normal'
               fullWidth
             />
-            <div className='mt-24'>
-              <p className='mb-8 ml-14 text-[#6B7280]'>Template</p>
-              <MonacoEditor
-                value={template?.template}
-                height='350px'
-                width='100%'
-                name='values'
-                language='yaml'
-                theme='vs-dark'
-                onChange={getValue.bind(this)}
-              />
-            </div>
+            <TemplatesModalTabs template={template} setConfigYamlText={setConfigYamlText} />
+            <MonacoEditor
+              value={template?.template}
+              height='350px'
+              width='100%'
+              name='values'
+              language='yaml'
+              theme='vs-dark'
+              onChange={handleGetValue.bind(this)}
+            />
           </DialogContent>
           <DialogActions className='p-24 justify-between'>
             <div className='mr-10'>
