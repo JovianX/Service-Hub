@@ -36,7 +36,28 @@ const ClusterModal = ({ openModal }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
-  const [configYamlText, setConfigYamlText] = useState('');
+  const [configYamlText, setConfigYamlText] = useState(
+    '---\n' +
+      'kind: Config\n' +
+      'apiVersion: v1\n' +
+      'current-context: example-context\n' +
+      'clusters:\n' +
+      '- cluster:\n' +
+      '    certificate-authority-data: dG9rZW4=\n' +
+      '    server: https://42.42.42.42\n' +
+      '  name: example-cluster\n' +
+      'contexts:\n' +
+      '- context:\n' +
+      '    cluster: example-cluster\n' +
+      '    namespace: example-namespace\n' +
+      '    user: example-user\n' +
+      '  name: example-context\n' +
+      'users:\n' +
+      '- user:\n' +
+      '    token: example-user-token\n' +
+      '  name: example-user\n' +
+      'preferences: {}',
+  );
 
   useEffect(() => {
     if (openModal.openModal) {
@@ -120,13 +141,14 @@ const ClusterModal = ({ openModal }) => {
               </div>
               <div className='border-b-2 p-24 relative'>
                 <Typography component='h3' className='mb-8'>
-                  Run command in your terminal to add a Kubernetes cluster via kubectl command
+                  Copy the command below to add a Kubernetes cluster via configured kubectl:
                 </Typography>
                 <div className='flex items-center bg-black'>
                   <TextField
                     inputRef={copyInputRef}
                     InputProps={{
                       startAdornment: <InputAdornment position='start'>$</InputAdornment>,
+                      spellCheck: 'false',
                     }}
                     fullWidth
                     onFocus={(event) => {
@@ -136,7 +158,6 @@ const ClusterModal = ({ openModal }) => {
                       event.target.value = kubeconfigUrl;
                     }}
                     defaultValue={kubeconfigUrl}
-                    inputProps={{ spellCheck: 'false' }}
                     sx={{
                       '& .MuiInputBase-root': {
                         color: 'primary.light',
@@ -153,6 +174,9 @@ const ClusterModal = ({ openModal }) => {
                     message='Copied to clipboard'
                   />
                 </div>
+                <Typography component='h3' className='my-8'>
+                  Paste and run command in a terminal where Kubectl is configured.
+                </Typography>
                 <Stack direction='row' spacing={1} className='absolute bg-white right-[44%] bottom-[-18px]'>
                   <Chip label='OR' className='text-2xl text-gray px-20 border-b-40 ' />
                 </Stack>
@@ -167,6 +191,7 @@ const ClusterModal = ({ openModal }) => {
                   Paste a kubeconfig file to add a Kubernetes cluster
                 </Typography>
                 <MonacoEditor
+                  value={configYamlText}
                   height='400px'
                   name='values'
                   language='yaml'
