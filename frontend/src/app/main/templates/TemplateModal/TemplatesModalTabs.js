@@ -4,11 +4,15 @@ import Button from '@mui/material/Button';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import PropTypes from 'prop-types';
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import { getChartList } from 'app/store/chartsSlice';
 
+import TypeSelector from './ComponentSelectors/TypeSelector';
+import VersionSelector from './ComponentSelectors/VersionSelector';
+import ChartSelector from './ComponentSelectors/ChartSelector';
 import TemplateBuilder from './TemplateBuilder';
 
 function TabPanel(props) {
@@ -40,15 +44,19 @@ function a11yProps(index) {
   };
 }
 
-const TemplatesModalTabs = () => {
+const TemplatesModalTabs = ({ setConfigYamlText }) => {
+  const dispatch = useDispatch();
   const [components, setComponents] = useState([]);
   const [open, setOpen] = useState(false);
-
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    dispatch(getChartList());
+  }, [dispatch]);
 
   return (
     <Box>
@@ -61,24 +69,55 @@ const TemplatesModalTabs = () => {
       <TabPanel value={value} index={0} />
       <TabPanel value={value} index={1}>
         <div className='py-12'>
+          <Box className='my-6'>
+            {components?.map((component, index) => {
+              return (
+                <div key={index} className='grid grid-cols-2 gap-10 mb-24'>
+                  {component.map((item, i) => (
+                    <React.Fragment key={item?.value || i}>
+                      {item ? (
+                        <div key={item.value} className='w-full'>
+                          {item.field_name === 'name' && (
+                            <TextField
+                              size='small'
+                              type='text'
+                              fullWidth
+                              defaultValue={value}
+                              required={item.required}
+                              className='mr-10'
+                              label={item.label}
+                            />
+                          )}
+                          {item.field_name === 'type' && <TypeSelector typeValue={item.value} />}
+                          {item.field_name === 'chart' && <ChartSelector chartValue={item.value} />}
+                          {item && item.field_name === 'version' && <VersionSelector versionValue={item.value} />}
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+              );
+            })}
+          </Box>
+
           <Button
             className='group inline-flex items-center mt-2 -ml-4 py-2 px-4 rounded cursor-pointer'
             onClick={() => setOpen(true)}
           >
             <FuseSvgIcon size={20}>heroicons-solid:plus-circle</FuseSvgIcon>
-            <span className='ml-8 font-medium text-secondary group-hover:underline'>Add a component</span>
+            <span className='ml-8 font-medium text-secondary group-hover:underline'>
+              {components.length > 0 ? 'Add another component' : 'Add a Component'}
+            </span>
           </Button>
 
-          {components?.map((component) => (
-            <div className='flex w-full' key={component.components.name}>
-              <TextField type='text' fullWidth defaultValue={component.components.name} />
-              <Button variant='text' color='error'>
-                <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-              </Button>
-            </div>
-          ))}
-
-          <TemplateBuilder open={open} setOpen={setOpen} setComponents={setComponents} />
+          <TemplateBuilder
+            open={open}
+            setOpen={setOpen}
+            setComponents={setComponents}
+            setConfigYamlText={setConfigYamlText}
+          />
         </div>
       </TabPanel>
     </Box>

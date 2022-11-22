@@ -118,16 +118,29 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
               margin='normal'
               fullWidth
             />
-            <TemplatesModalTabs template={template} setConfigYamlText={setConfigYamlText} />
-            <MonacoEditor
-              value={template?.template}
-              height='350px'
-              width='100%'
-              name='values'
-              language='yaml'
-              theme='vs-dark'
-              onChange={handleGetValue.bind(this)}
-            />
+            <TemplatesModalTabs setConfigYamlText={setConfigYamlText} />
+            {modalInfo?.action === 'EDIT' && (
+              <MonacoEditor
+                value={template?.template}
+                height='350px'
+                width='100%'
+                name='values'
+                language='yaml'
+                theme='vs-dark'
+                onChange={handleGetValue.bind(this)}
+              />
+            )}
+            {modalInfo?.action === 'CREATE' && (
+              <MonacoEditor
+                value={configYamlText ?? this}
+                height='350px'
+                width='100%'
+                name='values'
+                language='yaml'
+                theme='vs-dark'
+                onChange={handleGetValue.bind(this)}
+              />
+            )}
           </DialogContent>
           <DialogActions className='p-24 justify-between'>
             <div className='mr-10'>

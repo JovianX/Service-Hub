@@ -52,8 +52,13 @@ const chartsSlice = createSlice({
   initialState: {
     isLoading: false,
     charts: [],
+    chartName: '',
   },
-  reducers: {},
+  reducers: {
+    setChartName(state, action) {
+      state.chartName = action.payload;
+    },
+  },
   extraReducers: {
     [getChartList.fulfilled]: (state, { payload }) => ({
       charts: payload,
@@ -77,4 +82,5 @@ const chartsSlice = createSlice({
 export const selectCharts = ({ charts }) => charts.charts;
 export const selectIsChartsLoading = ({ charts }) => charts.isLoading;
 
+export const { setChartName } = chartsSlice.actions;
 export default chartsSlice.reducer;
