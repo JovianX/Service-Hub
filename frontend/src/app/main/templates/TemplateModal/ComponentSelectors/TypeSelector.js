@@ -15,9 +15,9 @@ const TypeSelector = ({ type, setType, typeValue }) => {
   };
 
   return (
-    <FormControl size='small' fullWidth className='mb-10'>
+    <FormControl size='small' required fullWidth className='mb-10'>
       <InputLabel>Type</InputLabel>
-      <Select name='type' value={typeValue || type} required label='Type' onChange={handleChangeType}>
+      <Select name='type' value={typeValue || type} label='Type' onChange={handleChangeType}>
         {!typeValue ? (
           TYPE_VALUES?.map((item) => (
             <MenuItem key={item} value={item}>

@@ -31,12 +31,11 @@ const ChartSelector = ({ chart, setChart, chartValue }) => {
   };
 
   return (
-    <FormControl size='small' fullWidth className='mb-10'>
+    <FormControl size='small' required fullWidth className='mb-10'>
       <InputLabel>Chart</InputLabel>
       <Select
         name='chart'
         value={chartValue || chart}
-        required
         label='Chart'
         onChange={handleChangeChart}
         MenuProps={{ PaperProps: { sx: { maxHeight: 400 } } }}
