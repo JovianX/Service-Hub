@@ -2,17 +2,18 @@ import { Button, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRef, useEffect, useState } from 'react';
 
+import ChartSelector from './ComponentSelectors/ChartSelector';
 import TypeSelector from './ComponentSelectors/TypeSelector';
 import VersionSelector from './ComponentSelectors/VersionSelector';
-import ChartSelector from './ComponentSelectors/ChartSelector';
 
-const TemplateBuilder = ({ open, setOpen, setComponents, setConfigYamlText }) => {
+const TemplateBuilder = ({ open, setOpen, setComponents, setDefaultConfigYamlText }) => {
   const nameRef = useRef();
   const keyRef = useRef();
   const valueRef = useRef();
   const [type, setType] = useState('');
   const [chart, setChart] = useState('');
   const [version, setVersion] = useState('');
+  const [infoMessageError, setInfoMessageError] = useState('');
 
   const [openInputs, setOpenInputs] = useState(false);
 
@@ -24,11 +25,14 @@ const TemplateBuilder = ({ open, setOpen, setComponents, setConfigYamlText }) =>
   }, [open]);
 
   const handleAddComponent = () => {
-    if (!nameRef.current.value.trim() || !type || !chart) {
+    if (!nameRef.current.value.trim()) {
+      setInfoMessageError('The name field is required');
       return;
     }
 
-    const configYamlText = `\ncomponents: \n - name: ${
+    setInfoMessageError('');
+
+    const configYamlText = `\ncomponents: \n\n - name: ${
       nameRef.current.value
     } \n   type: ${type} \n   chart: ${chart} \n   ${version ? `version: ${version}` : ''} \n   ${
       keyRef.current.value && valueRef.current.value
@@ -36,27 +40,24 @@ const TemplateBuilder = ({ open, setOpen, setComponents, setConfigYamlText }) =>
         : ''
     }`;
 
-    setConfigYamlText((prevConfigYamlText) => prevConfigYamlText + configYamlText);
+    setDefaultConfigYamlText((prevConfigYamlText) => prevConfigYamlText + configYamlText);
 
     const nameField = {
       field_name: 'name',
       label: 'Name',
       value: nameRef.current.value,
-      required: true,
     };
 
     const typeField = {
       field_name: 'type',
       label: 'Type',
       value: type,
-      required: true,
     };
 
     const chartField = {
       field_name: 'chart',
       label: 'Chart',
       value: chart,
-      required: true,
     };
 
     const versionField = version
@@ -64,13 +65,34 @@ const TemplateBuilder = ({ open, setOpen, setComponents, setConfigYamlText }) =>
           field_name: 'version',
           label: 'Version',
           value: version,
-          required: false,
         }
       : null;
 
-    const newComponents = [nameField, typeField, chartField, versionField];
+    const keyField = keyRef.current.value
+      ? {
+          field_name: 'key',
+          label: 'Key',
+          value: keyRef.current.value,
+        }
+      : null;
+
+    const valuesField = valueRef.current.value
+      ? {
+          field_name: 'value',
+          label: 'Value',
+          value: valueRef.current.value,
+        }
+      : null;
+
+    const newComponents = [nameField, typeField, chartField, versionField, keyField, valuesField];
     setComponents((components) => [...components, newComponents]);
     setOpenInputs(false);
+  };
+
+  const handleChangeInputName = () => {
+    if (infoMessageError) {
+      setInfoMessageError('');
+    }
   };
 
   return (
@@ -87,6 +109,7 @@ const TemplateBuilder = ({ open, setOpen, setComponents, setConfigYamlText }) =>
               className='mr-10'
               required
               inputRef={nameRef}
+              onChange={handleChangeInputName}
             />
             <TypeSelector type={type} setType={setType} />
           </Box>
@@ -106,9 +129,12 @@ const TemplateBuilder = ({ open, setOpen, setComponents, setConfigYamlText }) =>
               className='ml-10 mb-10'
             />
           </Box>
-          <Box display='flex' justifyContent='end'>
-            <Button onClick={() => setOpenInputs(false)}>Cancel</Button>
-            <Button onClick={handleAddComponent}>Add a Component</Button>
+          <Box display='flex' justifyContent='space-between' alignItems='center'>
+            <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
+            <div>
+              <Button onClick={() => setOpenInputs(false)}>Cancel</Button>
+              <Button onClick={handleAddComponent}>Add a Component</Button>
+            </div>
           </Box>
         </Box>
       )}

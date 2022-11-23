@@ -13,11 +13,11 @@ import TemplatesModalTabs from './TemplatesModalTabs';
 const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setEditTemplateId }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [template, setTemplate] = useState({});
   const [open, setOpen] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
   const [configYamlText, setConfigYamlText] = useState('');
+  const [defaultConfigYamlText, setDefaultConfigYamlText] = useState('');
   const [inputDescription, setInputDescription] = useState('');
 
   useEffect(() => {
@@ -29,8 +29,14 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
 
   useEffect(() => {
     if (modalInfo?.action) {
-      setTemplate(modalInfo.template);
       setInputDescription(modalInfo.template?.description);
+      if (modalInfo.action === 'EDIT') {
+        setConfigYamlText(modalInfo.template?.template);
+        setDefaultConfigYamlText(modalInfo.template?.template);
+      } else if (modalInfo.action === 'CREATE') {
+        setConfigYamlText('');
+        setDefaultConfigYamlText('');
+      }
     }
   }, [modalInfo.template]);
 
@@ -118,29 +124,16 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
               margin='normal'
               fullWidth
             />
-            <TemplatesModalTabs setConfigYamlText={setConfigYamlText} />
-            {modalInfo?.action === 'EDIT' && (
-              <MonacoEditor
-                value={template?.template}
-                height='350px'
-                width='100%'
-                name='values'
-                language='yaml'
-                theme='vs-dark'
-                onChange={handleGetValue.bind(this)}
-              />
-            )}
-            {modalInfo?.action === 'CREATE' && (
-              <MonacoEditor
-                value={configYamlText ?? this}
-                height='350px'
-                width='100%'
-                name='values'
-                language='yaml'
-                theme='vs-dark'
-                onChange={handleGetValue.bind(this)}
-              />
-            )}
+            <TemplatesModalTabs setDefaultConfigYamlText={setDefaultConfigYamlText} />
+            <MonacoEditor
+              value={defaultConfigYamlText || this}
+              height='350px'
+              width='100%'
+              name='values'
+              language='yaml'
+              theme='vs-dark'
+              onChange={handleGetValue.bind(this)}
+            />
           </DialogContent>
           <DialogActions className='p-24 justify-between'>
             <div className='mr-10'>

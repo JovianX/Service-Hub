@@ -10,9 +10,9 @@ import { useDispatch } from 'react-redux';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { getChartList } from 'app/store/chartsSlice';
 
+import ChartSelector from './ComponentSelectors/ChartSelector';
 import TypeSelector from './ComponentSelectors/TypeSelector';
 import VersionSelector from './ComponentSelectors/VersionSelector';
-import ChartSelector from './ComponentSelectors/ChartSelector';
 import TemplateBuilder from './TemplateBuilder';
 
 function TabPanel(props) {
@@ -44,7 +44,7 @@ function a11yProps(index) {
   };
 }
 
-const TemplatesModalTabs = ({ setConfigYamlText }) => {
+const TemplatesModalTabs = ({ setDefaultConfigYamlText }) => {
   const dispatch = useDispatch();
   const [components, setComponents] = useState([]);
   const [open, setOpen] = useState(false);
@@ -83,7 +83,7 @@ const TemplatesModalTabs = ({ setConfigYamlText }) => {
                               type='text'
                               fullWidth
                               defaultValue={value}
-                              required={item.required}
+                              required
                               className='mr-10'
                               label={item.label}
                             />
@@ -91,6 +91,24 @@ const TemplatesModalTabs = ({ setConfigYamlText }) => {
                           {item.field_name === 'type' && <TypeSelector typeValue={item.value} />}
                           {item.field_name === 'chart' && <ChartSelector chartValue={item.value} />}
                           {item && item.field_name === 'version' && <VersionSelector versionValue={item.value} />}
+                          {item && item.field_name === 'key' && (
+                            <TextField
+                              type='text'
+                              label={item.label}
+                              defaultValue={item.value}
+                              size='small'
+                              fullWidth
+                            />
+                          )}
+                          {item && item.field_name === 'value' && (
+                            <TextField
+                              type='text'
+                              label={item.value}
+                              defaultValue={item.value}
+                              size='small'
+                              fullWidth
+                            />
+                          )}
                         </div>
                       ) : (
                         ''
@@ -116,7 +134,7 @@ const TemplatesModalTabs = ({ setConfigYamlText }) => {
             open={open}
             setOpen={setOpen}
             setComponents={setComponents}
-            setConfigYamlText={setConfigYamlText}
+            setDefaultConfigYamlText={setDefaultConfigYamlText}
           />
         </div>
       </TabPanel>
