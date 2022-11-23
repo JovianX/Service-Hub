@@ -74,15 +74,15 @@ const TemplatesModalTabs = ({ setDefaultConfigYamlText }) => {
               return (
                 <div key={index} className='grid grid-cols-2 gap-10 mb-24'>
                   {component.map((item, i) => (
-                    <React.Fragment key={item?.value || i}>
+                    <React.Fragment key={item?.field_name + i}>
                       {item ? (
-                        <div key={item.value} className='w-full'>
+                        <div key={item.field_name + value + i} className='w-full'>
                           {item.field_name === 'name' && (
                             <TextField
                               size='small'
                               type='text'
                               fullWidth
-                              defaultValue={value}
+                              defaultValue={item.value}
                               required
                               className='mr-10'
                               label={item.label}
@@ -133,6 +133,7 @@ const TemplatesModalTabs = ({ setDefaultConfigYamlText }) => {
           <TemplateBuilder
             open={open}
             setOpen={setOpen}
+            components={components}
             setComponents={setComponents}
             setDefaultConfigYamlText={setDefaultConfigYamlText}
           />

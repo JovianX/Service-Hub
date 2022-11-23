@@ -18,7 +18,6 @@ const ChartSelector = ({ chart, setChart, chartValue }) => {
       });
       dispatch(setChartName(chartData[0].name));
       setCharts(chartsName);
-      setChart(chartsName[0]);
     }
   }, [chartData]);
 
