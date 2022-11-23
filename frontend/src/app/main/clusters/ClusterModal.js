@@ -199,7 +199,7 @@ const ClusterModal = ({ openModal }) => {
                   onChange={getValue.bind(this)}
                 />
 
-                <div className='mt-10'>
+                <div className='mt-20'>
                   {showMessage && (
                     <>
                       <div className=''>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
