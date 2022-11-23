@@ -25,8 +25,8 @@ const TemplateBuilder = ({ open, setOpen, components, setComponents, setDefaultC
   }, [open]);
 
   const handleAddComponent = () => {
-    if (!nameRef.current.value.trim()) {
-      setInfoMessageError('The name field is required');
+    if (!nameRef.current.value.trim() || !chart) {
+      setInfoMessageError('Fill in the required fields');
       return;
     }
 
@@ -99,7 +99,7 @@ const TemplateBuilder = ({ open, setOpen, components, setComponents, setDefaultC
     setOpenInputs(false);
   };
 
-  const handleChangeInputName = () => {
+  const handleChangeInputs = () => {
     if (infoMessageError) {
       setInfoMessageError('');
     }
@@ -117,12 +117,12 @@ const TemplateBuilder = ({ open, setOpen, components, setComponents, setDefaultC
           className='mr-10'
           required
           inputRef={nameRef}
-          onChange={handleChangeInputName}
+          onChange={handleChangeInputs}
         />
         <TypeSelector type={type} setType={setType} />
       </Box>
       <Box display='flex'>
-        <ChartSelector chart={chart} setChart={setChart} />
+        <ChartSelector chart={chart} setChart={setChart} handleChangeInputs={handleChangeInputs} />
         <VersionSelector version={version} setVersion={setVersion} />
       </Box>
       <Box display='flex'>

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { selectCharts, setChartName } from 'app/store/chartsSlice';
 
-const ChartSelector = ({ chart, setChart, chartValue }) => {
+const ChartSelector = ({ chart, setChart, chartValue, handleChangeInputs }) => {
   const dispatch = useDispatch();
   const [charts, setCharts] = useState([]);
 
@@ -27,6 +27,7 @@ const ChartSelector = ({ chart, setChart, chartValue }) => {
       dispatch(setChartName(selectedChart.name));
     }
     setChart(e.target.value);
+    handleChangeInputs();
   };
 
   return (
