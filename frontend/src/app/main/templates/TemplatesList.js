@@ -17,7 +17,7 @@ import {
 } from 'app/store/templatesSlice';
 import { selectUser } from 'app/store/userSlice';
 
-import CatalogList from './CatalogsList/CatalogList';
+import CatalogList from './CatalogList/CatalogList';
 import TemplatesListItem from './TemplatesListItem';
 import TemplatesModal from './TemplatesModal';
 
