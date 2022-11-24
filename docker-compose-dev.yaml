@@ -45,6 +45,7 @@ services:
       UI_HOST: http://localhost:3000
       ENV_FILE: .env
       PYTHONPATH: .
+      PYTHONUNBUFFERED: 1
     depends_on:
       - postgres
       - application
