@@ -1,19 +1,15 @@
-import { TextField } from '@mui/material';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { getChartList } from 'app/store/chartsSlice';
 
-import ChartSelector from './ComponentSelectors/ChartSelector';
-import TypeSelector from './ComponentSelectors/TypeSelector';
-import VersionSelector from './ComponentSelectors/VersionSelector';
-import TemplateBuilder from './TemplateBuilder';
+import TemplateFormBuilder from './TemplateFormBuilder/TemplateFormBuilder';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -44,7 +40,7 @@ function a11yProps(index) {
   };
 }
 
-const TemplatesModalTabs = ({ setDefaultConfigYamlText }) => {
+const TemplatesModalTabs = ({ configYamlText, defaultConfigYamlText, setDefaultConfigYamlText }) => {
   const dispatch = useDispatch();
   const [components, setComponents] = useState([]);
   const [open, setOpen] = useState(false);
@@ -52,6 +48,30 @@ const TemplatesModalTabs = ({ setDefaultConfigYamlText }) => {
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleDeleteComponent = (component) => {
+    setComponents((components) => components.filter((item) => item[0].value !== component[0].value));
+    const configYamlArray = configYamlText.split('\n');
+    const filterComponent = component.filter((item) => item && item.value);
+    const firstIndex = configYamlArray.findIndex((row) => row.includes(` - name: ${filterComponent[0].value} `));
+    const lastIndex = configYamlArray.findIndex((row) =>
+      row.includes(filterComponent[filterComponent.length - 1].value),
+    );
+    let newConfigYaml = [];
+    if (components.length > 1) {
+      newConfigYaml = [
+        ...configYamlArray.slice(0, firstIndex),
+        ...configYamlArray.slice(lastIndex + 1, configYamlArray.length),
+      ];
+    } else {
+      newConfigYaml = [
+        ...configYamlArray.slice(0, firstIndex - 2),
+        ...configYamlArray.slice(lastIndex + 1, configYamlArray.length),
+      ];
+    }
+
+    setDefaultConfigYamlText(newConfigYaml.join('\n'));
   };
 
   useEffect(() => {
@@ -72,50 +92,61 @@ const TemplatesModalTabs = ({ setDefaultConfigYamlText }) => {
           <Box className='my-6'>
             {components?.map((component, index) => {
               return (
-                <div key={index} className='grid grid-cols-2 gap-10 mb-24'>
-                  {component.map((item, i) => (
-                    <React.Fragment key={item?.field_name + i}>
-                      {item ? (
-                        <div key={item.field_name + value + i} className='w-full'>
-                          {item.field_name === 'name' && (
-                            <TextField
-                              size='small'
-                              type='text'
-                              fullWidth
-                              defaultValue={item.value}
-                              required
-                              className='mr-10'
-                              label={item.label}
-                            />
-                          )}
-                          {item.field_name === 'type' && <TypeSelector typeValue={item.value} />}
-                          {item.field_name === 'chart' && <ChartSelector chartValue={item.value} />}
-                          {item && item.field_name === 'version' && <VersionSelector versionValue={item.value} />}
-                          {item && item.field_name === 'key' && (
-                            <TextField
-                              type='text'
-                              label={item.label}
-                              defaultValue={item.value}
-                              size='small'
-                              fullWidth
-                            />
-                          )}
-                          {item && item.field_name === 'value' && (
-                            <TextField
-                              type='text'
-                              label={item.value}
-                              defaultValue={item.value}
-                              size='small'
-                              fullWidth
-                            />
-                          )}
-                        </div>
-                      ) : (
-                        ''
-                      )}
-                    </React.Fragment>
-                  ))}
-                </div>
+                <React.Fragment key={component[0].field_name + index}>
+                  <div key={index} className='grid grid-cols-2 gap-10 mb-24'>
+                    {component.map((item, i) => (
+                      <React.Fragment key={item?.field_name + i}>
+                        {item ? (
+                          <div key={item.field_name + value + i} className='w-full'>
+                            {item.field_name === 'name' && (
+                              <TextField
+                                size='small'
+                                type='text'
+                                fullWidth
+                                defaultValue={item.value}
+                                required
+                                className='mr-10'
+                                label={item.label}
+                              />
+                            )}
+                            {item.field_name === 'type' && <TypeSelector typeValue={item.value} />}
+                            {item.field_name === 'chart' && <ChartSelector chartValue={item.value} />}
+                            {item.field_name === 'version' && item.value ? (
+                              <VersionSelector versionValue={item.value} />
+                            ) : (
+                              <div />
+                            )}
+                            {item && item.field_name === 'key' && (
+                              <TextField
+                                type='text'
+                                label={item.label}
+                                defaultValue={item.value}
+                                size='small'
+                                fullWidth
+                              />
+                            )}
+                            {item && item.field_name === 'value' && (
+                              <TextField
+                                type='text'
+                                label={item.value}
+                                defaultValue={item.value}
+                                size='small'
+                                fullWidth
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          ''
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                  <Box display='flex' justifyContent='end' alignItems='center'>
+                    <Button key={component[0].field_name + index} onClick={() => handleDeleteComponent(component)}>
+                      Delete
+                    </Button>
+                  </Box>
+                </React.Fragment>
               );
             })}
           </Box>
@@ -130,12 +161,14 @@ const TemplatesModalTabs = ({ setDefaultConfigYamlText }) => {
             </span>
           </Button>
 
-          <TemplateBuilder
+          <TemplateFormBuilder
             open={open}
+            defaultConfigYamlText={defaultConfigYamlText}
             setOpen={setOpen}
             components={components}
             setComponents={setComponents}
             setDefaultConfigYamlText={setDefaultConfigYamlText}
+            configYamlText={configYamlText}
           />
         </div>
       </TabPanel>

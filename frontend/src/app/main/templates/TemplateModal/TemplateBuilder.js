@@ -14,7 +14,6 @@ const TemplateBuilder = ({ open, setOpen, components, setComponents, setDefaultC
   const [chart, setChart] = useState('');
   const [version, setVersion] = useState('');
   const [infoMessageError, setInfoMessageError] = useState('');
-
   const [openInputs, setOpenInputs] = useState(false);
 
   useEffect(() => {
@@ -29,7 +28,6 @@ const TemplateBuilder = ({ open, setOpen, components, setComponents, setDefaultC
       setInfoMessageError('Fill in the required fields');
       return;
     }
-
     setInfoMessageError('');
     let configYamlText = '';
     if (components.length) {
@@ -70,13 +68,11 @@ const TemplateBuilder = ({ open, setOpen, components, setComponents, setDefaultC
       value: chart,
     };
 
-    const versionField = version
-      ? {
-          field_name: 'version',
-          label: 'Version',
-          value: version,
-        }
-      : null;
+    const versionField = {
+      field_name: 'version',
+      label: 'Version',
+      value: version || null,
+    };
 
     const keyField = keyRef.current.value
       ? {

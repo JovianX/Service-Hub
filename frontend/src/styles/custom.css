@@ -18,7 +18,6 @@
 .component.hidden_component {
     overflow: hidden;
     opacity: 0;
-    transition: height 0ms 400ms, opacity 400ms 0ms;
 }
 
 .component.visible_component {

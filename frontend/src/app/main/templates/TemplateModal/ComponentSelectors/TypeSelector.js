@@ -1,34 +1,21 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { useEffect } from 'react';
+import { useState } from 'react';
 
-const TYPE_VALUES = ['helm_chart'];
-
-const TypeSelector = ({ type, setType, typeValue }) => {
-  useEffect(() => {
-    if (setType) {
-      setType(TYPE_VALUES[0]);
-    }
-  }, [setType]);
+const TypeSelector = ({ schema, value }) => {
+  const [type, setType] = useState(value);
 
   const handleChangeType = (e) => {
     setType(e.target.value);
   };
-
   return (
-    <FormControl size='small' required fullWidth className='mb-10'>
+    <FormControl size='small' required fullWidth>
       <InputLabel>Type</InputLabel>
-      <Select name='type' value={typeValue || type} label='Type' onChange={handleChangeType}>
-        {!typeValue ? (
-          TYPE_VALUES?.map((item) => (
-            <MenuItem key={item} value={item}>
-              {item}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem key={typeValue} value={typeValue}>
-            {typeValue}
+      <Select name='type' value={type} label='Type' onChange={handleChangeType}>
+        {schema.enum?.map((type) => (
+          <MenuItem key={type} value={type}>
+            {type}
           </MenuItem>
-        )}
+        ))}
       </Select>
     </FormControl>
   );

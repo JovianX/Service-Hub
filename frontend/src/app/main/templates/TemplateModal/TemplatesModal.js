@@ -3,7 +3,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import MonacoEditor from '@uiw/react-monacoeditor';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { createTemplate } from 'app/store/templatesSlice';
@@ -12,6 +12,7 @@ import TemplatesModalTabs from './TemplatesModalTabs';
 
 const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setEditTemplateId }) => {
   const dispatch = useDispatch();
+  const inputSubmitRef = useRef();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
@@ -55,6 +56,13 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
 
   const handleGetValue = (newValue) => {
     setConfigYamlText(newValue);
+  };
+
+  const handleOnClickTemplate = () => {
+    if (!inputDescription || !configYamlText) {
+      return;
+    }
+    inputSubmitRef.current.click();
   };
 
   const handleSubmitTemplate = async (e) => {
@@ -110,10 +118,11 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='md'>
-        <form onSubmit={handleSubmitTemplate}>
-          <DialogTitle className='bg-primary text-center text-white'>{modalInfo.title}</DialogTitle>
-          <DialogContent className='pb-0 mt-16 overflow-y-hidden'>
-            {/* <div className='mt-24'>create new template</div> */}
+        <DialogTitle className='bg-primary text-center text-white'>{modalInfo.title}</DialogTitle>
+
+        <DialogContent className='pb-0 mt-16 overflow-y-hidden'>
+          {/* <div className='mt-24'>create new template</div> */}
+          <form onSubmit={handleSubmitTemplate}>
             <TextField
               value={inputDescription || ''}
               onChange={onChangeInputDescription}
@@ -124,42 +133,47 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
               margin='normal'
               fullWidth
             />
-            <TemplatesModalTabs setDefaultConfigYamlText={setDefaultConfigYamlText} />
-            <MonacoEditor
-              value={defaultConfigYamlText || this}
-              height='350px'
-              width='100%'
-              name='values'
-              language='yaml'
-              theme='vs-dark'
-              onChange={handleGetValue.bind(this)}
-            />
-          </DialogContent>
-          <DialogActions className='p-24 justify-between'>
-            <div className='mr-10'>
-              <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
-              <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
-            </div>
-            <div className='flex'>
-              <Button className='mr-14' onClick={handleClose}>
-                Cancel
-              </Button>
-              <LoadingButton
-                color='primary'
-                type='submit'
-                loading={loading}
-                loadingPosition='start'
-                startIcon={[
-                  modalInfo.action === 'CREATE' && <AddIcon key={modalInfo.action} />,
-                  modalInfo.action === 'EDIT' && <EditIcon key={modalInfo.action} />,
-                ]}
-                variant='contained'
-              >
-                {modalInfo.confirmText}
-              </LoadingButton>
-            </div>
-          </DialogActions>
-        </form>
+            <input type='submit' className='hidden' ref={inputSubmitRef} />
+          </form>
+          <TemplatesModalTabs
+            configYamlText={configYamlText}
+            setDefaultConfigYamlText={setDefaultConfigYamlText}
+            defaultConfigYamlText={defaultConfigYamlText}
+          />
+          <MonacoEditor
+            value={defaultConfigYamlText || this}
+            height='350px'
+            width='100%'
+            name='values'
+            language='yaml'
+            theme='vs-dark'
+            onChange={handleGetValue.bind(this)}
+          />
+        </DialogContent>
+        <DialogActions className='p-24 justify-between'>
+          <div className='mr-10'>
+            <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div>
+            <div>{infoMessageSuccess && <p className='text-green'>{infoMessageSuccess}</p>}</div>
+          </div>
+          <div className='flex'>
+            <Button className='mr-14' onClick={handleClose}>
+              Cancel
+            </Button>
+            <LoadingButton
+              color='primary'
+              onClick={handleOnClickTemplate}
+              loading={loading}
+              loadingPosition='start'
+              startIcon={[
+                modalInfo.action === 'CREATE' && <AddIcon key={modalInfo.action} />,
+                modalInfo.action === 'EDIT' && <EditIcon key={modalInfo.action} />,
+              ]}
+              variant='contained'
+            >
+              {modalInfo.confirmText}
+            </LoadingButton>
+          </div>
+        </DialogActions>
       </Dialog>
     </div>
   );

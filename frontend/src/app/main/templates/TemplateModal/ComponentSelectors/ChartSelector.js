@@ -1,25 +1,12 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 
-import { selectCharts, setChartName } from 'app/store/chartsSlice';
-
-const ChartSelector = ({ chart, setChart, chartValue, handleChangeInputs }) => {
-  const dispatch = useDispatch();
-  const [charts, setCharts] = useState([]);
-
-  const chartData = useSelector(selectCharts);
+const ChartSelector = ({ schema, value }) => {
+  const [chart, setChart] = useState('');
 
   useEffect(() => {
-    if (chartData.length && setChart) {
-      const chartsName = [];
-      chartData.forEach((item) => {
-        chartsName.push(item.application_name);
-      });
-      dispatch(setChartName(chartData[0].name));
-      setCharts(chartsName);
-    }
-  }, [chartData]);
+    setChart(value);
+  }, [value]);
 
   const handleChangeChart = (e) => {
     const selectedChart = chartData.find((item) => item.application_name === e.target.value);
@@ -35,22 +22,16 @@ const ChartSelector = ({ chart, setChart, chartValue, handleChangeInputs }) => {
       <InputLabel>Chart</InputLabel>
       <Select
         name='chart'
-        value={chartValue || chart}
+        value={chart}
         label='Chart'
-        onChange={handleChangeChart}
         MenuProps={{ PaperProps: { sx: { maxHeight: 400 } } }}
+        onChange={handleChangeChart}
       >
-        {!chartValue ? (
-          charts?.map((chart) => (
-            <MenuItem key={chart} value={chart}>
-              {chart}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem key={chartValue} value={chartValue}>
-            {chartValue}
+        {schema.enum?.map((chart) => (
+          <MenuItem key={chart} value={chart}>
+            {chart}
           </MenuItem>
-        )}
+        ))}
       </Select>
     </FormControl>
   );
