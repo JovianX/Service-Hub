@@ -26,35 +26,35 @@ export const useSchema = () => {
       chart: {
         type: 'string',
         enum: charts,
-        default: '',
       },
       type: {
         type: 'string',
         enum: TYPE_VALUES,
-        default: '',
       },
       version: {
         type: 'string',
         enum: versions,
       },
     },
-    title: 'A rather large form',
     type: 'object',
     properties: {
       name: {
         type: 'string',
         title: 'Name',
         required: true,
+        default: '',
       },
       type: {
         $ref: '#/definitions/type',
         title: 'Type',
         required: true,
+        default: '',
       },
       chart: {
         $ref: '#/definitions/chart',
         title: 'Chart',
         required: true,
+        default: '',
       },
       version: {
         $ref: '#/definitions/version',

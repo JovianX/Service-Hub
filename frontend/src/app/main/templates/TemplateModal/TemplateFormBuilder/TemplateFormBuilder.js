@@ -14,37 +14,54 @@ const TemplateFormBuilder = ({ open, setOpen, defaultConfigYamlText, configYamlT
   const [formData, setFormData] = useState(null);
 
   const schema = useSchema();
-  const uiSchema = {};
+  let uiSchema = {};
   const widgets = {};
 
   if (schema?.definitions?.chart?.enum.length) {
-    // uiSchema = {
-    //   chart: {
-    //     'ui:widget': 'ChartSelector',
-    //   },
-    //   type: {
-    //     'ui:widget': 'TypeSelector',
-    //   },
-    // };
-    // widgets = {
-    //   ChartSelector,
-    //   TypeSelector,
-    // };
+    uiSchema = {
+      chart: {
+        'ui:widget': 'ChartSelector',
+      },
+      type: {
+        'ui:widget': 'TypeSelector',
+      },
+    };
   }
 
   useEffect(() => {
-    const jsonConfig = yaml.load(configYamlText, { json: true });
-    setFormData(jsonConfig);
+    try {
+      let jsonConfig = yaml.load(configYamlText, { json: true });
+
+      if (formData.key && formData.value) {
+        jsonConfig = { ...jsonConfig, key: formData.key, value: formData.value };
+      }
+      if (formData.values) {
+        const valuesKey = Object.keys(jsonConfig.values)[0];
+        jsonConfig = { ...jsonConfig, key: valuesKey, value: jsonConfig.values[valuesKey] };
+      }
+      setFormData(jsonConfig);
+    } catch (e) {
+      console.log(e);
+    }
   }, [configYamlText]);
 
   const handleSetDefaultConfigYamlText = (e) => {
     let { formData } = e;
-
+    let formDataForEditor = formData;
     if (formData.key && formData.value) {
       formData = { ...formData, values: { [formData.key]: formData.value } };
+      for (const key in formData) {
+        formDataForEditor = { ...formDataForEditor, [key]: formData[key] };
+      }
+
+      delete formDataForEditor.key;
+      delete formDataForEditor.value;
+    } else {
+      delete formDataForEditor.values;
     }
+
     setFormData(formData);
-    setDefaultConfigYamlText(YAML.stringify(formData));
+    setDefaultConfigYamlText(YAML.stringify(formDataForEditor));
   };
 
   useEffect(() => {
@@ -59,13 +76,13 @@ const TemplateFormBuilder = ({ open, setOpen, defaultConfigYamlText, configYamlT
       {schema?.definitions?.chart?.enum.length ? (
         <Form
           schema={schema}
-          uiSchema={uiSchema}
+          // uiSchema={uiSchema}
           // widgets={widgets}
           validator={validator}
           formData={formData}
           onChange={handleSetDefaultConfigYamlText}
         >
-          <Box display='flex' justifyContent='space-between' alignItems='center'>
+          <Box display='flex' justifyContent='end' alignItems='center'>
             {/* <div>{infoMessageError && <p className='text-red'>{infoMessageError}</p>}</div> */}
             <div>
               <Button onClick={() => setOpenInputs(false)}>Cancel</Button>
