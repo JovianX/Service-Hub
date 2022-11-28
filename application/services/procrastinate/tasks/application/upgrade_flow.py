@@ -36,10 +36,9 @@ async def execute_pre_upgrade_hooks(application_id: int, new_template_id: int):
         manifest = load_template(application_manager.render_manifest(new_template, application=application))
         await application_manager.set_state_status(application, ApplicationStatuses.upgrading)
         try:
-            await asyncio.gather(*[
-                application_manager.execute_hook(application, hook)
-                for hook in manifest.hooks.pre_upgrade if hook.enabled
-            ])
+            hooks = [hook for hook in manifest.hooks.pre_upgrade if hook.enabled]
+            for hook in hooks:
+                await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
             logger.error(
                 f'Failed to upgrade <Applicaton ID="{application.id}">. '
@@ -100,10 +99,9 @@ async def execute_post_upgrade_hooks(application_id: int, new_template_id: int):
         raw_manifest = application_manager.render_manifest(new_template, application=application)
         manifest = load_template(raw_manifest)
         try:
-            await asyncio.gather(*[
-                application_manager.execute_hook(application, hook)
-                for hook in manifest.hooks.post_upgrade if hook.enabled
-            ])
+            hooks = [hook for hook in manifest.hooks.post_upgrade if hook.enabled]
+            for hook in hooks:
+                await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
             logger.error(
                 f'Failed to launch <Applicaton ID="{application.id}">. '
