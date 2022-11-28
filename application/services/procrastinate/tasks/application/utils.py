@@ -6,7 +6,6 @@ from crud.organizations import OrganizationDatabase
 from crud.templates import TemplateDatabase
 from db.session import session_maker
 from managers.applications import ApplicationManager
-from managers.helm.manager import HelmManager
 from managers.events import EventManager
 from managers.helm.manager import HelmManager
 from managers.organizations.manager import OrganizationManager
