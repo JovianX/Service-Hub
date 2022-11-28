@@ -6,7 +6,7 @@ import { selectCharts } from 'app/store/chartsSlice';
 const TYPE_VALUES = ['helm_chart'];
 const versions = ['14.0.1', '2.4.2'];
 
-export const UseSchema = () => {
+export const useSchema = () => {
   const [charts, setCharts] = useState(['airflow', 'bitnami']);
 
   const chartData = useSelector(selectCharts);

@@ -6,33 +6,30 @@ import yaml from 'js-yaml';
 import YAML from 'json-to-pretty-yaml';
 import { useEffect, useState } from 'react';
 
-import ChartSelector from '../ComponentSelectors/ChartSelector';
-import TypeSelector from '../ComponentSelectors/TypeSelector';
-
-import { UseSchema } from './UseSchema';
+import { useSchema } from './useSchema';
 
 const TemplateFormBuilder = ({ open, setOpen, defaultConfigYamlText, configYamlText, setDefaultConfigYamlText }) => {
   const [openInputs, setOpenInputs] = useState(false);
 
   const [formData, setFormData] = useState(null);
 
-  const schema = UseSchema();
-  let uiSchema = {};
-  let widgets = {};
+  const schema = useSchema();
+  const uiSchema = {};
+  const widgets = {};
 
   if (schema?.definitions?.chart?.enum.length) {
-    uiSchema = {
-      chart: {
-        'ui:widget': 'ChartSelector',
-      },
-      type: {
-        'ui:widget': 'TypeSelector',
-      },
-    };
-    widgets = {
-      ChartSelector,
-      TypeSelector,
-    };
+    // uiSchema = {
+    //   chart: {
+    //     'ui:widget': 'ChartSelector',
+    //   },
+    //   type: {
+    //     'ui:widget': 'TypeSelector',
+    //   },
+    // };
+    // widgets = {
+    //   ChartSelector,
+    //   TypeSelector,
+    // };
   }
 
   useEffect(() => {
@@ -44,9 +41,7 @@ const TemplateFormBuilder = ({ open, setOpen, defaultConfigYamlText, configYamlT
     let { formData } = e;
 
     if (formData.key && formData.value) {
-      const { key } = formData;
-      const values = { key: formData.value };
-      formData = { ...formData, values };
+      formData = { ...formData, values: { [formData.key]: formData.value } };
     }
     setFormData(formData);
     setDefaultConfigYamlText(YAML.stringify(formData));
@@ -64,7 +59,7 @@ const TemplateFormBuilder = ({ open, setOpen, defaultConfigYamlText, configYamlT
       {schema?.definitions?.chart?.enum.length ? (
         <Form
           schema={schema}
-          // uiSchema={uiSchema}
+          uiSchema={uiSchema}
           // widgets={widgets}
           validator={validator}
           formData={formData}
