@@ -173,24 +173,15 @@ class ApplicationManager:
             'uninstall_outputs': {},
         }
 
-        install_outputs = await asyncio.gather(*[
-            self.install_component(component, application, dry_run=dry_run) for component in components_to_install
-        ])
-        results['install_outputs'] = {
-            component.name: output for component, output in zip(components_to_install, install_outputs)
-        }
-        update_outputs = await asyncio.gather(*[
-            self.update_component(application, component, dry_run=dry_run) for component in components_to_update
-        ])
-        results['update_outputs'] = {
-            component.name: output for component, output in zip(components_to_update, update_outputs)
-        }
-        uninstall_outputs = await asyncio.gather(*[
-            self.uninstall_component(application, component, dry_run=dry_run) for component in components_to_remove
-        ])
-        results['uninstall_outputs'] = {
-            component.name: output for component, output in zip(components_to_remove, uninstall_outputs)
-        }
+        for component in components_to_install:
+            output = await self.install_component(component, application, dry_run=dry_run)
+            results['install_outputs'][component.name] = output
+        for component in components_to_update:
+            output = await self.update_component(application, component, dry_run=dry_run)
+            results['update_outputs'][component.name] = output
+        for component in components_to_remove:
+            output = await self.uninstall_component(application, component, dry_run=dry_run)
+            results['uninstall_outputs'][component.name] = output
 
         return results
 
