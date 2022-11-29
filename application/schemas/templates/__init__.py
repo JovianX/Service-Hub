@@ -1,4 +1,4 @@
-from .templates import TemplateSchema
+from .template import TemplateSchema
 
 __all__ = [
     'TemplateSchema',

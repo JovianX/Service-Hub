@@ -13,6 +13,7 @@ from pydantic import validator
 from .components import Component
 from .hooks import Hooks
 from .inputs import Input
+from .outputs import Output
 from .validators import unique_names
 
 
@@ -27,6 +28,7 @@ class TemplateSchema(BaseModel):
     components: conlist(Component, min_items=1) = Field(description='Application components.')
     hooks: Hooks | None = Field(description='Application actions.', default_factory=Hooks)
     inputs: list[Input] | None = Field(description='Input that should be provided by user.', default_factory=list)
+    output: Output | None = Field(description='Valuable output for Application consumer.')
 
     class Config:
         extra = Extra.forbid
