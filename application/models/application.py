@@ -37,6 +37,7 @@ class Application(Base):
     context_name = Column(String, nullable=False)
     namespace = Column(String, nullable=False)
     user_inputs = Column(MutableJSON, nullable=False, default={})
+    ttl = Column(DateTime, nullable=True)
     template_id = Column(Integer, ForeignKey('template_revision.id'), nullable=False)
     template = relationship('TemplateRevision', back_populates='applications', lazy='selectin')
     creator_id = Column(UUID, ForeignKey('user.id'), nullable=True)

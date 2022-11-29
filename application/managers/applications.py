@@ -469,6 +469,16 @@ class ApplicationManager:
                     hook=hook
                 )
 
+    async def set_ttl(self, application: Application, delta: timedelta) -> None:
+        """
+        Set deadline after which application must be terminated.
+        """
+        if delta.total_seconds() <= 0:
+            raise ValueError('Unable to set application TTL. Time offset was not provided.')
+        now = datetime.now()
+        application.ttl = now + delta
+        await self.db.save(application)
+
     def get_inputs(self, template: TemplateRevision, *, application: Application | None = None,
                    user_inputs: dict | None = None) -> dict:
         """

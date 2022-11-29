@@ -1,6 +1,8 @@
 """
 Application endpoints.
 """
+from datetime import timedelta
+
 from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
@@ -18,6 +20,7 @@ from models.user import User
 
 from ..schemas.applications import ApplicationInstallResponseSchema
 from ..schemas.applications import ApplicationResponseSchema
+from ..schemas.applications import ApplicationTTLSchema
 from ..schemas.applications import ApplicationUpgradeResponseSchema
 from ..schemas.applications import InstallRequestBodySchema
 from ..schemas.applications import UpgradeRequestSchema
@@ -59,10 +62,47 @@ async def install_application(
             'results': install_result
         }
     else:
+        if body.ttl:
+            delta = timedelta(hours=body.ttl.hours)
+            await application_manager.set_ttl(install_result, delta)
         return {
             'application': install_result,
             'results': {}
         }
+
+
+@router.get(
+    '/list',
+    response_model=list[ApplicationResponseSchema],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def list_applications(
+    user: User = Depends(current_active_user),
+    application_manager: ApplicationManager = Depends(get_application_manager)
+):
+    """
+    Returns list of organization's applications.
+    """
+    return await application_manager.list_applications(user.organization)
+
+
+@router.get(
+    '/{application_id}/health',
+    response_model=ApplicationHealthStatuses,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def get_application_health_status(
+    application_id: int = Path(title='The ID of the application to check'),
+    user: User = Depends(current_active_user),
+    application_manager: ApplicationManager = Depends(get_application_manager)
+):
+    """
+    Returns application health condition.
+    """
+    application = await application_manager.get_organization_application(application_id, user.organization)
+    condition = await application_manager.get_application_health_condition(application)
+
+    return condition['status']
 
 
 @router.post(
@@ -108,6 +148,28 @@ async def update_user_inputs(
     return await application_manager.update_user_inputs(application, body.inputs, body.dry_run)
 
 
+@router.post(
+    '/{application_id}/ttl',
+    response_model=ApplicationResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def set_application_ttl(
+    application_id: int = Path(title='The ID of the application.'),
+    body: ApplicationTTLSchema = Body(description='Application deadline parameters.'),
+    user: User = Depends(current_active_user),
+    application_manager: ApplicationManager = Depends(get_application_manager),
+):
+    """
+    Sets application deadline reaching which application will be deleted(TTL - time to live).
+    """
+    application = await application_manager.get_organization_application(application_id, user.organization)
+    delta = timedelta(hours=body.hours)
+
+    await application_manager.set_ttl(application, delta)
+
+    return application
+
+
 @router.delete('/{application_id}', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def uninstall_application(
     application_id: int = Path(title='The ID of the application to terminate'),
@@ -119,37 +181,3 @@ async def uninstall_application(
     """
     application = await application_manager.get_organization_application(application_id, user.organization)
     await application_manager.terminate(application)
-
-
-@router.get(
-    '/list',
-    response_model=list[ApplicationResponseSchema],
-    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
-)
-async def list_applications(
-    user: User = Depends(current_active_user),
-    application_manager: ApplicationManager = Depends(get_application_manager)
-):
-    """
-    Returns list of organization's applications.
-    """
-    return await application_manager.list_applications(user.organization)
-
-
-@router.get(
-    '/{application_id}/health',
-    response_model=ApplicationHealthStatuses,
-    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
-)
-async def get_application_health_status(
-    application_id: int = Path(title='The ID of the application to check'),
-    user: User = Depends(current_active_user),
-    application_manager: ApplicationManager = Depends(get_application_manager)
-):
-    """
-    Returns application health condition.
-    """
-    application = await application_manager.get_organization_application(application_id, user.organization)
-    condition = await application_manager.get_application_health_condition(application)
-
-    return condition['status']

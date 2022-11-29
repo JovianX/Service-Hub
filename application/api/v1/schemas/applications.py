@@ -6,6 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import PositiveInt
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
@@ -14,16 +15,24 @@ from .common import OrganizationResponseSchema
 from .common import UserResponseSchema
 
 
+class ApplicationTTLSchema(BaseModel):
+    """
+    Body of request for setting applicatoin TTL.
+    """
+    hours: PositiveInt = Field(description='Time to live in hours.')
+
+
 class InstallRequestBodySchema(BaseModel):
     """
     Body of request for application installation from specific template.
     """
-    template_id: int = Field(description='Identifier of template from which application should be installed')
-    inputs: dict[str, Any] = Field(description='Inputs provided by user')
-    context_name: str = Field(description='Kubernetes configuration context name')
-    namespace: str = Field(description='Name of namespace where to install application')
+    template_id: int = Field(description='Identifier of template from which application should be installed.')
+    inputs: dict[str, Any] = Field(description='Inputs provided by user.')
+    context_name: str = Field(description='Kubernetes configuration context name.')
+    namespace: str = Field(description='Name of namespace where to install application.')
+    ttl: ApplicationTTLSchema | None = Field(description='Application time to live.')
     dry_run: bool | None = Field(
-        description='If `True` application installation will be simulated',
+        description='If `True` application installation will be simulated.',
         default=False
     )
 
