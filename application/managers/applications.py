@@ -473,11 +473,17 @@ class ApplicationManager:
         """
         Set deadline after which application must be terminated.
         """
-        if delta.total_seconds() <= 0:
-            raise ValueError('Unable to set application TTL. Time offset was not provided.')
-        now = datetime.now()
-        application.ttl = now + delta
-        await self.db.save(application)
+        if delta.total_seconds() < 0:
+            raise ValueError('Unable to set application TTL. Time offset can not be in past.')
+
+        if delta.total_seconds() == 0:
+            if application.ttl is not None:
+                application.ttl = None
+                await self.db.save(application)
+        else:
+            now = datetime.now()
+            application.ttl = now + delta
+            await self.db.save(application)
 
     def get_inputs(self, template: TemplateRevision, *, application: Application | None = None,
                    user_inputs: dict | None = None) -> dict:

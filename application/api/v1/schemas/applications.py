@@ -6,7 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel
 from pydantic import Field
-from pydantic import PositiveInt
+from pydantic import NonNegativeInt
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
@@ -19,7 +19,7 @@ class ApplicationTTLSchema(BaseModel):
     """
     Body of request for setting applicatoin TTL.
     """
-    hours: PositiveInt = Field(description='Time to live in hours.')
+    hours: NonNegativeInt = Field(description='Time to live in hours. If 0 pass, TTL will be removed.')
 
 
 class InstallRequestBodySchema(BaseModel):
@@ -83,19 +83,20 @@ class ApplicationResponseSchema(BaseModel):
     """
     Application response body schema.
     """
-    id: int = Field(description='Application record ID')
-    created_at: datetime = Field(description='Date and time when application was launched')
-    name: str = Field(description='Name of application')
-    description: str | None = Field(description='Application description')
-    manifest: str = Field(description='Rendered template with which application was deployed or upgraded')
-    status: ApplicationStatuses = Field(description='Application condition status')
-    health: ApplicationHealthStatuses = Field(description='Application application health condition')
-    context_name: str = Field(description='')
-    namespace: str = Field(description='')
-    user_inputs: dict = Field(description='')
-    template: ApplicationTemplateSchema = Field(description='')
-    creator: UserResponseSchema = Field(description='User that have launched this application')
-    organization: OrganizationResponseSchema = Field(description='Organization that owns the application')
+    id: int = Field(description='Application record ID.')
+    created_at: datetime = Field(description='Date and time when application was launched.')
+    name: str = Field(description='Name of application.')
+    description: str | None = Field(description='Application description.')
+    ttl: datetime | None = Field(description='Date and time when application will reach end of life and will be terminated.')
+    manifest: str = Field(description='Rendered template with which application was deployed or upgraded.')
+    status: ApplicationStatuses = Field(description='Application condition status.')
+    health: ApplicationHealthStatuses = Field(description='Application application health condition.')
+    context_name: str = Field(description='Name of Kubernetes context that was used during application deploy.')
+    namespace: str = Field(description='Name of namespace that was used during application deploy.')
+    user_inputs: dict = Field(description='User provided values from template inputs.')
+    template: ApplicationTemplateSchema = Field(description='Template from which application was deployed.')
+    creator: UserResponseSchema = Field(description='User that have launched this application.')
+    organization: OrganizationResponseSchema = Field(description='Organization that owns the application.')
 
     class Config:
         orm_mode = True
