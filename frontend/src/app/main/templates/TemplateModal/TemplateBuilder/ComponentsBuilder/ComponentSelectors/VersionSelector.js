@@ -2,24 +2,33 @@ import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { getVersionsList as getVersionsListAPI } from '../../../../api';
+import { getVersionsList as getVersionsListAPI } from '../../../../../../api';
 
-const VersionSelector = ({ version, setVersion, versionValue }) => {
-  const [versionsList, setVersionsList] = useState([]);
+const VersionSelector = ({ version, setVersion, index, versionValue, handleOnChangeComponent }) => {
+  const [versionsList, setVersionsList] = useState([versionValue]);
   const chartName = useSelector((state) => state.charts.chartName);
 
   useEffect(() => {
+    if (versionValue) {
+      setVersion(versionValue);
+    }
+  }, [versionValue]);
+
+  useEffect(() => {
     let canceled = false;
-    if (chartName && setVersion) {
+    setVersionsList([versionValue]);
+    if (chartName) {
+      setVersionsList([]);
       getVersionsListAPI(chartName).then(
         function ({ data }) {
           if (canceled) {
             return;
           }
-          const versions = [];
+          const versions = [''];
           data.forEach((item) => {
             versions.push(item.version);
           });
+
           setVersionsList(versions);
         },
         function () {
@@ -30,6 +39,7 @@ const VersionSelector = ({ version, setVersion, versionValue }) => {
         },
       );
     }
+
     return () => {
       canceled = true;
     };
@@ -37,30 +47,34 @@ const VersionSelector = ({ version, setVersion, versionValue }) => {
 
   const handleChangeVersion = (e) => {
     setVersion(e.target.value);
+    handleOnChangeComponent(e.target.value, index, 'version');
   };
 
   return (
-    <FormControl size='small' fullWidth className={`mb-10 ${!versionValue ? 'ml-10' : ''}`}>
+    <FormControl size='small' fullWidth>
       <InputLabel>Version</InputLabel>
       <Select
         name='version'
-        value={versionValue || version}
+        value={version}
         required
         label='Version'
         onChange={handleChangeVersion}
         MenuProps={{ PaperProps: { sx: { maxHeight: 400 } } }}
       >
-        {!versionValue ? (
-          versionsList?.map((versionsList) => (
-            <MenuItem key={versionsList} value={versionsList}>
-              {versionsList}
+        {versionsList?.map((version, index) => {
+          if (version) {
+            return (
+              <MenuItem key={index} value={version}>
+                {version}
+              </MenuItem>
+            );
+          }
+          return (
+            <MenuItem key={index} value={version}>
+              <em>None</em>
             </MenuItem>
-          ))
-        ) : (
-          <MenuItem key={versionValue} value={versionValue}>
-            {versionValue}
-          </MenuItem>
-        )}
+          );
+        })}
       </Select>
     </FormControl>
   );
