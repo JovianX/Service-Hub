@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from pprint import pprint
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
@@ -13,6 +14,7 @@ from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
 from services.procrastinate.application import procrastinate
 from utils.template import load_template
+from utils.template import render_template
 
 from .utils import get_application_manager
 
@@ -71,6 +73,10 @@ async def install_applicatoin_components(application_id: int):
         try:
             await application_manager.await_healthy_state(application)
             await application_manager.set_health_status(application, ApplicationHealthStatuses.healthy)
+            components_manifests = await application_manager.get_component_manifests(application)
+            manifest = render_template(application.template.template, application.user_inputs, components_manifests)
+            application.manifest = manifest
+            await application_manager.db.save(application)
         except ApplicationLaunchTimeoutException:
             logger.error(
                 f'Failed to install <Applicaton ID="{application.id}">. Reached deadline of awaiting application to '

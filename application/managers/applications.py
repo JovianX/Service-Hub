@@ -485,14 +485,31 @@ class ApplicationManager:
 
         return user_inputs
 
+    async def get_component_manifests(self, application: Application) -> dict[str, list]:
+        """
+        Returns application components manifests.
+        """
+        manifests = {}
+        manifest = load_template(application.manifest)
+        components = [component for component in manifest.components if component.enabled]
+        for component in components:
+            manifests[component.name] = await self.helm_manager.get_detailed_manifest(
+                application.organization,
+                application.context_name,
+                application.namespace,
+                component.name
+            )
+
+        return manifests
+
     def render_manifest(self, template: TemplateRevision, *, application: Application | None = None,
-                        user_inputs: dict | None = None) -> str:
+                        user_inputs: dict | None = None, components_manifests: dict[str, list] | None = None) -> str:
         """
         Renders new application's manifest using existing user input.
         """
         inputs = self.get_inputs(template, application=application, user_inputs=user_inputs)
 
-        manifest = render_template(template.template, inputs)
+        manifest = render_template(template.template, inputs, components_manifests)
 
         return manifest
 
