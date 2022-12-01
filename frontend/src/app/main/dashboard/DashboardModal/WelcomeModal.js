@@ -1,8 +1,9 @@
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import { Dialog, DialogContent, DialogTitle } from '@mui/material';
+import { Checkbox, Dialog, DialogContent, DialogTitle, FormGroup } from '@mui/material';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
@@ -47,15 +48,20 @@ const WelcomeModal = ({ openModal, setOpenModal, children, onClose, ...other }) 
         </DialogTitle>
         <DialogContent className='p-0 overflow-y-hidden min-h-[250px] flex flex-col justify-around'>
           <ModalStepper />
-          <div className='text-center pb-24 px-24'>
-            <Typography  variant="h6">
-              Hi 👋, welcome to JovianX ServiceHub!  <br /> Activate your account by adding a Kubernetes cluster.
+          <div className='welcome-modal text-center pb-24 px-24'>
+            <Typography variant='h6'>
+              Hi 👋, welcome to JovianX ServiceHub! <br /> Activate your account by adding a Kubernetes cluster.
             </Typography>
+          </div>
+          <div className='px-24'>
+            <FormGroup className='ml-48'>
+              <FormControlLabel disabled control={<Checkbox defaultChecked />} label='Create an account ' />
+              <FormControlLabel className='mt-[-10px]' control={<Checkbox />} label='Connect to a Kubernetes cluster' />
+            </FormGroup>
           </div>
         </DialogContent>
         <DialogActions className='p-24 justify-end'>
           <Button
-            className='mt-24'
             variant='contained'
             color='primary'
             startIcon={<AddIcon />}

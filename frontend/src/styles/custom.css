@@ -10,6 +10,10 @@
 .monaco-editor.no-user-select {
     padding-top: 12px;
 }
-.customDatePickerWidth .MuiFormControl-root.MuiTextField-root.muiltr-1u3bzj6-MuiFormControl-root-MuiTextField-root{
+.customDatePickerWidth .MuiFormControl-root.MuiTextField-root.muiltr-1u3bzj6-MuiFormControl-root-MuiTextField-root {
     width: 100%;
+}
+
+.welcome-modal .MuiTypography-body1.MuiFormControlLabel-label {
+    font-size: 18px;
 }

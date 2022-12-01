@@ -40,8 +40,8 @@ const navigationConfig = [
   },
   {
     id: 'templates-component',
-    title: 'Catalogs',
-    translate: 'CATALOGS',
+    title: 'Catalog',
+    translate: 'CATALOG',
     type: 'item',
     icon: 'heroicons-outline:template',
     url: 'templates',
