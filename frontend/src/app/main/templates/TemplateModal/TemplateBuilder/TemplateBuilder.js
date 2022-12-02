@@ -1,46 +1,34 @@
-import { Button } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import Box from '@mui/material/Box';
 import { useState } from 'react';
-
-import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
 import ComponentsBuilder from './ComponentsBuilder/ComponentsBuilder';
 import InputsBuilder from './InputsBuilder/InputsBuilder';
 
-const TemplateBuilder = ({ templateBuilder, setTemplateBuilder }) => {
-  const [isOpenComponents, setIsOpenComponents] = useState(false);
-  const [isOpenInputs, setIsOpenInputs] = useState(false);
+const TemplateBuilder = () => {
+  const [alignment, setAlignment] = useState('components');
+
+  const handleChangeAlignment = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
 
   return (
     <>
-      <Button
-        className='group inline-flex items-center mt-2 -ml-4 py-2 px-4 rounded cursor-pointer'
-        onClick={() => setIsOpenComponents(true)}
-      >
-        <FuseSvgIcon size={20}>heroicons-solid:plus-circle</FuseSvgIcon>
-        <span className='ml-8 font-medium text-secondary group-hover:underline'>Add a Component</span>
-      </Button>
+      <Box display='flex' justifyContent='center'>
+        <ToggleButtonGroup color='primary' value={alignment} exclusive onChange={handleChangeAlignment}>
+          <ToggleButton size='small' value='components'>
+            Components
+          </ToggleButton>
+          <ToggleButton size='small' value='inputs' className='w-[110px]'>
+            Inputs
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
-      <ComponentsBuilder
-        components={templateBuilder?.components ? templateBuilder.components : null}
-        setTemplateBuilder={setTemplateBuilder}
-        isOpenComponents={isOpenComponents}
-        setIsOpenComponents={setIsOpenComponents}
-      />
-
-      <Button
-        className='group inline-flex items-center mt-2 -ml-4 py-2 px-4 rounded cursor-pointer'
-        onClick={() => setIsOpenInputs(true)}
-      >
-        <FuseSvgIcon size={20}>heroicons-solid:plus-circle</FuseSvgIcon>
-        <span className='ml-8 font-medium text-secondary group-hover:underline'>Add a Input</span>
-      </Button>
-
-      <InputsBuilder
-        inputs={templateBuilder?.inputs ? templateBuilder.inputs : null}
-        setTemplateBuilder={setTemplateBuilder}
-        isOpenInputs={isOpenInputs}
-        setIsOpenInputs={setIsOpenInputs}
-      />
+      <div className='mt-24'>
+        {alignment === 'components' && <ComponentsBuilder />}
+        {alignment === 'inputs' && <InputsBuilder />}
+      </div>
     </>
   );
 };

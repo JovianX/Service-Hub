@@ -1,14 +1,14 @@
-import Editor from '@monaco-editor/react';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import yaml from 'js-yaml';
-import YAML from 'json-to-pretty-yaml';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { createTemplate } from 'app/store/templatesSlice';
+
+import { TemplateContext } from '../TemplateProvider';
 
 import TemplatesModalTabs from './TemplatesModalTabs';
 
@@ -18,9 +18,9 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
   const [open, setOpen] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
-  const [configYamlText, setConfigYamlText] = useState('');
-  const [templateBuilder, setTemplateBuilder] = useState(null);
   const [inputDescription, setInputDescription] = useState('');
+
+  const { configYamlText, onChangeYaml, setTemplateBuilder } = useContext(TemplateContext);
 
   useEffect(() => {
     if (openModal) {
@@ -33,46 +33,19 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
     if (modalInfo?.action) {
       setInputDescription(modalInfo.template?.description);
       if (modalInfo.action === 'EDIT') {
-        setConfigYamlText(modalInfo.template?.template);
+        onChangeYaml(modalInfo.template?.template);
         setTemplateBuilder(yaml.load(modalInfo.template?.template, { json: true }));
       } else if (modalInfo.action === 'CREATE') {
-        setConfigYamlText('');
+        onChangeYaml('');
       }
     }
   }, [modalInfo.template]);
-
-  useEffect(() => {
-    if (infoMessageError) {
-      setInfoMessageError('');
-    }
-    try {
-      setTemplateBuilder(yaml.load(configYamlText, { json: true }));
-    } catch (e) {
-      setInfoMessageError(e.reason);
-    }
-  }, [configYamlText]);
-
-  useEffect(() => {
-    try {
-      if (!templateBuilder) {
-        setConfigYamlText('');
-        return;
-      }
-      setConfigYamlText(YAML.stringify(templateBuilder));
-    } catch (e) {
-      setInfoMessageError(e.reason);
-    }
-  }, [templateBuilder]);
 
   const onChangeInputDescription = (e) => {
     setInputDescription(e.target.value);
     if (infoMessageError) {
       setInfoMessageError('');
     }
-  };
-
-  const handleChangeConfigYamlText = (newValue) => {
-    setConfigYamlText(newValue);
   };
 
   const handleSubmitTemplate = async (e) => {
@@ -127,7 +100,17 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='md'>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth='xl'
+        PaperProps={{
+          sx: {
+            minHeight: '90vh',
+          },
+        }}
+      >
         <form onSubmit={handleSubmitTemplate}>
           <DialogTitle className='bg-primary text-center text-white'>{modalInfo.title}</DialogTitle>
           <DialogContent className='pb-0 mt-16 overflow-y-hidden'>
@@ -142,16 +125,7 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
               margin='normal'
               fullWidth
             />
-            <TemplatesModalTabs templateBuilder={templateBuilder} setTemplateBuilder={setTemplateBuilder} />
-
-            <Editor
-              value={configYamlText}
-              height='350px'
-              width='100%'
-              language='yaml'
-              theme='vs-dark'
-              onChange={handleChangeConfigYamlText}
-            />
+            <TemplatesModalTabs />
           </DialogContent>
           <DialogActions className='p-24 justify-between'>
             <div className='mr-10'>
