@@ -61,35 +61,6 @@ const ComponentItem = ({ component, index }) => {
           index={index}
           handleOnChangeComponent={handleOnChangeComponent}
         />
-        {component.values?.map((item, i) => (
-          <React.Fragment key={i}>
-            <div>
-              <TextField
-                size='small'
-                type='text'
-                fullWidth
-                disabled
-                defaultValue={Object.keys(item)[0]}
-                className='mr-10'
-                label='Key'
-                // onChange={(e) => handleOnChangeComponent(e.target.value, index, 'values', 'key', i)}
-              />
-            </div>
-
-            <div>
-              <TextField
-                size='small'
-                type='text'
-                fullWidth
-                disabled
-                defaultValue={item[Object.keys(item)]}
-                className='mr-10'
-                label='Value'
-                // onChange={(e) => handleOnChangeComponent(e.target.value, index, 'values', 'value', i)}
-              />
-            </div>
-          </React.Fragment>
-        ))}
       </div>
       <Box display='flex' justifyContent='end' className='mb-12'>
         <Button onClick={() => handleDeleteComponent(index)}>Delete</Button>
