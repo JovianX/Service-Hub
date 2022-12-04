@@ -28,3 +28,6 @@ class Component(BaseModel):
 
     class Config:
         extra = Extra.forbid
+
+    def __hash__(self) -> str:
+        return hash(self.name)

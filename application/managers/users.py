@@ -19,6 +19,7 @@ from exceptions.organization import DifferentOrganizationException
 from managers.events import EventManager
 from managers.events import get_event_manager
 from managers.helm.manager import HelmManager
+from managers.helm.manager import get_helm_manager
 from managers.invitations import InvitationManager
 from managers.invitations import get_invitation_manager
 from managers.organizations.manager import OrganizationManager
@@ -42,10 +43,10 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     invitation_record: UserInvitation | None = None
 
     def __init__(self, user_db: UserDatabase, organizations: OrganizationManager, invitation_manager: InvitationManager,
-                 template_manager: TemplateManager, event_manager: EventManager):
+                 template_manager: TemplateManager, event_manager: EventManager, helm_manager: HelmManager):
         self.organizations = organizations
         self.invitation_manager = invitation_manager
-        self.helm_manager = HelmManager(organizations)
+        self.helm_manager = helm_manager
         self.template_manager = template_manager
         self.event_manager = event_manager
         super().__init__(user_db)
@@ -251,5 +252,6 @@ async def get_user_manager(
     invitation_manager=Depends(get_invitation_manager),
     template_manager=Depends(get_template_manager),
     event_manager=Depends(get_event_manager),
+    helm_manager=Depends(get_helm_manager),
 ):
-    yield UserManager(user_db, organization_manager, invitation_manager, template_manager, event_manager)
+    yield UserManager(user_db, organization_manager, invitation_manager, template_manager, event_manager, helm_manager)
