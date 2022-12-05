@@ -78,10 +78,14 @@ const InputsBuilder = () => {
           </List>
 
           <Box className='w-3/5'>
-            <InputItem input={input} index={index} />
+            <InputItem input={input} index={index} setSelectedIndex={setSelectedIndex} setIndex={setIndex} />
           </Box>
         </Box>
-      ) : null}
+      ) : (
+        <Box>
+          <Button onClick={handleAddAnotherInput}>Add an input</Button>
+        </Box>
+      )}
     </>
   );
 };

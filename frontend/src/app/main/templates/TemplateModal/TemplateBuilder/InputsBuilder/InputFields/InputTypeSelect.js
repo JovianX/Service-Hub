@@ -61,13 +61,13 @@ const InputTypeSelect = ({ input, index, handleOnChangeInput }) => {
       {input?.options?.length ? (
         <p className='col-span-2 mb-12'>Options</p>
       ) : (
-        <p className='col-span-2 mb-12 hover:cursor-pointer' onClick={() => handleAddOptions(index)}>
+        <div className='col-span-2 mb-12 hover:cursor-pointer' onClick={() => handleAddOptions(index)}>
           Add Options
-        </p>
+        </div>
       )}
 
       {input?.options?.map((option, i) => (
-        <div key={i}>
+        <div key={i} className='mt-14'>
           <TextField
             size='small'
             type='text'
@@ -109,9 +109,9 @@ const InputTypeSelect = ({ input, index, handleOnChangeInput }) => {
         </div>
       ))}
       {input?.options?.length > 0 && (
-        <p className='col-span-2 mb-12 hover:cursor-pointer' onClick={() => handleAddOptions(index)}>
+        <div className='col-span-2 mb-12 hover:cursor-pointer' onClick={() => handleAddOptions(index)}>
           Add another option
-        </p>
+        </div>
       )}
     </>
   );

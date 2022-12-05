@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { Box } from '@mui/system';
-import React, { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 
 import { TemplateContext } from '../../../TemplateProvider';
 
@@ -9,7 +9,7 @@ import ChartSelector from './ComponentSelectors/ChartSelector';
 import TypeSelector from './ComponentSelectors/TypeSelector';
 import VersionSelector from './ComponentSelectors/VersionSelector';
 
-const ComponentItem = ({ component, index }) => {
+const ComponentItem = ({ component, index, setIndex, setSelectedIndex }) => {
   const [chart, setChart] = useState('');
   const [version, setVersion] = useState('');
   const { setTemplateBuilder } = useContext(TemplateContext);
@@ -26,6 +26,8 @@ const ComponentItem = ({ component, index }) => {
   }, []);
 
   const handleDeleteComponent = (index) => {
+    setSelectedIndex(0);
+    setIndex(0);
     setTemplateBuilder((template) => {
       let { components } = template;
       components = [...components.filter((item, i) => i !== index)];

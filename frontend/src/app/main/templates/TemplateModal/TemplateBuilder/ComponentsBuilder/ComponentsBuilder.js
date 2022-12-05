@@ -81,10 +81,19 @@ const ComponentsBuilder = () => {
           </List>
 
           <Box className='w-3/5'>
-            <ComponentItem component={component} index={index} />
+            <ComponentItem
+              component={component}
+              index={index}
+              setIndex={setIndex}
+              setSelectedIndex={setSelectedIndex}
+            />
           </Box>
         </Box>
-      ) : null}
+      ) : (
+        <Box>
+          <Button onClick={handleAddAnotherComponent}>Add a component</Button>
+        </Box>
+      )}
     </>
   );
 };

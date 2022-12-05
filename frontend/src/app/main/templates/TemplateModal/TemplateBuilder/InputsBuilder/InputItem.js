@@ -6,14 +6,13 @@ import { TemplateContext } from '../../../TemplateProvider';
 
 import InputTypeCheckbox from './InputFields/InputTypeCheckbox';
 import InputTypeNumber from './InputFields/InputTypeNumber';
-import InputTypeRadioSelect from './InputFields/InputTypeRadioSelect';
 import InputTypes from './InputFields/InputTypes';
 import InputTypeSelect from './InputFields/InputTypeSelect';
 import InputTypeSlider from './InputFields/InputTypeSlider';
 import InputTypeSwitch from './InputFields/InputTypeSwitch';
 import InputTypeText from './InputFields/InputTypeText';
 
-const InputItem = ({ input, index }) => {
+const InputItem = ({ input, index, setIndex, setSelectedIndex }) => {
   const { setTemplateBuilder } = useContext(TemplateContext);
 
   const handleOnChangeInput = useCallback((value, index, type, nestedIndex, nestedType) => {
@@ -31,6 +30,8 @@ const InputItem = ({ input, index }) => {
   }, []);
 
   const handleDeleteInput = (index) => {
+    setSelectedIndex(0);
+    setIndex(0);
     setTemplateBuilder((template) => {
       let { inputs } = template;
       inputs = [...inputs.filter((item, i) => i !== index)];
@@ -60,7 +61,7 @@ const InputItem = ({ input, index }) => {
           <InputTypeSelect input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
         )}
         {input.type === 'radio_select' && (
-          <InputTypeRadioSelect input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeSelect input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
         )}
         {input.type === 'checkbox' && (
           <InputTypeCheckbox input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
