@@ -39,6 +39,16 @@ const InputItem = ({ input, index, setIndex, setSelectedIndex }) => {
     });
   };
 
+  const handleDeleteInputOptions = (inputIndex, optionIndex) => {
+    setTemplateBuilder((template) => {
+      const { inputs } = template;
+      const options = inputs[inputIndex].options.filter((item, index) => index !== optionIndex);
+      inputs[inputIndex].options = options;
+
+      return { ...template, inputs };
+    });
+  };
+
   return (
     <div>
       <div className={`grid ${input.type === '' ? 'grid-cols-1' : 'grid-cols-2'}  gap-10`}>
@@ -48,6 +58,7 @@ const InputItem = ({ input, index, setIndex, setSelectedIndex }) => {
         {input.type === 'text' && (
           <InputTypeText input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
         )}
+
         {input.type === 'textarea' && (
           <InputTypeText input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
         )}
@@ -58,10 +69,20 @@ const InputItem = ({ input, index, setIndex, setSelectedIndex }) => {
           <InputTypeSlider input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
         )}
         {input.type === 'select' && (
-          <InputTypeSelect input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeSelect
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            handleDeleteInputOptions={handleDeleteInputOptions}
+          />
         )}
         {input.type === 'radio_select' && (
-          <InputTypeSelect input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeSelect
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            handleDeleteInputOptions={handleDeleteInputOptions}
+          />
         )}
         {input.type === 'checkbox' && (
           <InputTypeCheckbox input={input} handleOnChangeInput={handleOnChangeInput} index={index} />

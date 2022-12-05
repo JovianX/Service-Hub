@@ -7,7 +7,7 @@ const InputTypeText = ({ input, index, handleOnChangeInput }) => {
         size='small'
         type='text'
         fullWidth
-        defaultValue={input.name}
+        value={input.name}
         required
         className='mr-10'
         label='Name'
@@ -17,7 +17,7 @@ const InputTypeText = ({ input, index, handleOnChangeInput }) => {
         size='small'
         type='text'
         fullWidth
-        defaultValue={input.label}
+        value={input.label}
         className='mr-10'
         label='Label'
         onChange={(e) => handleOnChangeInput(e.target.value, index, 'label')}
@@ -26,7 +26,7 @@ const InputTypeText = ({ input, index, handleOnChangeInput }) => {
         size='small'
         type='text'
         fullWidth
-        defaultValue={input.default}
+        value={input.default}
         className='mr-10'
         label='Default'
         onChange={(e) => handleOnChangeInput(e.target.value, index, 'default')}
@@ -35,7 +35,7 @@ const InputTypeText = ({ input, index, handleOnChangeInput }) => {
         size='small'
         type='text'
         fullWidth
-        defaultValue={input.description}
+        value={input.description}
         className='mr-10'
         label='Description'
         onChange={(e) => handleOnChangeInput(e.target.value, index, 'description')}

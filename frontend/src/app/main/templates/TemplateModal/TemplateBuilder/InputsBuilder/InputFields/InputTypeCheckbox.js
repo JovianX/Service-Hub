@@ -9,7 +9,7 @@ const InputTypeCheckbox = ({ input, index, handleOnChangeInput }) => {
         size='small'
         type='text'
         fullWidth
-        defaultValue={input.name}
+        value={input.name}
         required
         className='mr-10'
         label='Name'
@@ -19,7 +19,7 @@ const InputTypeCheckbox = ({ input, index, handleOnChangeInput }) => {
         size='small'
         type='text'
         fullWidth
-        defaultValue={input.label}
+        value={input.label}
         className='mr-10'
         label='Label'
         onChange={(e) => handleOnChangeInput(e.target.value, index, 'label')}
