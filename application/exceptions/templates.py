@@ -16,10 +16,7 @@ class InvalidTemplateException(TemplateException):
     """
     Raised when error was found in template YAML.
     """
-    message: str
-
     def __init__(self, message: str) -> None:
-        self.message = message
         super().__init__(message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
@@ -27,8 +24,14 @@ class InvalidUserInputsException(TemplateException):
     """
     Raised when template user inputs is invalid.
     """
-    message: str
-
     def __init__(self, message: str) -> None:
-        self.message = message
         super().__init__(message=message, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class TemlateVariableNotFoundException(TemplateException):
+    """
+    Raised when template have variables that absent in rendering context.
+    """
+    def __init__(self, message: str, variable: str) -> None:
+        self.variable = variable
+        super().__init__(message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)

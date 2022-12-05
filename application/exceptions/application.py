@@ -86,3 +86,9 @@ class ApplicationComponentUninstallException(ApplicationComponentException):
     """
     Raised when application component failed to uninstall.
     """
+
+
+class ApplicationComponentInstallTimeoutException(ApplicationComponentException):
+    """
+    Raised when application component failed to install in time.
+    """

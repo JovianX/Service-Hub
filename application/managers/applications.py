@@ -21,6 +21,7 @@ from core.configuration import settings
 from crud.applications import ApplicationDatabase
 from crud.applications import get_application_db
 from exceptions.application import ApplicationComponentInstallException
+from exceptions.application import ApplicationComponentInstallTimeoutException
 from exceptions.application import ApplicationComponentUninstallException
 from exceptions.application import ApplicationComponentUpdateException
 from exceptions.application import ApplicationHookLaunchException
@@ -254,41 +255,66 @@ class ApplicationManager:
             data={'application_id': application.id}
         ))
 
+    async def get_component_health(self, component: Component, application: Application) -> dict:
+        """
+        Returns component health condition.
+        """
+        try:
+            component_health_status = await self.helm_manager.release_health_status(
+                application.organization,
+                application.context_name,
+                application.namespace,
+                component.name
+            )
+            health_status = component_health_status['status']
+            details = component_health_status['details']
+        except ReleaseNotFoundException:
+            health_status = ReleaseHealthStatuses.unhealthy
+            details = {}
+
+        return {
+            'status': health_status,
+            'details': details
+        }
+
     async def get_application_health_condition(self, application: Application) -> dict:
         """
         Returns application status.
         """
         template_schema = load_template(application.manifest)
+
+        status = ApplicationHealthStatuses.healthy
         problem_components = {}
         for component in template_schema.components:
-            try:
-                component_health_status = await self.helm_manager.release_health_status(
-                    application.organization,
-                    application.context_name,
-                    application.namespace,
-                    component.name
-                )
-            except ReleaseNotFoundException:
-                problem_components[component] = None
-                continue
-            if component_health_status['status'] != ReleaseHealthStatuses.healthy:
+            component_health_status = await self.get_component_health(component, application)
+            if component_health_status['status'] == ReleaseHealthStatuses.unhealthy:
                 problem_components[component] = component_health_status['details']
-        if problem_components:
-            return {
-                'status': ApplicationHealthStatuses.unhealthy,
-                'problem_components': problem_components
-            }
+                status = ApplicationHealthStatuses.unhealthy
+
+        return {
+            'status': status,
+            'problem_components': problem_components
+        }
+
+    async def await_component_healthy_state(self, component: Component, application: Application) -> None:
+        """
+        Awaits until application component becomes healthy otherwise raises timeout exception.
+        """
+        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENT_DEPLOY_TIMEOUT)
+        while datetime.now() < application_deadline:
+            condition = await self.get_component_health(component, application)
+            if condition['status'] == ApplicationHealthStatuses.healthy:
+                return
         else:
-            return {
-                'status': ApplicationHealthStatuses.healthy,
-                'problem_components': {}
-            }
+            raise ApplicationComponentInstallTimeoutException(
+                f'Failed to start application component in time.', application=application, component=component
+            )
 
     async def await_healthy_state(self, application: Application) -> None:
         """
         Awaits until application become healthy or rises timeout exception.
         """
-        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT)
+        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_DEPLOY_TIMEOUT)
         while datetime.now() < application_deadline:
             condition = await self.get_application_health_condition(application)
             if condition['status'] == ApplicationHealthStatuses.healthy:
@@ -485,7 +511,7 @@ class ApplicationManager:
 
         return user_inputs
 
-    async def get_component_manifests(self, application: Application) -> dict[str, list]:
+    async def get_components_manifests(self, application: Application, skip_absent: bool = False) -> dict[str, list]:
         """
         Returns application components manifests.
         """
@@ -493,12 +519,16 @@ class ApplicationManager:
         manifest = load_template(application.manifest)
         components = [component for component in manifest.components if component.enabled]
         for component in components:
-            manifests[component.name] = await self.helm_manager.get_detailed_manifest(
-                application.organization,
-                application.context_name,
-                application.namespace,
-                component.name
-            )
+            try:
+                manifests[component.name] = await self.helm_manager.get_detailed_manifest(
+                    application.organization,
+                    application.context_name,
+                    application.namespace,
+                    component.name
+                )
+            except ReleaseNotFoundException:
+                if not skip_absent:
+                    raise
 
         return manifests
 
