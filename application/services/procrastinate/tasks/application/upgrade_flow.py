@@ -11,7 +11,6 @@ from exceptions.application import ApplicationComponentUninstallException
 from exceptions.application import ApplicationComponentUpdateException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
-from exceptions.application import ApplicationLaunchTimeoutException
 from schemas.events import EventSchema
 from services.procrastinate.application import procrastinate
 from utils.template import load_template
