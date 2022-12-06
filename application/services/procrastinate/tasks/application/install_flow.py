@@ -72,10 +72,8 @@ async def install_applicatoin_components(application_id: int):
                 await application_manager.await_component_healthy_state(component, application)
                 components_manifests = await application_manager.get_components_manifests(application, skip_absent=True)
                 raw_manifest = application_manager.render_manifest(
-                        application.template,
-                        application=application,
-                        components_manifests=components_manifests
-                    )
+                    application.template, application=application, components_manifests=components_manifests
+                )
                 manifest: TemplateSchema = load_template(raw_manifest)
                 components = [component for component in manifest.components if component.enabled]
                 if component_names != [component.name for component in components]:

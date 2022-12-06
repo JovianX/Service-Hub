@@ -154,18 +154,15 @@ class ApplicationManager:
         new_components_names = new_manifest.components_mapping.keys()
         old_components_names = old_manifest.components_mapping.keys()
         components_to_install = [
-            new_manifest.components_mapping[component_name]
-            for component_name in new_components_names - old_components_names
+            component_name for component_name in new_components_names - old_components_names
             if new_manifest.components_mapping[component_name].enabled
         ]
         components_to_remove = [
-            old_manifest.components_mapping[component_name]
-            for component_name in old_components_names - new_components_names
+            component_name for component_name in old_components_names - new_components_names
             if old_manifest.components_mapping[component_name].enabled
         ]
         components_to_update = [
-            new_manifest.components_mapping[component_name]
-            for component_name in old_components_names & new_components_names
+            component_name for component_name in old_components_names & new_components_names
             if new_manifest.components_mapping[component_name].enabled
         ]
         results = {
@@ -174,13 +171,26 @@ class ApplicationManager:
             'uninstall_outputs': {},
         }
 
-        for component in components_to_install:
-            output = await self.install_component(component, application, dry_run=dry_run)
-            results['install_outputs'][component.name] = output
-        for component in components_to_update:
-            output = await self.update_component(application, component, dry_run=dry_run)
-            results['update_outputs'][component.name] = output
-        for component in components_to_remove:
+        for component_name in new_components_names:
+            component = new_manifest.components_mapping[component_name]
+            if component_name in components_to_install:
+                output = await self.install_component(component, application, dry_run=dry_run)
+                results['install_outputs'][component.name] = output
+            elif component_name in components_to_update:
+                output = await self.update_component(application, component, dry_run=dry_run)
+                results['update_outputs'][component.name] = output
+            if not dry_run:
+                await self.await_component_healthy_state(component, application)
+                components_manifests = await self.get_components_manifests(application, skip_absent=True)
+                raw_manifest = self.render_manifest(
+                    application.template,
+                    application=application,
+                    components_manifests=components_manifests
+                )
+                new_manifest = load_template(raw_manifest)
+
+        for component_name in components_to_remove:
+            component = old_manifest.components_mapping[component_name]
             output = await self.uninstall_component(application, component, dry_run=dry_run)
             results['uninstall_outputs'][component.name] = output
 
