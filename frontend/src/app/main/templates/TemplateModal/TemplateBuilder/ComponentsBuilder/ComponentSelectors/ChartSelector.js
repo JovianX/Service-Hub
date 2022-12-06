@@ -4,13 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { selectCharts, setChartName } from 'app/store/chartsSlice';
 
-const ChartSelector = ({ chart, setChart, chartValue, index, handleOnChangeComponent }) => {
+const ChartSelector = ({ chartValue, index, handleOnChangeComponent }) => {
+  const [chart, setChart] = useState('');
   const dispatch = useDispatch();
   const [charts, setCharts] = useState([chartValue]);
 
   const chartData = useSelector(selectCharts);
 
   useEffect(() => {
+    setChart('');
     if (chartValue) {
       setChart(chartValue);
     }

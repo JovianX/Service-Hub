@@ -66,7 +66,7 @@ const InputsBuilder = () => {
                   onClick={() => handleShowInput(index)}
                 >
                   <ListItemText>
-                    {input.name ? input.name : 'name'} - {input.type ? input.type : 'type'}
+                    {input?.name ? input?.name : 'name'} - {input?.type ? input?.type : 'type'}
                   </ListItemText>
                 </ListItemButton>
                 <Divider variant='fullWidth' component='li' />

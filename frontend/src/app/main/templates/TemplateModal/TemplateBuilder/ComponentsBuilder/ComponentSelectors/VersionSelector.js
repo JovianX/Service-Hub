@@ -4,11 +4,13 @@ import { useSelector } from 'react-redux';
 
 import { getVersionsList as getVersionsListAPI } from '../../../../../../api';
 
-const VersionSelector = ({ version, setVersion, index, versionValue, handleOnChangeComponent }) => {
+const VersionSelector = ({ index, versionValue, handleOnChangeComponent }) => {
+  const [version, setVersion] = useState('');
   const [versionsList, setVersionsList] = useState([versionValue]);
   const chartName = useSelector((state) => state.charts.chartName);
 
   useEffect(() => {
+    setVersion('');
     if (versionValue) {
       setVersion(versionValue);
     }

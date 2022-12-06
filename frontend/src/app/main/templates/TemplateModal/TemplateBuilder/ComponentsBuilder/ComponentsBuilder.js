@@ -69,7 +69,7 @@ const ComponentsBuilder = () => {
                   onClick={() => handleShowComponent(index)}
                 >
                   <ListItemText>
-                    {component.name ? component.name : 'name'} - {component.type ? component.type : 'type'}
+                    {component?.name ? component.name : 'name'} - {component?.type ? component.type : 'type'}
                   </ListItemText>
                 </ListItemButton>
                 <Divider variant='fullWidth' component='li' />

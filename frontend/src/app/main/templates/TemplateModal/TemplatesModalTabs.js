@@ -45,7 +45,7 @@ const TemplatesModalTabs = () => {
   const dispatch = useDispatch();
 
   const [value, setValue] = useState(0);
-  const { configYamlText, onChangeYaml } = useContext(TemplateContext);
+  const { configYamlText, onChangeYaml, infoIsYamlValid } = useContext(TemplateContext);
 
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
@@ -78,15 +78,20 @@ const TemplatesModalTabs = () => {
           <div className='w-3/5 mr-24'>
             <TemplateBuilder />
           </div>
-          <div className='w-2/5 mt-48'>
-            <Editor
-              value={configYamlText}
-              height='60vh'
-              width='100%'
-              language='yaml'
-              theme='vs-dark'
-              onChange={onChangeYaml}
-            />
+          <div className='w-2/5'>
+            <div className='h-[39px] flex items-center'>
+              {infoIsYamlValid && <p className='text-red'>{infoIsYamlValid}</p>}
+            </div>
+            <div className='mt-24'>
+              <Editor
+                value={configYamlText}
+                height='80vh'
+                width='100%'
+                language='yaml'
+                theme='vs-dark'
+                onChange={onChangeYaml}
+              />
+            </div>
           </div>
         </Box>
       </TabPanel>

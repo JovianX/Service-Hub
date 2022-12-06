@@ -7,6 +7,7 @@ const TypeSelector = ({ typeValue, handleOnChangeComponent, index }) => {
   const [type, setType] = useState('');
 
   useEffect(() => {
+    setType('');
     if (typeValue) {
       setType(typeValue);
     }
