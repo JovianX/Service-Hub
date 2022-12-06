@@ -17,12 +17,6 @@ class ApplicationException(CommonException):
         super().__init__(message=message, status_code=status_code)
 
 
-class ApplicationLaunchTimeoutException(ApplicationException):
-    """
-    Raised when failed to start application in time.
-    """
-
-
 ################################################################################
 # Applicatoin hooks exceptions
 ################################################################################

@@ -26,7 +26,6 @@ from exceptions.application import ApplicationComponentUninstallException
 from exceptions.application import ApplicationComponentUpdateException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
-from exceptions.application import ApplicationLaunchTimeoutException
 from exceptions.common import CommonException
 from exceptions.helm import HelmException
 from exceptions.helm import ReleaseNotFoundException
@@ -319,31 +318,6 @@ class ApplicationManager:
             raise ApplicationComponentInstallTimeoutException(
                 f'Failed to start application component in time.', application=application, component=component
             )
-
-    async def await_healthy_state(self, application: Application) -> None:
-        """
-        Awaits until application become healthy or rises timeout exception.
-        """
-        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_DEPLOY_TIMEOUT)
-        while datetime.now() < application_deadline:
-            condition = await self.get_application_health_condition(application)
-            if condition['status'] == ApplicationHealthStatuses.healthy:
-                return
-        else:
-            await self.event_manager.create(EventSchema(
-                title='Application failed to start.',
-                message='Not all application components became healthy in time.',
-                category=EventCategory.application,
-                organization_id=application.organization.id,
-                severity=EventSeverityLevel.error,
-                data={
-                    'application_id': application.id,
-                    'problem_components': {
-                        component.name: details for component, details in condition['problem_components'].items()
-                    }
-                }
-            ))
-            raise ApplicationLaunchTimeoutException(f'Failed to start application in time.', application=application)
 
     async def install_component(self, component: Component, application: Application | None = None,
                                 organization: Organization | None = None, context_name: str | None = None,
