@@ -1,3 +1,4 @@
+import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { Box } from '@mui/system';
@@ -63,9 +64,14 @@ const InputTypeSelect = ({ input, index, handleOnChangeInput, handleDeleteInputO
       {input?.options?.length ? (
         <p className='col-span-2 mb-12'>Options</p>
       ) : (
-        <div className='col-span-2 mb-12 hover:cursor-pointer' onClick={() => handleAddOptions(index)}>
-          Add Options
-        </div>
+        <Button
+          className='mb-12 col-span-2 justify-start'
+          color='primary'
+          startIcon={<AddIcon />}
+          onClick={() => handleAddOptions(index)}
+        >
+          New option
+        </Button>
       )}
 
       {input?.options?.map((option, i) => (
@@ -116,9 +122,14 @@ const InputTypeSelect = ({ input, index, handleOnChangeInput, handleDeleteInputO
         </div>
       ))}
       {input?.options?.length > 0 && (
-        <div className='col-span-2 mb-12 hover:cursor-pointer' onClick={() => handleAddOptions(index)}>
-          Add another option
-        </div>
+        <Button
+          className='mb-12 col-span-2 justify-start'
+          color='primary'
+          startIcon={<AddIcon />}
+          onClick={() => handleAddOptions(index)}
+        >
+          New option
+        </Button>
       )}
     </>
   );

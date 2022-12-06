@@ -42,17 +42,17 @@ const ComponentsBuilder = () => {
     }
   }, [components]);
 
+  const handleShowComponent = (index) => {
+    setIndex(index);
+    setSelectedIndex(index);
+  };
+
   const handleAddAnotherComponent = () => {
     setTemplateBuilder((template) => {
       let { components } = template;
       components = [...components, ...newComponents];
       return { ...template, components };
     });
-  };
-
-  const handleShowComponent = (index) => {
-    setIndex(index);
-    setSelectedIndex(index);
   };
 
   return (
@@ -69,15 +69,12 @@ const ComponentsBuilder = () => {
                   onClick={() => handleShowComponent(index)}
                 >
                   <ListItemText>
-                    {component?.name ? component.name : 'name'} - {component?.type ? component.type : 'type'}
+                    {component.name ? component.name : 'name'} - {component.type ? component.type : 'type'}
                   </ListItemText>
                 </ListItemButton>
                 <Divider variant='fullWidth' component='li' />
               </React.Fragment>
             ))}
-            <Box>
-              <Button onClick={handleAddAnotherComponent}>Add another component</Button>
-            </Box>
           </List>
 
           <Box className='w-3/5'>

@@ -50,7 +50,7 @@ const InputItem = ({ input, index, setIndex, setSelectedIndex }) => {
   };
 
   return (
-    <div>
+    <div className='template-builder bg-deep-purple-50 bg-opacity-50 p-12'>
       <div className={`grid ${input.type === '' ? 'grid-cols-1' : 'grid-cols-2'}  gap-10`}>
         {input.type === '' && (
           <InputTypes typeValue={input.type} index={index} handleOnChangeInput={handleOnChangeInput} />

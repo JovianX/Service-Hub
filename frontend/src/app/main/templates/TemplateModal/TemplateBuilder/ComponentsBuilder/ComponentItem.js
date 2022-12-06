@@ -1,3 +1,4 @@
+import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { Box } from '@mui/system';
@@ -77,7 +78,7 @@ const ComponentItem = ({ component, index, setIndex, setSelectedIndex }) => {
   };
 
   return (
-    <div>
+    <div className='template-builder bg-deep-purple-50 bg-opacity-50 p-12'>
       <div className='grid grid-cols-2 gap-10'>
         <TextField
           size='small'
@@ -99,9 +100,14 @@ const ComponentItem = ({ component, index, setIndex, setSelectedIndex }) => {
         {component?.values?.length ? (
           <p className='col-span-2 mb-12'>Values</p>
         ) : (
-          <div className='col-span-2 mb-12 hover:cursor-pointer' onClick={() => handleAddValues(index)}>
-            Add Values
-          </div>
+          <Button
+            className='mb-12  justify-start'
+            color='primary'
+            startIcon={<AddIcon />}
+            onClick={() => handleAddValues(index)}
+          >
+            New value
+          </Button>
         )}
 
         {component?.values?.map((item, nestedIndex) => {
@@ -118,9 +124,14 @@ const ComponentItem = ({ component, index, setIndex, setSelectedIndex }) => {
         })}
 
         {component.values?.length > 0 && (
-          <div className='col-span-2 mb-12 hover:cursor-pointer' onClick={() => handleAddValues(index)}>
-            Add another value
-          </div>
+          <Button
+            className='mb-12 justify-start'
+            color='primary'
+            startIcon={<AddIcon />}
+            onClick={() => handleAddValues(index)}
+          >
+            New value
+          </Button>
         )}
       </div>
       <Box display='flex' justifyContent='end' className='mb-12'>

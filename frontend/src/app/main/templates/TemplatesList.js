@@ -59,7 +59,131 @@ const TemplatesList = () => {
   }, [selectedTemplateId]);
 
   useEffect(() => {
-    setTemplates(templatesData);
+    setTemplates([
+      {
+        id: 23,
+        created_at: 1667557455.310733,
+        name: 'my-new-service        2',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur',
+        revision: 4,
+        enabled: true,
+        default: false,
+        template:
+          "name: my-new-service        2                    # Required. Name of service.\n\n# List of applicatoin components.\n#\n# Each component should have unique name across all other components.\n# Available components types:\n#     helm_chart:\n#         Component that represent helm chart.\n#         Currently chart can be specified in chart parameter in format\n#         <repository name>/<application name>`(don't forget to add required\n#         repository to Service Hub).\n#         Optionally Version of installing chart, can be defined with `version`\n#         parameter.\n#         Helm chart values can defined in `values parameter.\ncomponents:                                    # Required. Application components list.\n  - name: redis                           # Required. Component name.\n    type: helm_chart                            # Required. Component type.\n    chart: bitnami/redis                        # Required. Chart name in format <repository name>/<application name>.\n    version: 17.0.6                             # Optional. Chart version to install.\n    values:                                     # Optional. Helm chart values to install/update.\n      - db:\n          username: {{ inputs.username }}       # Example of usage dynamic tempalte variables.\n\n# List of user inputs. These inputs allow collect data from user before\n# application launch.\n# Each input must have unique name. That name is used in dynamic template\n# variables, {{ inputs.username }} for instance.\n# Available next inputs types:\n#     Boolean:\n#     Inputs that handling boolean values.\n#     Option provided in options parameter. Option name must be unique across\n#     all input's options. If default option defined it must be in list of\n#     input's options.\n#         checkbox:\n#             Input with checkbox widget, where user can tick option with\n#             checkmark.\n#         switch:\n#             Input with toggle widget(on/off), where user can toggle option.\n#     Choice:\n#     Inputs where user can select option from predefined list.\n#         select:\n#             Input with select widget, where user can choose option from\n#             dropdown list.\n#         radio_select:\n#             Input with radio button widget, where user can select option by\n#             clicking on it.\n#     Numeric:\n#         Inputs that handling integer and float values.\n#         number:\n#             Input with textbox widget where user can enter integer or float\n#             value.\n#         slider:\n#             Input with slider widget where user can enter value by pooling\n#             pointer.\n#     Textual:\n#     Inputs that handling single and multi line strings.\n#         text:\n#             Input with textbox widget. Suitable for simple single-line string,\n#             entity name for instance.\n#         textarea:\n#             Input with textarea widget. Suitable for long multi-line string,\n#             some description for example.\ninputs:                                         # Optional. User input list.\n  - name: text_example                              # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.\n    type: text                                  # Required. Input type.\n    label: 'User Name'                          # Optional. User friendly short input title.\n    default: 'John Connor'                      # Optional. Default input value. Used if was no input from user.\n    description: 'Input description for user.'  # Optional. Valuable for user description of this input.\n\n  - name: textarea_example\n    type: textarea\n    label: 'Short Bio'\n    default: 'This is a short bio for Jon'\n\n  - name: select_example\n    type: select\n    label: 'Select one options from the dropdown'\n    default: 'option_b'                         # Optional. Default option. Must be in list of input's options.\n    options:\n    - name: option_a                            # Required. Option name. Must be unique across all input's options.\n      value: 'option_a_value'                   # Required. Option value that will put into dynamic template variable(in this case `{{ inputs.select_example }}`).\n      description: 'Helpful hit for user regarding this option.'  # Optional. User valuable description what consequences will face user if choose this option.\n      label: 'Option A'                         # Optional. User friendly short option title.\n    - name: option_b\n      value: 'option_b_value'\n      label: 'Option B'\n\n  - name: radio_select_example\n    type: radio_select\n    label: 'Select one options clicking on radio button.'\n    default: 'option_b'                         # Optional. Default option. Must be in list of input's options.\n    options:\n    - name: option_a                            # Required. Option name. Must be unique across all input's options.\n      value: 'option_a_value'                   # Required. Option value that will put into dynamic template variable(in this case `{{ inputs.radio_select_example }}`).\n      description: 'Helpful hit for user regarding this option.'  # Optional. User valuable description what consequences will face user if choose this option.\n      label: 'Option A'                         # Optional. User friendly short option title.\n    - name: option_b\n      value: 'option_b_value'\n      label: 'Option B'\n\n  - name: switch_example\n    type: switch\n    label: 'Toggle this off or on'\n    default: true  # or false\n\n  - name: checkbox_example\n    type: checkbox\n    label: 'Enable or disable this'\n    default: false  # or true\n\n  - name: slider_example\n    type: slider\n    label: 'Choose some numeric value.'\n    min: 1                                      # Required. Minimal value.\n    max: 10                                     # Required. Maximal value.\n    step: 0.5                                   # Required. Step of pointer.\n    default: 5                                  # Optional. Default input value. Must be greater or equal minimal value and less of equal maximal value.\n\n  - name: number_example\n    type: number\n    label: 'Enter some numeric value'\n    min: 1                                      # Optional. Minimal value.\n    max: 10                                     # Optional. Maximal value.\n    default: 5",
+        parsed_template: {
+          name: 'my-new-service        2',
+          components: [
+            {
+              name: 'redis',
+              type: 'helm_chart',
+              chart: 'bitnami/redis',
+              version: '17.0.6',
+              values: [
+                {
+                  db: {
+                    username: '{{{ inputs.username }}}',
+                  },
+                },
+              ],
+            },
+          ],
+          inputs: [
+            {
+              name: 'text_example',
+              type: 'text',
+              label: 'User Name',
+              default: 'John Connor',
+              description: 'Input description for user.',
+            },
+            {
+              name: 'textarea_example',
+              type: 'textarea',
+              label: 'Short Bio',
+              default: 'This is a short bio for Jon',
+            },
+            {
+              name: 'select_example',
+              type: 'select',
+              label: 'Select one options from the dropdown',
+              default: 'option_b',
+              options: [
+                {
+                  name: 'option_a',
+                  value: 'option_a_value',
+                  description: 'Helpful hit for user regarding this option.',
+                  label: 'Option A',
+                },
+                {
+                  name: 'option_b',
+                  value: 'option_b_value',
+                  label: 'Option B',
+                },
+              ],
+            },
+            {
+              name: 'radio_select_example',
+              type: 'radio_select',
+              label: 'Select one options clicking on radio button.',
+              default: 'option_b',
+              options: [
+                {
+                  name: 'option_a',
+                  value: 'option_a_value',
+                  description: 'Helpful hit for user regarding this option.',
+                  label: 'Option A',
+                },
+                {
+                  name: 'option_b',
+                  value: 'option_b_value',
+                  label: 'Option B',
+                },
+              ],
+            },
+            {
+              name: 'switch_example',
+              type: 'switch',
+              label: 'Toggle this off or on',
+              default: true,
+            },
+            {
+              name: 'checkbox_example',
+              type: 'checkbox',
+              label: 'Enable or disable this',
+              default: false,
+            },
+            {
+              name: 'slider_example',
+              type: 'slider',
+              label: 'Choose some numeric value.',
+              min: 1,
+              max: 10,
+              step: 0.5,
+              default: 5,
+            },
+            {
+              name: 'number_example',
+              type: 'number',
+              label: 'Enter some numeric value',
+              min: 1,
+              max: 10,
+              default: 5,
+            },
+          ],
+        },
+        creator: {
+          id: 'a2acdb5d-8552-4e4e-9123-1a8481ca667f',
+          email: 'ee@ee.com',
+          is_active: true,
+          is_verified: false,
+          role: 'admin',
+        },
+        organization: {
+          id: 3,
+          title: 'Weber PLC',
+        },
+      },
+    ]);
+    // setTemplates(templatesData);
   }, [templatesData]);
 
   useEffect(() => {

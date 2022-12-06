@@ -39,17 +39,17 @@ const InputsBuilder = () => {
     }
   }, [inputs]);
 
+  const handleShowInput = (index) => {
+    setIndex(index);
+    setSelectedIndex(index);
+  };
+
   const handleAddAnotherInput = () => {
     setTemplateBuilder((template) => {
       let { inputs } = template;
       inputs = [...inputs, ...newInputs];
       return { ...template, inputs };
     });
-  };
-
-  const handleShowInput = (index) => {
-    setIndex(index);
-    setSelectedIndex(index);
   };
 
   return (
@@ -66,15 +66,12 @@ const InputsBuilder = () => {
                   onClick={() => handleShowInput(index)}
                 >
                   <ListItemText>
-                    {input?.name ? input?.name : 'name'} - {input?.type ? input?.type : 'type'}
+                    {input.name ? input.name : 'name'} - {input.type ? input.type : 'type'}
                   </ListItemText>
                 </ListItemButton>
                 <Divider variant='fullWidth' component='li' />
               </React.Fragment>
             ))}
-            <Box>
-              <Button onClick={handleAddAnotherInput}>Add another input</Button>
-            </Box>
           </List>
 
           <Box className='w-3/5'>

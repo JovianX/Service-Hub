@@ -15,3 +15,6 @@
     width: 100%;
 }
 
+.template-builder .MuiFormControl-root {
+    background-color: #fff;
+}
