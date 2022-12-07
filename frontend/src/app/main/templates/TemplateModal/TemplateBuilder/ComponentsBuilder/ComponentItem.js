@@ -1,7 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { Box } from '@mui/system';
 import { useCallback, useContext } from 'react';
 
 import { TemplateContext } from '../../../TemplateProvider';
@@ -13,37 +12,40 @@ import VersionSelector from './ComponentSelectors/VersionSelector';
 
 const values = [
   {
-    key1: {
-      key2: {
-        key3: '',
-      },
-    },
+    key: '',
   },
 ];
 
-const ComponentItem = ({ component, index, setIndex, setSelectedIndex }) => {
+const ComponentItem = ({ component, index }) => {
   const { setTemplateBuilder } = useContext(TemplateContext);
 
-  const handleOnChangeComponent = useCallback((value, index, type) => {
+  const handleOnChangeComponent = useCallback((value, index, type, nestedIndex, nestedType) => {
     setTemplateBuilder((template) => {
       const components = template?.components || [];
       const component = components[index] || {};
+
+      if (nestedIndex !== undefined && nestedType) {
+        const valueForChange = component[type][nestedIndex];
+
+        if (nestedType === 'value') {
+          valueForChange[Object.keys(valueForChange)[0]] = value;
+          component[type][nestedIndex] = valueForChange;
+          return { ...template, components };
+        }
+        if (nestedType === 'key') {
+          component[type][nestedIndex] = {
+            [value]: valueForChange[Object.keys(valueForChange)[0]],
+          };
+          return { ...template, components };
+        }
+      }
+
       component[type] = value;
       components[index] = component;
 
       return { ...template, components };
     });
   }, []);
-
-  const handleDeleteComponent = (index) => {
-    setSelectedIndex(0);
-    setIndex(0);
-    setTemplateBuilder((template) => {
-      let { components } = template;
-      components = [...components.filter((item, i) => i !== index)];
-      return { ...template, components };
-    });
-  };
 
   const handleAddValues = (index) => {
     setTemplateBuilder((template) => {
@@ -70,8 +72,7 @@ const ComponentItem = ({ component, index, setIndex, setSelectedIndex }) => {
   const handleDeleteComponentValues = (inputIndex, optionIndex) => {
     setTemplateBuilder((template) => {
       const { components } = template;
-      const values = components[inputIndex].values.filter((item, index) => index !== optionIndex);
-      components[inputIndex].values = values;
+      components[inputIndex].values = components[inputIndex].values.filter((item, index) => index !== optionIndex);
 
       return { ...template, components };
     });
@@ -111,13 +112,24 @@ const ComponentItem = ({ component, index, setIndex, setSelectedIndex }) => {
         )}
 
         {component?.values?.map((item, nestedIndex) => {
-          const value = onRecursValues(item);
+          let value = [];
+          try {
+            if (item[Object.keys(item)] !== undefined && typeof item[Object.keys(item)] === 'object') {
+              value = onRecursValues(item);
+            } else {
+              value = item;
+            }
+          } catch (e) {
+            throw new Error(e);
+          }
+
           return (
             <ValuesInputs
               key={nestedIndex}
               value={value}
               index={index}
               nestedIndex={nestedIndex}
+              handleOnChangeComponent={handleOnChangeComponent}
               handleDeleteComponentValues={handleDeleteComponentValues}
             />
           );
@@ -134,9 +146,6 @@ const ComponentItem = ({ component, index, setIndex, setSelectedIndex }) => {
           </Button>
         )}
       </div>
-      <Box display='flex' justifyContent='end' className='mb-12'>
-        <Button onClick={() => handleDeleteComponent(index)}>Delete</Button>
-      </Box>
     </div>
   );
 };

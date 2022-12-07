@@ -1,7 +1,10 @@
+import AddIcon from '@mui/icons-material/Add';
 import { Divider, List, ListItemButton, ListItemText } from '@mui/material';
 import Button from '@mui/material/Button';
 import { Box } from '@mui/system';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
 import { TemplateContext } from '../../../TemplateProvider';
 
@@ -55,6 +58,16 @@ const ComponentsBuilder = () => {
     });
   };
 
+  const handleDeleteComponent = async (index) => {
+    await setSelectedIndex(0);
+    await setIndex(0);
+    await setTemplateBuilder((template) => {
+      let { components } = template;
+      components = [...components.filter((item, i) => i !== index)];
+      return { ...template, components };
+    });
+  };
+
   return (
     <>
       {components?.length ? (
@@ -63,7 +76,7 @@ const ComponentsBuilder = () => {
             {components?.map((component, index) => (
               <React.Fragment key={index}>
                 <ListItemButton
-                  className='hover:cursor-pointer'
+                  className='group hover:cursor-pointer min-h-[50px]'
                   style={{ borderLeft: selectedIndex === index ? '3px solid #2A3BAB' : '' }}
                   selected={selectedIndex === index}
                   onClick={() => handleShowComponent(index)}
@@ -71,19 +84,33 @@ const ComponentsBuilder = () => {
                   <ListItemText>
                     {component.name ? component.name : 'name'} - {component.type ? component.type : 'type'}
                   </ListItemText>
+
+                  <Button
+                    className='hidden group-hover:flex'
+                    variant='text'
+                    color='error'
+                    size='small'
+                    onClick={() => handleDeleteComponent(index)}
+                  >
+                    <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                  </Button>
                 </ListItemButton>
                 <Divider variant='fullWidth' component='li' />
               </React.Fragment>
             ))}
+            <Button
+              className='mt-12'
+              color='primary'
+              variant='contained'
+              startIcon={<AddIcon />}
+              onClick={handleAddAnotherComponent}
+            >
+              New component
+            </Button>
           </List>
 
           <Box className='w-3/5'>
-            <ComponentItem
-              component={component}
-              index={index}
-              setIndex={setIndex}
-              setSelectedIndex={setSelectedIndex}
-            />
+            <ComponentItem component={component} index={index} />
           </Box>
         </Box>
       ) : (

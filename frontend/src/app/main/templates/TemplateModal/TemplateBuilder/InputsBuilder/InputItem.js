@@ -1,5 +1,3 @@
-import Button from '@mui/material/Button';
-import { Box } from '@mui/system';
 import { useCallback, useContext } from 'react';
 
 import { TemplateContext } from '../../../TemplateProvider';
@@ -12,7 +10,7 @@ import InputTypeSlider from './InputFields/InputTypeSlider';
 import InputTypeSwitch from './InputFields/InputTypeSwitch';
 import InputTypeText from './InputFields/InputTypeText';
 
-const InputItem = ({ input, index, setIndex, setSelectedIndex }) => {
+const InputItem = ({ input, index }) => {
   const { setTemplateBuilder } = useContext(TemplateContext);
 
   const handleOnChangeInput = useCallback((value, index, type, nestedIndex, nestedType) => {
@@ -28,16 +26,6 @@ const InputItem = ({ input, index, setIndex, setSelectedIndex }) => {
       return { ...template, inputs };
     });
   }, []);
-
-  const handleDeleteInput = (index) => {
-    setSelectedIndex(0);
-    setIndex(0);
-    setTemplateBuilder((template) => {
-      let { inputs } = template;
-      inputs = [...inputs.filter((item, i) => i !== index)];
-      return { ...template, inputs };
-    });
-  };
 
   const handleDeleteInputOptions = (inputIndex, optionIndex) => {
     setTemplateBuilder((template) => {
@@ -91,10 +79,6 @@ const InputItem = ({ input, index, setIndex, setSelectedIndex }) => {
           <InputTypeSwitch input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
         )}
       </div>
-
-      <Box display='flex' justifyContent='end' className='mb-12'>
-        <Button onClick={() => handleDeleteInput(index)}>Delete</Button>
-      </Box>
     </div>
   );
 };

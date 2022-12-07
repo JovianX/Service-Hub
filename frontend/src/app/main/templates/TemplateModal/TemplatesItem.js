@@ -17,7 +17,6 @@ const TemplatesItem = () => {
     setTemplateBuilder,
     configYamlText,
     onChangeYaml,
-    infoIsYamlValid,
     inputDescription,
     onChangeInputDescription,
   } = useContext(TemplateContext);
@@ -36,39 +35,35 @@ const TemplatesItem = () => {
 
   return (
     <>
-      <TextField
-        value={templateBuilder?.name || ''}
-        name='name'
-        type='text'
-        id='outlined-required'
-        label='Application name'
-        margin='normal'
-        fullWidth
-        onChange={onChangeApplicationName}
-      />
-      <TextField
-        value={inputDescription || ''}
-        name='description'
-        type='text'
-        id='outlined-required'
-        label='Description'
-        margin='normal'
-        fullWidth
-        onChange={onChangeInputDescription}
-      />
-
       <Box display='flex' justifyContent='space-between'>
         <div className='w-3/5 mr-24'>
+          <TextField
+            value={templateBuilder?.name || ''}
+            name='name'
+            type='text'
+            id='outlined-required'
+            label='Application name'
+            margin='normal'
+            fullWidth
+            onChange={onChangeApplicationName}
+          />
+          <TextField
+            value={inputDescription || ''}
+            name='description'
+            type='text'
+            id='outlined-required'
+            label='Description'
+            margin='normal'
+            fullWidth
+            onChange={(e) => onChangeInputDescription(e.target.value)}
+          />
           <TemplateBuilder />
         </div>
         <div className='w-2/5 mt-12'>
-          <div className='h-[39px] flex items-center'>
-            {infoIsYamlValid && <p className='text-red'>{infoIsYamlValid}</p>}
-          </div>
-          <div className='mt-24'>
+          <div className='mt-4'>
             <Editor
               value={configYamlText}
-              height='80vh'
+              height='90vh'
               width='100%'
               language='yaml'
               theme='vs-dark'

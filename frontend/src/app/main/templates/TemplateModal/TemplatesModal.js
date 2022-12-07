@@ -19,19 +19,28 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
 
-  const { configYamlText, onChangeYaml, setTemplateBuilder, inputDescription, onChangeInputDescription } =
-    useContext(TemplateContext);
+  const {
+    configYamlText,
+    onChangeYaml,
+    setTemplateBuilder,
+    inputDescription,
+    onChangeInputDescription,
+    infoIsYamlValid,
+    setInfoIsYamlValid,
+  } = useContext(TemplateContext);
 
   useEffect(() => {
     if (openModal) {
       setOpen(true);
       setOpenModal(false);
+      setInfoIsYamlValid('');
     }
   }, [openModal]);
 
   useEffect(() => {
     if (modalInfo?.action) {
       onChangeInputDescription(modalInfo.template?.description);
+
       if (modalInfo.action === 'EDIT') {
         onChangeYaml(modalInfo.template?.template);
         setTemplateBuilder(yaml.load(modalInfo.template?.template, { json: true }));
@@ -123,6 +132,7 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
                 type='submit'
                 loading={loading}
                 loadingPosition='start'
+                disabled={!!infoIsYamlValid}
                 startIcon={[
                   modalInfo.action === 'CREATE' && <AddIcon key={modalInfo.action} />,
                   modalInfo.action === 'EDIT' && <EditIcon key={modalInfo.action} />,
