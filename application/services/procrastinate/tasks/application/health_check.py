@@ -23,7 +23,11 @@ async def check_applications_health(*args, **kwargs):
         application_manager = get_application_manager(session)
         applications = await application_manager.list_all_applications()
         for application in applications:
-            condition = await application_manager.get_application_health_condition(application)
+            try:
+                condition = await application_manager.get_application_health_condition(application)
+            except Exception as error:
+                logger.exception(f'Skipping health check of <Application ID={application.id}>. {error}')
+                continue
             health_status = condition['status']
             if application.health != health_status:
                 if health_status == ReleaseHealthStatuses.unhealthy:
@@ -32,7 +36,8 @@ async def check_applications_health(*args, **kwargs):
                     severity = EventSeverityLevel.info
                 await application_manager.event_manager.create(EventSchema(
                     title='Change of application health.',
-                    message=f'Application became {health_status}.',
+                    message=f'Automatic periodic application health check detected health condition change. '
+                            f'Application became {health_status}.',
                     organization_id=application.organization.id,
                     category=EventCategory.application,
                     severity=severity,
