@@ -11,7 +11,7 @@ const ValuesInputs = ({ value, index, nestedIndex, handleOnChangeComponent, hand
             size='small'
             type='text'
             fullWidth
-            value={Object.keys(value)}
+            value={Object.keys(value) || ''}
             className='mr-10'
             label='Key'
             onChange={(e) => handleOnChangeComponent(e.target.value, index, 'values', nestedIndex, 'key')}

@@ -2,7 +2,6 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import yaml from 'js-yaml';
 import { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -23,7 +22,6 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
   const {
     configYamlText,
     onChangeYaml,
-    setTemplateBuilder,
     inputDescription,
     onChangeInputDescription,
     infoIsYamlValid,
@@ -45,7 +43,6 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
 
       if (modalInfo.action === 'EDIT') {
         onChangeYaml(modalInfo.template?.template);
-        setTemplateBuilder(yaml.load(modalInfo.template?.template, { json: true }));
       } else if (modalInfo.action === 'CREATE') {
         onChangeYaml('');
       }

@@ -119,9 +119,7 @@ const ComponentItem = ({ component, index }) => {
             } else {
               value = item;
             }
-          } catch (e) {
-            throw new Error('The YAML format is incorrect');
-          }
+          } catch (e) {}
 
           return (
             <ValuesInputs
