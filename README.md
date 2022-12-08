@@ -1,12 +1,11 @@
 <div align=center>
-
-![image](https://user-images.githubusercontent.com/2787296/198906916-9904da29-3005-49e6-a109-b4238dc9ace1.png)
-
-# JovianX Service Hub
          
+![service-hub-banner](https://user-images.githubusercontent.com/2787296/206389982-424ccee3-3f4e-42b9-ac0d-e62e5117b03c.png)
+     
 | **Please star ⭐ the repo if you find it useful.** |
 | --- |
          
+
 <table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Thank you dear stargazers! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub/pulls">Issues/PRs are welcome 👍 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Join Discord 💬 </a></td></tr></tbody></table>
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
@@ -16,7 +15,7 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 </div>
 
-
+# JovianX Service Hub
 JovianX **Service Hub** is a tool to create and manage Self-Service using Helm and Kubernetes (used by Platform Engineers).
 
 
