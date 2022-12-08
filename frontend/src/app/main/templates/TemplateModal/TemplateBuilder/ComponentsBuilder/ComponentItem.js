@@ -120,7 +120,7 @@ const ComponentItem = ({ component, index }) => {
               value = item;
             }
           } catch (e) {
-            throw new Error(e);
+            throw new Error('The YAML format is incorrect');
           }
 
           return (
