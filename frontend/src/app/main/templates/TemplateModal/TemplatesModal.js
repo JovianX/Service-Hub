@@ -6,6 +6,7 @@ import yaml from 'js-yaml';
 import { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { getChartList } from 'app/store/chartsSlice';
 import { createTemplate } from 'app/store/templatesSlice';
 
 import { TemplateContext } from '../TemplateProvider';
@@ -34,6 +35,7 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
       setOpen(true);
       setOpenModal(false);
       setInfoIsYamlValid('');
+      dispatch(getChartList());
     }
   }, [openModal]);
 
@@ -110,6 +112,7 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
         PaperProps={{
           sx: {
             minHeight: '90vh',
+            overflowY: 'hidden',
           },
         }}
       >

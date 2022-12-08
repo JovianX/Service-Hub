@@ -10,7 +10,7 @@ import ComponentsBuilder from './ComponentsBuilder/ComponentsBuilder';
 import InputsBuilder from './InputsBuilder/InputsBuilder';
 
 const TemplateBuilder = () => {
-  const [alignment, setAlignment] = useState('');
+  const [alignment, setAlignment] = useState('components');
 
   const { infoIsYamlValid, setIsInputByHand, isInputByHand } = useContext(TemplateContext);
 
@@ -24,29 +24,31 @@ const TemplateBuilder = () => {
 
   return (
     <Box className='mt-12'>
-      <Box className='mr-12' display='flex' justifyContent='space-between'>
-        <ToggleButtonGroup color='primary' value={alignment} exclusive onChange={handleChangeAlignment}>
-          <ToggleButton size='small' value='components'>
-            Components
-          </ToggleButton>
-          <ToggleButton size='small' value='inputs' className='w-[110px]'>
-            Inputs
-          </ToggleButton>
-        </ToggleButtonGroup>
+      <Box className='overflow-y-scroll' style={{ height: 'calc(100vh - 430px)' }}>
+        <Box className='mr-12' display='flex' justifyContent='space-between'>
+          <ToggleButtonGroup color='primary' value={alignment} exclusive onChange={handleChangeAlignment}>
+            <ToggleButton size='small' value='components'>
+              Components
+            </ToggleButton>
+            <ToggleButton size='small' value='inputs' className='w-[110px]'>
+              Inputs
+            </ToggleButton>
+          </ToggleButtonGroup>
 
-        <FormGroup>
-          <FormControlLabel
-            control={<Switch color='primary' onChange={handleOnChangeInput} checked={isInputByHand} />}
-            label='add manually'
-          />
-        </FormGroup>
+          <FormGroup>
+            <FormControlLabel
+              control={<Switch color='primary' onChange={handleOnChangeInput} checked={isInputByHand} />}
+              label='Sync Designer UI with YAML'
+            />
+          </FormGroup>
+        </Box>
+
+        <Box className='mt-24 h-max'>
+          {alignment === 'components' && <ComponentsBuilder />}
+          {alignment === 'inputs' && <InputsBuilder />}
+        </Box>
       </Box>
-
-      <div className='mt-24 h-max'>
-        {alignment === 'components' && <ComponentsBuilder />}
-        {alignment === 'inputs' && <InputsBuilder />}
-      </div>
-      <div className={`${alignment ? 'mt-[-28px]' : ''} min-h-[30px] flex justify-center`}>
+      <div className='mt-3 min-h-[30px] flex justify-center items-end'>
         {infoIsYamlValid && <p className='text-red'>{infoIsYamlValid}</p>}
       </div>
     </Box>

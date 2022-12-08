@@ -1,6 +1,6 @@
 import yaml from 'js-yaml';
 import YAML from 'json-to-pretty-yaml';
-import { createContext, useCallback, useMemo, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 export const TemplateContext = createContext({});
 
@@ -8,7 +8,8 @@ export const TemplateProvider = ({ children }) => {
   const [templateBuilder, setTemplateBuilder] = useState(null);
   const [infoIsYamlValid, setInfoIsYamlValid] = useState('');
   const [inputDescription, setInputDescription] = useState('');
-  const [isInputByHand, setIsInputByHand] = useState(false);
+  const [isInputByHand, setIsInputByHand] = useState(true);
+  const [changedByHandConfigYamlText, setChangedByHandConfigYamlText] = useState('');
 
   const onChangeInputDescription = useCallback((newValue) => {
     setInputDescription(newValue);
@@ -21,17 +22,23 @@ export const TemplateProvider = ({ children }) => {
 
   const onChangeYaml = useCallback(
     (newValue) => {
-      if (!isInputByHand) {
+      if (isInputByHand) {
         try {
           setTemplateBuilder(yaml.load(newValue, { json: true }));
           setInfoIsYamlValid('');
         } catch (e) {
           setInfoIsYamlValid(e.reason);
         }
+      } else {
+        setChangedByHandConfigYamlText(newValue);
       }
     },
     [isInputByHand],
   );
+
+  useEffect(() => {
+    onChangeYaml(changedByHandConfigYamlText);
+  }, [isInputByHand]);
 
   const value = useMemo(
     () => ({

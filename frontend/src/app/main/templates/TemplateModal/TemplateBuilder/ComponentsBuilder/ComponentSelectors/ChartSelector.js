@@ -8,7 +8,6 @@ const ChartSelector = ({ chartValue, index, handleOnChangeComponent }) => {
   const [chart, setChart] = useState('');
   const dispatch = useDispatch();
   const [charts, setCharts] = useState([chartValue]);
-
   const chartData = useSelector(selectCharts);
 
   useEffect(() => {
@@ -24,7 +23,7 @@ const ChartSelector = ({ chartValue, index, handleOnChangeComponent }) => {
       chartData.forEach((item) => {
         chartsName.push(item.name);
       });
-      setCharts((charts) => [...charts, ...chartsName.filter((item) => item !== chartValue)]);
+      setCharts(chartsName);
     }
   }, [chartData]);
 

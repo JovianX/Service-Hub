@@ -22,6 +22,7 @@ const newComponents = [
 const ComponentsBuilder = () => {
   const { templateBuilder, setTemplateBuilder } = useContext(TemplateContext);
   const [index, setIndex] = useState(0);
+  const [actionType, setActionType] = useState('');
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -29,6 +30,11 @@ const ComponentsBuilder = () => {
     if (!templateBuilder?.components) {
       return null;
     }
+    if (actionType === 'ADD') {
+      setIndex(templateBuilder.components.length - 1);
+      setSelectedIndex(templateBuilder.components.length - 1);
+    }
+
     return templateBuilder.components;
   }, [templateBuilder]);
 
@@ -46,11 +52,13 @@ const ComponentsBuilder = () => {
   }, [components]);
 
   const handleShowComponent = (index) => {
+    setActionType('');
     setIndex(index);
     setSelectedIndex(index);
   };
 
   const handleAddAnotherComponent = () => {
+    setActionType('ADD');
     setTemplateBuilder((template) => {
       let { components } = template;
       components = [...components, ...newComponents];
@@ -59,6 +67,7 @@ const ComponentsBuilder = () => {
   };
 
   const handleDeleteComponent = async (index) => {
+    await setActionType('');
     await setSelectedIndex(0);
     await setIndex(0);
     await setTemplateBuilder((template) => {
@@ -115,7 +124,9 @@ const ComponentsBuilder = () => {
         </Box>
       ) : (
         <Box>
-          <Button onClick={handleAddAnotherComponent}>Add a component</Button>
+          <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddAnotherComponent}>
+            New component
+          </Button>
         </Box>
       )}
     </>

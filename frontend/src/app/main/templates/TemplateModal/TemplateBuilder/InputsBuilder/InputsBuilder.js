@@ -18,13 +18,17 @@ const newInputs = [
 
 const InputsBuilder = () => {
   const { templateBuilder, setTemplateBuilder } = useContext(TemplateContext);
-
   const [index, setIndex] = useState(0);
+  const [actionType, setActionType] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const inputs = useMemo(() => {
     if (!templateBuilder?.inputs) {
       return null;
+    }
+    if (actionType === 'ADD') {
+      setIndex(templateBuilder.inputs.length - 1);
+      setSelectedIndex(templateBuilder.inputs.length - 1);
     }
     return templateBuilder.inputs;
   }, [templateBuilder]);
@@ -43,11 +47,13 @@ const InputsBuilder = () => {
   }, [inputs]);
 
   const handleShowInput = (index) => {
+    setActionType('');
     setIndex(index);
     setSelectedIndex(index);
   };
 
   const handleDeleteInput = async (index) => {
+    await setActionType('');
     await setSelectedIndex(0);
     await setIndex(0);
     await setTemplateBuilder((template) => {
@@ -58,6 +64,7 @@ const InputsBuilder = () => {
   };
 
   const handleAddAnotherInput = () => {
+    setActionType('ADD');
     setTemplateBuilder((template) => {
       let { inputs } = template;
       inputs = [...inputs, ...newInputs];
@@ -113,7 +120,9 @@ const InputsBuilder = () => {
         </Box>
       ) : (
         <Box>
-          <Button onClick={handleAddAnotherInput}>Add an input</Button>
+          <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddAnotherInput}>
+            New input
+          </Button>
         </Box>
       )}
     </>

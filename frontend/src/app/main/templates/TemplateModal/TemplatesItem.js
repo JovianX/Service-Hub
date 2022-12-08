@@ -1,17 +1,13 @@
 import Editor from '@monaco-editor/react';
 import { TextField } from '@mui/material';
 import Box from '@mui/material/Box';
-import { useContext, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-
-import { getChartList } from 'app/store/chartsSlice';
+import { useContext } from 'react';
 
 import { TemplateContext } from '../TemplateProvider';
 
 import TemplateBuilder from './TemplateBuilder/TemplateBuilder';
 
 const TemplatesItem = () => {
-  const dispatch = useDispatch();
   const {
     templateBuilder,
     setTemplateBuilder,
@@ -20,10 +16,6 @@ const TemplatesItem = () => {
     inputDescription,
     onChangeInputDescription,
   } = useContext(TemplateContext);
-
-  useEffect(() => {
-    dispatch(getChartList());
-  }, [dispatch]);
 
   const onChangeApplicationName = (e) => {
     setTemplateBuilder((template) => {
@@ -60,10 +52,10 @@ const TemplatesItem = () => {
           <TemplateBuilder />
         </div>
         <div className='w-2/5 mt-12'>
-          <div className='mt-4'>
+          <div className='mt-4' style={{ height: 'calc(100vh - 250px)' }}>
             <Editor
               value={configYamlText}
-              height='90vh'
+              height='100%'
               width='100%'
               language='yaml'
               theme='vs-dark'
