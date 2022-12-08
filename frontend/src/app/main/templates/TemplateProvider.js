@@ -24,6 +24,7 @@ export const TemplateProvider = ({ children }) => {
     (newValue) => {
       if (isInputByHand) {
         try {
+          setChangedByHandConfigYamlText(newValue);
           setTemplateBuilder(yaml.load(newValue, { json: true }));
           setInfoIsYamlValid('');
         } catch (e) {

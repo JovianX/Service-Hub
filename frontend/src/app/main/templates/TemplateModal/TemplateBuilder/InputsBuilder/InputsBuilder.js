@@ -76,7 +76,7 @@ const InputsBuilder = () => {
     <>
       {inputs?.length ? (
         <Box display='flex' justifyContent='space-between'>
-          <List className='w-2/5 pt-0 h-[70vh] overflow-y-scroll mr-12'>
+          <List className='w-2/5 pt-0 h-full overflow-y-scroll mr-12'>
             {inputs?.map((input, index) => (
               <React.Fragment key={index}>
                 <ListItemButton
