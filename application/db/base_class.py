@@ -4,11 +4,13 @@ from typing import Any
 from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy.ext.declarative import declared_attr
 
+from .session import engine
+
 
 camel_case_pattern = re.compile(r'(?<!^)(?=[A-Z])')
 
 
-@as_declarative()
+@as_declarative(bind=engine)
 class Base:
     id: Any
     __name__: str

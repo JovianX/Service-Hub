@@ -12,6 +12,8 @@ from fastapi import status
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
+from constants.events import EventCategory
+from constants.events import EventSeverityLevel
 from constants.helm import ReleaseHealthStatuses
 from constants.kubernetes import K8sKinds
 from constants.templates import HookOnFailureBehavior
@@ -28,7 +30,10 @@ from exceptions.common import CommonException
 from exceptions.helm import HelmException
 from exceptions.helm import ReleaseNotFoundException
 from exceptions.templates import InvalidUserInputsException
+from managers.events import EventManager
+from managers.events import get_event_manager
 from managers.helm.manager import HelmManager
+from managers.helm.manager import get_helm_manager
 from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
@@ -36,6 +41,7 @@ from models.application import Application
 from models.organization import Organization
 from models.template import TemplateRevision
 from models.user import User
+from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
 from schemas.templates.components import Component
 from schemas.templates.hooks import Hook
@@ -54,11 +60,14 @@ class ApplicationManager:
     db: ApplicationDatabase
     organization_manager: OrganizationManager
     helm_manager: HelmManager
+    event_manager: EventManager
 
-    def __init__(self, db: ApplicationDatabase, organization_manager: OrganizationManager) -> None:
+    def __init__(self, db: ApplicationDatabase, organization_manager: OrganizationManager, event_manager: EventManager,
+                 helm_manager: HelmManager) -> None:
         self.db = db
         self.organization_manager = organization_manager
-        self.helm_manager = HelmManager(organization_manager)
+        self.helm_manager = helm_manager
+        self.event_manager = event_manager
 
     async def install(self, context_name: str, namespace: str, user: User, template: TemplateRevision, inputs: dict,
                       dry_run: bool = False) -> Application | dict[str, dict]:
@@ -101,6 +110,13 @@ class ApplicationManager:
 
             from services.procrastinate.tasks.application import execute_pre_install_hooks
             await execute_pre_install_hooks.defer_async(application_id=application_record.id)
+            await self.event_manager.create(EventSchema(
+                title='Application deploy requested.',
+                message='Created deferred task to deploy application.',
+                category=EventCategory.application,
+                organization_id=user.organization.id,
+                data={'application_id': application_record.id}
+            ))
 
             return application_record
 
@@ -114,6 +130,16 @@ class ApplicationManager:
         else:
             from services.procrastinate.tasks.application import execute_pre_upgrade_hooks
             await execute_pre_upgrade_hooks.defer_async(application_id=application.id, new_template_id=template.id)
+            await self.event_manager.create(EventSchema(
+                title='Application upgrade requested.',
+                message='Created deferred task to upgrade application with new template.',
+                category=EventCategory.application,
+                organization_id=application.organization.id,
+                data={
+                    'application_id': application.id,
+                    'template_id': template.id
+                }
+            ))
 
     async def upgrade_components(self, application: Application, new_template: TemplateRevision,
                                  dry_run: bool = False) -> dict[str, dict]:
@@ -147,24 +173,15 @@ class ApplicationManager:
             'uninstall_outputs': {},
         }
 
-        install_outputs = await asyncio.gather(*[
-            self.install_component(component, application, dry_run=dry_run) for component in components_to_install
-        ])
-        results['install_outputs'] = {
-            component.name: output for component, output in zip(components_to_install, install_outputs)
-        }
-        update_outputs = await asyncio.gather(*[
-            self.update_component(application, component, dry_run=dry_run) for component in components_to_update
-        ])
-        results['update_outputs'] = {
-            component.name: output for component, output in zip(components_to_update, update_outputs)
-        }
-        uninstall_outputs = await asyncio.gather(*[
-            self.uninstall_component(application, component, dry_run=dry_run) for component in components_to_remove
-        ])
-        results['uninstall_outputs'] = {
-            component.name: output for component, output in zip(components_to_remove, uninstall_outputs)
-        }
+        for component in components_to_install:
+            output = await self.install_component(component, application, dry_run=dry_run)
+            results['install_outputs'][component.name] = output
+        for component in components_to_update:
+            output = await self.update_component(application, component, dry_run=dry_run)
+            results['update_outputs'][component.name] = output
+        for component in components_to_remove:
+            output = await self.uninstall_component(application, component, dry_run=dry_run)
+            results['uninstall_outputs'][component.name] = output
 
         return results
 
@@ -229,13 +246,20 @@ class ApplicationManager:
 
         from services.procrastinate.tasks.application import execute_pre_terminate_hooks
         await execute_pre_terminate_hooks.defer_async(application_id=application.id)
+        await self.event_manager.create(EventSchema(
+            title='Application termination requested.',
+            message='Created deferred task to terminate application.',
+            category=EventCategory.application,
+            organization_id=application.organization.id,
+            data={'application_id': application.id}
+        ))
 
-    async def get_application_health_status(self, application: Application) -> ApplicationHealthStatuses:
+    async def get_application_health_condition(self, application: Application) -> dict:
         """
         Returns application status.
         """
         template_schema = load_template(application.manifest)
-        application_components_healthy = []
+        problem_components = {}
         for component in template_schema.components:
             try:
                 component_health_status = await self.helm_manager.release_health_status(
@@ -245,15 +269,20 @@ class ApplicationManager:
                     component.name
                 )
             except ReleaseNotFoundException:
-                application_components_healthy.append(False)
-                break
-            application_components_healthy.append(
-                component_health_status['status'] == ReleaseHealthStatuses.healthy
-            )
-        if all(application_components_healthy):
-            return ApplicationHealthStatuses.healthy
+                problem_components[component] = None
+                continue
+            if component_health_status['status'] != ReleaseHealthStatuses.healthy:
+                problem_components[component] = component_health_status['details']
+        if problem_components:
+            return {
+                'status': ApplicationHealthStatuses.unhealthy,
+                'problem_components': problem_components
+            }
         else:
-            return ApplicationHealthStatuses.unhealthy
+            return {
+                'status': ApplicationHealthStatuses.healthy,
+                'problem_components': {}
+            }
 
     async def await_healthy_state(self, application: Application) -> None:
         """
@@ -261,10 +290,23 @@ class ApplicationManager:
         """
         application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT)
         while datetime.now() < application_deadline:
-            status = await self.get_application_health_status(application)
-            if status == ApplicationHealthStatuses.healthy:
+            condition = await self.get_application_health_condition(application)
+            if condition['status'] == ApplicationHealthStatuses.healthy:
                 return
         else:
+            await self.event_manager.create(EventSchema(
+                title='Application failed to start.',
+                message='Not all application components became healthy in time.',
+                category=EventCategory.application,
+                organization_id=application.organization.id,
+                severity=EventSeverityLevel.error,
+                data={
+                    'application_id': application.id,
+                    'problem_components': {
+                        component.name: details for component, details in condition['problem_components'].items()
+                    }
+                }
+            ))
             raise ApplicationLaunchTimeoutException(f'Failed to start application in time.', application=application)
 
     async def install_component(self, component: Component, application: Application | None = None,
@@ -371,6 +413,16 @@ class ApplicationManager:
                     name=job_name
                 )
                 if job.is_completed:
+                    await self.event_manager.create(EventSchema(
+                        title='Application deploy.',
+                        message=f'Hook "{hook.name}" successfully executed.',
+                        organization_id=application.organization.id,
+                        category=EventCategory.application,
+                        data={
+                            'application_id': application.id,
+                            'hook': hook.name
+                        }
+                    ))
                     break
                 if job.is_failed:
                     job_log = k8s_manager.get_log(
@@ -378,15 +430,41 @@ class ApplicationManager:
                     )
                     logger.error(f'Failed to launch hook "{hook.name}". Error message from Job:\n{job_log}')
                     if hook.on_failure == HookOnFailureBehavior.stop:
+                        await self.event_manager.create(EventSchema(
+                            title='Application deploy failed.',
+                            message=f'Failed to start application because was error during execution of "{hook.name}" '
+                                    f'hook and this hook is vital for application deployment.',
+                            organization_id=application.organization.id,
+                            category=EventCategory.application,
+                            severity=EventSeverityLevel.error,
+                            data={
+                                'application_id': application.id,
+                                'hook': hook.name,
+                                'job_log': job_log
+                            }
+                        ))
                         raise ApplicationHookLaunchException(
-                            f'<Hook name="{hook.name}"> failed to start in {hook.timeout} seconds.',
+                            f'<Hook name="{hook.name}"> failed to execute.',
                             application=application,
-                            hook=hook
+                            hook=hook,
+                            log=job_log
                         )
             else:
                 logger.error(f'Hook "{hook.name}" launch timeout. Failed to launch hook in {hook.timeout} seconds.')
+                await self.event_manager.create(EventSchema(
+                    title='Application deploy failed.',
+                    message=f'Failed to start application because execution of hook "{hook.name}" was not finished in '
+                            f'time and this hook is vital for application deployment.',
+                    organization_id=application.organization.id,
+                    category=EventCategory.application,
+                    severity=EventSeverityLevel.error,
+                    data={
+                        'application_id': application.id,
+                        'hook': hook.name
+                    }
+                ))
                 raise ApplicationHookTimeoutException(
-                    f'<Hook name="{hook.name}"> failed to start in {hook.timeout} seconds.',
+                    f'<Hook name="{hook.name}"> failed to execute in {hook.timeout} seconds.',
                     application=application,
                     hook=hook
                 )
@@ -450,6 +528,13 @@ class ApplicationManager:
             raise ValueError(f'Unknown application state status "{status}".')
 
         if application.status != status:
+            await self.event_manager.create(EventSchema(
+                title='Application operational status.',
+                message=f'Application operational status changed from "{application.status}" to "{status}".',
+                organization_id=application.organization.id,
+                category=EventCategory.application,
+                data={'application_id': application.id}
+            ))
             application.status = status
             await self.db.save(application)
 
@@ -461,6 +546,13 @@ class ApplicationManager:
             raise ValueError(f'Unknown application health status "{status}".')
 
         if application.health != status:
+            await self.event_manager.create(EventSchema(
+                title='Application health changed.',
+                message=f'Application health condition changed from "{application.health}" to "{status}".',
+                organization_id=application.organization.id,
+                category=EventCategory.application,
+                data={'application_id': application.id}
+            ))
             application.health = status
             await self.db.save(application)
 
@@ -473,6 +565,8 @@ class ApplicationManager:
 
 async def get_application_manager(
     db=Depends(get_application_db),
-    organization_manager=Depends(get_organization_manager)
+    organization_manager=Depends(get_organization_manager),
+    event_manager=Depends(get_event_manager),
+    helm_manager=Depends(get_helm_manager)
 ):
-    yield ApplicationManager(db, organization_manager)
+    yield ApplicationManager(db, organization_manager, event_manager, helm_manager)

@@ -8,6 +8,7 @@ from core.authentication import AuthorizedUser
 from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
 from managers.helm.manager import HelmManager
+from managers.helm.manager import get_helm_manager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
 from models.user import User
@@ -36,24 +37,22 @@ router = APIRouter()
 async def add_repository(
     data: AddHelmRepositoryBodySchema,
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Add helm charts repository.
     """
-    helm_manager = HelmManager(organization_manager)
     await helm_manager.add_repository(user.organization, data.name, data.url)
 
 
 @router.get('/repository/list', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def list_repository(
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     List all helm charts repositories.
     """
-    helm_manager = HelmManager(organization_manager)
     repositories = await helm_manager.list_repositories(user.organization)
 
     return repositories
@@ -63,12 +62,11 @@ async def list_repository(
 async def delete_repository(
     repository_name: str = Path(description='Name of Helm repository to delete', example='nginx-stable'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Removes Helm repository.
     """
-    helm_manager = HelmManager(organization_manager)
     await helm_manager.delete_repository(user.organization, repository_name)
 
 
@@ -84,15 +82,15 @@ async def delete_repository(
 )
 async def list_charts_in_repsitories(
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     List all charts in all repositories.
     """
-    helm_manager = HelmManager(organization_manager)
     charts = await helm_manager.list_repositories_charts(user.organization)
 
     return charts
+
 
 @router.get(
     '/chart/versions',
@@ -105,12 +103,11 @@ async def list_chart_versions(
                                                       default=False),
     version_filter: str = Query(description='Chart version filter.', default=None),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     List chart's versions.
     """
-    helm_manager = HelmManager(organization_manager)
     charts = await helm_manager.list_chart_versions(
         user.organization,
         chart_name=chart_name,
@@ -129,12 +126,11 @@ async def list_chart_versions(
 async def get_chart_default_values(
     chart_name: str = Query(description='Chart name in format `<repository-name>/<application name>`.'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns default chart values(content of values.yaml file).
     """
-    helm_manager = HelmManager(organization_manager)
     values_file_content = await helm_manager.chart_defaults(user.organization, chart_name)
 
     return values_file_content
@@ -144,12 +140,11 @@ async def get_chart_default_values(
 async def list_available_for_application_charts(
     application_name: str = Query(description='Name of application for which chart requested'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     List charts available charts for given application.
     """
-    helm_manager = HelmManager(organization_manager)
     charts = await helm_manager.list_available_charts(user.organization, application_name)
 
     return charts
@@ -159,12 +154,11 @@ async def list_available_for_application_charts(
 async def install_chart(
     data: InstallChartBodySchema,
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Install Helm chart.
     """
-    helm_manager = HelmManager(organization_manager)
     return await helm_manager.install_chart(
         user.organization,
         context_name=data.context_name,
@@ -191,12 +185,11 @@ async def install_chart(
 async def list_releases(
     namespace: str | None = Query(default=None),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     List releases in all namespaces using default context.
     """
-    helm_manager = HelmManager(organization_manager)
     releases = await helm_manager.list_releases(user.organization, namespace=namespace)
 
     return releases
@@ -212,12 +205,11 @@ async def release_health_status(
     context_name: str = Query(title='Name of context to use during data fetch'),
     namespase: str = Query(title='Name of namespace to use during data fetch'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns health status details for given release entities.
     """
-    helm_manager = HelmManager(organization_manager)
     health_details = await helm_manager.release_health_status(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
@@ -235,12 +227,11 @@ async def release_user_supplied_values(
     context_name: str = Query(title='Name of context to use during data fetch'),
     namespase: str = Query(title='Name of namespace to use during data fetch'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns release values supplied by user during chart install.
     """
-    helm_manager = HelmManager(organization_manager)
     user_supplied_values = await helm_manager.get_user_supplied_values(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
@@ -258,12 +249,11 @@ async def release_computed_values(
     context_name: str = Query(title='Name of context to use during data fetch'),
     namespase: str = Query(title='Name of namespace to use during data fetch'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns release final release values.
     """
-    helm_manager = HelmManager(organization_manager)
     computed_values = await helm_manager.get_computed_values(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
@@ -281,12 +271,11 @@ async def release_detailed_hooks(
     context_name: str = Query(title='Name of context to use during data fetch'),
     namespase: str = Query(title='Name of namespace to use during data fetch'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns release hooks extended with details from Kubernetes.
     """
-    helm_manager = HelmManager(organization_manager)
     detailed_hooks = await helm_manager.get_detailed_hooks(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
@@ -304,12 +293,11 @@ async def release_detailed_manifest(
     context_name: str = Query(title='Name of context to use during data fetch'),
     namespase: str = Query(title='Name of namespace to use during data fetch'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns release manifest extended with details from Kubernetes.
     """
-    helm_manager = HelmManager(organization_manager)
     detailed_manifest = await helm_manager.get_detailed_manifest(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
@@ -327,12 +315,11 @@ async def release_notes(
     context_name: str = Query(title='Name of context to use during data fetch'),
     namespase: str = Query(title='Name of namespace to use during data fetch'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns release notes.
     """
-    helm_manager = HelmManager(organization_manager)
     notes = await helm_manager.get_notes(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
@@ -350,12 +337,11 @@ async def create_release_chart(
     context_name: str = Query(title='Name of context where release located'),
     namespase: str = Query(title='Name of namespace where release located'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Creates chart for release.
     """
-    helm_manager = HelmManager(organization_manager)
     return await helm_manager.get_release_chart(user.organization, context_name, namespase, release_name)
 
 
@@ -369,12 +355,11 @@ async def release_revisions_history(
     context_name: str = Query(title='Name of context where release located'),
     namespase: str = Query(title='Name of namespace where release located'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns history of release's revisions.
     """
-    helm_manager = HelmManager(organization_manager)
     return await helm_manager.get_release_revisions(user.organization, context_name, namespase, release_name)
 
 
@@ -387,12 +372,11 @@ async def update_release(
     release_name: str = Path(description='Name of relase'),
     body: ReleaseUpdateRequestSchema = Body(description='Release update parameters'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Updates release's values.
     """
-    helm_manager = HelmManager(organization_manager)
     return await helm_manager.update_release(
         organization=user.organization,
         context_name=body.context_name,
@@ -413,12 +397,11 @@ async def rollback_release(
     release_name: str = Path(description='Name of relase'),
     body: ReleaseRollbackRequestSchema = Body(description='Release revision rollback parameters.'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Updates release's values.
     """
-    helm_manager = HelmManager(organization_manager)
     return await helm_manager.rollback_release_revision(
         organization=user.organization,
         context_name=body.context_name,
@@ -435,13 +418,12 @@ async def delete_release(
     context_name: str = Query(title='Name of context where uninstalling release is located'),
     namespase: str = Query(title='Name of namespace where uninstalling release is located'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Uninstalls release.
     """
-    helm_manager = HelmManager(organization_manager)
-    await helm_manager.uninstall_release(
+    return await helm_manager.uninstall_release(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
 
@@ -451,12 +433,11 @@ async def set_release_ttl(
     release_name: str = Path(description='Name of relase to set TTL'),
     data: SetReleaseTTLRequestSchema = Body(description='Release TTL data'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Sets release TTL(time to live).
     """
-    helm_manager = HelmManager(organization_manager)
     await helm_manager.set_release_ttl(
         user.organization, context_name=data.context_name, namespace=data.namespase, release_name=release_name,
         minutes=data.minutes
@@ -473,12 +454,11 @@ async def get_release_ttl(
     context_name: str = Query(title='Name of context where release is located'),
     namespase: str = Query(title='Name of namespace where release is located'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Returns date when release scheduled for removal.
     """
-    helm_manager = HelmManager(organization_manager)
     release_scheduled_removal_date = await helm_manager.read_release_ttl(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
@@ -492,12 +472,11 @@ async def unset_release_ttl(
     context_name: str = Query(title='Name of context where release is located'),
     namespase: str = Query(title='Name of namespace where release is located'),
     user: User = Depends(current_active_user),
-    organization_manager: OrganizationManager = Depends(get_organization_manager)
+    helm_manager: HelmManager = Depends(get_helm_manager)
 ):
     """
     Removes release TTL.
     """
-    helm_manager = HelmManager(organization_manager)
     await helm_manager.delete_release_ttl(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
