@@ -43,6 +43,9 @@ class ApplicationHookLaunchException(ApplicationHookException):
     """
     Raised when hook execution failed.
     """
+    def __init__(self, message: str | None = None, status_code: int | None = None, *, application, hook, log) -> None:
+        self.log = log
+        super().__init__(message, status_code, application=application, hook=hook)
 
 
 class ApplicationHookTimeoutException(ApplicationHookException):

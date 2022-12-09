@@ -1,32 +1,25 @@
 <div align=center>
+         
+![service-hub-banner](https://user-images.githubusercontent.com/2787296/206389982-424ccee3-3f4e-42b9-ac0d-e62e5117b03c.png)
+     
+| **Please star ⭐ the repo if you find it useful.** |
+| --- |
+         
 
-![image](https://user-images.githubusercontent.com/2787296/198906916-9904da29-3005-49e6-a109-b4238dc9ace1.png)
-
-# JovianX Service Hub
 <table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Thank you dear stargazers! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub/pulls">Issues/PRs are welcome 👍 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Join Discord 💬 </a></td></tr></tbody></table>
 
-![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub?style=social)
+![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub)
 ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
 ![GitHub contributors](https://img.shields.io/github/contributors/JovianX/Service-Hub)
+![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/platform_engineering)
 ![Discord](https://img.shields.io/discord/1014893148599754894)
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 </div>
 
+# JovianX Service Hub
+JovianX **Service Hub** is a tool to create and manage a Self-Service portal for your applications using Kubernetes and Helm (used by Platform Engineers).
 
-JovianX **Service Hub** is a tool to create and manage Self-Service using Helm and Kubernetes (used by Platform Engineers).
 
-
-
-```
-         _____                         _                   _    _           _
-        / ____|                       (_)                 | |  | |         | |
-       | (___     ___   _ __  __   __  _    ___    ___    | |__| |  _   _  | |__
-        \___ \   / _ \ | '__| \ \ / / | |  / __|  / _ \   |  __  | | | | | | '_ \
-        ____) | |  __/ | |     \ V /  | | | (__  |  __/   | |  | | | |_| | | |_) |
-       |_____/   \___| |_|      \_/   |_|  \___|  \___|   |_|  |_|  \__,_| |_.__/
-
-                Create X-as-a-Service on Kubernetes with Helm
-```
 # 🦄 Features:
 
 **Application Templates** ([Docs](documentation/templates.md))

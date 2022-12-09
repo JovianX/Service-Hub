@@ -9,12 +9,19 @@ from collections.abc import Iterable
 from datetime import timedelta
 from uuid import uuid4
 
+from fastapi import Depends
+
+from constants.events import EventCategory
 from constants.helm import ReleaseHealthStatuses
 from constants.kubernetes import K8sKinds
 from exceptions.kubernetes import ClusterUnreachableException
+from managers.events import EventManager
+from managers.events import get_event_manager
 from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
+from managers.organizations.manager import get_organization_manager
 from models.organization import Organization
+from schemas.events import EventSchema
 from services.helm.facade import HelmService
 from services.helm.schemas import ChartSchema
 from services.helm.schemas import ReleaseRevisionSchema
@@ -30,8 +37,9 @@ class HelmManager:
     """
     organization_manager: OrganizationManager
 
-    def __init__(self, organization_manager: OrganizationManager):
+    def __init__(self, organization_manager: OrganizationManager, event_manager: EventManager):
         self.organization_manager = organization_manager
+        self.event_manager = event_manager
 
     ############################################################################
     # Repositories
@@ -44,6 +52,17 @@ class HelmManager:
         async with HelmArchive(organization, self.organization_manager) as helm_home:
             helm_service = HelmService(kubernetes_configuration='', helm_home=helm_home)
             await helm_service.repository.add(name, url)
+
+        await self.event_manager.create(EventSchema(
+            title='Helm repository added.',
+            message=f'Added "{name}" Helm repository.',
+            organization_id=organization.id,
+            category=EventCategory.helm,
+            data={
+                'repository_name': name,
+                'repository_url': url
+            }
+        ))
 
     async def list_repositories(self, organization: Organization) -> list[dict]:
         """
@@ -61,6 +80,14 @@ class HelmManager:
         async with HelmArchive(organization, self.organization_manager) as helm_home:
             helm_service = HelmService(kubernetes_configuration='', helm_home=helm_home)
             await helm_service.repository.remove(name)
+
+        await self.event_manager.create(EventSchema(
+            title='Helm repository removed.',
+            message=f'Removed "{name}" Helm repository.',
+            organization_id=organization.id,
+            category=EventCategory.helm,
+            data={'repository_name': name}
+        ))
 
     ############################################################################
     # Charts
@@ -83,7 +110,7 @@ class HelmManager:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
                 await helm_service.repository.update()
-                return await helm_service.install.chart(
+                output = await helm_service.install.chart(
                     context_name=context_name,
                     namespace=namespace,
                     release_name=release_name,
@@ -94,6 +121,23 @@ class HelmManager:
                     debug=debug,
                     dry_run=dry_run
                 )
+                if not dry_run:
+                    await self.event_manager.create(EventSchema(
+                        title='Installed Helm chart.',
+                        message=f'Installed Helm chart "{chart_name}".',
+                        organization_id=organization.id,
+                        category=EventCategory.helm,
+                        data={
+                            'context': context_name,
+                            'namespace': namespace,
+                            'release_name': release_name,
+                            'chart_name': chart_name,
+                            'chart_version': version,
+                            'values': values
+                        }
+                    ))
+
+                return output
 
     async def list_repositories_charts(self, organization: Organization) -> list[ChartSchema]:
         """
@@ -295,7 +339,6 @@ class HelmManager:
 
         return unhealthy_releases
 
-
     async def get_release_revisions(self, organization: Organization, context_name: str, namespace: str,
                                     release_name: str) -> list[ReleaseRevisionSchema]:
         """
@@ -362,7 +405,7 @@ class HelmManager:
                         namespace=namespace,
                         chart_directory=chart
                     )
-                return await helm_service.upgrade.release(
+                output = await helm_service.upgrade.release(
                     context_name=context_name,
                     namespace=namespace,
                     release_name=release_name,
@@ -371,6 +414,26 @@ class HelmManager:
                     debug=debug,
                     dry_run=dry_run
                 )
+                if not dry_run:
+                    if chart:
+                        message = f'Updated Helm release "{chart}".'
+                    else:
+                        message = 'Updated Helm release. Chart name was omitted, chart was restored from release.'
+                    await self.event_manager.create(EventSchema(
+                        title='Updated Helm chart.',
+                        message=message,
+                        organization_id=organization.id,
+                        category=EventCategory.helm,
+                        data={
+                            'context': context_name,
+                            'namespace': namespace,
+                            'release_name': release_name,
+                            'chart_name': chart,
+                            'values': values
+                        }
+                    ))
+
+                return output
 
     async def rollback_release_revision(self, organization: Organization, context_name: str, namespace: str,
                                         release_name: str, revision_number: int | None = None, dry_run: bool = False):
@@ -380,13 +443,28 @@ class HelmManager:
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
-                return await helm_service.rollback.revision(
+                output = await helm_service.rollback.revision(
                     context_name=context_name,
                     namespace=namespace,
                     release_name=release_name,
                     revision=revision_number,
                     dry_run=dry_run
                 )
+                if not dry_run:
+                    await self.event_manager.create(EventSchema(
+                        title='Helm release rollback.',
+                        message=f'Helm release "{release_name}" was rollbacked to revision {revision_number}.',
+                        organization_id=organization.id,
+                        category=EventCategory.helm,
+                        data={
+                            'context': context_name,
+                            'namespace': namespace,
+                            'release_name': release_name,
+                            'revision_number': revision_number
+                        }
+                    ))
+
+                return output
 
     async def uninstall_release(
         self, organization: Organization, context_name: str, namespace: str, release_name: str, dry_run: bool = False
@@ -400,13 +478,27 @@ class HelmManager:
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
-                await helm_service.uninstall.release(
+                if not dry_run:
+                    await self.event_manager.create(EventSchema(
+                        title='Helm release removed.',
+                        message=f'Helm release "{release_name}" was removed.',
+                        organization_id=organization.id,
+                        category=EventCategory.helm,
+                        data={
+                            'context': context_name,
+                            'namespace': namespace,
+                            'release_name': release_name
+                        }
+                    ))
+                output = await helm_service.uninstall.release(
                     context_name=context_name,
                     namespace=namespace,
                     release_name=release_name,
                     debug=debug,
                     dry_run=dry_run
                 )
+
+                return output
 
     ############################################################################
     # Release TTL
@@ -421,6 +513,18 @@ class HelmManager:
         with self.organization_manager.get_kubernetes_configuration(organization) as k8s_config_path:
             async with HelmArchive(organization, self.organization_manager) as helm_home:
                 helm_service = HelmService(kubernetes_configuration=k8s_config_path, helm_home=helm_home)
+                await self.event_manager.create(EventSchema(
+                    title='Helm release TTL set.',
+                    message=f'TTL for Helm release "{release_name}" was set to {minutes} minutes.',
+                    organization_id=organization.id,
+                    category=EventCategory.helm,
+                    data={
+                        'context': context_name,
+                        'namespace': namespace,
+                        'release_name': release_name,
+                        'minutes': minutes
+                    }
+                ))
                 await helm_service.release.set_ttl(
                     context_name=context_name,
                     namespace=namespace,
@@ -457,6 +561,17 @@ class HelmManager:
                     namespace=namespace,
                     release_name=release_name
                 )
+                await self.event_manager.create(EventSchema(
+                    title='Helm release TTL removed.',
+                    message=f'TTL for Helm release "{release_name}" was removed.',
+                    organization_id=organization.id,
+                    category=EventCategory.helm,
+                    data={
+                        'context': context_name,
+                        'namespace': namespace,
+                        'release_name': release_name
+                    }
+                ))
 
     ############################################################################
     # Misc
@@ -553,3 +668,10 @@ class HelmManager:
             'status': health_status,
             'details': health_details
         }
+
+
+async def get_helm_manager(
+    organization_manager=Depends(get_organization_manager),
+    event_manager=Depends(get_event_manager)
+):
+    yield HelmManager(organization_manager, event_manager)

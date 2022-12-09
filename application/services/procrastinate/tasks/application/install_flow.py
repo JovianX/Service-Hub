@@ -3,11 +3,13 @@ import logging
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
+from constants.events import EventCategory
 from db.session import session_maker
 from exceptions.application import ApplicationComponentInstallException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
 from exceptions.application import ApplicationLaunchTimeoutException
+from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
 from services.procrastinate.application import procrastinate
 from utils.template import load_template
@@ -33,10 +35,9 @@ async def execute_pre_install_hooks(application_id: int):
         await application_manager.set_state_status(application, ApplicationStatuses.deploying)
         manifest: TemplateSchema = load_template(application.manifest)
         try:
-            await asyncio.gather(*[
-                application_manager.execute_hook(application, hook)
-                for hook in manifest.hooks.pre_install if hook.enabled
-            ])
+            hooks = [hook for hook in manifest.hooks.pre_install if hook.enabled]
+            for hook in hooks:
+                await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
             logger.error(
                 f'Failed to launch <Applicaton ID="{application.id}">. '
@@ -58,17 +59,14 @@ async def install_applicatoin_components(application_id: int):
         application_manager = get_application_manager(session)
         application = await application_manager.get_application(application_id)
         manifest: TemplateSchema = load_template(application.manifest)
+        components = [component for component in manifest.components if component.enabled]
         try:
-            await asyncio.gather(*[
-                application_manager.install_component(component, application)
-                for component in manifest.components if component.enabled
-            ])
+            for component in components:
+                await application_manager.install_component(component, application)
         except ApplicationComponentInstallException:
             await application_manager.set_state_status(application, ApplicationStatuses.error)
-            await asyncio.gather(*[
-                application_manager.uninstall_component(application, component)
-                for component in manifest.components if component.enabled
-            ])
+            for component in components:
+                await application_manager.uninstall_component(application, component)
             raise
         try:
             await application_manager.await_healthy_state(application)
@@ -94,10 +92,9 @@ async def execute_post_install_hooks(application_id: int):
         application = await application_manager.get_application(application_id)
         manifest: TemplateSchema = load_template(application.manifest)
         try:
-            await asyncio.gather(*[
-                application_manager.execute_hook(application, hook)
-                for hook in manifest.hooks.post_install if hook.enabled
-            ])
+            hooks = [hook for hook in manifest.hooks.post_install if hook.enabled]
+            for hook in hooks:
+                await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
             logger.error(
                 f'Failed to launch <Applicaton ID="{application.id}">. '
@@ -105,4 +102,12 @@ async def execute_post_install_hooks(application_id: int):
             )
             await application_manager.set_state_status(application, ApplicationStatuses.error)
             return
+
+        await application_manager.event_manager.create(EventSchema(
+            title='Application deployed.',
+            message=f'Application was successfully deployed.',
+            organization_id=application.organization.id,
+            category=EventCategory.application,
+            data={'application_id': application.id}
+        ))
         await application_manager.set_state_status(application, ApplicationStatuses.deployed)

@@ -5,8 +5,8 @@ from fastapi import Depends
 
 from constants.events import EventCategory
 from schemas.events import EventSchema
-from crud.event import EventDatabase
-from crud.event import get_event_db
+from crud.events import EventDatabase
+from crud.events import get_event_db
 from models.organization import Organization
 
 

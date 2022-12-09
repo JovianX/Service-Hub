@@ -3,6 +3,7 @@ import logging
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
+from constants.events import EventCategory
 from db.session import session_maker
 from exceptions.application import ApplicationComponentInstallException
 from exceptions.application import ApplicationComponentUninstallException
@@ -10,6 +11,7 @@ from exceptions.application import ApplicationComponentUpdateException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
 from exceptions.application import ApplicationLaunchTimeoutException
+from schemas.events import EventSchema
 from services.procrastinate.application import procrastinate
 from utils.template import load_template
 
@@ -34,10 +36,9 @@ async def execute_pre_upgrade_hooks(application_id: int, new_template_id: int):
         manifest = load_template(application_manager.render_manifest(new_template, application=application))
         await application_manager.set_state_status(application, ApplicationStatuses.upgrading)
         try:
-            await asyncio.gather(*[
-                application_manager.execute_hook(application, hook)
-                for hook in manifest.hooks.pre_upgrade if hook.enabled
-            ])
+            hooks = [hook for hook in manifest.hooks.pre_upgrade if hook.enabled]
+            for hook in hooks:
+                await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
             logger.error(
                 f'Failed to upgrade <Applicaton ID="{application.id}">. '
@@ -98,10 +99,9 @@ async def execute_post_upgrade_hooks(application_id: int, new_template_id: int):
         raw_manifest = application_manager.render_manifest(new_template, application=application)
         manifest = load_template(raw_manifest)
         try:
-            await asyncio.gather(*[
-                application_manager.execute_hook(application, hook)
-                for hook in manifest.hooks.post_upgrade if hook.enabled
-            ])
+            hooks = [hook for hook in manifest.hooks.post_upgrade if hook.enabled]
+            for hook in hooks:
+                await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
             logger.error(
                 f'Failed to launch <Applicaton ID="{application.id}">. '
@@ -114,3 +114,13 @@ async def execute_post_upgrade_hooks(application_id: int, new_template_id: int):
         application.template = new_template
         application.user_inputs = application_manager.get_inputs(new_template, application=application)
         await application_manager.db.save(application)
+        await application_manager.event_manager.create(EventSchema(
+            title='Application application template upgraded.',
+            message=f'Application was successfully upgraded.',
+            organization_id=application.organization.id,
+            category=EventCategory.application,
+            data={
+                'application_id': application.id,
+                'new_template_id': new_template_id
+            }
+        ))

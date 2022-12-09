@@ -8,6 +8,7 @@ from pydantic import conlist
 from core.authentication import AuthorizedUser
 from core.authentication import current_active_user
 from managers.helm.manager import HelmManager
+from managers.helm.manager import get_helm_manager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
 from managers.rules.manager import RuleManager
@@ -113,6 +114,7 @@ async def audit_release(
     release_name: str = Query(alias='release-name', description='Name of release against which validate rules'),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager),
+    helm_manager: HelmManager = Depends(get_helm_manager),
     rule_manager: RuleManager = Depends(get_rule_manager)
 ):
     """
@@ -120,7 +122,6 @@ async def audit_release(
     """
     organization = user.organization
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(organization)
-    helm_manager = HelmManager(organization_manager)
     computed_values = await helm_manager.get_computed_values(
         organization=organization, context_name=context_name, namespace=namespace, release_name=release_name
     )
@@ -145,6 +146,7 @@ async def values_to_apply(
     release_name: str = Query(alias='release-name', description='Name of release against which check rules'),
     user: User = Depends(current_active_user),
     organization_manager: OrganizationManager = Depends(get_organization_manager),
+    helm_manager: HelmManager = Depends(get_helm_manager),
     rule_manager: RuleManager = Depends(get_rule_manager)
 ):
     """
@@ -152,7 +154,6 @@ async def values_to_apply(
     """
     organization = user.organization
     kubernetes_configuration = organization_manager.get_kubernetes_configuration(organization)
-    helm_manager = HelmManager(organization_manager)
     computed_values = await helm_manager.get_computed_values(
         organization=organization, context_name=context_name, namespace=namespace, release_name=release_name
     )

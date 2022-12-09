@@ -46,6 +46,7 @@ class HelmGet(HelmBase):
 
         Full description: https://helm.sh/docs/helm/helm_get_hooks/
         """
+        manifests = []
         command = self._formup_command('hooks', release_name, kube_context=context_name, namespace=namespace)
         try:
             output = await self._run_command(command)
@@ -53,8 +54,9 @@ class HelmGet(HelmBase):
             raise ReleaseNotFoundException(
                 f'Failed to get release hooks. Release "{release_name}" does not exist in namespace "{namespace}".'
             )
+        if not output:
+            return manifests
         parsed_manifests = [yaml.safe_load(item) for item in output.split('---\n') if item]
-        manifests = []
         for parsed_manifest in parsed_manifests:
             manifest = ManifestSchema.parse_obj(parsed_manifest)
             if not manifest.metadata.namespace:
@@ -71,6 +73,7 @@ class HelmGet(HelmBase):
 
         Full description: https://helm.sh/docs/helm/helm_get_manifest/
         """
+        manifests = []
         command = self._formup_command('manifest', release_name, kube_context=context_name, namespace=namespace)
         try:
             output = await self._run_command(command)
@@ -78,8 +81,9 @@ class HelmGet(HelmBase):
             raise ReleaseNotFoundException(
                 f'Failed to get release manifest. Release "{release_name}" does not exist in namespace  "{namespace}".'
             )
+        if not output:
+            return manifests
         parsed_manifests = [yaml.safe_load(item) for item in output.split('---\n') if item]
-        manifests = []
         for parsed_manifest in parsed_manifests:
             manifest = ManifestSchema.parse_obj(parsed_manifest)
             if not manifest.metadata.namespace:

@@ -28,16 +28,16 @@ const Dashboard = () => {
     dispatch(getReleasesCount());
     dispatch(getRepositoriesCount());
     dispatch(getChartsCount());
-    dispatch(getContextsCount());
     dispatch(getUnhealthyCount());
     dispatch(getServicesCount());
+    (async () => {
+      await dispatch(getContextsCount()).then(({ payload }) => {
+        if (payload === '-') {
+          setOpenModal(true);
+        }
+      });
+    })();
   }, [dispatch]);
-
-  useEffect(() => {
-    if (contexts === '-') {
-      setOpenModal(true);
-    }
-  }, [contexts]);
 
   const container = {
     show: {

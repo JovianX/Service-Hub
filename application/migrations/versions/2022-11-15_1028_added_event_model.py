@@ -22,9 +22,7 @@ depends_on = None
 
 def upgrade() -> None:
     event_categories = postgresql.ENUM(EventCategory, name='event_categories')
-    # event_categories.create(op.get_bind(), checkfirst=True)
     event_severity_levels = postgresql.ENUM(EventSeverityLevel, name='event_severity_levels')
-    # event_severity_levels.create(op.get_bind(), checkfirst=True)
     op.create_table(
         'event',
         sa.Column('id', sa.Integer(), nullable=False),

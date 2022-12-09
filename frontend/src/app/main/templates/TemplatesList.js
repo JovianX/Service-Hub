@@ -17,10 +17,11 @@ import {
 } from 'app/store/templatesSlice';
 import { selectUser } from 'app/store/userSlice';
 
-import CatalogList from './CatalogsList/CatalogList';
+
 import TemplatesModal from './TemplateModal/TemplatesModal';
 import { TemplateProvider } from './TemplateProvider';
 import TemplatesListItem from './TemplatesListItem';
+import CatalogList from "./CatalogList/CatalogList";
 
 const TemplatesList = () => {
   const dispatch = useDispatch();
