@@ -58,7 +58,6 @@ const VersionSelector = ({ index, versionValue, handleOnChangeComponent, infoIsY
       <Select
         name='version'
         value={version}
-        required
         label='Version'
         onChange={handleChangeVersion}
         MenuProps={{ PaperProps: { sx: { maxHeight: 400 } } }}
