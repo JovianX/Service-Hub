@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 const TYPE_VALUES = ['helm_chart'];
 
-const TypeSelector = ({ typeValue, handleOnChangeComponent, index }) => {
+const TypeSelector = ({ typeValue, handleOnChangeComponent, index, infoIsYamlValid }) => {
   const [type, setType] = useState('');
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const TypeSelector = ({ typeValue, handleOnChangeComponent, index }) => {
   };
 
   return (
-    <FormControl size='small' required fullWidth>
+    <FormControl size='small' required fullWidth disabled={!!infoIsYamlValid}>
       <InputLabel>Type</InputLabel>
       <Select name='type' value={type} label='Type' onChange={handleChangeType}>
         {TYPE_VALUES?.map((item) => (

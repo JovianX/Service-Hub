@@ -1,6 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Button, Divider, List, ListItemButton, ListItemText } from '@mui/material';
 import { Box } from '@mui/system';
+import yaml from 'js-yaml';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -16,22 +17,12 @@ const newInputs = [
   },
 ];
 
-const InputsBuilder = () => {
-  const { templateBuilder, setTemplateBuilder } = useContext(TemplateContext);
+const InputsBuilder = ({ inputs }) => {
+  const { setTemplateBuilder, infoIsYamlValid } = useContext(TemplateContext);
+
   const [index, setIndex] = useState(0);
   const [actionType, setActionType] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const inputs = useMemo(() => {
-    if (!templateBuilder?.inputs) {
-      return null;
-    }
-    if (actionType === 'ADD') {
-      setIndex(templateBuilder.inputs.length - 1);
-      setSelectedIndex(templateBuilder.inputs.length - 1);
-    }
-    return templateBuilder.inputs;
-  }, [templateBuilder]);
 
   const input = useMemo(() => {
     if (!inputs) {
@@ -41,8 +32,9 @@ const InputsBuilder = () => {
   }, [inputs, index]);
 
   useEffect(() => {
-    if (!inputs) {
-      setTemplateBuilder((template) => ({ ...template, inputs: newInputs }));
+    if (actionType === 'ADD') {
+      setIndex(inputs.length - 1);
+      setSelectedIndex(inputs.length - 1);
     }
   }, [inputs]);
 
@@ -56,19 +48,27 @@ const InputsBuilder = () => {
     await setActionType('');
     await setSelectedIndex(0);
     await setIndex(0);
-    await setTemplateBuilder((template) => {
+
+    await setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
       let { inputs } = template;
       inputs = [...inputs.filter((item, i) => i !== index)];
-      return { ...template, inputs };
+      return yaml.dump({ ...template, inputs });
     });
   };
 
   const handleAddAnotherInput = () => {
     setActionType('ADD');
-    setTemplateBuilder((template) => {
-      let { inputs } = template;
+    setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
+      let inputs;
+      if (template?.inputs) {
+        inputs = template.inputs;
+      } else {
+        inputs = [];
+      }
       inputs = [...inputs, ...newInputs];
-      return { ...template, inputs };
+      return yaml.dump({ ...template, inputs });
     });
   };
 
@@ -86,10 +86,11 @@ const InputsBuilder = () => {
                   onClick={() => handleShowInput(index)}
                 >
                   <ListItemText>
-                    {input.name ? input.name : 'name'} - {input.type ? input.type : 'type'}
+                    {input?.name ? input?.name : 'name'} - {input?.type ? input?.type : 'type'}
                   </ListItemText>
 
                   <Button
+                    disabled={!!infoIsYamlValid}
                     className='hidden group-hover:flex'
                     variant='text'
                     color='error'
@@ -104,6 +105,7 @@ const InputsBuilder = () => {
             ))}
 
             <Button
+              disabled={!!infoIsYamlValid}
               className='mt-12'
               color='primary'
               variant='contained'
@@ -114,13 +116,23 @@ const InputsBuilder = () => {
             </Button>
           </List>
 
-          <Box className='w-3/5'>
-            <InputItem input={input} index={index} />
-          </Box>
+          {input ? (
+            <Box className='w-3/5'>
+              <InputItem input={input} index={index} infoIsYamlValid={infoIsYamlValid} />
+            </Box>
+          ) : (
+            ''
+          )}
         </Box>
       ) : (
         <Box>
-          <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddAnotherInput}>
+          <Button
+            disabled={!!infoIsYamlValid}
+            color='primary'
+            variant='contained'
+            startIcon={<AddIcon />}
+            onClick={handleAddAnotherInput}
+          >
             New input
           </Button>
         </Box>

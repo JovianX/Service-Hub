@@ -1,53 +1,42 @@
 import yaml from 'js-yaml';
-import YAML from 'json-to-pretty-yaml';
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useMemo, useState } from 'react';
 
 import { formattingTemplateValues } from '../../uitls/formattingTemplateValues';
 
 export const TemplateContext = createContext({});
 
 export const TemplateProvider = ({ children }) => {
-  const [templateBuilder, setTemplateBuilder] = useState(null);
   const [infoIsYamlValid, setInfoIsYamlValid] = useState('');
   const [inputDescription, setInputDescription] = useState('');
-  const [isInputByHand, setIsInputByHand] = useState(true);
-  const [changedByHandConfigYamlText, setChangedByHandConfigYamlText] = useState('');
+
+  const [configYamlText, setConfigYamlText] = useState('');
 
   const onChangeInputDescription = useCallback((newValue) => {
     setInputDescription(newValue);
   }, []);
 
-  const configYamlText = useMemo(() => {
-    if (!templateBuilder) return '';
-    const replacedNewValue = formattingTemplateValues(YAML.stringify(templateBuilder));
-    setChangedByHandConfigYamlText(replacedNewValue);
-    return YAML.stringify(templateBuilder);
-  }, [templateBuilder]);
-
-  const onChangeYaml = useCallback(
-    (newValue) => {
-      const replacedNewValue = formattingTemplateValues(newValue);
-      if (isInputByHand) {
-        try {
-          setChangedByHandConfigYamlText(replacedNewValue);
-          setTemplateBuilder(yaml.load(replacedNewValue, { json: true }));
-          setInfoIsYamlValid('');
-        } catch (e) {
-          setInfoIsYamlValid(e.reason);
-        }
-      } else {
-        setChangedByHandConfigYamlText(replacedNewValue);
+  const templateBuilder = useMemo(() => {
+    if (!configYamlText) return {};
+    let changedConfigYamlText = '';
+    try {
+      if (infoIsYamlValid) {
+        setInfoIsYamlValid('');
       }
-    },
-    [isInputByHand],
-  );
-
-  useEffect(() => {
-    if (isInputByHand) {
-      setInfoIsYamlValid('');
-      onChangeYaml(changedByHandConfigYamlText);
+      changedConfigYamlText = yaml.load(configYamlText, { json: true });
+      changedConfigYamlText = yaml.dump(changedConfigYamlText, { skipInvalid: true });
+      changedConfigYamlText = yaml.load(changedConfigYamlText, { json: true });
+      return changedConfigYamlText;
+    } catch (e) {
+      setInfoIsYamlValid(e.reason);
     }
-  }, [isInputByHand]);
+  }, [configYamlText]);
+
+  const setTemplateBuilder = setConfigYamlText;
+
+  const onChangeYaml = useCallback((newValue) => {
+    const replacedNewValue = formattingTemplateValues(newValue);
+    setConfigYamlText(replacedNewValue);
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -59,10 +48,8 @@ export const TemplateProvider = ({ children }) => {
       setInfoIsYamlValid,
       inputDescription,
       onChangeInputDescription,
-      isInputByHand,
-      setIsInputByHand,
     }),
-    [templateBuilder, configYamlText, inputDescription, infoIsYamlValid, isInputByHand],
+    [templateBuilder, configYamlText, inputDescription, infoIsYamlValid],
   );
 
   return <TemplateContext.Provider value={value}>{children}</TemplateContext.Provider>;

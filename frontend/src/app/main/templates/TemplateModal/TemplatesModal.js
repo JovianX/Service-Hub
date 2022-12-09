@@ -2,12 +2,14 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import yaml from 'js-yaml';
 import { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { getChartList } from 'app/store/chartsSlice';
 import { createTemplate } from 'app/store/templatesSlice';
 
+import { formattingTemplateValues } from '../../../uitls/formattingTemplateValues';
 import { TemplateContext } from '../TemplateProvider';
 
 import TemplatesItem from './TemplatesItem';
@@ -42,7 +44,10 @@ const TemplatesModal = ({ openModal, setOpenModal, setTemplates, modalInfo, setE
       onChangeInputDescription(modalInfo.template?.description);
 
       if (modalInfo.action === 'EDIT') {
-        onChangeYaml(modalInfo.template?.template);
+        let template = formattingTemplateValues(modalInfo.template?.template);
+        template = yaml.load(template, { json: true });
+        template = yaml.dump(template);
+        onChangeYaml(template);
       } else if (modalInfo.action === 'CREATE') {
         onChangeYaml('');
       }

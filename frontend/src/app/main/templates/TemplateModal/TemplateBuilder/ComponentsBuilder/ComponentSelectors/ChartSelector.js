@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { selectCharts, setChartName } from 'app/store/chartsSlice';
 
-const ChartSelector = ({ chartValue, index, handleOnChangeComponent }) => {
+const ChartSelector = ({ chartValue, index, handleOnChangeComponent, infoIsYamlValid }) => {
   const [chart, setChart] = useState('');
   const dispatch = useDispatch();
   const [charts, setCharts] = useState([chartValue]);
@@ -37,7 +37,7 @@ const ChartSelector = ({ chartValue, index, handleOnChangeComponent }) => {
   };
 
   return (
-    <FormControl size='small' required fullWidth>
+    <FormControl size='small' required fullWidth disabled={!!infoIsYamlValid}>
       <InputLabel>Chart</InputLabel>
       <Select
         name='chart'

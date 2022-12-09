@@ -1,3 +1,4 @@
+import yaml from 'js-yaml';
 import { useCallback, useContext } from 'react';
 
 import { TemplateContext } from '../../../TemplateProvider';
@@ -10,30 +11,32 @@ import InputTypeSlider from './InputFields/InputTypeSlider';
 import InputTypeSwitch from './InputFields/InputTypeSwitch';
 import InputTypeText from './InputFields/InputTypeText';
 
-const InputItem = ({ input, index }) => {
+const InputItem = ({ input, index, infoIsYamlValid }) => {
   const { setTemplateBuilder } = useContext(TemplateContext);
 
   const handleOnChangeInput = useCallback((value, index, type, nestedIndex, nestedType) => {
-    setTemplateBuilder((template) => {
+    setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
       const inputs = template?.inputs || [];
 
       if (nestedIndex !== undefined && nestedType) {
         inputs[index][type][nestedIndex][nestedType] = value;
-        return { ...template, inputs };
+        return yaml.dump({ ...template, inputs });
       }
 
       inputs[index][type] = value;
-      return { ...template, inputs };
+      return yaml.dump({ ...template, inputs });
     });
   }, []);
 
   const handleDeleteInputOptions = (inputIndex, optionIndex) => {
-    setTemplateBuilder((template) => {
+    setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
       const { inputs } = template;
       const options = inputs[inputIndex].options.filter((item, index) => index !== optionIndex);
       inputs[inputIndex].options = options;
 
-      return { ...template, inputs };
+      return yaml.dump({ ...template, inputs });
     });
   };
 
@@ -41,20 +44,45 @@ const InputItem = ({ input, index }) => {
     <div className='template-builder bg-deep-purple-50 bg-opacity-50 p-12'>
       <div className={`grid ${input.type === '' ? 'grid-cols-1' : 'grid-cols-2'}  gap-10`}>
         {input.type === '' && (
-          <InputTypes typeValue={input.type} index={index} handleOnChangeInput={handleOnChangeInput} />
+          <InputTypes
+            typeValue={input.type}
+            index={index}
+            handleOnChangeInput={handleOnChangeInput}
+            infoIsYamlValid={infoIsYamlValid}
+          />
         )}
         {input.type === 'text' && (
-          <InputTypeText input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeText
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            infoIsYamlValid={infoIsYamlValid}
+          />
         )}
 
         {input.type === 'textarea' && (
-          <InputTypeText input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeText
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            infoIsYamlValid={infoIsYamlValid}
+          />
         )}
         {input.type === 'number' && (
-          <InputTypeNumber input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeNumber
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            infoIsYamlValid={infoIsYamlValid}
+          />
         )}
         {input.type === 'slider' && (
-          <InputTypeSlider input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeSlider
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            infoIsYamlValid={infoIsYamlValid}
+          />
         )}
         {input.type === 'select' && (
           <InputTypeSelect
@@ -62,6 +90,7 @@ const InputItem = ({ input, index }) => {
             handleOnChangeInput={handleOnChangeInput}
             index={index}
             handleDeleteInputOptions={handleDeleteInputOptions}
+            infoIsYamlValid={infoIsYamlValid}
           />
         )}
         {input.type === 'radio_select' && (
@@ -70,13 +99,24 @@ const InputItem = ({ input, index }) => {
             handleOnChangeInput={handleOnChangeInput}
             index={index}
             handleDeleteInputOptions={handleDeleteInputOptions}
+            infoIsYamlValid={infoIsYamlValid}
           />
         )}
         {input.type === 'checkbox' && (
-          <InputTypeCheckbox input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeCheckbox
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            infoIsYamlValid={infoIsYamlValid}
+          />
         )}
         {input.type === 'switch' && (
-          <InputTypeSwitch input={input} handleOnChangeInput={handleOnChangeInput} index={index} />
+          <InputTypeSwitch
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            infoIsYamlValid={infoIsYamlValid}
+          />
         )}
       </div>
     </div>

@@ -2,6 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Divider, List, ListItemButton, ListItemText } from '@mui/material';
 import Button from '@mui/material/Button';
 import { Box } from '@mui/system';
+import yaml from 'js-yaml';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -15,28 +16,15 @@ const newComponents = [
     name: '',
     type: '',
     chart: '',
-    version: '',
   },
 ];
 
-const ComponentsBuilder = () => {
-  const { templateBuilder, setTemplateBuilder } = useContext(TemplateContext);
+const ComponentsBuilder = ({ components }) => {
+  const { setTemplateBuilder, infoIsYamlValid } = useContext(TemplateContext);
+
   const [index, setIndex] = useState(0);
   const [actionType, setActionType] = useState('');
-
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const components = useMemo(() => {
-    if (!templateBuilder?.components) {
-      return null;
-    }
-    if (actionType === 'ADD') {
-      setIndex(templateBuilder.components.length - 1);
-      setSelectedIndex(templateBuilder.components.length - 1);
-    }
-
-    return templateBuilder.components;
-  }, [templateBuilder]);
 
   const component = useMemo(() => {
     if (!components) {
@@ -46,8 +34,9 @@ const ComponentsBuilder = () => {
   }, [components, index]);
 
   useEffect(() => {
-    if (!components) {
-      setTemplateBuilder((template) => ({ ...template, components: newComponents }));
+    if (actionType === 'ADD') {
+      setIndex(components.length - 1);
+      setSelectedIndex(components.length - 1);
     }
   }, [components]);
 
@@ -59,10 +48,16 @@ const ComponentsBuilder = () => {
 
   const handleAddAnotherComponent = () => {
     setActionType('ADD');
-    setTemplateBuilder((template) => {
-      let { components } = template;
+    setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
+      let components;
+      if (template?.components) {
+        components = template.components;
+      } else {
+        components = [];
+      }
       components = [...components, ...newComponents];
-      return { ...template, components };
+      return yaml.dump({ ...template, components }, { skipInvalid: true });
     });
   };
 
@@ -70,16 +65,17 @@ const ComponentsBuilder = () => {
     await setActionType('');
     await setSelectedIndex(0);
     await setIndex(0);
-    await setTemplateBuilder((template) => {
+    await setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
       let { components } = template;
       components = [...components.filter((item, i) => i !== index)];
-      return { ...template, components };
+      return yaml.dump({ ...template, components }, { skipInvalid: true });
     });
   };
 
   return (
     <>
-      {components?.length ? (
+      {components && components?.length ? (
         <Box display='flex' justifyContent='space-between'>
           <List className='w-2/5 pt-0 h-full overflow-y-scroll mr-12'>
             {components?.map((component, index) => (
@@ -91,10 +87,11 @@ const ComponentsBuilder = () => {
                   onClick={() => handleShowComponent(index)}
                 >
                   <ListItemText>
-                    {component.name ? component.name : 'name'} - {component.type ? component.type : 'type'}
+                    {component?.name ? component?.name : 'name'} - {component?.type ? component?.type : 'type'}
                   </ListItemText>
 
                   <Button
+                    disabled={!!infoIsYamlValid}
                     className='hidden group-hover:flex'
                     variant='text'
                     color='error'
@@ -108,6 +105,7 @@ const ComponentsBuilder = () => {
               </React.Fragment>
             ))}
             <Button
+              disabled={!!infoIsYamlValid}
               className='mt-12'
               color='primary'
               variant='contained'
@@ -118,13 +116,23 @@ const ComponentsBuilder = () => {
             </Button>
           </List>
 
-          <Box className='w-3/5'>
-            <ComponentItem component={component} index={index} />
-          </Box>
+          {component ? (
+            <Box className='w-3/5'>
+              <ComponentItem component={component} index={index} infoIsYamlValid={infoIsYamlValid} />
+            </Box>
+          ) : (
+            ''
+          )}
         </Box>
       ) : (
         <Box>
-          <Button color='primary' variant='contained' startIcon={<AddIcon />} onClick={handleAddAnotherComponent}>
+          <Button
+            disabled={!!infoIsYamlValid}
+            color='primary'
+            variant='contained'
+            startIcon={<AddIcon />}
+            onClick={handleAddAnotherComponent}
+          >
             New component
           </Button>
         </Box>

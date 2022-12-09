@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 const TYPE_VALUES = ['text', 'textarea', 'select', 'radio_select', 'switch', 'checkbox', 'slider', 'number'];
 
-const InputTypes = ({ typeValue, index, handleOnChangeInput }) => {
+const InputTypes = ({ typeValue, index, handleOnChangeInput, infoIsYamlValid }) => {
   const [type, setType] = useState('');
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const InputTypes = ({ typeValue, index, handleOnChangeInput }) => {
 
   return (
     <>
-      <FormControl size='small' margin='normal' required fullWidth className='my-0'>
+      <FormControl size='small' margin='normal' required fullWidth className='my-0' disabled={!!infoIsYamlValid}>
         <InputLabel>Type</InputLabel>
         <Select name='type' value={type} label='Type' onChange={handleChangeType}>
           {TYPE_VALUES?.map((item) => (

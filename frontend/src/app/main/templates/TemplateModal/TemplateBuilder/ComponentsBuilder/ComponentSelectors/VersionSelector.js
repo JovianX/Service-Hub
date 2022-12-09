@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { getVersionsList as getVersionsListAPI } from '../../../../../../api';
 
-const VersionSelector = ({ index, versionValue, handleOnChangeComponent }) => {
+const VersionSelector = ({ index, versionValue, handleOnChangeComponent, infoIsYamlValid }) => {
   const [version, setVersion] = useState('');
   const [versionsList, setVersionsList] = useState([versionValue]);
   const chartName = useSelector((state) => state.charts.chartName);
@@ -53,7 +53,7 @@ const VersionSelector = ({ index, versionValue, handleOnChangeComponent }) => {
   };
 
   return (
-    <FormControl size='small' fullWidth>
+    <FormControl size='small' fullWidth disabled={!!infoIsYamlValid}>
       <InputLabel>Version</InputLabel>
       <Select
         name='version'
