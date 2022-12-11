@@ -30,7 +30,7 @@ JovianX **Service Hub** is a tool to create and manage a Self-Service portal for
 
 <table><tbody>
 <tr align=center>
-<td><b>Application Templates</b></td><td><b>Generated Self-Service UI</b></td>
+<td><b>Application Templates</b></td><td><b>Self-Service UI</b></td>
 </tr>
 <tr><td colspan=2>
 <img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png">
