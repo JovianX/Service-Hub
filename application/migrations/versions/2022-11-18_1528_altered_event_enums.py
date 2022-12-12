@@ -5,11 +5,7 @@ Revision ID: 488fbe744acd
 Revises: e8700095ac3e
 Create Date: 2022-11-16 15:28:18.096036
 """
-import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects import postgresql
-from constants.events import EventCategory
-from constants.events import EventSeverityLevel
 
 # revision identifiers, used by Alembic.
 revision = '488fbe744acd'
