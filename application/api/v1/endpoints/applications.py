@@ -121,7 +121,7 @@ async def get_application_outputs(
     Returns application outputs that must be shown to user.
     """
     application = await application_manager.get_organization_application(application_id, user.organization)
-    components_manifests = await application_manager.get_component_manifests(application)
+    components_manifests = await application_manager.get_components_manifests(application)
     raw_manifest = application_manager.render_manifest(
         application.template,
         application=application,
@@ -130,6 +130,7 @@ async def get_application_outputs(
     manifet = load_template(raw_manifest)
 
     return manifet.output
+
 
 @router.post(
     '/{application_id}/upgrade',
