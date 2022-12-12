@@ -17,9 +17,11 @@ import {
 } from 'app/store/templatesSlice';
 import { selectUser } from 'app/store/userSlice';
 
-import CatalogList from './CatalogList/CatalogList';
+
+import TemplatesModal from './TemplateModal/TemplatesModal';
+import { TemplateProvider } from './TemplateProvider';
 import TemplatesListItem from './TemplatesListItem';
-import TemplatesModal from './TemplatesModal';
+import CatalogList from "./CatalogList/CatalogList";
 
 const TemplatesList = () => {
   const dispatch = useDispatch();
@@ -259,13 +261,15 @@ const TemplatesList = () => {
           <CatalogList transformedTemplates={transformedTemplates} />
         </div>
       )}
-      <TemplatesModal
-        setTemplates={setTemplates}
-        openModal={openModal}
-        setOpenModal={setOpenModal}
-        modalInfo={modalInfo}
-        setEditTemplateId={setEditTemplateId}
-      />
+      <TemplateProvider>
+        <TemplatesModal
+          setTemplates={setTemplates}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          modalInfo={modalInfo}
+          setEditTemplateId={setEditTemplateId}
+        />
+      </TemplateProvider>
     </div>
   );
 };

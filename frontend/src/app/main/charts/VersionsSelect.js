@@ -7,6 +7,7 @@ import { getVersionsList as getVersionsListAPI } from '../../api';
 const VersionsSelect = ({ chartName, chartVersion, setChartVersion, startVersion, setStartVersion }) => {
   const [versionsList, setVersionsList] = useState([]);
 
+
   useEffect(() => {
     if (chartVersion && !startVersion) {
       setStartVersion(chartVersion);
