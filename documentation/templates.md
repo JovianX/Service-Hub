@@ -29,6 +29,23 @@ The `inputs` definition creates a UI that asks the user to provide values when d
 
 Users (with the `Operator` or `Admin` roles) can deploy applications via the Self-Service web UI (or RESTful API).
 
+### Template variables
+
+You can insert values in template dynamically with template variables. Template variables starting from `{{` and end with `}}` they have doted syntaxs, for instance: `{{ part1.part2 }}`.
+
+#### **User inputs**
+
+These template variables start from `inputs.` that follows by name of input. Pattern: `{{ inputs.<input name> }}`.
+Values for variables will be provided by application consumer during application launch. Check full tempalte [example](#markdown-header-complete-template-example) to see how to declare user inputs.
+
+#### **Kubernetes entities manifests**
+
+With these template variables you can get access to arbitrary Kubernetes entity deployed by Helm.
+Pattern: `{{ components.<component name>.manifest.<entity kind>.<entity name>.<doted path to attribute> }}`.
+- component name - name of application Helm component.
+- entity kind - Kind of Kubernetes entity. For instance: `PersistentVolumeClaim`, `Service`.
+- entity name - Name of Kubernetes entity. Compared with `metadata.name` of entity instance.
+
 ### **Creating a new template**
 
 1.  Navigate to Templates in the side menu. 
@@ -67,13 +84,13 @@ inputs:                                         # Optional. User input list.
     description: 'Enter app username'           # Optional. Valuable for user description of this input.
 ```
 
-**Managing Reversions**  
+**Managing Reversions**
 Every change, edit, or update of a template creates a new template reversion. You can upgrade or roll back an application to match a reversion.
 
-**Default Template**  
+**Default Template**
 When deploying an application, the default template is automatically selected,
 
-**Setting a Default Template**  
+**Setting a Default Template**
 To set the default template, hover over a non-default template, and click on the "Default" button that appears.  
 
 ![image](https://user-images.githubusercontent.com/2787296/200361559-a3b0f2e7-70da-4135-86cb-1c0150353f74.png)
@@ -203,8 +220,8 @@ hooks:
                                                 # variables to set in container.
         - name: JX_ENV_KEY
           value: "Hello World"
-        - name: CUSTOMER_ACCOUNT_NAME
-          value: "{{ account://end_company }}"
+        - name: SOME_OTHER_ENV_VAR
+          value: "Hello there."
 
   post_install:
     - name: post-install-hook
@@ -347,6 +364,12 @@ inputs:                                         # Optional. User input list.
     min: 1                                      # Optional. Minimal value.
     max: 10                                     # Optional. Maximal value.
     default: 5
+
+# If you need show message to user, you can use output.
+#     notes:
+#         Simple multiline text. Template variables can be used here to make message more adaptive.
+output:
+    notes: 'Message that informs that Mongo DB cluster IP is: {{ components.mongodb.manifest.Service.mongodb.spec.cluster_ip }}'
 ```
 
 The comprehensive example would produce the following inputs:

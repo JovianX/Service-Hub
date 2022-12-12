@@ -1,18 +1,21 @@
-import asyncio
 import logging
+
+from fastapi import status
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
 from constants.events import EventCategory
 from db.session import session_maker
 from exceptions.application import ApplicationComponentInstallException
+from exceptions.application import ApplicationComponentInstallTimeoutException
+from exceptions.application import ApplicationException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
-from exceptions.application import ApplicationLaunchTimeoutException
 from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
 from services.procrastinate.application import procrastinate
 from utils.template import load_template
+from utils.template import render_template
 
 from .utils import get_application_manager
 
@@ -58,26 +61,52 @@ async def install_applicatoin_components(application_id: int):
     async with session_maker() as session:
         application_manager = get_application_manager(session)
         application = await application_manager.get_application(application_id)
-        manifest: TemplateSchema = load_template(application.manifest)
+        raw_manifest = application_manager.render_manifest(application.template, application=application)
+        manifest: TemplateSchema = load_template(raw_manifest)
         components = [component for component in manifest.components if component.enabled]
+        component_names = [component.name for component in components]
         try:
-            for component in components:
+            for component_name in component_names:
+                component = manifest.components_mapping[component_name]
                 await application_manager.install_component(component, application)
-        except ApplicationComponentInstallException:
-            await application_manager.set_state_status(application, ApplicationStatuses.error)
-            for component in components:
-                await application_manager.uninstall_component(application, component)
-            raise
-        try:
-            await application_manager.await_healthy_state(application)
-            await application_manager.set_health_status(application, ApplicationHealthStatuses.healthy)
-        except ApplicationLaunchTimeoutException:
+                await application_manager.await_component_healthy_state(component, application)
+                components_manifests = await application_manager.get_components_manifests(application, skip_absent=True)
+                raw_manifest = application_manager.render_manifest(
+                    application.template, application=application, components_manifests=components_manifests
+                )
+                manifest: TemplateSchema = load_template(raw_manifest)
+                components = [component for component in manifest.components if component.enabled]
+                if component_names != [component.name for component in components]:
+                    logger.error(
+                        f'Error during deployment of <Application ID="{application.id}"> from '
+                        f'<Template ID="{application.template.id}">. Application set of components was changed after '
+                        f'another teplate rerendering. Most probably it happened because of changed '
+                        f'`component.enabled` flag for one or more components after rerendering template with new '
+                        f'components manifests.'
+                    )
+                    raise ApplicationException(
+                        'Application component set was changed during installation process.',
+                        status.HTTP_500_INTERNAL_SERVER_ERROR, application=application
+                    )
+        except ApplicationComponentInstallTimeoutException:
             logger.error(
-                f'Failed to install <Applicaton ID="{application.id}">. Reached deadline of awaiting application to '
-                f'become healthy.'
+                f'Failed to install <Applicaton ID="{application.id}">. Reached deadline of awaiting application '
+                f'component to become healthy.'
             )
             await application_manager.set_state_status(application, ApplicationStatuses.error)
             raise
+        except ApplicationException:
+            await application_manager.set_state_status(application, ApplicationStatuses.error)
+            raw_manifest = application_manager.render_manifest(application.template, application=application)
+            manifest: TemplateSchema = load_template(raw_manifest)
+            components = [component for component in manifest.components if component.enabled]
+            for component in components:
+                await application_manager.uninstall_component(application, component)
+            raise
+
+        await application_manager.set_health_status(application, ApplicationHealthStatuses.healthy)
+        application.manifest = raw_manifest
+        await application_manager.db.save(application)
 
     await execute_post_install_hooks.defer_async(application_id=application_id)
 

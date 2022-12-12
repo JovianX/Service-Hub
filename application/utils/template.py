@@ -8,10 +8,13 @@ import pystache
 import yaml
 from pydantic import ValidationError
 from pydantic.error_wrappers import display_errors
+from pystache.common import MissingTags
+from pystache.context import KeyNotFoundError
 from yaml import YAMLError
 
 from exceptions.templates import InvalidTemplateException
 from exceptions.templates import InvalidUserInputsException
+from exceptions.templates import TemlateVariableNotFoundException
 from schemas.templates import TemplateSchema
 
 
@@ -22,6 +25,7 @@ START_DELIMITER = re.compile(r'''(?<!['"])\{\{''')
 END_DELIMITER = re.compile(r'''\}\}(?!['"])''')
 START_DELIMITER_REPLACEMENT = '"{{{'
 END_DELIMITER_REPLACEMENT = '}}}"'
+PLACEHOLDERS = re.compile(r'.*{{(.*)}}.*')
 
 
 def make_template_yaml_safe(raw_template: str) -> str:
@@ -73,11 +77,23 @@ def load_template(raw_template: str) -> TemplateSchema:
     return validate_template(parsed_template_data)
 
 
-def render_template(template: str, inputs: dict) -> str:
+def render_template(template: str, inputs: dict, components_manifests: dict[str, list] | None = None) -> str:
     """
     Renders template with provided context.
     """
-    return pystache.render(template, inputs=inputs)
+    components_context = {}
+    if components_manifests is None:
+        components_manifests = {}
+    for component_name, entities in components_manifests.items():
+        grouped_entites = {}
+        for entity in entities:
+            grouped_entites.setdefault(entity.kind, {})[entity.metadata['name']] = entity.dict(by_alias=True)
+        components_context[component_name] = {'manifest': grouped_entites}
+    context = {
+        'inputs': inputs,
+        'components': components_context
+    }
+    return pystache.render(template, context)
 
 
 def validate_inputs(template: str, inputs: dict) -> None:
@@ -92,3 +108,13 @@ def validate_inputs(template: str, inputs: dict) -> None:
     extra_inputs = inputs.keys() - template_schema.inputs_mapping.keys()
     if extra_inputs:
         raise InvalidUserInputsException(f'Unexpected extra template input(s): {", ".join(extra_inputs)}')
+
+
+def find_placeholders(template: str) -> set[str]:
+    """
+    Return list of placeholders in template.
+    """
+    placeholders: list[str] = PLACEHOLDERS.findall(template)
+    placeholders = [placeholder.strip() for placeholder in placeholders]
+
+    return set(placeholders)

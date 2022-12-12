@@ -17,12 +17,6 @@ class ApplicationException(CommonException):
         super().__init__(message=message, status_code=status_code)
 
 
-class ApplicationLaunchTimeoutException(ApplicationException):
-    """
-    Raised when failed to start application in time.
-    """
-
-
 ################################################################################
 # Applicatoin hooks exceptions
 ################################################################################
@@ -85,4 +79,10 @@ class ApplicationComponentUpdateException(ApplicationComponentException):
 class ApplicationComponentUninstallException(ApplicationComponentException):
     """
     Raised when application component failed to uninstall.
+    """
+
+
+class ApplicationComponentInstallTimeoutException(ApplicationComponentException):
+    """
+    Raised when application component failed to install in time.
     """

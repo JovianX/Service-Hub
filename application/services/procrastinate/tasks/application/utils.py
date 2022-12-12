@@ -20,7 +20,10 @@ def get_application_manager(session: AsyncSession) -> ApplicationManager:
         ApplicationDatabase(session_maker()),
         OrganizationManager(OrganizationDatabase(session_maker())),
         EventManager(EventDatabase(session_maker())),
-        HelmManager(OrganizationManager(OrganizationDatabase(session_maker())), EventManager(EventDatabase(session_maker())))
+        HelmManager(
+            OrganizationManager(OrganizationDatabase(session_maker())),
+            EventManager(EventDatabase(session_maker()))
+        )
     )
 
 

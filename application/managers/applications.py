@@ -21,11 +21,11 @@ from core.configuration import settings
 from crud.applications import ApplicationDatabase
 from crud.applications import get_application_db
 from exceptions.application import ApplicationComponentInstallException
+from exceptions.application import ApplicationComponentInstallTimeoutException
 from exceptions.application import ApplicationComponentUninstallException
 from exceptions.application import ApplicationComponentUpdateException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
-from exceptions.application import ApplicationLaunchTimeoutException
 from exceptions.common import CommonException
 from exceptions.helm import HelmException
 from exceptions.helm import ReleaseNotFoundException
@@ -153,18 +153,15 @@ class ApplicationManager:
         new_components_names = new_manifest.components_mapping.keys()
         old_components_names = old_manifest.components_mapping.keys()
         components_to_install = [
-            new_manifest.components_mapping[component_name]
-            for component_name in new_components_names - old_components_names
+            component_name for component_name in new_components_names - old_components_names
             if new_manifest.components_mapping[component_name].enabled
         ]
         components_to_remove = [
-            old_manifest.components_mapping[component_name]
-            for component_name in old_components_names - new_components_names
+            component_name for component_name in old_components_names - new_components_names
             if old_manifest.components_mapping[component_name].enabled
         ]
         components_to_update = [
-            new_manifest.components_mapping[component_name]
-            for component_name in old_components_names & new_components_names
+            component_name for component_name in old_components_names & new_components_names
             if new_manifest.components_mapping[component_name].enabled
         ]
         results = {
@@ -173,13 +170,26 @@ class ApplicationManager:
             'uninstall_outputs': {},
         }
 
-        for component in components_to_install:
-            output = await self.install_component(component, application, dry_run=dry_run)
-            results['install_outputs'][component.name] = output
-        for component in components_to_update:
-            output = await self.update_component(application, component, dry_run=dry_run)
-            results['update_outputs'][component.name] = output
-        for component in components_to_remove:
+        for component_name in new_components_names:
+            component = new_manifest.components_mapping[component_name]
+            if component_name in components_to_install:
+                output = await self.install_component(component, application, dry_run=dry_run)
+                results['install_outputs'][component.name] = output
+            elif component_name in components_to_update:
+                output = await self.update_component(application, component, dry_run=dry_run)
+                results['update_outputs'][component.name] = output
+            if not dry_run:
+                await self.await_component_healthy_state(component, application)
+                components_manifests = await self.get_components_manifests(application, skip_absent=True)
+                raw_manifest = self.render_manifest(
+                    application.template,
+                    application=application,
+                    components_manifests=components_manifests
+                )
+                new_manifest = load_template(raw_manifest)
+
+        for component_name in components_to_remove:
+            component = old_manifest.components_mapping[component_name]
             output = await self.uninstall_component(application, component, dry_run=dry_run)
             results['uninstall_outputs'][component.name] = output
 
@@ -254,60 +264,60 @@ class ApplicationManager:
             data={'application_id': application.id}
         ))
 
+    async def get_component_health(self, component: Component, application: Application) -> dict:
+        """
+        Returns component health condition.
+        """
+        try:
+            component_health_status = await self.helm_manager.release_health_status(
+                application.organization,
+                application.context_name,
+                application.namespace,
+                component.name
+            )
+            health_status = component_health_status['status']
+            details = component_health_status['details']
+        except ReleaseNotFoundException:
+            health_status = ReleaseHealthStatuses.unhealthy
+            details = {}
+
+        return {
+            'status': health_status,
+            'details': details
+        }
+
     async def get_application_health_condition(self, application: Application) -> dict:
         """
         Returns application status.
         """
         template_schema = load_template(application.manifest)
+
+        status = ApplicationHealthStatuses.healthy
         problem_components = {}
         for component in template_schema.components:
-            try:
-                component_health_status = await self.helm_manager.release_health_status(
-                    application.organization,
-                    application.context_name,
-                    application.namespace,
-                    component.name
-                )
-            except ReleaseNotFoundException:
-                problem_components[component] = None
-                continue
-            if component_health_status['status'] != ReleaseHealthStatuses.healthy:
+            component_health_status = await self.get_component_health(component, application)
+            if component_health_status['status'] == ReleaseHealthStatuses.unhealthy:
                 problem_components[component] = component_health_status['details']
-        if problem_components:
-            return {
-                'status': ApplicationHealthStatuses.unhealthy,
-                'problem_components': problem_components
-            }
-        else:
-            return {
-                'status': ApplicationHealthStatuses.healthy,
-                'problem_components': {}
-            }
+                status = ApplicationHealthStatuses.unhealthy
 
-    async def await_healthy_state(self, application: Application) -> None:
+        return {
+            'status': status,
+            'problem_components': problem_components
+        }
+
+    async def await_component_healthy_state(self, component: Component, application: Application) -> None:
         """
-        Awaits until application become healthy or rises timeout exception.
+        Awaits until application component becomes healthy otherwise raises timeout exception.
         """
-        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENTS_INSTALL_TIMEOUT)
+        application_deadline = datetime.now() + timedelta(seconds=settings.APPLICATION_COMPONENT_DEPLOY_TIMEOUT)
         while datetime.now() < application_deadline:
-            condition = await self.get_application_health_condition(application)
+            condition = await self.get_component_health(component, application)
             if condition['status'] == ApplicationHealthStatuses.healthy:
                 return
         else:
-            await self.event_manager.create(EventSchema(
-                title='Application failed to start.',
-                message='Not all application components became healthy in time.',
-                category=EventCategory.application,
-                organization_id=application.organization.id,
-                severity=EventSeverityLevel.error,
-                data={
-                    'application_id': application.id,
-                    'problem_components': {
-                        component.name: details for component, details in condition['problem_components'].items()
-                    }
-                }
-            ))
-            raise ApplicationLaunchTimeoutException(f'Failed to start application in time.', application=application)
+            raise ApplicationComponentInstallTimeoutException(
+                f'Failed to start application component in time.', application=application, component=component
+            )
 
     async def install_component(self, component: Component, application: Application | None = None,
                                 organization: Organization | None = None, context_name: str | None = None,
@@ -501,14 +511,35 @@ class ApplicationManager:
 
         return user_inputs
 
+    async def get_components_manifests(self, application: Application, skip_absent: bool = False) -> dict[str, list]:
+        """
+        Returns application components manifests.
+        """
+        manifests = {}
+        manifest = load_template(application.manifest)
+        components = [component for component in manifest.components if component.enabled]
+        for component in components:
+            try:
+                manifests[component.name] = await self.helm_manager.get_detailed_manifest(
+                    application.organization,
+                    application.context_name,
+                    application.namespace,
+                    component.name
+                )
+            except ReleaseNotFoundException:
+                if not skip_absent:
+                    raise
+
+        return manifests
+
     def render_manifest(self, template: TemplateRevision, *, application: Application | None = None,
-                        user_inputs: dict | None = None) -> str:
+                        user_inputs: dict | None = None, components_manifests: dict[str, list] | None = None) -> str:
         """
         Renders new application's manifest using existing user input.
         """
         inputs = self.get_inputs(template, application=application, user_inputs=user_inputs)
 
-        manifest = render_template(template.template, inputs)
+        manifest = render_template(template.template, inputs, components_manifests)
 
         return manifest
 
