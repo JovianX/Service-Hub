@@ -6,7 +6,6 @@ from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
 from constants.events import EventCategory
 from db.session import session_maker
-from exceptions.application import ApplicationComponentInstallException
 from exceptions.application import ApplicationComponentInstallTimeoutException
 from exceptions.application import ApplicationException
 from exceptions.application import ApplicationHookLaunchException
@@ -15,7 +14,6 @@ from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
 from services.procrastinate.application import procrastinate
 from utils.template import load_template
-from utils.template import render_template
 
 from .utils import get_application_manager
 

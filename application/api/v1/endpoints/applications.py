@@ -17,6 +17,8 @@ from managers.applications import get_application_manager
 from managers.templates import TemplateManager
 from managers.templates import get_template_manager
 from models.user import User
+from schemas.templates.outputs import Output
+from utils.template import load_template
 
 from ..schemas.applications import ApplicationInstallResponseSchema
 from ..schemas.applications import ApplicationResponseSchema
@@ -103,6 +105,31 @@ async def get_application_health_status(
     condition = await application_manager.get_application_health_condition(application)
 
     return condition['status']
+
+
+@router.get(
+    '/{application_id}/outputs',
+    response_model=Output,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
+async def get_application_outputs(
+    application_id: int = Path(title='The ID of the application.'),
+    user: User = Depends(current_active_user),
+    application_manager: ApplicationManager = Depends(get_application_manager)
+):
+    """
+    Returns application outputs that must be shown to user.
+    """
+    application = await application_manager.get_organization_application(application_id, user.organization)
+    components_manifests = await application_manager.get_components_manifests(application)
+    raw_manifest = application_manager.render_manifest(
+        application.template,
+        application=application,
+        components_manifests=components_manifests
+    )
+    manifet = load_template(raw_manifest)
+
+    return manifet.output
 
 
 @router.post(
