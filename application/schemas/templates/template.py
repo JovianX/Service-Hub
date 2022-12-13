@@ -25,7 +25,7 @@ class TemplateSchema(BaseModel):
         description='Name of application which describes this template.',
         example='My Application'
     )
-    components: conlist(Component, min_items=1) = Field(description='Application components.')
+    components: list[Component] | None = Field(description='Application components.', default_factory=list)
     hooks: Hooks | None = Field(description='Application actions.', default_factory=Hooks)
     inputs: list[Input] | None = Field(description='Input that should be provided by user.', default_factory=list)
     output: Output | None = Field(description='Valuable output for Application consumer.')
