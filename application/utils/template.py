@@ -8,13 +8,10 @@ import pystache
 import yaml
 from pydantic import ValidationError
 from pydantic.error_wrappers import display_errors
-from pystache.common import MissingTags
-from pystache.context import KeyNotFoundError
 from yaml import YAMLError
 
 from exceptions.templates import InvalidTemplateException
 from exceptions.templates import InvalidUserInputsException
-from exceptions.templates import TemlateVariableNotFoundException
 from schemas.templates import TemplateSchema
 
 
