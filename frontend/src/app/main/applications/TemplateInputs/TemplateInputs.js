@@ -35,15 +35,20 @@ const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalo
   }, [templatesData, templateFromCatalog]);
 
   useEffect(() => {
+    setTemplateFormData({});
     const template = templates.find((item) => item.id === templateId);
     if (template) {
       const { inputs } = template.parsed_template;
-      setInputs(inputs);
+      if (inputs) {
+        setInputs(inputs);
+      } else {
+        setInputs([]);
+      }
     }
   }, [templateId]);
 
   useEffect(() => {
-    if (inputs.length) {
+    if (inputs?.length) {
       const obj = {};
       inputs.map((item) => (obj[item.name] = item.default));
       setTemplateFormData(obj);
@@ -117,27 +122,29 @@ const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalo
         </FormControl>
       </Box>
 
-      {inputs?.map((item, index) => {
-        switch (item.type) {
-          case 'text':
-            return <TypeText key={item.name} item={item} onChangeInputs={onChangeInputs} />;
-          case 'textarea':
-            return <TypeTextarea key={item.name} item={item} onChangeInputs={onChangeInputs} />;
-          case 'select':
-            return <TypeSelect key={item.name} item={item} onChangeInputs={onChangeInputs} />;
-          case 'radio_select':
-            return <TypeRadio key={item.name} item={item} onChangeInputs={onChangeInputs} />;
-          case 'switch':
-            return <TypeSwitch key={item.name} item={item} onChangeInputs={onChangeInputs} />;
-          case 'checkbox':
-            return <TypeCheckbox key={item.name} item={item} onChangeInputs={onChangeInputs} />;
-          case 'slider':
-            return <TypeSlider key={item.name} item={item} onChangeInputs={onChangeInputs} />;
-          case 'number':
-            return <TypeNumber key={item.name} item={item} onChangeInputs={onChangeInputs} />;
-          default:
-        }
-      })}
+      {inputs.length > 0 &&
+        inputs?.map((item) => {
+          switch (item.type) {
+            case 'text':
+              return <TypeText key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            case 'textarea':
+              return <TypeTextarea key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            case 'select':
+              return <TypeSelect key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            case 'radio_select':
+              return <TypeRadio key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            case 'switch':
+              return <TypeSwitch key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            case 'checkbox':
+              return <TypeCheckbox key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            case 'slider':
+              return <TypeSlider key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            case 'number':
+              return <TypeNumber key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            default:
+              return null;
+          }
+        })}
     </>
   );
 };
