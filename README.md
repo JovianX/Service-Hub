@@ -97,4 +97,4 @@ Copyright 2022 JovianX Ltd.
 Licensed under the Apache License, Version 2.0 (the "License");
 
 ![JovianX](https://jovianx.com/wp-content/uploads/2021/05/Logo2-2.png)
-<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=a30430df-712e-4c02-8574-79ae73a6f38a" />
+<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=44b1bb3d-1d33-4c7a-bf39-18379b658acc" />
