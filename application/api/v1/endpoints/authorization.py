@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from core.authentication import auth_backend
+from core.authentication import permanent_jwt_auth_backend
 from core.authentication import fastapi_users
 from core.authentication import github_client
 from core.authentication import google_client
@@ -13,6 +14,7 @@ router = APIRouter()
 
 
 router.include_router(fastapi_users.get_auth_router(auth_backend), prefix='/jwt')
+router.include_router(fastapi_users.get_auth_router(permanent_jwt_auth_backend), prefix='/permanent-jwt')
 
 router.include_router(fastapi_users.get_register_router(UserRead, UserCreate))
 

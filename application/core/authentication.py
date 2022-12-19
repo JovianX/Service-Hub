@@ -68,13 +68,23 @@ def get_jwt_strategy() -> CustomPayloadJWTStrategy:
     return CustomPayloadJWTStrategy(secret=settings.SECRET, lifetime_seconds=settings.USER_SESSION_TTL)
 
 
-auth_backend = AuthenticationBackend(
-    name='jwt',
-    transport=bearer_transport,
-    get_strategy=get_jwt_strategy,
+auth_backend = AuthenticationBackend(name='jwt', transport=bearer_transport, get_strategy=get_jwt_strategy,)
+
+
+permanent_jwt_bearer_transport = BearerTransport(tokenUrl='api/v1/auth/permanent-jwt/login')
+
+
+def get_permanent_jwt_strategy() -> CustomPayloadJWTStrategy:
+    return CustomPayloadJWTStrategy(secret=settings.SECRET, lifetime_seconds=None)
+
+
+permanent_jwt_auth_backend = AuthenticationBackend(
+    name='permanent-jwt',
+    transport=permanent_jwt_bearer_transport,
+    get_strategy=get_permanent_jwt_strategy
 )
 
-fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
+fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend, permanent_jwt_auth_backend])
 
 current_active_user = fastapi_users.current_user(active=True)
 
