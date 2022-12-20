@@ -24,6 +24,10 @@ def upgrade() -> None:
         env={**system_environment, **{'PYTHONPATH': '.'}}
     )
     if response.returncode != 0:
+        error_message = response.stderr.decode()
+        if 'already exists' in error_message:
+            # It seems we trying to recreate existing Procrastinate DB entities.
+            return
         raise RuntimeError(response.stderr.decode())
 
 

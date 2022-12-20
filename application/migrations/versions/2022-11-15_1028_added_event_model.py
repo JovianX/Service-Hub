@@ -7,10 +7,6 @@ Create Date: 2022-11-15 10:28:44.572461
 """
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects import postgresql
-
-from constants.events import EventCategory
-from constants.events import EventSeverityLevel
 
 
 # revision identifiers, used by Alembic.
@@ -21,8 +17,8 @@ depends_on = None
 
 
 def upgrade() -> None:
-    event_categories = postgresql.ENUM(EventCategory, name='event_categories')
-    event_severity_levels = postgresql.ENUM(EventSeverityLevel, name='event_severity_levels')
+    event_categories = sa.Enum('application', 'hook', 'organization', 'release', name='event_categories')
+    event_severity_levels = sa.Enum('debug', 'info', 'error', 'critical', name='event_severity_levels')
     op.create_table(
         'event',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -40,7 +36,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table('event')
-    event_categories = postgresql.ENUM(EventCategory, name='event_categories')
+    event_categories = sa.Enum('application', 'hook', 'organization', 'release', name='event_categories')
     event_categories.drop(op.get_bind())
-    event_severity_levels = postgresql.ENUM(EventSeverityLevel, name='event_severity_levels')
+    event_severity_levels = sa.Enum('debug', 'info', 'error', 'critical', name='event_severity_levels')
     event_severity_levels.drop(op.get_bind())
