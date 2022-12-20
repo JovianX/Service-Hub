@@ -56,8 +56,13 @@ const applicationsSlice = createSlice({
   initialState: {
     isLoading: false,
     applications: [],
+    isFirstRequest: true,
   },
-  reducers: {},
+  reducers: {
+    setIsFirstApplicationsRequest(state) {
+      state.isFirstRequest = false;
+    },
+  },
   extraReducers: {
     [getApplicationsList.fulfilled]: (state, { payload }) => ({
       applications: payload,
@@ -65,7 +70,7 @@ const applicationsSlice = createSlice({
     }),
     [getApplicationsList.pending]: (state) => ({
       ...state,
-      isLoading: true,
+      isLoading: state.isFirstRequest,
     }),
     [getApplicationsList.rejected]: (state) => ({
       ...state,
@@ -89,4 +94,5 @@ const applicationsSlice = createSlice({
 export const selectApplications = ({ applications }) => applications.applications;
 export const selectIsApplicationsLoading = ({ applications }) => applications.isLoading;
 
+export const { setIsFirstApplicationsRequest } = applicationsSlice.actions;
 export default applicationsSlice.reducer;
