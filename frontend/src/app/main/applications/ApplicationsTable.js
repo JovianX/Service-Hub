@@ -18,7 +18,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import { getApplicationsList, selectApplications, selectIsApplicationsLoading } from 'app/store/applicationsSlice';
+import {
+  getApplicationsList,
+  selectApplications,
+  selectIsApplicationsLoading,
+  setIsFirstApplicationsRequest,
+} from 'app/store/applicationsSlice';
 import { getContextList, selectContexts } from 'app/store/clustersSlice';
 import { getTemplatesList } from 'app/store/templatesSlice';
 import { selectUser } from 'app/store/userSlice';
@@ -43,11 +48,17 @@ const ApplicationsTable = () => {
   const user = useSelector(selectUser);
 
   useEffect(() => {
-    dispatch(getApplicationsList());
-    dispatch(getTemplatesList());
-  }, [dispatch]);
+    const getApplicationsTimer = setInterval(() => {
+      dispatch(getApplicationsList());
+    }, 6000);
+
+    return () => clearInterval(getApplicationsTimer);
+  }, []);
 
   useEffect(() => {
+    dispatch(getApplicationsList());
+    dispatch(setIsFirstApplicationsRequest());
+    dispatch(getTemplatesList());
     dispatch(getContextList());
   }, [dispatch]);
 

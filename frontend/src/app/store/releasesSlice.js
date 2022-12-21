@@ -7,7 +7,7 @@ import {
   deleteReleaseTtl as deleteReleaseTtlAPI,
 } from '../api';
 
-export const getReleases = createAsyncThunk('releases/getReleasesList', async () => {
+export const getReleases = createAsyncThunk('releases/getReleasesList', async (status) => {
   try {
     const response = await getReleasesList();
     const { data } = response;
@@ -66,8 +66,13 @@ const releasesSlice = createSlice({
   initialState: {
     isLoading: false,
     releases: [],
+    isFirstRequest: true,
   },
-  reducers: {},
+  reducers: {
+    setIsFirstReleasesRequest(state) {
+      state.isFirstRequest = false;
+    },
+  },
   extraReducers: {
     [getReleases.fulfilled]: (state, { payload }) => ({
       releases: payload,
@@ -75,8 +80,9 @@ const releasesSlice = createSlice({
     }),
     [getReleases.pending]: (state) => ({
       ...state,
-      isLoading: true,
+      isLoading: state.isFirstRequest,
     }),
+
     [getReleases.rejected]: (state) => ({
       ...state,
       isLoading: false,
@@ -87,4 +93,5 @@ const releasesSlice = createSlice({
 export const selectReleases = ({ releases }) => releases.releases;
 export const selectIsReleasesLoading = ({ releases }) => releases.isLoading;
 
+export const { setIsFirstReleasesRequest } = releasesSlice.actions;
 export default releasesSlice.reducer;

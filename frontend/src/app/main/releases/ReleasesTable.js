@@ -20,7 +20,12 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import withRouter from '@fuse/core/withRouter';
-import { getReleases, selectIsReleasesLoading, selectReleases } from 'app/store/releasesSlice';
+import {
+  getReleases,
+  selectIsReleasesLoading,
+  selectReleases,
+  setIsFirstReleasesRequest,
+} from 'app/store/releasesSlice';
 
 import { getReleaseHealth, getReleaseTtl } from '../../api';
 import { selectUser } from '../../store/userSlice';
@@ -59,13 +64,16 @@ const ReleasesTable = () => {
   const isLoading = useSelector(selectIsReleasesLoading);
 
   useEffect(() => {
-    setReleases(releasesData);
-    getHealthRows(releasesData);
-    getTtlRows(releasesData);
-  }, [releasesData]);
+    const getReleasesTimer = setInterval(() => {
+      dispatch(getReleases());
+    }, 6000);
+
+    return () => clearInterval(getReleasesTimer);
+  }, []);
 
   useEffect(() => {
     dispatch(getReleases());
+    dispatch(setIsFirstReleasesRequest());
   }, [dispatch]);
 
   useEffect(() => {
@@ -80,6 +88,10 @@ const ReleasesTable = () => {
       const clustersSelectOptions = getSelectItemsFromArray(uniqueClusters);
       setNamespaces(namespacesSelectOptions);
       setClusters(clustersSelectOptions);
+
+      setReleases(releasesData);
+      getHealthRows(releasesData);
+      getTtlRows(releasesData);
     }
   }, [releasesData]);
 
