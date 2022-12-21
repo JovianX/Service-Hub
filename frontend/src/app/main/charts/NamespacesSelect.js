@@ -1,8 +1,10 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import { useState, useEffect } from 'react';
 
 import { getNamespacesList as getNamespacesListAPI } from '../../api';
+import { useGetMe } from '../../hooks/useGetMe';
+import { formattedNamespace } from '../../uitls/formattedNamespace';
 
 const filter = createFilterOptions();
 
@@ -10,10 +12,20 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
   const [namespace, setNamespace] = useState(null);
   const [open, toggleOpen] = useState(false);
   const [list, setList] = useState([]);
+  const user = useGetMe();
 
   useEffect(() => {
     handleGetNamespace(namespace?.name);
   }, [namespace]);
+
+  useEffect(() => {
+    const defaultNamespace = {
+      name: formattedNamespace(user.email),
+      states: 'active',
+    };
+
+    setNamespace(defaultNamespace);
+  }, [user]);
 
   useEffect(() => {
     let canceled = false;
@@ -37,13 +49,6 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
       canceled = true;
     };
   }, [clusterContextName]);
-
-  useEffect(() => {
-    if (list.length) {
-      const namespaceItem = list.find((item) => item.name === 'default');
-      setNamespace(namespaceItem);
-    }
-  }, [list]);
 
   const handleClose = () => {
     setDialogValue({
