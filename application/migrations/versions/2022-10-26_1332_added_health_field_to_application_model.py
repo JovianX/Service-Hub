@@ -7,9 +7,6 @@ Create Date: 2022-10-26 13:32:36.548426
 """
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects import postgresql
-
-from constants.applications import ApplicationHealthStatuses
 
 
 # revision identifiers, used by Alembic.
@@ -20,7 +17,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    statuses = postgresql.ENUM(ApplicationHealthStatuses, name='application_health_statuses')
+    statuses = sa.Enum('healthy', 'unhealthy', name='application_health_statuses')
     statuses.create(op.get_bind(), checkfirst=True)
     op.add_column('application', sa.Column('health', statuses, nullable=True))
 
@@ -31,5 +28,5 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_column('application', 'health')
-    statuses = postgresql.ENUM(ApplicationHealthStatuses, name='application_health_statuses')
+    statuses = sa.Enum('healthy', 'unhealthy', name='application_health_statuses')
     statuses.drop(op.get_bind())
