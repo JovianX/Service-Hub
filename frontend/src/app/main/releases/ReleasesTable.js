@@ -66,7 +66,7 @@ const ReleasesTable = () => {
   useEffect(() => {
     const getReleasesTimer = setInterval(() => {
       dispatch(getReleases());
-    }, 10000);
+    }, 6000);
 
     return () => clearInterval(getReleasesTimer);
   }, []);

@@ -50,7 +50,7 @@ const ApplicationsTable = () => {
   useEffect(() => {
     const getApplicationsTimer = setInterval(() => {
       dispatch(getApplicationsList());
-    }, 10000);
+    }, 6000);
 
     return () => clearInterval(getApplicationsTimer);
   }, []);
