@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 import { getNamespacesList as getNamespacesListAPI } from '../../api';
 import { useGetMe } from '../../hooks/useGetMe';
+import { formattedNamespace } from '../../uitls/formattedNamespace';
 
 const filter = createFilterOptions();
 
@@ -18,7 +19,7 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
 
   useEffect(() => {
     const defaultNamespace = {
-      name: user.email.replace('@', '--').replace('.', '-'),
+      name: formattedNamespace(user.email),
       states: 'active',
     };
     setNamespace(defaultNamespace);
