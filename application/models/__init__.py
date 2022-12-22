@@ -1,3 +1,4 @@
+from . import access_token
 from . import application
 from . import event
 from . import invitation
