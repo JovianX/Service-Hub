@@ -41,6 +41,7 @@ export const deleteApplication = createAsyncThunk('applications/deleteApplicatio
   try {
     await deleteApplicationAPI(id);
     return {
+      id,
       status: 'success',
       message: 'Application was successfully removed',
     };
@@ -92,10 +93,13 @@ const applicationsSlice = createSlice({
       ...state,
       isLoading: false,
     }),
-    [deleteApplication.fulfilled]: (state) => ({
-      ...state,
-      isLoading: false,
-    }),
+    [applicationInstall.fulfilled]: (state, { payload }) => {
+      state.applications = [...state.applications, payload.application];
+    },
+    [deleteApplication.fulfilled]: (state, { payload }) => {
+      state.applications = [...state.applications.filter((item) => item.id !== payload.id)];
+      state.isLoading = false;
+    },
     [deleteApplication.pending]: (state, action) => ({
       ...state,
       isLoading: true,

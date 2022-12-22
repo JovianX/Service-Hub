@@ -1,20 +1,20 @@
 import AddIcon from '@mui/icons-material/Add';
 import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
 import {
-  Paper,
   Button,
+  FormGroup,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  FormGroup,
 } from '@mui/material';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
@@ -40,8 +40,6 @@ const ApplicationsTable = () => {
   const dispatch = useDispatch();
 
   const [kubernetesConfiguration, setKubernetesConfiguration] = useState({});
-  const [applications, setApplications] = useState([]);
-  const [allApplications, setAllApplications] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openDeleteInfo, setOpenDeleteInfo] = useState({});
@@ -70,22 +68,16 @@ const ApplicationsTable = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setApplications(applicationsData);
-    setAllApplications(applicationsData);
-  }, [applicationsData]);
-
-  useEffect(() => {
     setKubernetesConfiguration(contextData);
   }, [contextData]);
 
-  useEffect(() => {
+  const applications = useMemo(() => {
+    const sortedByCreatedAt = [...applicationsData].sort((first, second) => first.created_at - second.created_at);
     if (showOnlyMine) {
-      const onlyMineApplications = allApplications.filter((item) => item.creator.email === user.email);
-      setApplications(onlyMineApplications);
-    } else {
-      setApplications(allApplications);
+      return sortedByCreatedAt.filter((item) => item.creator.email === user.email);
     }
-  }, [showOnlyMine]);
+    return sortedByCreatedAt;
+  }, [applicationsData, showOnlyMine]);
 
   const handleShowOnlyMineApplications = () => {
     setShowOnlyMine(!showOnlyMine);
@@ -181,8 +173,6 @@ const ApplicationsTable = () => {
             openModal={openModal}
             setOpenModal={setOpenModal}
             kubernetesConfiguration={kubernetesConfiguration}
-            setApplications={setApplications}
-            setAllApplications={setAllApplications}
           />
         </FuseScrollbars>
       </Paper>
@@ -195,8 +185,6 @@ const ApplicationsTable = () => {
             text: 'Are you sure you want to proceed',
             confirmText: 'Delete',
           }}
-          setApplications={setApplications}
-          setAllApplications={setAllApplications}
           setOpenDeleteModal={setOpenDeleteModal}
         />
       )}
