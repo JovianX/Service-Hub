@@ -22,7 +22,6 @@ class AccessTokenBaseSchema(BaseModel):
 
 class AccessTokenSchema(BaseModel):
     user_id: UUID = Field(description='ID of user which token represents.')
-    creator_id: UUID = Field(description='ID of user who have created this token.')
     organization_id: int = Field(description='ID of organization to which token belongs.')
 
     class Config:

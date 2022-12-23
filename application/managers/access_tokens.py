@@ -4,17 +4,14 @@ User access tokens business logic.
 from datetime import datetime
 
 from fastapi import Depends
-from fastapi import status
 
 from constants.access_tokens import AccessTokenStatuses
 from constants.events import EventCategory
 from crud.access_tokens import AccessTokenDatabase
 from crud.access_tokens import get_access_token_db
-from exceptions.common import CommonException
 from managers.events import EventManager
 from managers.events import get_event_manager
 from models.access_token import AccessToken
-from models.organization import Organization
 from models.user import User
 from schemas.events import EventSchema
 
@@ -31,25 +28,19 @@ class AccessTokenManager:
         self.event_manager = event_manager
 
     async def create(
-        self, creator: User, user: User, comment: str | None = None, expiration_date: datetime | None = None
+        self, user: User, comment: str | None = None, expiration_date: datetime | None = None
     ) -> AccessToken:
         """
         Creates new user access token.
         """
         if comment is None:
             comment = ''
-        if user.organization.id != creator.organization.id:
-            raise CommonException(
-                'Token creator and token owner belongs to different organizations.',
-                status_code=status.HTTP_412_PRECONDITION_FAILED
-            )
         token_data = {
             'status': AccessTokenStatuses.active,
             'comment': comment,
             'expiration_date': expiration_date,
             'user_id': str(user.id),
-            'creator_id': str(creator.id),
-            'organization_id': creator.organization.id
+            'organization_id': user.organization.id
         }
         record = await self.db.create(token_data)
         if expiration_date is None:
@@ -59,29 +50,28 @@ class AccessTokenManager:
         await self.event_manager.create(EventSchema(
             title='User access token created.',
             message=message,
-            organization_id=creator.organization.id,
+            organization_id=user.organization.id,
             category=EventCategory.access_token,
             data={
                 'token': str(record.id),
                 'user': str(user.id),
-                'creator': str(creator.id),
                 'expiration_date': expiration_date.timestamp() if expiration_date is not None else None
             }
         ))
 
         return record
 
-    async def get_access_token(self, organization: Organization, token: str) -> AccessToken:
+    async def get_access_token(self, user: User, token: str) -> AccessToken:
         """
-        Returns organization's user access token.
+        Returns user's access token.
         """
-        return await self.db.get(organization_id=organization.id, id=token)
+        return await self.db.get(user_id=user.id, id=token)
 
-    async def list_organization_access_tokens(self, organization: Organization) -> list[AccessToken]:
+    async def list_owned_access_tokens(self, user: User) -> list[AccessToken]:
         """
-        List organization's user access tokens.
+        List user's access tokens.
         """
-        return await self.db.list(organization_id=organization.id)
+        return await self.db.list(user_id=user.id)
 
     async def set_status(self, token: AccessToken, status: AccessTokenStatuses) -> None:
         """

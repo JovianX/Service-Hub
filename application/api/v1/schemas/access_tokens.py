@@ -2,7 +2,6 @@
 User access token related API schemas.
 """
 from datetime import datetime
-from datetime import timezone
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -51,7 +50,6 @@ class AccessTokenResponseSchema(AccessTokenBaseSchema):
     User access token response schema.
     """
     user: UserResponseSchema = Field(description='User that can use this token for access.')
-    creator: UserResponseSchema = Field(description='User that have created this access token.')
     organization: OrganizationResponseSchema = Field(description='Organization which own this access token.')
 
     class Config:

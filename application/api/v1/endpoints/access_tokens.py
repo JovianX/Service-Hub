@@ -14,8 +14,6 @@ from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
 from managers.access_tokens import AccessTokenManager
 from managers.access_tokens import get_access_token_manager
-from managers.users import UserManager
-from managers.users import get_user_manager
 from models.user import User
 
 from ..schemas.access_tokens import AccessTokenResponseSchema
@@ -37,20 +35,13 @@ router = APIRouter()
 )
 async def create_access_token(
     data: CreateSchema = Body(description='Access token create data.'),
-    creator: User = Depends(current_active_user),
-    user_manager: UserManager = Depends(get_user_manager),
+    user: User = Depends(current_active_user),
     token_manager: AccessTokenManager = Depends(get_access_token_manager)
 ):
     """
     Create new user access token.
     """
-    user = await user_manager.get(data.user)
-    token = await token_manager.create(
-        creator=creator,
-        user=user,
-        comment=data.comment,
-        expiration_date=data.expiration_date
-    )
+    token = await token_manager.create(user=user, comment=data.comment, expiration_date=data.expiration_date)
 
     return token
 
@@ -67,7 +58,7 @@ async def list_access_tokens(
     """
     Returns list of organization's user access tokens.
     """
-    return await token_manager.list_organization_access_tokens(user.organization)
+    return await token_manager.list_owned_access_tokens(user)
 
 
 @router.post(
@@ -84,7 +75,7 @@ async def set_access_token_expiration_date(
     """
     Sets user access token expiration date.
     """
-    token_record = await token_manager.get_access_token(user.organization, token)
+    token_record = await token_manager.get_access_token(user, token)
     await token_manager.set_expiration_date(token_record, body.expiration_date)
 
     return token_record
@@ -104,7 +95,7 @@ async def set_access_token_comment(
     """
     Sets user access token comment.
     """
-    token_record = await token_manager.get_access_token(user.organization, token)
+    token_record = await token_manager.get_access_token(user, token)
     await token_manager.set_comment(token_record, body.comment)
 
     return token_record
@@ -124,7 +115,7 @@ async def set_access_token_status(
     """
     Sets user access token status.
     """
-    token_record = await token_manager.get_access_token(user.organization, token)
+    token_record = await token_manager.get_access_token(user, token)
     await token_manager.set_status(token_record, body.status)
 
     return token_record
@@ -143,7 +134,7 @@ async def delete_access_token(
     """
     Deletes organization's user access token.
     """
-    token_record = await token_manager.get_access_token(user.organization, token)
+    token_record = await token_manager.get_access_token(user, token)
     await token_manager.delete_access_token(token_record, user)
 
-    return await token_manager.list_organization_access_tokens(user.organization)
+    return await token_manager.list_owned_access_tokens(user)

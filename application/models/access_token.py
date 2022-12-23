@@ -27,7 +27,6 @@ class AccessToken(Base):
     status - status of access token.
     comment - description for this access token.
     user_id - identifier of User to which belongs the access token.
-    creator_id - identifier of User record that created this access token.
     organization_id - identifier of the organization to which access token
                       belongs.
     """
@@ -37,8 +36,6 @@ class AccessToken(Base):
     expiration_date = Column(DateTime, nullable=True)
     comment = Column(String, nullable=False, default='')
     user_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=False)
-    user = relationship('User', back_populates='access_tokens', lazy='selectin', foreign_keys=user_id)
-    creator_id = Column(UUID(as_uuid=True), ForeignKey('user.id'), nullable=False)
-    creator = relationship('User', back_populates='created_access_tokens', lazy='selectin', foreign_keys=creator_id)
+    user = relationship('User', back_populates='access_tokens', lazy='selectin')
     organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
     organization = relationship('Organization', back_populates='access_tokens', lazy='selectin')
