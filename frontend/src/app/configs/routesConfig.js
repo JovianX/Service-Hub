@@ -5,6 +5,7 @@ import FuseUtils from '@fuse/utils';
 import settingsConfig from 'app/configs/settingsConfig';
 
 import Error404Page from '../main/404/Error404Page';
+import ApplicationDetailsConfig from '../main/applications/ApplicationDetails/ApplicationDetailsConfig';
 import ApplicationsConfig from '../main/applications/ApplicationsConfig';
 import ChartsConfig from '../main/charts/ChartsConfig';
 import ClustersConfig from '../main/clusters/ClustersConfig';
@@ -33,6 +34,7 @@ const adminRouteConfigs = [
   ServicesConfig,
   ChartsConfig,
   ApplicationsConfig,
+  ApplicationDetailsConfig,
   ReleasesConfig,
   ReleaseDetailsConfig,
   DashboardConfig,
@@ -47,6 +49,7 @@ const operatorRouteConfigs = [
   ForgotPasswordConfig,
   ResetPasswordConfig,
   ApplicationsConfig,
+  ApplicationDetailsConfig,
   ChartsConfig,
   RepositoriesConfig,
   ReleasesConfig,

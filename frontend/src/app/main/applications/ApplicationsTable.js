@@ -9,11 +9,14 @@ import {
   TableHead,
   TableRow,
   FormGroup,
+  Stack,
+  Chip,
 } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
@@ -28,11 +31,14 @@ import { getContextList, selectContexts } from 'app/store/clustersSlice';
 import { getTemplatesList } from 'app/store/templatesSlice';
 import { selectUser } from 'app/store/userSlice';
 
+import { getColorForStatus } from '../../uitls';
+
+import ApplicationDeleteModal from './ApplicationDeleteModal';
 import ApplicationsModal from './ApplicationsModal';
-import DeleteApplicationModal from './DeleteApplicationModal';
 
 const ApplicationsTable = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [kubernetesConfiguration, setKubernetesConfiguration] = useState({});
   const [applications, setApplications] = useState([]);
@@ -112,7 +118,7 @@ const ApplicationsTable = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell align='center'>Status</TableCell>
                   <TableCell>Template</TableCell>
                   <TableCell>Reversion</TableCell>
                   <TableCell>Created By</TableCell>
@@ -124,8 +130,25 @@ const ApplicationsTable = () => {
                 <TableBody>
                   {applications.map((row) => (
                     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align='left'>{row.name}</TableCell>
-                      <TableCell align='left'>{row.status}</TableCell>
+                      <TableCell align='left'>
+                        <div
+                          className='hover:cursor-pointer underline'
+                          onClick={() => {
+                            navigate(`${row.id}`, {
+                              state: {
+                                row,
+                              },
+                            });
+                          }}
+                        >
+                          {row.name}
+                        </div>
+                      </TableCell>
+                      <TableCell align='left'>
+                        <Stack>
+                          <Chip className='capitalize' label={row.status} color={getColorForStatus(row.status)} />
+                        </Stack>
+                      </TableCell>
                       <TableCell align='left'>{row.template.name}</TableCell>
                       <TableCell align='left'>{row.template.revision}</TableCell>
                       <TableCell align='left'>{row.creator.email}</TableCell>
@@ -162,7 +185,7 @@ const ApplicationsTable = () => {
         </FuseScrollbars>
       </Paper>
       {openDeleteModal && (
-        <DeleteApplicationModal
+        <ApplicationDeleteModal
           options={{
             id: openDeleteInfo.id,
             isOpenModal: true,

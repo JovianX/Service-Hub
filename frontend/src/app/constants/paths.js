@@ -1,5 +1,6 @@
 export const PATHS = {
   APPLICATIONS: 'applications',
+  APPLICATION_DETAILS: 'applications/:id',
   SERVICES: 'services',
   SERVICE_CREATE: 'services/create',
   CHARTS: 'charts',

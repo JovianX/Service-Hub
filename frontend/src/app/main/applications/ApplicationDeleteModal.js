@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import DialogModal from 'app/shared-components/DialogModal';
 import { deleteApplication } from 'app/store/applicationsSlice';
 
-const DeleteApplicationModal = ({ options, setApplications, setAllApplications, setOpenDeleteModal }) => {
+const ApplicationDeleteModal = ({ options, setApplications, setAllApplications, setOpenDeleteModal }) => {
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(options.isOpenModal);
+  const navigate = useNavigate();
 
   const handleDeleteApplication = async (id) => {
+    if (options.is_application_page) {
+      navigate(-1);
+    }
     await dispatch(deleteApplication(id)).then((res) => {
       setApplications((applications) => [...applications.filter((item) => item.id !== id)]);
       setAllApplications((applications) => [...applications.filter((item) => item.id !== id)]);
@@ -21,6 +26,7 @@ const DeleteApplicationModal = ({ options, setApplications, setAllApplications, 
   };
   const handleCancel = () => {
     toggleModalOpen();
+    setOpenDeleteModal(false);
   };
 
   const handleConfirm = () => {
@@ -43,4 +49,4 @@ const DeleteApplicationModal = ({ options, setApplications, setAllApplications, 
   );
 };
 
-export default DeleteApplicationModal;
+export default ApplicationDeleteModal;
