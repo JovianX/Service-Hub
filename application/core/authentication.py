@@ -19,6 +19,8 @@ from httpx_oauth.clients.github import GitHubOAuth2
 from httpx_oauth.clients.google import GoogleOAuth2
 
 from constants.access_tokens import AccessTokenStatuses
+from constants.events import EventCategory
+from constants.events import EventSeverityLevel
 from constants.roles import Roles
 from core.configuration import settings
 from crud.access_tokens import AccessTokenDatabase
@@ -28,6 +30,7 @@ from exceptions.db import RecordNotFoundException
 from managers.users import UserManager
 from managers.users import get_user_manager
 from models.user import User
+from schemas.events import EventSchema
 
 
 JWT_PATTERN = re.compile(r'^(?:[\w-]*\.){2}[\w-]*$')
@@ -88,9 +91,35 @@ class PermanentTokenStrategy(Strategy):
             except RecordNotFoundException:
                 raise CommonException(f'Unknown access token {token}.', status_code=status.HTTP_401_UNAUTHORIZED)
         if token_record.status != AccessTokenStatuses.active:
+            if user_manager is not None:
+                await user_manager.event_manager.create(EventSchema(
+                    organization_id=token_record.organization.id,
+                    title='Invalid access token useded.',
+                    message=f'Was used token that is not active.',
+                    category=EventCategory.access_token,
+                    severity=EventSeverityLevel.warning,
+                    data={'token': str(token_record.id)}
+                ))
             raise CommonException(f'Token is not usable.', status_code=status.HTTP_403_FORBIDDEN)
         if token_record.expiration_date is not None and token_record.expiration_date <= datetime.now():
+            if user_manager is not None:
+                await user_manager.event_manager.create(EventSchema(
+                    organization_id=token_record.organization.id,
+                    title='Expired access token useded.',
+                    message=f'Was used token that reached end of its life time.',
+                    category=EventCategory.access_token,
+                    severity=EventSeverityLevel.warning,
+                    data={'token': str(token_record.id)}
+                ))
             raise CommonException(f'Token is expired.', status_code=status.HTTP_403_FORBIDDEN)
+        if user_manager is not None:
+            await user_manager.event_manager.create(EventSchema(
+                organization_id=token_record.organization.id,
+                title='Access token useded.',
+                message=f'Access token useded access Service Hub.',
+                category=EventCategory.access_token,
+                data={'token': str(token_record.id)}
+            ))
 
         return token_record.user
 
