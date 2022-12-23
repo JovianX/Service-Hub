@@ -19,10 +19,8 @@ depends_on = None
 def upgrade() -> None:
     op.drop_constraint('access_token_creator_id_fkey', 'access_token', type_='foreignkey')
     op.drop_column('access_token', 'creator_id')
-    op.create_index(op.f('ix_event_id'), 'event', ['id'], unique=False)
 
 
 def downgrade() -> None:
-    op.drop_index(op.f('ix_event_id'), table_name='event')
     op.add_column('access_token', sa.Column('creator_id', postgresql.UUID(), autoincrement=False, nullable=True))
     op.create_foreign_key('access_token_creator_id_fkey', 'access_token', 'user', ['creator_id'], ['id'])

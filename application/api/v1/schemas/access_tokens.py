@@ -41,7 +41,6 @@ class CreateSchema(SetExpirationDateSchema):
     """
     User invitation create request schema.
     """
-    user: UUID = Field(description='User for which token need to be created.')
     comment: str | None = Field(description='Description of token.')
 
 
