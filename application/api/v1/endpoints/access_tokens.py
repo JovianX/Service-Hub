@@ -10,6 +10,7 @@ from fastapi import Depends
 from fastapi import Path
 
 from core.authentication import AuthorizedUser
+from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
 from managers.access_tokens import AccessTokenManager
 from managers.access_tokens import get_access_token_manager
@@ -29,7 +30,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post('/', response_model=AccessTokenResponseSchema, dependencies=[Depends(AuthorizedUser())])
+@router.post(
+    '/',
+    response_model=AccessTokenResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def create_access_token(
     data: CreateSchema = Body(description='Access token create data.'),
     creator: User = Depends(current_active_user),
@@ -50,7 +55,11 @@ async def create_access_token(
     return token
 
 
-@router.get('/list/', response_model=list[AccessTokenResponseSchema], dependencies=[Depends(AuthorizedUser())])
+@router.get(
+    '/list',
+    response_model=list[AccessTokenResponseSchema],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def list_access_tokens(
     user: User = Depends(current_active_user),
     token_manager: AccessTokenManager = Depends(get_access_token_manager)
@@ -64,7 +73,7 @@ async def list_access_tokens(
 @router.post(
     '/{token}/expiration-date',
     response_model=AccessTokenResponseSchema,
-    dependencies=[Depends(AuthorizedUser())]
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def set_access_token_expiration_date(
     token: UUID = Path(title='Token to change.'),
@@ -81,7 +90,11 @@ async def set_access_token_expiration_date(
     return token_record
 
 
-@router.post('/{token}/comment', response_model=AccessTokenResponseSchema, dependencies=[Depends(AuthorizedUser())])
+@router.post(
+    '/{token}/comment',
+    response_model=AccessTokenResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def set_access_token_comment(
     token: UUID = Path(title='Token to change.'),
     body: SetCommentSchema = Body(description='Access token comment body.'),
@@ -97,7 +110,11 @@ async def set_access_token_comment(
     return token_record
 
 
-@router.post('/{token}/status', response_model=AccessTokenResponseSchema, dependencies=[Depends(AuthorizedUser())])
+@router.post(
+    '/{token}/status',
+    response_model=AccessTokenResponseSchema,
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def set_access_token_status(
     token: UUID = Path(title='Token to change.'),
     body: SetStatusSchema = Body(description='Access token status body.'),
@@ -113,7 +130,11 @@ async def set_access_token_status(
     return token_record
 
 
-@router.delete('/{token}', response_model=list[AccessTokenResponseSchema], dependencies=[Depends(AuthorizedUser())])
+@router.delete(
+    '/{token}',
+    response_model=list[AccessTokenResponseSchema],
+    dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
+)
 async def delete_access_token(
     token: UUID = Path(title='Token to remove.'),
     user: User = Depends(current_active_user),
