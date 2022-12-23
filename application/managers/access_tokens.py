@@ -65,7 +65,7 @@ class AccessTokenManager:
                 'token': str(record.id),
                 'user': str(user.id),
                 'creator': str(creator.id),
-                'expiration_date': expiration_date
+                'expiration_date': expiration_date.timestamp() if expiration_date is not None else None
             }
         ))
 
