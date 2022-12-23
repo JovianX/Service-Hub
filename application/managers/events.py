@@ -25,11 +25,27 @@ class EventManager:
         """
         await self.db.create(event.dict())
 
-    async def list_organization_events(self, organization: Organization, category: EventCategory) -> list[EventSchema]:
+    async def list_organization_events(
+        self, organization: Organization, category: EventCategory, **kwargs: dict
+    ) -> list[EventSchema]:
         """
         List of event of organization of specific category.
         """
-        events = await self.db.list(organization_id=organization.id, category=category)
+        if category == EventCategory.application and (application_id := kwargs.pop('application_id', None)) is not None:
+            events = await self.db.list_for_application(organization_id=organization.id, application_id=application_id)
+        elif category == EventCategory.helm and (repository := kwargs.pop('repository_name', None)) is not None:
+            events = await self.db.list_for_helm_repository(organization_id=organization.id, repository_name=repository)
+        elif category == EventCategory.helm and ((context := kwargs.pop('context', None)) is not None
+                                                 and (namespace := kwargs.pop('namespace', None)) is not None
+                                                 and (release_name := kwargs.pop('release_name', None)) is not None):
+            events = await self.db.list_for_helm_release(
+                organization_id=organization.id,
+                context_name=context,
+                namespace=namespace,
+                release_name=release_name
+            )
+        else:
+            events = await self.db.list(organization_id=organization.id, category=category)
 
         return [EventSchema.from_orm(event) for event in events]
 
