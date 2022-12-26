@@ -42,9 +42,9 @@ const ApplicationTable = ({ application }) => {
                 <TableRow key={application.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell align='left'>{application.name}</TableCell>
                   <TableCell align='left'>
-                    <Stack>
+                    <Stack className='max-w-max mx-auto'>
                       <Chip
-                        className='capitalize'
+                        className='capitalize px-20'
                         label={application.status}
                         color={getColorForStatus(application.status)}
                       />

@@ -145,8 +145,8 @@ const ApplicationsTable = () => {
                         </div>
                       </TableCell>
                       <TableCell align='left'>
-                        <Stack>
-                          <Chip className='capitalize' label={row.status} color={getColorForStatus(row.status)} />
+                        <Stack className='max-w-max mx-auto'>
+                          <Chip className='capitalize px-20' label={row.status} color={getColorForStatus(row.status)} />
                         </Stack>
                       </TableCell>
                       <TableCell align='left'>{row.template.name}</TableCell>
