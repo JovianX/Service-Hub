@@ -5,6 +5,7 @@ from fastapi import status
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
 from constants.events import EventCategory
+from constants.events import EventSeverityLevel
 from db.session import session_maker
 from exceptions.application import ApplicationComponentInstallTimeoutException
 from exceptions.application import ApplicationException
@@ -37,6 +38,14 @@ async def execute_pre_install_hooks(application_id: int):
         manifest: TemplateSchema = load_template(application.manifest)
         try:
             hooks = [hook for hook in manifest.hooks.pre_install if hook.enabled]
+            if hooks:
+                await application_manager.event_manager.create(EventSchema(
+                    title='Application deployment',
+                    message=f'Starting execution of pre-install hooks.',
+                    organization_id=application.organization.id,
+                    category=EventCategory.application,
+                    data={'application_id': application.id}
+                ))
             for hook in hooks:
                 await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
@@ -83,18 +92,38 @@ async def install_applicatoin_components(application_id: int):
                         f'components manifests.'
                     )
                     raise ApplicationException(
-                        'Application component set was changed during installation process.',
+                        'Application component set was changed during installation process. Application set of '
+                        'components was changed after another teplate rerendering. Most probably it happened because '
+                        'of changed `component.enabled` flag for one or more components after rerendering template '
+                        'with new components manifests.',
                         status.HTTP_500_INTERNAL_SERVER_ERROR, application=application
                     )
-        except ApplicationComponentInstallTimeoutException:
+        except ApplicationComponentInstallTimeoutException as error:
             logger.error(
                 f'Failed to install <Applicaton ID="{application.id}">. Reached deadline of awaiting application '
                 f'component to become healthy.'
             )
             await application_manager.set_state_status(application, ApplicationStatuses.error)
+            await application_manager.event_manager.create(EventSchema(
+                title='Application deployment',
+                message=f'Application deployment failed. Application component "{error.component.name}" did not become '
+                        f'healthy in time.',
+                organization_id=application.organization.id,
+                category=EventCategory.application,
+                severity=EventSeverityLevel.error,
+                data={'application_id': application.id}
+            ))
             raise
-        except ApplicationException:
+        except ApplicationException as error:
             await application_manager.set_state_status(application, ApplicationStatuses.error)
+            await application_manager.event_manager.create(EventSchema(
+                title='Application deployment',
+                message=f'Application deployment failed. {error.message.strip(".")}.',
+                organization_id=application.organization.id,
+                category=EventCategory.application,
+                severity=EventSeverityLevel.error,
+                data={'application_id': application.id}
+            ))
             raw_manifest = application_manager.render_manifest(application.template, application=application)
             manifest: TemplateSchema = load_template(raw_manifest)
             components = [component for component in manifest.components if component.enabled]
@@ -120,6 +149,14 @@ async def execute_post_install_hooks(application_id: int):
         manifest: TemplateSchema = load_template(application.manifest)
         try:
             hooks = [hook for hook in manifest.hooks.post_install if hook.enabled]
+            if hooks:
+                await application_manager.event_manager.create(EventSchema(
+                    title='Application deployment',
+                    message=f'Starting execution of post-install hooks.',
+                    organization_id=application.organization.id,
+                    category=EventCategory.application,
+                    data={'application_id': application.id}
+                ))
             for hook in hooks:
                 await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
@@ -131,7 +168,7 @@ async def execute_post_install_hooks(application_id: int):
             return
 
         await application_manager.event_manager.create(EventSchema(
-            title='Application deployed.',
+            title='Application deployment',
             message=f'Application was successfully deployed.',
             organization_id=application.organization.id,
             category=EventCategory.application,

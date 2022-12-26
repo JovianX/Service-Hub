@@ -2,6 +2,7 @@ import logging
 
 from constants.applications import ApplicationStatuses
 from constants.events import EventCategory
+from constants.events import EventSeverityLevel
 from db.session import session_maker
 from exceptions.application import ApplicationComponentUninstallException
 from exceptions.application import ApplicationHookLaunchException
@@ -30,6 +31,14 @@ async def execute_pre_terminate_hooks(application_id: int):
         manifest: TemplateSchema = load_template(application.manifest)
         try:
             hooks = [hook for hook in manifest.hooks.pre_terminate if hook.enabled]
+            if hooks:
+                await application_manager.event_manager.create(EventSchema(
+                    title='Application termination',
+                    message=f'Starting execution of pre-terminate hooks.',
+                    organization_id=application.organization.id,
+                    category=EventCategory.application,
+                    data={'application_id': application.id}
+                ))
             for hook in hooks:
                 await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
@@ -57,8 +66,16 @@ async def remove_applicatoin_components(application_id: int):
             components = [component for component in manifest.components if component.enabled]
             for component in components:
                 await application_manager.uninstall_component(application, component)
-        except ApplicationComponentUninstallException:
+        except ApplicationComponentUninstallException as error:
             await application_manager.set_state_status(application, ApplicationStatuses.error)
+            await application_manager.event_manager.create(EventSchema(
+                title='Application termination',
+                message=f'Failed to terminate application. {error.message.strip(".")}.',
+                organization_id=application.organization.id,
+                category=EventCategory.application,
+                severity=EventSeverityLevel.error,
+                data={'application_id': application.id}
+            ))
             raise
 
     await execute_post_terminate_hooks.defer_async(application_id=application_id)
@@ -75,6 +92,14 @@ async def execute_post_terminate_hooks(application_id: int):
         manifest: TemplateSchema = load_template(application.manifest)
         try:
             hooks = [hook for hook in manifest.hooks.post_terminate if hook.enabled]
+            if hooks:
+                await application_manager.event_manager.create(EventSchema(
+                    title='Application termination',
+                    message=f'Starting execution of post-terminate hooks.',
+                    organization_id=application.organization.id,
+                    category=EventCategory.application,
+                    data={'application_id': application.id}
+                ))
             for hook in hooks:
                 await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
@@ -86,7 +111,7 @@ async def execute_post_terminate_hooks(application_id: int):
             return
 
         await application_manager.event_manager.create(EventSchema(
-            title='Application application terminated.',
+            title='Application termination',
             message=f'Application was successfully terminated.',
             organization_id=application.organization.id,
             category=EventCategory.application,

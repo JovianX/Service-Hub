@@ -28,6 +28,7 @@ from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
 from exceptions.common import CommonException
 from exceptions.helm import HelmException
+from exceptions.helm import ReleaseAlreadyExistsException
 from exceptions.helm import ReleaseNotFoundException
 from exceptions.templates import InvalidUserInputsException
 from managers.events import EventManager
@@ -316,7 +317,8 @@ class ApplicationManager:
                 return
         else:
             raise ApplicationComponentInstallTimeoutException(
-                f'Failed to start application component in time.', application=application, component=component
+                f'Application component "{component.name}" did not become healthy in the allotted time.',
+                application=application, component=component
             )
 
     async def install_component(self, component: Component, application: Application | None = None,
@@ -345,10 +347,15 @@ class ApplicationManager:
                 values=component.values,
                 dry_run=dry_run
             )
-        except HelmException as error:
-            logger.error(f'Failed to install application component. {error.message}')
+        except ReleaseAlreadyExistsException as error:
             raise ApplicationComponentInstallException(
-                f'Failed to install application component.',
+                f'Failed to install application component "{component.name}". Helm release "{component.name}" already '
+                f'exists in namespace "{namespace}".',
+                application=application, component=component
+            )
+        except HelmException as error:
+            raise ApplicationComponentInstallException(
+                f'Failed to install application component "{component.name}". {error.message}.',
                 application=application, component=component
             )
 
@@ -367,9 +374,8 @@ class ApplicationManager:
                 dry_run=dry_run
             )
         except HelmException as error:
-            logger.error(f'Failed to update application component. {error.message}')
             raise ApplicationComponentUpdateException(
-                f'Failed to update application component.',
+                f'Failed to update application component "{component.name}". {error.message}',
                 application=application, component=component
             )
 
@@ -388,9 +394,8 @@ class ApplicationManager:
         except ReleaseNotFoundException:
             logging.warning(f'Failed to uninstall component "{component.name}". No corresponding Helm release found.')
         except HelmException as error:
-            logging.exception(f'Failed to uninstall component "{component.name}". {error.message}')
             raise ApplicationComponentUninstallException(
-                f'Failed to uninstall component "{component.name}".',
+                f'Failed to uninstall component "{component.name}". {error.message}',
                 application=application, component=component
             )
 
@@ -414,6 +419,16 @@ class ApplicationManager:
                 env=hook.env,
                 service_account_name=hook.service_account_name
             )
+            await self.event_manager.create(EventSchema(
+                title='Hook execution',
+                message=f'Starting execution "{hook.name}" hook.',
+                organization_id=application.organization.id,
+                category=EventCategory.application,
+                data={
+                    'application_id': application.id,
+                    'hook': hook.name
+                }
+            ))
             job_deadline = datetime.now() + timedelta(seconds=hook.timeout)
             while datetime.now() < job_deadline:
                 job = await k8s_manager.get_details(
@@ -424,7 +439,7 @@ class ApplicationManager:
                 )
                 if job.is_completed:
                     await self.event_manager.create(EventSchema(
-                        title='Application deploy.',
+                        title='Hook execution',
                         message=f'Hook "{hook.name}" successfully executed.',
                         organization_id=application.organization.id,
                         category=EventCategory.application,
@@ -441,9 +456,9 @@ class ApplicationManager:
                     logger.error(f'Failed to launch hook "{hook.name}". Error message from Job:\n{job_log}')
                     if hook.on_failure == HookOnFailureBehavior.stop:
                         await self.event_manager.create(EventSchema(
-                            title='Application deploy failed.',
-                            message=f'Failed to start application because was error during execution of "{hook.name}" '
-                                    f'hook and this hook is vital for application deployment.',
+                            title='Hook execution',
+                            message=f'Failed to execute hook "{hook.name}". Cannot continue because this hook is vital '
+                                    f'for application.',
                             organization_id=application.organization.id,
                             category=EventCategory.application,
                             severity=EventSeverityLevel.error,
@@ -459,25 +474,47 @@ class ApplicationManager:
                             hook=hook,
                             log=job_log
                         )
+                    else:
+                        await self.event_manager.create(EventSchema(
+                            title='Hook execution',
+                            message=f'Failed to execute hook "{hook.name}". Skipping this hook because this hook was '
+                                    f'not vital for application.',
+                            organization_id=application.organization.id,
+                            category=EventCategory.application,
+                            severity=EventSeverityLevel.warning,
+                            data={
+                                'application_id': application.id,
+                                'hook': hook.name,
+                                'job_log': job_log
+                            }
+                        ))
             else:
                 logger.error(f'Hook "{hook.name}" launch timeout. Failed to launch hook in {hook.timeout} seconds.')
+                if hook.on_failure == HookOnFailureBehavior.stop:
+                    message = f'Failed to execute hook "{hook.name}" in the allotted time. Cannot continue because ' \
+                              f'this hook is vital for application.'
+                    severity = EventSeverityLevel.error
+                else:
+                    message = f'Failed to execute hook "{hook.name}" in the allotted time. Skipping this hook ' \
+                              f'because this hook was not vital for application.'
+                    severity = EventSeverityLevel.warning
                 await self.event_manager.create(EventSchema(
-                    title='Application deploy failed.',
-                    message=f'Failed to start application because execution of hook "{hook.name}" was not finished in '
-                            f'time and this hook is vital for application deployment.',
+                    title='Hook execution',
+                    message=message,
                     organization_id=application.organization.id,
                     category=EventCategory.application,
-                    severity=EventSeverityLevel.error,
+                    severity=severity,
                     data={
                         'application_id': application.id,
                         'hook': hook.name
                     }
                 ))
-                raise ApplicationHookTimeoutException(
-                    f'<Hook name="{hook.name}"> failed to execute in {hook.timeout} seconds.',
-                    application=application,
-                    hook=hook
-                )
+                if hook.on_failure == HookOnFailureBehavior.stop:
+                    raise ApplicationHookTimeoutException(
+                        f'<Hook name="{hook.name}"> failed to execute in {hook.timeout} seconds.',
+                        application=application,
+                        hook=hook
+                    )
 
     async def set_ttl(self, application: Application, delta: timedelta) -> None:
         """

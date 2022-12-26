@@ -1,9 +1,9 @@
-import asyncio
 import logging
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
 from constants.events import EventCategory
+from constants.events import EventSeverityLevel
 from db.session import session_maker
 from exceptions.application import ApplicationComponentInstallException
 from exceptions.application import ApplicationComponentInstallTimeoutException
@@ -37,6 +37,14 @@ async def execute_pre_upgrade_hooks(application_id: int, new_template_id: int):
         await application_manager.set_state_status(application, ApplicationStatuses.upgrading)
         try:
             hooks = [hook for hook in manifest.hooks.pre_upgrade if hook.enabled]
+            if hooks:
+                await application_manager.event_manager.create(EventSchema(
+                    title='Application upgrade',
+                    message=f'Starting execution of pre-upgrade hooks.',
+                    organization_id=application.organization.id,
+                    category=EventCategory.application,
+                    data={'application_id': application.id}
+                ))
             for hook in hooks:
                 await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
@@ -69,6 +77,14 @@ async def upgrade_applicatoin_components(application_id: int, new_template_id: i
                 ApplicationComponentInstallTimeoutException) as error:
             logger.error(f'Failed to upgrate <Applicaton ID="{application.id}">. {error.message}.')
             await application_manager.set_state_status(application, ApplicationStatuses.error)
+            await application_manager.event_manager.create(EventSchema(
+                title='Application upgrade',
+                message=f'Failed to upgrade application. {error.message.strip(".")}.',
+                organization_id=application.organization.id,
+                category=EventCategory.application,
+                severity=EventSeverityLevel.error,
+                data={'application_id': application.id}
+            ))
             raise
         await application_manager.set_health_status(application, ApplicationHealthStatuses.healthy)
 
@@ -88,6 +104,14 @@ async def execute_post_upgrade_hooks(application_id: int, new_template_id: int):
         manifest = load_template(application.manifest)
         try:
             hooks = [hook for hook in manifest.hooks.post_upgrade if hook.enabled]
+            if hooks:
+                await application_manager.event_manager.create(EventSchema(
+                    title='Application upgrade',
+                    message=f'Starting execution of post-upgrade hooks.',
+                    organization_id=application.organization.id,
+                    category=EventCategory.application,
+                    data={'application_id': application.id}
+                ))
             for hook in hooks:
                 await application_manager.execute_hook(application, hook)
         except (ApplicationHookTimeoutException, ApplicationHookLaunchException) as error:
@@ -113,8 +137,8 @@ async def execute_post_upgrade_hooks(application_id: int, new_template_id: int):
         await application_manager.db.save(application)
 
         await application_manager.event_manager.create(EventSchema(
-            title='Application application template upgraded.',
-            message=f'Application was successfully upgraded.',
+            title='Application upgrade',
+            message=f'Application template was successfully upgraded.',
             organization_id=application.organization.id,
             category=EventCategory.application,
             data={
