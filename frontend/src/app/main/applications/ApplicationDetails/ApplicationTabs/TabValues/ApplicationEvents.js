@@ -8,19 +8,22 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 
-import { getEventsList as getEventsListAPI } from '../../../../../api/events';
+import { getApplicationEventsList as getApplicationEventsListAPI } from '../../../../../api/events';
 import { CATEGORIES_OF_EVENTS } from '../../../../../constants/categoriesOfEvents';
 import { getColorForStatus, getPresentFromIOSFormat } from '../../../../../uitls';
 
 const ApplicationEvents = () => {
+  const { id } = useParams();
+
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
     (async () => {
-      await getEventsListAPI(CATEGORIES_OF_EVENTS.APPLICATION).then((events) => {
+      await getApplicationEventsListAPI(CATEGORIES_OF_EVENTS.APPLICATION, id).then((events) => {
         setEvents(events.data);
       });
     })();
