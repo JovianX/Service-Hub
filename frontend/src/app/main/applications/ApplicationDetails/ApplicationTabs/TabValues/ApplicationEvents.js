@@ -18,18 +18,29 @@ import { getColorForStatus, getPresentFromIOSFormat } from '../../../../../uitls
 
 const ApplicationEvents = () => {
   const { id } = useParams();
-
+  const [isFirstEventsRequest, setIsFirstEventsRequest] = useState(true);
   const [events, setEvents] = useState([]);
 
+  const getApplicationEvents = () => {
+    getApplicationEventsListAPI(CATEGORIES_OF_EVENTS.APPLICATION, id).then((events) => {
+      setEvents(events.data);
+    });
+  };
+
   useEffect(() => {
-    (async () => {
-      await getApplicationEventsListAPI(CATEGORIES_OF_EVENTS.APPLICATION, id).then((events) => {
-        setEvents(events.data);
-      });
-    })();
+    getApplicationEvents();
+    if (isFirstEventsRequest) setIsFirstEventsRequest(false);
   }, []);
 
-  if (events.length === 0) {
+  useEffect(() => {
+    const getApplicationEventsTimer = setInterval(async () => {
+      await getApplicationEvents();
+    }, 6000);
+
+    return () => clearInterval(getApplicationEventsTimer);
+  }, []);
+
+  if (events.length === 0 && isFirstEventsRequest) {
     return (
       <div className='w-full flex flex-col min-h-full'>
         <FuseLoading />

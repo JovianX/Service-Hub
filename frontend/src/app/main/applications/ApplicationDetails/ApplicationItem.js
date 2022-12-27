@@ -2,14 +2,19 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+
+import { getApplicationsList } from 'app/store/applicationsSlice';
 
 import ApplicationTable from './ApplicationTable';
 import ApplicationTabs from './ApplicationTabs/ApplicationTabs';
 
 const ApplicationItem = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const { id } = useParams();
   const [application, setApplication] = useState({});
 
   useEffect(() => {
@@ -17,6 +22,17 @@ const ApplicationItem = () => {
       setApplication(location.state.row);
     }
   }, [location]);
+
+  useEffect(() => {
+    const getApplicationsTimer = setInterval(async () => {
+      await dispatch(getApplicationsList()).then(({ payload }) => {
+        const application = payload.find((application) => application.id === +id);
+        setApplication(application);
+      });
+    }, 6000);
+
+    return () => clearInterval(getApplicationsTimer);
+  }, []);
 
   if (!location?.state?.row) {
     return <Navigate to='/404' />;
