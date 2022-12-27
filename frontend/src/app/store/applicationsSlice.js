@@ -4,6 +4,7 @@ import {
   getApplicationsList as getApplicationsListAPi,
   deleteApplication as deleteApplicationAPI,
   applicationInstall as applicationInstallAPI,
+  createApplicationTtl as createApplicationTtlAPI,
 } from '../api';
 
 export const getApplicationsList = createAsyncThunk('applications/getApplicationsList', async () => {
@@ -40,6 +41,7 @@ export const deleteApplication = createAsyncThunk('applications/deleteApplicatio
   try {
     await deleteApplicationAPI(id);
     return {
+      id,
       status: 'success',
       message: 'Application was successfully removed',
     };
@@ -47,6 +49,21 @@ export const deleteApplication = createAsyncThunk('applications/deleteApplicatio
     return {
       status: 'error',
       message: e.response.data.message,
+    };
+  }
+});
+
+export const setApplicationTtl = createAsyncThunk('applications/createApplicationTtl', async ({ id, hours }) => {
+  try {
+    await createApplicationTtlAPI(id, hours);
+    return {
+      status: 'success',
+      message: hours.hours === 0 ? 'Unset ttl was successful' : 'Setting ttl was successful',
+    };
+  } catch (e) {
+    return {
+      status: 'error',
+      message: 'An error occurred when adding ttl',
     };
   }
 });
@@ -76,10 +93,13 @@ const applicationsSlice = createSlice({
       ...state,
       isLoading: false,
     }),
-    [deleteApplication.fulfilled]: (state) => ({
-      ...state,
-      isLoading: false,
-    }),
+    [applicationInstall.fulfilled]: (state, { payload }) => {
+      state.applications = [...state.applications, payload.application];
+    },
+    [deleteApplication.fulfilled]: (state, { payload }) => {
+      state.applications = [...state.applications.filter((item) => item.id !== payload.id)];
+      state.isLoading = false;
+    },
     [deleteApplication.pending]: (state, action) => ({
       ...state,
       isLoading: true,

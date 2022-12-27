@@ -22,7 +22,7 @@ import { selectUser } from 'app/store/userSlice';
 import { getReleaseHealth, getReleaseTtl } from '../../../api';
 import { checkTrimString, getColorForStatus, getPresent } from '../../../uitls';
 import ReleasesDeleteModal from '../ReleasesDeleteModal';
-import TtlModal from '../ttlModal';
+import TtlModal from '../ReleaseTtl';
 
 import RollbackRelease from './ReleaseTabs/RollbackRelease';
 
