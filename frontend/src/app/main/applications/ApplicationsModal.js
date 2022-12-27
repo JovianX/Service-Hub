@@ -14,7 +14,7 @@ import {
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { applicationInstall } from 'app/store/applicationsSlice';
 
@@ -40,7 +40,6 @@ const ApplicationsModal = ({
   const [namespace, setNamespace] = useState('');
   const [templateFormData, setTemplateFormData] = useState({});
 
-  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,9 +76,8 @@ const ApplicationsModal = ({
       setInfoMessageError(payload.message);
     } else {
       setInfoMessageSuccess('Application was successfully created');
-      if (location.pathname === `/${PATHS.TEMPLATES}`) {
-        navigate(`/${PATHS.APPLICATIONS}`);
-      }
+      navigate(`/${PATHS.APPLICATIONS}/${payload.application.id}`);
+
       if (setApplications) {
         setApplications((applications) => [...applications, payload.application]);
         setAllApplications((applications) => [...applications, payload.application]);
