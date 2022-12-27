@@ -76,7 +76,12 @@ const ApplicationsModal = ({
       setInfoMessageError(payload.message);
     } else {
       setInfoMessageSuccess('Application was successfully created');
-      navigate(`/${PATHS.APPLICATIONS}/${payload.application.id}`);
+
+      navigate(`/${PATHS.APPLICATIONS}/${payload.application.id}`, {
+        state: {
+          row: payload.application,
+        },
+      });
 
       if (setApplications) {
         setApplications((applications) => [...applications, payload.application]);
