@@ -11,3 +11,7 @@ export const getTimeFormatWithoutSeconds = (ts, format = 'YYYY-MM-DD HH:MM') => 
 export const getPresent = (ts) => {
   return new Date(+ts * 1000).toLocaleString().replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1');
 };
+
+export const getPresentFromIOSFormat = (timeInISO) => {
+  return new Date(+new Date(timeInISO).getTime()).toLocaleString().replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1');
+};
