@@ -1,34 +1,28 @@
 import TextField from '@mui/material/TextField';
 
+import TemplateBuilderInput from 'app/shared-components/TemplateBuilderInput';
+
 const InputTypeNumber = ({ input, index, handleOnChangeInput, infoIsYamlValid }) => {
   return (
     <>
-      <TextField
-        size='small'
-        type='text'
-        fullWidth
-        value={input.name || ''}
-        required
-        className='mr-10'
+      <TemplateBuilderInput
+        value={input.name}
         label='Name'
+        required
         disabled={!!infoIsYamlValid}
-        onChange={(e) => handleOnChangeInput(e.target.value, index, 'name')}
+        onChangeTemplate={(e) => handleOnChangeInput(e.target.value, index, 'name')}
       />
-      <TextField
-        size='small'
-        type='text'
-        fullWidth
-        value={input.label || ''}
-        className='mr-10'
+      <TemplateBuilderInput
+        value={input.name}
         label='Label'
         disabled={!!infoIsYamlValid}
-        onChange={(e) => handleOnChangeInput(e.target.value, index, 'label')}
+        onChangeTemplate={(e) => handleOnChangeInput(e.target.value, index, 'label')}
       />
       <TextField
         size='small'
         type='number'
         fullWidth
-        value={input.min}
+        value={input.min || ''}
         className='mr-10'
         label='Min'
         disabled={!!infoIsYamlValid}
@@ -38,7 +32,7 @@ const InputTypeNumber = ({ input, index, handleOnChangeInput, infoIsYamlValid })
         size='small'
         type='number'
         fullWidth
-        value={input.max}
+        value={input.max || ''}
         className='mr-10'
         label='Max'
         disabled={!!infoIsYamlValid}
@@ -48,7 +42,7 @@ const InputTypeNumber = ({ input, index, handleOnChangeInput, infoIsYamlValid })
         size='small'
         type='number'
         fullWidth
-        value={input.default}
+        value={input.default || ''}
         className='mr-10'
         label='Default'
         InputProps={{
