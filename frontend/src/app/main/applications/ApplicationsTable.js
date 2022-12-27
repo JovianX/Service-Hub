@@ -28,6 +28,8 @@ import { getContextList, selectContexts } from 'app/store/clustersSlice';
 import { getTemplatesList } from 'app/store/templatesSlice';
 import { selectUser } from 'app/store/userSlice';
 
+import { getPresent } from '../../uitls';
+
 import ApplicationsModal from './ApplicationsModal';
 import DeleteApplicationModal from './DeleteApplicationModal';
 
@@ -116,6 +118,7 @@ const ApplicationsTable = () => {
                   <TableCell>Template</TableCell>
                   <TableCell>Reversion</TableCell>
                   <TableCell>Created By</TableCell>
+                  <TableCell>Created At</TableCell>
                   <TableCell />
                 </TableRow>
               </TableHead>
@@ -129,6 +132,7 @@ const ApplicationsTable = () => {
                       <TableCell align='left'>{row.template.name}</TableCell>
                       <TableCell align='left'>{row.template.revision}</TableCell>
                       <TableCell align='left'>{row.creator.email}</TableCell>
+                      <TableCell align='left'>{getPresent(row.created_at)}</TableCell>
                       <TableCell align='right'>
                         <Button
                           onClick={() => {
