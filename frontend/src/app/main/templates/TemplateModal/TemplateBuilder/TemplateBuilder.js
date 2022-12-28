@@ -37,7 +37,12 @@ const TemplateBuilder = () => {
     if (!changedTemplatesBuilder?.hooks) {
       return null;
     }
-    return changedTemplatesBuilder.hooks;
+
+    if (typeof changedTemplatesBuilder.hooks === 'object' && changedTemplatesBuilder.hooks !== null) {
+      return Object.entries(changedTemplatesBuilder.hooks);
+    }
+
+    return null;
   }, [changedTemplatesBuilder]);
 
   useEffect(() => {
