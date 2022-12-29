@@ -73,9 +73,9 @@ class CustomPayloadJWTStrategy(JWTStrategy):
         return decode_jwt(token, self.decode_key, self.token_audience, algorithms=[self.algorithm])
 
 
-class PermanentTokenStrategy(Strategy):
+class AccessTokenStrategy(Strategy):
     """
-    Class to extend encoded in JWT token payload.
+    Strategy to authenticate user by user's access token.
     """
     async def write_token(self, user: User) -> str:
         raise CommonException('Access token can not be created through common login flow.')
@@ -136,20 +136,20 @@ def get_jwt_strategy() -> CustomPayloadJWTStrategy:
     return CustomPayloadJWTStrategy(secret=settings.SECRET, lifetime_seconds=settings.USER_SESSION_TTL)
 
 
-auth_backend = AuthenticationBackend(name='jwt', transport=bearer_transport, get_strategy=get_jwt_strategy,)
+jwt_backend = AuthenticationBackend(name='jwt', transport=bearer_transport, get_strategy=get_jwt_strategy,)
 
 
-def get_access_token_strategy() -> PermanentTokenStrategy:
-    return PermanentTokenStrategy()
+def get_access_token_strategy() -> AccessTokenStrategy:
+    return AccessTokenStrategy()
 
 
-permanent_jwt_auth_backend = AuthenticationBackend(
-    name='permanent-jwt',
+access_token_backend = AuthenticationBackend(
+    name='access-token',
     transport=bearer_transport,
     get_strategy=get_access_token_strategy
 )
 
-fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend, permanent_jwt_auth_backend])
+fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [jwt_backend, access_token_backend])
 
 current_active_user = fastapi_users.current_user(active=True)
 

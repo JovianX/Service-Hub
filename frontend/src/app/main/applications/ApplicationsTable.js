@@ -32,8 +32,6 @@ import { getTemplatesList } from 'app/store/templatesSlice';
 import { useGetMe } from '../../hooks/useGetMe';
 import { getPresent } from '../../uitls';
 
-import { getPresent } from '../../uitls';
-
 import ApplicationsModal from './ApplicationsModal';
 import ApplicationTtl from './ApplicationTtl';
 import DeleteApplicationModal from './DeleteApplicationModal';
