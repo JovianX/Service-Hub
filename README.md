@@ -17,7 +17,7 @@
 </div>
 
 # JovianX Service Hub
-JovianX **Service Hub** is a tool to create and manage a Self-Service deployments for your applications using Kubernetes and Helm (used by Platform Engineers).
+JovianX **Service Hub** is a tool to create and manage a Self-Service deployments for softawre stacks using Kubernetes and Helm (used by Platform Engineers).
 
 # Use Case
 - Developmnet enviromnets for developers via self-service UI/CLI/IDE to accelerate the developmnet cylce. 
