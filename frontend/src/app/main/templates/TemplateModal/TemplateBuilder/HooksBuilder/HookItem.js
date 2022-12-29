@@ -8,20 +8,7 @@ import { TemplateContext } from '../../../TemplateProvider';
 import HookFields from './HookFields';
 import HookTypes from './HookTypes';
 
-const newHook = {
-  name: '',
-  type: '',
-  image: '',
-  enabled: false,
-  namespace: '',
-  on_failure: '',
-  timeout: 0,
-  command: [],
-  args: [],
-  env: [],
-};
-
-const HookItem = ({ hook, index, selectedHook, infoIsYamlValid }) => {
+const HookItem = ({ hook, index, selectedHook, infoIsYamlValid, handleAddNewHook, setActionType }) => {
   const { setTemplateBuilder } = useContext(TemplateContext);
 
   const handleOnChangeHook = useCallback((value, index, type) => {
@@ -36,22 +23,8 @@ const HookItem = ({ hook, index, selectedHook, infoIsYamlValid }) => {
 
       return yaml.dump({ ...template, hooks }, { skipInvalid: true });
     });
+    setActionType('');
   }, []);
-
-  const handleAddNewHook = (index) => {
-    setTemplateBuilder((configYamlText) => {
-      const template = yaml.load(configYamlText, { json: true });
-
-      let hooks = Object.entries(template.hooks);
-
-      let updatedHooks = hooks;
-      updatedHooks = [...updatedHooks.find((_, i) => i === index)[1], newHook];
-      hooks[index][1] = updatedHooks;
-      hooks = Object.fromEntries(hooks);
-
-      return yaml.dump({ ...template, hooks }, { skipInvalid: true });
-    });
-  };
 
   return (
     <div className='template-builder bg-deep-purple-50 bg-opacity-50 p-12'>
@@ -71,6 +44,7 @@ const HookItem = ({ hook, index, selectedHook, infoIsYamlValid }) => {
                 indexOfSelectedHook={selectedHook}
                 hookFields={hook[1][selectedHook]}
                 infoIsYamlValid={infoIsYamlValid}
+                setActionType={setActionType}
               />
             ) : (
               <Button

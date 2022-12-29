@@ -30,6 +30,19 @@ const newHooks = {
   ],
 };
 
+const newHook = {
+  name: '',
+  type: '',
+  image: '',
+  enabled: false,
+  namespace: '',
+  on_failure: '',
+  timeout: 0,
+  command: [],
+  args: [],
+  env: [],
+};
+
 const HooksBuilder = ({ hooks }) => {
   const { setTemplateBuilder, infoIsYamlValid } = useContext(TemplateContext);
 
@@ -96,6 +109,23 @@ const HooksBuilder = ({ hooks }) => {
     });
   };
 
+  const handleAddNewHook = async (index, indexOfCreatedHook) => {
+    await setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
+
+      let hooks = Object.entries(template.hooks);
+
+      let updatedHooks = hooks;
+      updatedHooks = [...updatedHooks.find((_, i) => i === index)[1], newHook];
+      hooks[index][1] = updatedHooks;
+      hooks = Object.fromEntries(hooks);
+
+      return yaml.dump({ ...template, hooks }, { skipInvalid: true });
+    });
+    await setSelectedHook(indexOfCreatedHook ?? 0);
+    await setActionType('');
+  };
+
   return (
     <>
       {hooks?.length ? (
@@ -125,7 +155,7 @@ const HooksBuilder = ({ hooks }) => {
                         },
                       }}
                     >
-                      {itemHook[1] &&
+                      {itemHook[1].length > 0 &&
                         itemHook[1]?.map((item, indexHook) => {
                           return (
                             <TimelineItem className='group min-h-[40px]' key={indexHook}>
@@ -169,12 +199,24 @@ const HooksBuilder = ({ hooks }) => {
                     </Timeline>
                   </ListItemText>
                 </ListItemButton>
+                {itemHook[1].length !== 0 ? (
+                  <Button
+                    className='ml-12'
+                    disabled={!!infoIsYamlValid || itemHook[0] === ''}
+                    color='primary'
+                    startIcon={<AddIcon />}
+                    onClick={() => handleAddNewHook(index, itemHook[1].length)}
+                  >
+                    New hook
+                  </Button>
+                ) : null}
+
                 <Divider variant='fullWidth' component='li' />
               </React.Fragment>
             ))}
             <Button
-              disabled={!!infoIsYamlValid}
               className='mt-12'
+              disabled={!!infoIsYamlValid}
               color='primary'
               variant='contained'
               startIcon={<AddIcon />}
@@ -191,6 +233,8 @@ const HooksBuilder = ({ hooks }) => {
                 selectedHook={selectedHook}
                 index={indexHookType}
                 infoIsYamlValid={infoIsYamlValid}
+                handleAddNewHook={handleAddNewHook}
+                setActionType={setActionType}
               />
             </Box>
           ) : (
@@ -206,7 +250,7 @@ const HooksBuilder = ({ hooks }) => {
             startIcon={<AddIcon />}
             onClick={handleAddTypeOfHook}
           >
-            New hook
+            New type of hook
           </Button>
         </Box>
       )}

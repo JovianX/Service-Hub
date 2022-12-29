@@ -2,7 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Button, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import yaml from 'js-yaml';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { TemplateContext } from '../../../TemplateProvider';
 
@@ -14,12 +14,15 @@ const ENV = {
 const COMMAND = '';
 const ARGS = '';
 
-const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYamlValid }) => {
+const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYamlValid, setActionType }) => {
   const { setTemplateBuilder } = useContext(TemplateContext);
   const [hookFieldsInArray, setHookFieldsInArray] = useState([]);
 
   useEffect(() => {
-    if (hookFields) setHookFieldsInArray(Object.entries(hookFields));
+    if (hookFields) {
+      setHookFieldsInArray(Object.entries(hookFields));
+      setActionType('');
+    }
   }, [hookFields]);
 
   const handleDeleteHookOption = (nestedIndexOfEnv, type) => {
@@ -56,6 +59,53 @@ const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYa
     });
   };
 
+  const handleOnChangeHook = useCallback((type, value) => {
+    setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
+      let hooks = Object.entries(template.hooks);
+
+      hooks[indexOfTypeHook][1][indexOfSelectedHook][type] = value;
+
+      hooks = Object.fromEntries(hooks);
+      return yaml.dump({ ...template, hooks }, { skipInvalid: true });
+    });
+  }, []);
+
+  const handleOnChangeHookEvn = useCallback((nestedEnvIndex, type, nestedType, value) => {
+    setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
+      let hooks = Object.entries(template.hooks);
+
+      const updatedHookEnv = hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex];
+
+      if (nestedType === 'name') {
+        updatedHookEnv[Object.keys(updatedHookEnv)[0]] = value;
+        hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex] = updatedHookEnv;
+      }
+      if (nestedType === 'value') {
+        updatedHookEnv[Object.keys(updatedHookEnv)[1]] = value;
+        hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex] = updatedHookEnv;
+      }
+
+      hooks = Object.fromEntries(hooks);
+      return yaml.dump({ ...template, hooks }, { skipInvalid: true });
+    });
+  }, []);
+
+  const handleOnChangeHookArray = useCallback((nestedArrayIndex, type, value) => {
+    setTemplateBuilder((configYamlText) => {
+      const template = yaml.load(configYamlText, { json: true });
+      let hooks = Object.entries(template.hooks);
+
+      const updatedHookEnv = hooks[indexOfTypeHook][1][indexOfSelectedHook][type];
+      updatedHookEnv[nestedArrayIndex] = value;
+
+      hooks[indexOfTypeHook][1][indexOfSelectedHook][type] = updatedHookEnv;
+      hooks = Object.fromEntries(hooks);
+      return yaml.dump({ ...template, hooks }, { skipInvalid: true });
+    });
+  }, []);
+
   return (
     <>
       {hookFieldsInArray.length > 0 &&
@@ -68,10 +118,12 @@ const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYa
                   <TextField
                     size='small'
                     label={field[0]}
-                    value={field[1]}
+                    value={field[1] || ''}
                     required={
                       !!(field[0] === 'name' || field[0] === 'type' || field[0] === 'type' || field[0] === 'image')
                     }
+                    disabled={!!infoIsYamlValid}
+                    onChange={(e) => handleOnChangeHook(field[0], e.target.value)}
                   />
                 </>
               ) : (
@@ -82,8 +134,22 @@ const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYa
                       <React.Fragment key={optionIndex}>
                         {field[0] === 'env' ? (
                           <>
-                            <TextField type='text' size='small' label='Name' value={item.name} />
-                            <TextField type='text' size='small' label='Value' value={item.value} />
+                            <TextField
+                              type='text'
+                              size='small'
+                              label='Name'
+                              value={item.name || ''}
+                              disabled={!!infoIsYamlValid}
+                              onChange={(e) => handleOnChangeHookEvn(optionIndex, field[0], 'name', e.target.value)}
+                            />
+                            <TextField
+                              type='text'
+                              size='small'
+                              label='Value'
+                              value={item.value || ''}
+                              disabled={!!infoIsYamlValid}
+                              onChange={(e) => handleOnChangeHookEvn(optionIndex, field[0], 'value', e.target.value)}
+                            />
                             <Box display='flex' justifyContent='end' className='col-span-2 mt-[-10px]'>
                               <Button
                                 disabled={!!infoIsYamlValid}
@@ -107,7 +173,13 @@ const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYa
                         )}
                         {field[0] === 'args' || field[0] === 'command' ? (
                           <>
-                            <TextField size='small' className='col-span-2' value={item} />
+                            <TextField
+                              size='small'
+                              className='col-span-2'
+                              value={item || ''}
+                              disabled={!!infoIsYamlValid}
+                              onChange={(e) => handleOnChangeHookArray(optionIndex, field[0], e.target.value)}
+                            />
                             {field[0] === 'args' && (
                               <Box display='flex' justifyContent='end' className='col-span-2 mt-[-10px]'>
                                 <Button
