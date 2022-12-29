@@ -123,8 +123,8 @@ const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYa
             <React.Fragment key={index}>
               {!Array.isArray(field[1]) ? (
                 <>
-                  <p className='flex items-center'>{field[0]}</p>
                   <TextField
+                    className='col-span-2'
                     size='small'
                     label={field[0]}
                     value={field[1] || ''}
