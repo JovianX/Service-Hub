@@ -59,52 +59,61 @@ const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYa
     });
   };
 
-  const handleOnChangeHook = useCallback((type, value) => {
-    setTemplateBuilder((configYamlText) => {
-      const template = yaml.load(configYamlText, { json: true });
-      let hooks = Object.entries(template.hooks);
+  const handleOnChangeHook = useCallback(
+    (type, value) => {
+      setTemplateBuilder((configYamlText) => {
+        const template = yaml.load(configYamlText, { json: true });
+        let hooks = Object.entries(template.hooks);
 
-      hooks[indexOfTypeHook][1][indexOfSelectedHook][type] = value;
+        hooks[indexOfTypeHook][1][indexOfSelectedHook][type] = value;
 
-      hooks = Object.fromEntries(hooks);
-      return yaml.dump({ ...template, hooks }, { skipInvalid: true });
-    });
-  }, []);
+        hooks = Object.fromEntries(hooks);
+        return yaml.dump({ ...template, hooks }, { skipInvalid: true });
+      });
+    },
+    [indexOfTypeHook, indexOfSelectedHook],
+  );
 
-  const handleOnChangeHookEvn = useCallback((nestedEnvIndex, type, nestedType, value) => {
-    setTemplateBuilder((configYamlText) => {
-      const template = yaml.load(configYamlText, { json: true });
-      let hooks = Object.entries(template.hooks);
+  const handleOnChangeHookEvn = useCallback(
+    (nestedEnvIndex, type, nestedType, value) => {
+      setTemplateBuilder((configYamlText) => {
+        const template = yaml.load(configYamlText, { json: true });
+        let hooks = Object.entries(template.hooks);
 
-      const updatedHookEnv = hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex];
+        const updatedHookEnv = hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex];
 
-      if (nestedType === 'name') {
-        updatedHookEnv[Object.keys(updatedHookEnv)[0]] = value;
-        hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex] = updatedHookEnv;
-      }
-      if (nestedType === 'value') {
-        updatedHookEnv[Object.keys(updatedHookEnv)[1]] = value;
-        hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex] = updatedHookEnv;
-      }
+        if (nestedType === 'name') {
+          updatedHookEnv[Object.keys(updatedHookEnv)[0]] = value;
+          hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex] = updatedHookEnv;
+        }
+        if (nestedType === 'value') {
+          updatedHookEnv[Object.keys(updatedHookEnv)[1]] = value;
+          hooks[indexOfTypeHook][1][indexOfSelectedHook][type][nestedEnvIndex] = updatedHookEnv;
+        }
 
-      hooks = Object.fromEntries(hooks);
-      return yaml.dump({ ...template, hooks }, { skipInvalid: true });
-    });
-  }, []);
+        hooks = Object.fromEntries(hooks);
+        return yaml.dump({ ...template, hooks }, { skipInvalid: true });
+      });
+    },
+    [indexOfTypeHook, indexOfSelectedHook],
+  );
 
-  const handleOnChangeHookArray = useCallback((nestedArrayIndex, type, value) => {
-    setTemplateBuilder((configYamlText) => {
-      const template = yaml.load(configYamlText, { json: true });
-      let hooks = Object.entries(template.hooks);
+  const handleOnChangeHookArray = useCallback(
+    (nestedArrayIndex, type, value) => {
+      setTemplateBuilder((configYamlText) => {
+        const template = yaml.load(configYamlText, { json: true });
+        let hooks = Object.entries(template.hooks);
 
-      const updatedHookEnv = hooks[indexOfTypeHook][1][indexOfSelectedHook][type];
-      updatedHookEnv[nestedArrayIndex] = value;
+        const updatedHookEnv = hooks[indexOfTypeHook][1][indexOfSelectedHook][type];
+        updatedHookEnv[nestedArrayIndex] = value;
 
-      hooks[indexOfTypeHook][1][indexOfSelectedHook][type] = updatedHookEnv;
-      hooks = Object.fromEntries(hooks);
-      return yaml.dump({ ...template, hooks }, { skipInvalid: true });
-    });
-  }, []);
+        hooks[indexOfTypeHook][1][indexOfSelectedHook][type] = updatedHookEnv;
+        hooks = Object.fromEntries(hooks);
+        return yaml.dump({ ...template, hooks }, { skipInvalid: true });
+      });
+    },
+    [indexOfTypeHook, indexOfSelectedHook],
+  );
 
   return (
     <>

@@ -231,7 +231,7 @@ const HooksBuilder = ({ hooks }) => {
               <HookItem
                 hook={hook}
                 selectedHook={selectedHook}
-                index={indexHookType}
+                selectedIndexHookType={selectedIndexHookType}
                 infoIsYamlValid={infoIsYamlValid}
                 handleAddNewHook={handleAddNewHook}
                 setActionType={setActionType}

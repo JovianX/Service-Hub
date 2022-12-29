@@ -8,7 +8,7 @@ import { TemplateContext } from '../../../TemplateProvider';
 import HookFields from './HookFields';
 import HookTypes from './HookTypes';
 
-const HookItem = ({ hook, index, selectedHook, infoIsYamlValid, handleAddNewHook, setActionType }) => {
+const HookItem = ({ hook, selectedIndexHookType, selectedHook, infoIsYamlValid, handleAddNewHook, setActionType }) => {
   const { setTemplateBuilder } = useContext(TemplateContext);
 
   const handleOnChangeHook = useCallback((value, index, type) => {
@@ -32,7 +32,7 @@ const HookItem = ({ hook, index, selectedHook, infoIsYamlValid, handleAddNewHook
         {hook[0] === '' ? (
           <HookTypes
             typeValue={hook[0]}
-            index={index}
+            index={selectedIndexHookType}
             handleOnChangeHook={handleOnChangeHook}
             infoIsYamlValid={infoIsYamlValid}
           />
@@ -40,7 +40,7 @@ const HookItem = ({ hook, index, selectedHook, infoIsYamlValid, handleAddNewHook
           <>
             {hook[1].length > 0 ? (
               <HookFields
-                indexOfTypeHook={index}
+                indexOfTypeHook={selectedIndexHookType}
                 indexOfSelectedHook={selectedHook}
                 hookFields={hook[1][selectedHook]}
                 infoIsYamlValid={infoIsYamlValid}
@@ -51,7 +51,7 @@ const HookItem = ({ hook, index, selectedHook, infoIsYamlValid, handleAddNewHook
                 disabled={!!infoIsYamlValid}
                 color='primary'
                 startIcon={<AddIcon />}
-                onClick={() => handleAddNewHook(index)}
+                onClick={() => handleAddNewHook(selectedIndexHookType)}
               >
                 New hook
               </Button>
