@@ -20,7 +20,7 @@
 JovianX **Service Hub** is a tool to create and manage a Self-Service deployments for softawre stacks using Kubernetes and Helm (used by Platform Engineers).
 
 # Use Cases
-- **Developmnet enviromnets for developers** via self-service UI/CLI/IDE to accelerate the developmnet cylce. 
+- **Developmnet enviromnets for developers** via self-service UI/CLI/IDE to accelerate and shorten the developmnet cylce. 
 - **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
 
 # 🦄 Features:
