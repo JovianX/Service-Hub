@@ -25,7 +25,7 @@ JovianX **Service Hub** is a tool to create and manage a Self-Service deployment
 
 # 🦄 Features:
 
-**Deploy dev environmnets from Templates** ([Docs](documentation/templates.md))
+**Deploy environmnets from Templates** ([Docs](documentation/templates.md))
 
 - Create application templates from Helm Charts.
 - Manage template changes and reversions.
