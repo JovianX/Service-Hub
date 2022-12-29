@@ -33,7 +33,7 @@ JovianX **Service Hub** is a tool to create and manage a Self-Service deployment
 
 <table><tbody>
 <tr align=center>
-<td><b>Templates (For Platform Enginners)</b></td><td><b>Self-Service Environmnets (For Software Engineers)</b></td>
+<td><b>Templates (For Platform Engineers)</b></td><td><b>Self-Service Environmnets (For Software Engineers)</b></td>
 </tr>
 <tr><td colspan=2>
 <img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png">
