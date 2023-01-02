@@ -23,14 +23,7 @@ import { PATHS } from '../../constants/paths';
 import NamespacesSelect from './NamespacesSelect';
 import TemplateInputs from './TemplateInputs/TemplateInputs';
 
-const ApplicationsModal = ({
-  openModal,
-  setOpenModal,
-  kubernetesConfiguration,
-  setApplications,
-  setAllApplications,
-  templateFromCatalog,
-}) => {
+const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, templateFromCatalog }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,7 +64,6 @@ const ApplicationsModal = ({
       dry_run: false,
     };
     const { payload } = await dispatch(applicationInstall(application));
-
     if (payload.status === 'error') {
       setInfoMessageError(payload.message);
     } else {
@@ -83,10 +75,6 @@ const ApplicationsModal = ({
         },
       });
 
-      if (setApplications) {
-        setApplications((applications) => [...applications, payload.application]);
-        setAllApplications((applications) => [...applications, payload.application]);
-      }
       setTimeout(() => {
         setOpen(false);
         clearMessages();
