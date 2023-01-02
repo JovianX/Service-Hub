@@ -31,3 +31,4 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
         'UserInvitation', back_populates='created_user', lazy='selectin', uselist=False,
         foreign_keys='UserInvitation.created_user_id'
     )
+    access_tokens = relationship('AccessToken', back_populates='user', lazy='selectin',)

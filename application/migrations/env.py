@@ -9,14 +9,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from db.base_class import Base
-from models.application import *
-from models.event import *
-from models.invitation import *
-from models.organization import *
-from models.rule import *
-from models.service import *
-from models.template import *
-from models.user import *
+import models
 
 
 try:
