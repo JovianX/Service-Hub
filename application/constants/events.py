@@ -8,10 +8,11 @@ class EventCategory(StrEnum):
     """
     Event severity levels.
     """
+    access_token = 'access_token'
     application = 'application'
+    helm = 'helm'
     hook = 'hook'
     organization = 'organization'
-    helm = 'helm'
 
 
 class EventSeverityLevel(StrEnum):

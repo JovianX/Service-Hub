@@ -22,3 +22,4 @@ class Organization(Base):
     applications = relationship('Application', back_populates='organization', lazy='selectin')
     invitations = relationship('UserInvitation', back_populates='organization', lazy='selectin')
     events = relationship('Event', back_populates='organization', lazy='selectin')
+    access_tokens = relationship('AccessToken', back_populates='organization', lazy='selectin')
