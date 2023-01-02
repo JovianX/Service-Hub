@@ -16,7 +16,7 @@ import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
 import { getColorForStatus } from '../../../uitls';
-import ApplicationDeleteModal from '../ApplicationDeleteModal';
+import ApplicationDeleteModal from '../DeleteApplicationModal';
 
 const ApplicationTable = ({ application }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState();

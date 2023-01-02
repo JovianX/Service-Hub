@@ -30,7 +30,7 @@ class CreateSchema(BaseModel):
 
 class InvitationResponseSchema(BaseModel):
     """
-    User registration by invitation request schema.
+    User registration by invitation response schema.
     """
     id: UUID = Field(description='User invitation ID')
     created_at: datetime = Field(description='Date and time of invitation creation in timestamp format')

@@ -9,6 +9,7 @@ export const getTimeFormatWithoutSeconds = (ts, format = 'YYYY-MM-DD HH:MM') => 
 };
 
 export const getPresent = (ts) => {
+  if (!ts) return '';
   return new Date(+ts * 1000).toLocaleString().replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$2-$1');
 };
 

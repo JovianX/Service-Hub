@@ -5,29 +5,29 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
-const ReleasesDatePicker = ({ currentDate, getSelectedDate }) => {
+const DatePicker = ({ currentDate, getSelectedDate }) => {
   let currentDateInFormat = new Date();
   if (currentDate) {
     currentDateInFormat = new Date(currentDate * 1000);
   }
 
-  const [value, setValue] = useState(dayjs(currentDateInFormat));
+  const [date, setDate] = useState(dayjs(currentDateInFormat));
 
   const handleChange = (newValue) => {
-    setValue(newValue);
+    setDate(newValue);
   };
 
   useEffect(() => {
-    getSelectedDate(value);
-  }, [value]);
+    getSelectedDate(date);
+  }, [date]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className='customDatePickerWidth'>
+      <div className='custom-date-picker'>
         <DateTimePicker
           label='ttl'
           renderInput={(params) => <TextField {...params} />}
-          value={value}
+          value={date}
           onChange={handleChange}
           minDate={dayjs(new Date())}
         />
@@ -36,4 +36,4 @@ const ReleasesDatePicker = ({ currentDate, getSelectedDate }) => {
   );
 };
 
-export default ReleasesDatePicker;
+export default DatePicker;

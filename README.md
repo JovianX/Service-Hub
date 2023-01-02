@@ -6,7 +6,7 @@
 | --- |
          
 
-<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Thank you dear stargazers! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub/pulls">Issues/PRs are welcome 👍 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Join Discord 💬 </a></td></tr></tbody></table>
+<table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Thank you dear stargazers! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub//blob/main/documentation/">Docs 🕮 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Questions? Ask on Discord 💬 </a></td></tr></tbody></table>
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub)
 ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JovianX/Service-Hub)
@@ -17,12 +17,15 @@
 </div>
 
 # JovianX Service Hub
-JovianX **Service Hub** is a tool to create and manage a Self-Service portal for your applications using Kubernetes and Helm (used by Platform Engineers).
+JovianX **Service Hub** is a tool to create and manage a Self-Service deployments for softawre stacks using Kubernetes and Helm (used by Platform Engineers).
 
+# Use Cases
+- **Developmnet enviromnets for developers** via self-service UI/CLI/IDE to accelerate and shorten the developmnet cylce. 
+- **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
 
 # 🦄 Features:
 
-**Application Templates** ([Docs](documentation/templates.md))
+**Deploy environmnets from Templates** ([Docs](documentation/templates.md))
 
 - Create application templates from Helm Charts.
 - Manage template changes and reversions.
@@ -30,7 +33,7 @@ JovianX **Service Hub** is a tool to create and manage a Self-Service portal for
 
 <table><tbody>
 <tr align=center>
-<td><b>Templates</b></td><td><b>Self-Service UI</b></td>
+<td><b>Templates</b> (For Platform Engineers)</td><td><b>Self-Service Environmnets</b> (For Software Engineers)</td>
 </tr>
 <tr><td colspan=2>
 <img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png">

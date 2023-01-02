@@ -39,7 +39,7 @@ import {
 
 import ReleasesDeleteModal from './ReleasesDeleteModal';
 import ReleasesFilters from './ReleasesFilters';
-import TtlModal from './ttlModal';
+import ReleaseTtl from './ReleaseTtl';
 
 const ReleasesTable = () => {
   const dispatch = useDispatch();
@@ -268,7 +268,7 @@ const ReleasesTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TtlModal
+          <ReleaseTtl
             refresh={refresh}
             setRefresh={setRefresh}
             parameters={selectedParameters}
