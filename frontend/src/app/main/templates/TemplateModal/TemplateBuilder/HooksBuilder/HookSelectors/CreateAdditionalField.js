@@ -4,7 +4,7 @@ import { Box } from '@mui/system';
 import yaml from 'js-yaml';
 import { useContext, useEffect, useRef, useState } from 'react';
 
-import { TemplateContext } from '../../../TemplateProvider';
+import { TemplateContext } from '../../../../TemplateProvider';
 
 const CreateAdditionalField = ({
   hookFieldsInArray,
@@ -30,11 +30,14 @@ const CreateAdditionalField = ({
   }, [hookType]);
 
   const handleAddNewHookValue = (type, value) => {
+    let changedValue = value;
+    if (value === 'false') changedValue = false;
+    if (value === 'true') changedValue = true;
     setTemplateBuilder((configYamlText) => {
       const template = yaml.load(configYamlText, { json: true });
       let hooks = Object.entries(template.hooks);
 
-      hooks[indexOfTypeHook][1][indexOfSelectedHook][type] = value;
+      hooks[indexOfTypeHook][1][indexOfSelectedHook][type] = changedValue;
 
       hooks = Object.fromEntries(hooks);
       return yaml.dump({ ...template, hooks }, { skipInvalid: true });

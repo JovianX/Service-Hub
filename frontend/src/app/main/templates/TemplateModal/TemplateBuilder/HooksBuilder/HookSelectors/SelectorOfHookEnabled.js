@@ -1,26 +1,28 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-const TYPE_VALUES = ['kubernetes_job'];
+const ENABLED_VALUES = ['true', 'false'];
 
-const SelectorOfHookType = ({ type, setType, typeValue, label, infoIsYamlValid, handleOnChangeHook }) => {
+const SelectorOfHookEnabled = ({ typeValue, label, infoIsYamlValid, handleOnChangeHook }) => {
+  const [enabled, setEnabled] = useState('');
+
   useEffect(() => {
-    setType('');
+    setEnabled('');
     if (typeValue) {
-      setType(typeValue);
+      setEnabled(typeValue);
     }
   }, [typeValue]);
 
   const handleChangeType = (e) => {
-    setType(e.target.value);
+    setEnabled(e.target.value);
     handleOnChangeHook(label, e.target.value);
   };
 
   return (
     <FormControl size='small' required fullWidth disabled={!!infoIsYamlValid} className='col-span-2'>
       <InputLabel>{label}</InputLabel>
-      <Select name='type' value={type} label={label} onChange={handleChangeType}>
-        {TYPE_VALUES?.map((item) => (
+      <Select name='type' value={enabled || typeValue} label={label} onChange={handleChangeType}>
+        {ENABLED_VALUES?.map((item) => (
           <MenuItem key={item} value={item}>
             {item}
           </MenuItem>
@@ -30,4 +32,4 @@ const SelectorOfHookType = ({ type, setType, typeValue, label, infoIsYamlValid, 
   );
 };
 
-export default SelectorOfHookType;
+export default SelectorOfHookEnabled;
