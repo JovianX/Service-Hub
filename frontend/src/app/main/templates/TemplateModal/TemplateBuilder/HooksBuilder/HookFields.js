@@ -6,6 +6,9 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { TemplateContext } from '../../../TemplateProvider';
 
+import CreateAdditionalField from './CreateAdditionalField';
+import SelectorOfHookType from './SelectorOfHookType';
+
 const ENV = {
   name: '',
   value: '',
@@ -17,6 +20,7 @@ const ARGS = '';
 const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYamlValid, setActionType }) => {
   const { setTemplateBuilder } = useContext(TemplateContext);
   const [hookFieldsInArray, setHookFieldsInArray] = useState([]);
+  const [type, setType] = useState('');
 
   useEffect(() => {
     if (hookFields) {
@@ -123,17 +127,28 @@ const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYa
             <React.Fragment key={index}>
               {!Array.isArray(field[1]) ? (
                 <>
-                  <TextField
-                    className='col-span-2'
-                    size='small'
-                    label={field[0]}
-                    value={field[1] || ''}
-                    required={
-                      !!(field[0] === 'name' || field[0] === 'type' || field[0] === 'type' || field[0] === 'image')
-                    }
-                    disabled={!!infoIsYamlValid}
-                    onChange={(e) => handleOnChangeHook(field[0], e.target.value)}
-                  />
+                  {field[0] === 'type' ? (
+                    <SelectorOfHookType
+                      typeValue={field[1]}
+                      label={field[0]}
+                      infoIsYamlValid={infoIsYamlValid}
+                      handleOnChangeHook={handleOnChangeHook}
+                      type={type}
+                      setType={setType}
+                    />
+                  ) : (
+                    <TextField
+                      className='col-span-2'
+                      size='small'
+                      label={field[0]}
+                      value={field[1] || ''}
+                      required={
+                        !!(field[0] === 'name' || field[0] === 'type' || field[0] === 'type' || field[0] === 'image')
+                      }
+                      disabled={!!infoIsYamlValid}
+                      onChange={(e) => handleOnChangeHook(field[0], e.target.value)}
+                    />
+                  )}
                 </>
               ) : (
                 <>
@@ -251,6 +266,16 @@ const HookFields = ({ indexOfTypeHook, indexOfSelectedHook, hookFields, infoIsYa
             </React.Fragment>
           );
         })}
+
+      {hookFieldsInArray.length > 0 ? (
+        <CreateAdditionalField
+          hookFieldsInArray={hookFieldsInArray}
+          infoIsYamlValid={infoIsYamlValid}
+          indexOfTypeHook={indexOfTypeHook}
+          indexOfSelectedHook={indexOfSelectedHook}
+          hookType={type}
+        />
+      ) : null}
     </>
   );
 };

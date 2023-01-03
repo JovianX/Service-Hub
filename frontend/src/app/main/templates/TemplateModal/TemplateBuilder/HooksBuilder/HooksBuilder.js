@@ -19,13 +19,6 @@ const newHooks = {
       name: '',
       type: '',
       image: '',
-      enabled: false,
-      namespace: '',
-      on_failure: '',
-      timeout: 0,
-      command: [],
-      args: [],
-      env: [],
     },
   ],
 };
@@ -34,13 +27,6 @@ const newHook = {
   name: '',
   type: '',
   image: '',
-  enabled: false,
-  namespace: '',
-  on_failure: '',
-  timeout: 0,
-  command: [],
-  args: [],
-  env: [],
 };
 
 const HooksBuilder = ({ hooks }) => {
