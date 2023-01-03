@@ -54,7 +54,7 @@ const CreateAdditionalField = ({
           Add enabled
         </Button>
       )}
-      {flattedFields.includes('enabled') ? null : (
+      {flattedFields.includes('namespace') ? null : (
         <Button
           disabled={!!infoIsYamlValid}
           className='mt-[-10px] col-span-2 justify-start'
