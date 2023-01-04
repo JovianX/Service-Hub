@@ -1,3 +1,4 @@
+import TokenIcon from '@mui/icons-material/Token';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -6,14 +7,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import { selectUser } from 'app/store/userSlice';
+
+import { useGetMe } from '../../hooks/useGetMe';
 
 function UserMenu() {
-  const user = useSelector(selectUser);
+  const user = useGetMe();
 
   const [userMenu, setUserMenu] = useState(null);
 
@@ -57,6 +58,18 @@ function UserMenu() {
         classes={{ paper: 'py-8' }}
       >
         <>
+          <MenuItem
+            component={NavLink}
+            to='/access-tokens'
+            onClick={() => {
+              userMenuClose();
+            }}
+          >
+            <ListItemIcon className='min-w-40'>
+              <TokenIcon />
+            </ListItemIcon>
+            <ListItemText primary='Access tokens' />
+          </MenuItem>
           <MenuItem
             component={NavLink}
             to='/sign-out'
