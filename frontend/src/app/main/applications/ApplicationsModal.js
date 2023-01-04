@@ -14,8 +14,11 @@ import {
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { applicationInstall } from 'app/store/applicationsSlice';
+
+import { PATHS } from '../../constants/paths';
 
 import NamespacesSelect from './NamespacesSelect';
 import TemplateInputs from './TemplateInputs/TemplateInputs';
@@ -29,6 +32,8 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
   const [cluster, setCluster] = useState('');
   const [namespace, setNamespace] = useState('');
   const [templateFormData, setTemplateFormData] = useState({});
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setCluster(kubernetesConfiguration[0]?.name);
@@ -63,6 +68,13 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
       setInfoMessageError(payload.message);
     } else {
       setInfoMessageSuccess('Application was successfully created');
+
+      navigate(`/${PATHS.APPLICATIONS}/${payload.application.id}`, {
+        state: {
+          row: payload.application,
+        },
+      });
+
       setTimeout(() => {
         setOpen(false);
         clearMessages();
