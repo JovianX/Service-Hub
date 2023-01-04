@@ -1,4 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import {
   Button,
@@ -13,7 +12,9 @@ import {
   TableRow,
 } from '@mui/material';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import { useEffect, useMemo } from 'react';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FuseLoading from '@fuse/core/FuseLoading';
@@ -23,8 +24,17 @@ import { getAccessTokensList, selectAccessTokens, selectIsAccessTokensLoading } 
 
 import { getColorForStatus, getPresent } from '../../uitls';
 
-const AccessTokensTable = () => {
+import AccessTokenStatusModal from './AccessTokenStatusModal';
+
+const AccessTokensTable = memo(() => {
   const dispatch = useDispatch();
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [statusModalInfo, setStatusModalInfo] = useState({
+    open: false,
+    status: '',
+    id: '',
+  });
 
   const accessTokensData = useSelector(selectAccessTokens);
   const isLoading = useSelector(selectIsAccessTokensLoading);
@@ -38,6 +48,19 @@ const AccessTokensTable = () => {
     return [];
   }, [accessTokensData]);
 
+  const handleClickCopyID = (id) => {
+    setOpenSnackbar(true);
+    navigator.clipboard.writeText(id);
+  };
+
+  const handleOpenStatusModal = (id, status) => {
+    setStatusModalInfo({
+      open: true,
+      status,
+      id,
+    });
+  };
+
   if (isLoading) {
     return (
       <div className='w-full flex flex-col min-h-full'>
@@ -47,12 +70,7 @@ const AccessTokensTable = () => {
   }
 
   return (
-    <div className='w-full flex flex-col min-h-full'>
-      <div className='m-24 flex justify-end items-center'>
-        <Button variant='contained' color='primary' startIcon={<AddIcon />}>
-          New Access Token
-        </Button>
-      </div>
+    <>
       <Paper className='h-full mx-24 rounded'>
         <FuseScrollbars className='grow overflow-x-auto'>
           <TableContainer>
@@ -72,7 +90,7 @@ const AccessTokensTable = () => {
                 <TableBody>
                   {accessTokens.map((row) => (
                     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align='left'>{row.id}</TableCell>
+                      <TableCell align='left'>{row.id.substring(0, 8).concat('...')}</TableCell>
                       <TableCell align='left'>
                         <Stack>
                           <Chip className='capitalize' label={row.status} color={getColorForStatus(row.status)} />
@@ -83,9 +101,17 @@ const AccessTokensTable = () => {
                       <TableCell align='left'>{getPresent(row.expiration_date)}</TableCell>
                       <TableCell align='right'>
                         <ButtonGroup aria-label='primary button group'>
-                          <Button variant='text'>
-                            <FileCopyIcon />
+                          <Button
+                            className='ml-5'
+                            onClick={() => handleOpenStatusModal(row.id, row.status)}
+                            variant='text'
+                            color={row.status === 'active' ? 'error' : 'success'}
+                          >
+                            {row.status === 'active' ? 'Deactivate' : 'Activate'}
                           </Button>
+                          <IconButton className='text-gray-600' onClick={() => handleClickCopyID(row.id)}>
+                            <FileCopyIcon />
+                          </IconButton>
 
                           <Button variant='text' color='error'>
                             <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
@@ -100,8 +126,18 @@ const AccessTokensTable = () => {
           </TableContainer>
         </FuseScrollbars>
       </Paper>
-    </div>
+      <Snackbar
+        open={openSnackbar}
+        onClose={() => setOpenSnackbar(false)}
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        message='Copied to clipboard'
+      />
+      {statusModalInfo.open && (
+        <AccessTokenStatusModal statusModalInfo={statusModalInfo} setStatusModalInfo={setStatusModalInfo} />
+      )}
+    </>
   );
-};
+});
 
 export default AccessTokensTable;
