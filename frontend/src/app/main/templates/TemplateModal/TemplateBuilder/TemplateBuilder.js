@@ -5,6 +5,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { TemplateContext } from '../../TemplateProvider';
 
 import ComponentsBuilder from './ComponentsBuilder/ComponentsBuilder';
+import HooksBuilder from './HooksBuilder/HooksBuilder';
 import InputsBuilder from './InputsBuilder/InputsBuilder';
 
 const TemplateBuilder = () => {
@@ -32,6 +33,18 @@ const TemplateBuilder = () => {
     return changedTemplatesBuilder.inputs;
   }, [changedTemplatesBuilder]);
 
+  const hooks = useMemo(() => {
+    if (!changedTemplatesBuilder?.hooks) {
+      return null;
+    }
+
+    if (typeof changedTemplatesBuilder.hooks === 'object' && changedTemplatesBuilder.hooks !== null) {
+      return Object.entries(changedTemplatesBuilder.hooks);
+    }
+
+    return null;
+  }, [changedTemplatesBuilder]);
+
   useEffect(() => {
     if (templateBuilder) {
       setChangedTemplatesBuilder(templateBuilder);
@@ -49,12 +62,16 @@ const TemplateBuilder = () => {
             <ToggleButton size='small' value='inputs' className='w-[110px]'>
               Inputs
             </ToggleButton>
+            <ToggleButton size='small' value='hooks' className='w-[110px]'>
+              Hooks
+            </ToggleButton>
           </ToggleButtonGroup>
         </Box>
 
         <Box className='mt-24 h-max'>
           {alignment === 'components' && <ComponentsBuilder components={components} />}
           {alignment === 'inputs' && <InputsBuilder inputs={inputs} />}
+          {alignment === 'hooks' && <HooksBuilder hooks={hooks} />}
         </Box>
       </Box>
       <div className='mt-3 min-h-[30px] flex justify-center items-end'>
