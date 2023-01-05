@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   getAccessTokensList as getAccessTokensListAPI,
   changeAccessTokenStatus as changeAccessTokenStatusAPI,
+  deleteAccessToken as deleteAccessTokenAPI,
 } from '../api';
 
 export const getAccessTokensList = createAsyncThunk('accessTokens/getAccessTokensList', async () => {
@@ -23,7 +24,18 @@ export const changeAccessTokenStatus = createAsyncThunk('accessTokens/changeAcce
     const { data } = response;
     return data;
   } catch (e) {
-    return [];
+    console.log(e);
+  }
+});
+
+export const deleteAccessToken = createAsyncThunk('accessTokens/deleteAccessToken', async (token) => {
+  try {
+    const response = await deleteAccessTokenAPI(token);
+    const { data } = response;
+    console.log(data);
+    return data;
+  } catch (e) {
+    console.log(e);
   }
 });
 
@@ -47,6 +59,7 @@ const accessTokensSlice = createSlice({
       ...state,
       isLoading: false,
     }),
+
     [changeAccessTokenStatus.fulfilled]: (state, { payload }) => {
       state.accessTokens = [
         ...state.accessTokens.map((accessToken) => {
@@ -63,6 +76,19 @@ const accessTokensSlice = createSlice({
       isLoading: true,
     }),
     [changeAccessTokenStatus.rejected]: (state) => ({
+      ...state,
+      isLoading: false,
+    }),
+
+    [deleteAccessToken.fulfilled]: (state, { payload }) => ({
+      accessTokens: payload,
+      isLoading: false,
+    }),
+    [deleteAccessToken.pending]: (state) => ({
+      ...state,
+      isLoading: true,
+    }),
+    [deleteAccessToken.rejected]: (state) => ({
       ...state,
       isLoading: false,
     }),

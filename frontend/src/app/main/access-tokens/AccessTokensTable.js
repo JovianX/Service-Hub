@@ -25,6 +25,7 @@ import { getAccessTokensList, selectAccessTokens, selectIsAccessTokensLoading } 
 import { getColorForStatus, getPresent } from '../../uitls';
 
 import AccessTokenStatusModal from './AccessTokenStatusModal';
+import DeleteAccessTokenModal from './DeleteAccessTokenModal';
 
 const AccessTokensTable = memo(() => {
   const dispatch = useDispatch();
@@ -33,6 +34,10 @@ const AccessTokensTable = memo(() => {
   const [statusModalInfo, setStatusModalInfo] = useState({
     open: false,
     status: '',
+    token: '',
+  });
+  const [deleteModalInfo, setDeleteModalInfo] = useState({
+    open: false,
     token: '',
   });
 
@@ -57,6 +62,13 @@ const AccessTokensTable = memo(() => {
     setStatusModalInfo({
       open: true,
       status,
+      token,
+    });
+  };
+
+  const handleDeleteAccessToken = (token) => {
+    setDeleteModalInfo({
+      open: true,
       token,
     });
   };
@@ -113,7 +125,7 @@ const AccessTokensTable = memo(() => {
                             <FileCopyIcon />
                           </IconButton>
 
-                          <Button variant='text' color='error'>
+                          <Button variant='text' color='error' onClick={() => handleDeleteAccessToken(row.id)}>
                             <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                           </Button>
                         </ButtonGroup>
@@ -135,6 +147,9 @@ const AccessTokensTable = memo(() => {
       />
       {statusModalInfo.open && (
         <AccessTokenStatusModal statusModalInfo={statusModalInfo} setStatusModalInfo={setStatusModalInfo} />
+      )}
+      {deleteModalInfo.open && (
+        <DeleteAccessTokenModal deleteModalInfo={deleteModalInfo} setDeleteModalInfo={setDeleteModalInfo} />
       )}
     </>
   );
