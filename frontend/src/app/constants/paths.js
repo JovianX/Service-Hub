@@ -1,6 +1,7 @@
 export const PATHS = {
   ACCESS_TOKENS: 'access-tokens',
   APPLICATIONS: 'applications',
+  APPLICATION_DETAILS: 'applications/:id',
   SERVICES: 'services',
   SERVICE_CREATE: 'services/create',
   CHARTS: 'charts',

@@ -2,8 +2,10 @@ import AddIcon from '@mui/icons-material/Add';
 import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
 import {
   Button,
+  Chip,
   FormGroup,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -16,6 +18,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import FuseLoading from '@fuse/core/FuseLoading';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
@@ -30,7 +33,7 @@ import { getContextList, selectContexts } from 'app/store/clustersSlice';
 import { getTemplatesList } from 'app/store/templatesSlice';
 
 import { useGetMe } from '../../hooks/useGetMe';
-import { getPresent } from '../../uitls';
+import { getColorForStatus, getPresent } from '../../uitls';
 
 import ApplicationsModal from './ApplicationsModal';
 import ApplicationTtl from './ApplicationTtl';
@@ -38,6 +41,7 @@ import DeleteApplicationModal from './DeleteApplicationModal';
 
 const ApplicationsTable = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [kubernetesConfiguration, setKubernetesConfiguration] = useState({});
   const [openModal, setOpenModal] = useState(false);
@@ -125,8 +129,25 @@ const ApplicationsTable = () => {
                 <TableBody>
                   {applications.map((row) => (
                     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align='left'>{row.name}</TableCell>
-                      <TableCell align='left'>{row.status}</TableCell>
+                      <TableCell align='left'>
+                        <div
+                          className='hover:cursor-pointer underline'
+                          onClick={() => {
+                            navigate(`${row.id}`, {
+                              state: {
+                                row,
+                              },
+                            });
+                          }}
+                        >
+                          {row.name}
+                        </div>
+                      </TableCell>
+                      <TableCell align='left'>
+                        <Stack className='max-w-max mx-auto'>
+                          <Chip className='capitalize px-20' label={row.status} color={getColorForStatus(row.status)} />
+                        </Stack>
+                      </TableCell>
                       <TableCell align='left'>{row.template.name}</TableCell>
                       <TableCell align='left'>{row.template.revision}</TableCell>
                       <TableCell align='left'>{getPresent(row.ttl)}</TableCell>
