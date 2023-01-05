@@ -33,7 +33,7 @@ const AccessTokensTable = memo(() => {
   const [statusModalInfo, setStatusModalInfo] = useState({
     open: false,
     status: '',
-    id: '',
+    token: '',
   });
 
   const accessTokensData = useSelector(selectAccessTokens);
@@ -53,11 +53,11 @@ const AccessTokensTable = memo(() => {
     navigator.clipboard.writeText(id);
   };
 
-  const handleOpenStatusModal = (id, status) => {
+  const handleOpenStatusModal = (token, status) => {
     setStatusModalInfo({
       open: true,
       status,
-      id,
+      token,
     });
   };
 
