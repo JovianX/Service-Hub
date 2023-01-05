@@ -4,6 +4,8 @@ const ACCESS_TOKENS_API_PATH = '/api/v1/access-token';
 
 export const getAccessTokensList = async () => await axios.get(`${ACCESS_TOKENS_API_PATH}/list`);
 
+export const createAccessToken = async (tokenData) => axios.post(`${ACCESS_TOKENS_API_PATH}/`, tokenData);
+
 export const changeAccessTokenStatus = async (token, status) =>
   await axios.post(`${ACCESS_TOKENS_API_PATH}/${token}/status`, status);
 

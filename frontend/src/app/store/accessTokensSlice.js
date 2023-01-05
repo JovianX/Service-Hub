@@ -4,6 +4,7 @@ import {
   getAccessTokensList as getAccessTokensListAPI,
   changeAccessTokenStatus as changeAccessTokenStatusAPI,
   deleteAccessToken as deleteAccessTokenAPI,
+  createAccessToken as createAccessTokenAPI,
 } from '../api';
 
 export const getAccessTokensList = createAsyncThunk('accessTokens/getAccessTokensList', async () => {
@@ -13,6 +14,16 @@ export const getAccessTokensList = createAsyncThunk('accessTokens/getAccessToken
     return data;
   } catch (e) {
     return [];
+  }
+});
+
+export const createAccessToken = createAsyncThunk('accessTokens/createAccessToken', async (tokenData, thunkAPI) => {
+  try {
+    const response = await createAccessTokenAPI(tokenData);
+    const { data } = response;
+    return data;
+  } catch (e) {
+    return thunkAPI.rejectWithValue('Failed to install the access token');
   }
 });
 
@@ -32,7 +43,6 @@ export const deleteAccessToken = createAsyncThunk('accessTokens/deleteAccessToke
   try {
     const response = await deleteAccessTokenAPI(token);
     const { data } = response;
-    console.log(data);
     return data;
   } catch (e) {
     console.log(e);
@@ -44,6 +54,7 @@ const accessTokensSlice = createSlice({
   initialState: {
     isLoading: false,
     accessTokens: [],
+    errorMessage: '',
   },
   reducers: {},
   extraReducers: {
@@ -57,6 +68,21 @@ const accessTokensSlice = createSlice({
     }),
     [getAccessTokensList.rejected]: (state) => ({
       ...state,
+      isLoading: false,
+    }),
+
+    [createAccessToken.fulfilled]: (state, { payload }) => {
+      state.accessTokens = [...state.accessTokens, payload];
+      state.isLoading = false;
+      state.errorMessage = '';
+    },
+    [createAccessToken.pending]: (state) => ({
+      ...state,
+      errorMessage: '',
+    }),
+    [createAccessToken.rejected]: (state, { payload }) => ({
+      ...state,
+      errorMessage: payload,
       isLoading: false,
     }),
 
@@ -97,5 +123,6 @@ const accessTokensSlice = createSlice({
 
 export const selectAccessTokens = ({ accessTokens }) => accessTokens.accessTokens;
 export const selectIsAccessTokensLoading = ({ accessTokens }) => accessTokens.isLoading;
+export const selectErrorMessage = ({ accessTokens }) => accessTokens.errorMessage;
 
 export default accessTokensSlice.reducer;

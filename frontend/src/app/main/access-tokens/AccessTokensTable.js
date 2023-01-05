@@ -14,6 +14,7 @@ import {
 import ButtonGroup from '@mui/material/ButtonGroup';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
+import { Box } from '@mui/system';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -26,6 +27,7 @@ import { getColorForStatus, getPresent } from '../../uitls';
 
 import AccessTokenStatusModal from './AccessTokenStatusModal';
 import DeleteAccessTokenModal from './DeleteAccessTokenModal';
+import TokenTooltip from './TokenTooltip';
 
 const AccessTokensTable = memo(() => {
   const dispatch = useDispatch();
@@ -102,7 +104,12 @@ const AccessTokensTable = memo(() => {
                 <TableBody>
                   {accessTokens.map((row) => (
                     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align='left'>{row.id.substring(0, 8).concat('...')}</TableCell>
+                      <TableCell align='left'>
+                        <Box display='flex' alignItems='center'>
+                          <Box className='w-[50px] mr-20'>{row.id.substring(0, 8).concat('...')}</Box>
+                          <TokenTooltip token={row.id} />
+                        </Box>
+                      </TableCell>
                       <TableCell align='left'>
                         <Stack>
                           <Chip className='capitalize' label={row.status} color={getColorForStatus(row.status)} />
