@@ -317,7 +317,7 @@ class ApplicationManager:
                 return
         else:
             raise ApplicationComponentInstallTimeoutException(
-                f'Application component "{component.name}" did not become healthy in the allotted time.',
+                f'Application component "{component.name}" did not become healthy in the allocated time.',
                 application=application, component=component
             )
 
@@ -457,8 +457,8 @@ class ApplicationManager:
                     if hook.on_failure == HookOnFailureBehavior.stop:
                         await self.event_manager.create(EventSchema(
                             title='Hook execution',
-                            message=f'Failed to execute hook "{hook.name}". Cannot continue because this hook is vital '
-                                    f'for application.',
+                            message=f'Failed to execute hook "{hook.name}". Cannot continue because the hook is set '
+                                    f'to stop execution on hook failure.',
                             organization_id=application.organization.id,
                             category=EventCategory.application,
                             severity=EventSeverityLevel.error,
@@ -477,8 +477,8 @@ class ApplicationManager:
                     else:
                         await self.event_manager.create(EventSchema(
                             title='Hook execution',
-                            message=f'Failed to execute hook "{hook.name}". Skipping this hook because this hook was '
-                                    f'not vital for application.',
+                            message=f'Failed to execute hook "{hook.name}". continuing as this hook is set to '
+                                    f'continue on hook failure.',
                             organization_id=application.organization.id,
                             category=EventCategory.application,
                             severity=EventSeverityLevel.warning,
@@ -491,12 +491,12 @@ class ApplicationManager:
             else:
                 logger.error(f'Hook "{hook.name}" launch timeout. Failed to launch hook in {hook.timeout} seconds.')
                 if hook.on_failure == HookOnFailureBehavior.stop:
-                    message = f'Failed to execute hook "{hook.name}" in the allotted time. Cannot continue because ' \
-                              f'this hook is vital for application.'
+                    message = f'Failed to execute hook "{hook.name}" in the allocated time. Cannot continue because ' \
+                              f'this hook is set to stop on failure.'
                     severity = EventSeverityLevel.error
                 else:
-                    message = f'Failed to execute hook "{hook.name}" in the allotted time. Skipping this hook ' \
-                              f'because this hook was not vital for application.'
+                    message = f'Failed to execute hook "{hook.name}" in the allocated time. Skipping this hook ' \
+                              f'because this hook is set to continue on failure.'
                     severity = EventSeverityLevel.warning
                 await self.event_manager.create(EventSchema(
                     title='Hook execution',

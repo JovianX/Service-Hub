@@ -86,21 +86,18 @@ async def install_applicatoin_components(application_id: int):
                 if component_names != [component.name for component in components]:
                     logger.error(
                         f'Error during deployment of <Application ID="{application.id}"> from '
-                        f'<Template ID="{application.template.id}">. Application set of components was changed after '
-                        f'another teplate rerendering. Most probably it happened because of changed '
-                        f'`component.enabled` flag for one or more components after rerendering template with new '
-                        f'components manifests.'
+                        f'<Template ID="{application.template.id}">. Some of the application components were changed while '
+                        f'rerendering the template. This probably happened because of altered '
+                        f'`component.enabled` flag for one or more components after rerendering the template. '
                     )
                     raise ApplicationException(
-                        'Application component set was changed during installation process. Application set of '
-                        'components was changed after another teplate rerendering. Most probably it happened because '
-                        'of changed `component.enabled` flag for one or more components after rerendering template '
-                        'with new components manifests.',
+                        'Some application components were changed during the installation process. '
+                        'This probably happened because of changed `component.enabled` flag for one or more components.',
                         status.HTTP_500_INTERNAL_SERVER_ERROR, application=application
                     )
         except ApplicationComponentInstallTimeoutException as error:
             logger.error(
-                f'Failed to install <Applicaton ID="{application.id}">. Reached deadline of awaiting application '
+                f'Failed to install <Applicaton ID="{application.id}">. Reached timeout for awaiting for the application '
                 f'component to become healthy.'
             )
             await application_manager.set_state_status(application, ApplicationStatuses.error)
