@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
 from fastapi import Path
+from fastapi import Query
 
 from constants.applications import ApplicationHealthStatuses
 from core.authentication import AuthorizedUser
@@ -79,12 +80,16 @@ async def install_application(
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def list_applications(
+    owned_only: bool | None = Query(description="If true only user's application will be returned.", default=False),
     user: User = Depends(current_active_user),
     application_manager: ApplicationManager = Depends(get_application_manager)
 ):
     """
-    Returns list of organization's applications.
+    Returns list of applications.
     """
+    if owned_only:
+        return await application_manager.list_user_applications(user)
+
     return await application_manager.list_applications(user.organization)
 
 
