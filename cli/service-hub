@@ -1,0 +1,191 @@
+#!/usr/bin/env python
+
+from configparser import ConfigParser
+from datetime import datetime
+
+import fire
+import requests
+from rich.console import Console
+from rich.prompt import Confirm
+from rich.table import Table
+from settings import SERVICE_HUB_SETTINGS_FILE
+from settings import SERVICE_HUB_SETTINGS_HOME
+from settings import settings
+
+from schemas.applications import ApplicationResponseSchema
+from schemas.templates import TemplateResponseBodySchema
+
+
+TIME_FORMAT = '%Y-%m-%d %H:%m:%S'
+
+console = Console()
+session = requests.Session()
+if settings.access_token:
+    session.headers['Authorization'] = f'Bearer {settings.access_token}'
+
+
+class User:
+    """
+    User related actions.
+    """
+    def set_access_token(self, token: str):
+        """
+        Saves to user access token to settings file.
+        """
+        configuration = ConfigParser()
+        configuration.add_section('default')
+        configuration['default']['access_token'] = token
+        with open(SERVICE_HUB_SETTINGS_FILE, 'w') as file:
+            configuration.write(file)
+
+
+class API:
+    """
+    Base API call class.
+    """
+    _base_path: str = ''
+
+    def _get_url(self, path: str | None = None):
+        """
+        Concatenates host and base part of path with optional additional piece.
+        """
+        host = settings.api_host.strip('/')
+        parts = [host, 'api', 'v1']
+        if self._base_path:
+            base_path = self._base_path.strip('/')
+            parts.append(base_path)
+        if path:
+            path = path.strip('/')
+            parts.append(path)
+
+        return '/'.join(parts)
+
+
+class Application(API):
+    """
+    Application management.
+    """
+    _base_path = 'application'
+
+    def list(self, all: bool = False):
+        """
+        List organization application.
+
+        Args:
+            all: If this flag set all organization applicatoiins will be listed.
+        """
+        if all:
+            response = session.get(self._get_url('list'))
+        else:
+            response = session.get(self._get_url('list'), params={'owned_only': True})
+        if response.status_code == 401:
+            console.print('Authentication failed.', style='bold red')
+        elif response.status_code == 403:
+            console.print('Authorization failed.', style='bold red')
+        elif response.status_code == 500:
+            console.print('Problem on server side.', style='bold red')
+        elif response.status_code == 200:
+            applications = [ApplicationResponseSchema.parse_obj(item) for item in response.json()]
+            if not applications:
+                return
+            applications.sort(key=lambda item: item.name)
+            organization_name = applications[0].organization.title
+            table = Table(title=f'Application of "{organization_name}"')
+            table.add_column('Creation date')
+            table.add_column('Name')
+            table.add_column('Status')
+            table.add_column('Health')
+            table.add_column('Template')
+            for application in applications:
+                table.add_row(
+                    application.created_at.strftime(TIME_FORMAT),
+                    application.name,
+                    '[red]error[/red]' if application.status == 'error' else application.status,
+                    '[red]unhealty[/red]' if application.health == 'unhealthy' else application.health,
+                    f'{application.template.name} Rev. {application.template.revision}'
+                )
+            console.print(table)
+        else:
+            console.print('Failed to list applications.', style='bold red')
+
+
+class Template(API):
+    """
+    Template management.
+    """
+    _base_path = 'template'
+
+    def list(self, all: bool = False):
+        """
+        List organization templates.
+        """
+        response = session.get(self._get_url('list'))
+        if response.status_code == 401:
+            console.print('Authentication failed.', style='bold red')
+        elif response.status_code == 403:
+            console.print('Authorization failed.', style='bold red')
+        elif response.status_code == 500:
+            console.print('Problem on server side.', style='bold red')
+        elif response.status_code == 200:
+            payload = response.json()
+            templates = [TemplateResponseBodySchema.parse_obj(item) for item in payload]
+            if not templates:
+                return
+            if not all:
+                latest_templates = {}  # Latest revision of each template.
+                for template in templates:
+                    if template.name not in latest_templates:
+                        latest_templates[template.name] = template
+                        continue
+                    elif latest_templates[template.name].revision < template.revision:
+                        latest_templates[template.name] = template
+                templates = list(latest_templates.values())
+            organization_name = templates[0].organization.title
+            table = Table(title=f'Templates of "{organization_name}"')
+            table.add_column('Creation date')
+            table.add_column('Name')
+            table.add_column('Revision')
+            table.add_column('Enabled')
+            table.add_column('Default')
+            table.add_column('Creator')
+            for template in templates:
+                table.add_row(
+                    template.created_at.strftime(TIME_FORMAT),
+                    template.name,
+                    str(template.revision),
+                    '✓' if template.enabled else '',
+                    '✓' if template.default else '',
+                    template.creator.email
+                )
+            console.print(table)
+        else:
+            console.print('Failed to list templates.', style='bold red')
+
+
+class ServiceHub:
+    """
+    Service Hub CLI.
+    """
+    application: Application = Application
+    template: Template = Template
+    user: User = User
+
+    def __init__(self) -> None:
+        self.application = Application()
+        self.template = Template()
+        self.user = User()
+
+    def init(self):
+        """
+        Creates Service Hub home directory initial with configuration file.
+        """
+        if (not SERVICE_HUB_SETTINGS_HOME.exists()
+            and Confirm.ask(
+                f'This will create initial configuration file in "{SERVICE_HUB_SETTINGS_HOME}". Continue?',
+                default=True)):
+            SERVICE_HUB_SETTINGS_HOME.mkdir()
+            self.user.set_access_token(settings.access_token)
+
+
+if __name__ == '__main__':
+    fire.Fire(ServiceHub)

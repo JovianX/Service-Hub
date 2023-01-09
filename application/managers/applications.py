@@ -598,6 +598,12 @@ class ApplicationManager:
         """
         return await self.db.list(organization_id=organization.id)
 
+    async def list_user_applications(self, user: User) -> list[Application]:
+        """
+        Returns list of only user's application records.
+        """
+        return await self.db.list(creator_id=str(user.id))
+
     async def list_all_applications(self) -> list[Application]:
         """
         Returns list of all application records.
