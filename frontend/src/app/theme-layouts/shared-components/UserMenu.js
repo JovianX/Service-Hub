@@ -1,4 +1,4 @@
-import TokenIcon from '@mui/icons-material/Token';
+import TokenOutlinedIcon from '@mui/icons-material/TokenOutlined';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -66,7 +66,7 @@ function UserMenu() {
             }}
           >
             <ListItemIcon className='min-w-40'>
-              <TokenIcon />
+              <TokenOutlinedIcon />
             </ListItemIcon>
             <ListItemText primary='Access tokens' />
           </MenuItem>
