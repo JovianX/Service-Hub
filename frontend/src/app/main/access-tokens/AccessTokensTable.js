@@ -91,9 +91,9 @@ const AccessTokensTable = memo(() => {
             <Table stickyHeader className='min-w-xl' aria-labelledby='tableTitle'>
               <TableHead>
                 <TableRow>
-                  <TableCell>Id</TableCell>
-                  <TableCell align='center'>Status</TableCell>
                   <TableCell>Comment</TableCell>
+                  <TableCell align='center'>Status</TableCell>
+                  <TableCell>Token</TableCell>
                   <TableCell>Created At</TableCell>
                   <TableCell>Expiration</TableCell>
                   <TableCell />
@@ -104,18 +104,21 @@ const AccessTokensTable = memo(() => {
                 <TableBody>
                   {accessTokens.map((row) => (
                     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                      <TableCell align='left'>
-                        <Box display='flex' alignItems='center'>
-                          <Box className='w-[50px] mr-20'>{row.id.substring(0, 8).concat('...')}</Box>
-                          <TokenTooltip token={row.id} />
-                        </Box>
-                      </TableCell>
+                      <TableCell align='left'>{row.comment}</TableCell>
                       <TableCell align='left'>
                         <Stack>
                           <Chip className='capitalize' label={row.status} color={getColorForStatus(row.status)} />
                         </Stack>
                       </TableCell>
-                      <TableCell align='left'>{row.comment}</TableCell>
+                      <TableCell align='left'>
+                        <Box display='flex' alignItems='center'>
+                          <Box className='w-[50px] mr-20'>{row.id.substring(0, 8).concat('...')}</Box>
+                          <TokenTooltip token={row.id} />
+                          <IconButton className='text-gray-600' onClick={() => handleClickCopyID(row.id)}>
+                            <FileCopyIcon />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
                       <TableCell align='left'>{getPresent(row.created_at)}</TableCell>
                       <TableCell align='left'>{getPresent(row.expiration_date)}</TableCell>
                       <TableCell align='right'>
@@ -128,10 +131,6 @@ const AccessTokensTable = memo(() => {
                           >
                             {row.status === 'active' ? 'Deactivate' : 'Activate'}
                           </Button>
-                          <IconButton className='text-gray-600' onClick={() => handleClickCopyID(row.id)}>
-                            <FileCopyIcon />
-                          </IconButton>
-
                           <Button variant='text' color='error' onClick={() => handleDeleteAccessToken(row.id)}>
                             <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
                           </Button>
