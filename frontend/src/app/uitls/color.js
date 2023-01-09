@@ -5,7 +5,8 @@ export const getColorForStatus = (status) => {
     status === 'pending_install' ||
     status === 'pending_upgrade' ||
     status === 'pending_rollback' ||
-    status === 'warning'
+    status === 'warning' ||
+    status === 'disabled'
   ) {
     return 'warning';
   }
@@ -21,7 +22,7 @@ export const getColorForStatus = (status) => {
   if (status === 'deployed' || status === 'info') {
     return 'info';
   }
-  if (status === 'healthy') {
+  if (status === 'healthy' || status === 'active') {
     return 'success';
   }
 };

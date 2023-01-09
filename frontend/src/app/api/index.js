@@ -9,3 +9,4 @@ export * from './invitations';
 export * from './users';
 export * from './applications';
 export * from './templates';
+export * from './accessTokens';

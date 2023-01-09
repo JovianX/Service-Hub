@@ -1,5 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
+import accessTokens from './accessTokensSlice';
 import applications from './applicationsSlice';
 import charts from './chartsSlice';
 import clusters from './clustersSlice';
@@ -31,6 +32,7 @@ const createReducer = (asyncReducers) => (state, action) => {
     services,
     repositories,
     clusters,
+    accessTokens,
     ...asyncReducers,
   });
 
