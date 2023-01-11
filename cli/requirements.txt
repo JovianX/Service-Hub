@@ -1,3 +1,4 @@
 fire==0.5.0
-pydantic==1.10.2
+pydantic[dotenv]==1.10.2
+requests==2.28.1
 rich==13.0.0
