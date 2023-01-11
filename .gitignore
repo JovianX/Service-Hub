@@ -6,10 +6,13 @@ __pycache__
 *.pyc
 
 # Project resources
-.venv
-/.idea
 ./frontend/.idea
+.idea
+.venv
 application/.env
+cli/build/
+cli/dist/
+
 
 # Local desktop resoruces
 .DS_Store
