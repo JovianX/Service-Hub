@@ -8,10 +8,10 @@ import requests
 from rich.console import Console
 from rich.prompt import Confirm
 from rich.table import Table
+
 from settings import SERVICE_HUB_SETTINGS_FILE
 from settings import SERVICE_HUB_SETTINGS_HOME
 from settings import settings
-
 from schemas.applications import ApplicationResponseSchema
 from schemas.templates import TemplateResponseBodySchema
 
@@ -30,7 +30,7 @@ class User:
     """
     def set_access_token(self, token: str):
         """
-        Saves to user access token to settings file.
+        Saves user's access token to settings file.
         """
         configuration = ConfigParser()
         configuration.add_section('default')
