@@ -10,16 +10,29 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useState } from 'react';
+import { Box } from '@mui/system';
+import { useEffect, useState } from 'react';
 
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
+import { getApplicationOutputs as getApplicationOutputsAPI } from '../../../api';
 import { getColorForStatus } from '../../../uitls';
 import ApplicationDeleteModal from '../DeleteApplicationModal';
+import OutputTooltip from '../OutputTooltip';
 
-const ApplicationTable = ({ application }) => {
+const ApplicationTable = ({ application, applicationOutput }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState();
+  const [output, setOutput] = useState(applicationOutput);
+
+  useEffect(() => {
+    if (!applicationOutput) {
+      (async () => {
+        console.log(1);
+        await getApplicationOutputsAPI(application.id).then(({ data }) => setOutput(data.notes));
+      })();
+    }
+  }, [applicationOutput, application]);
 
   return (
     <Paper className='h-100 rounded mt-12'>
@@ -32,6 +45,7 @@ const ApplicationTable = ({ application }) => {
                 <TableCell align='center'>Status</TableCell>
                 <TableCell>Template</TableCell>
                 <TableCell>Reversion</TableCell>
+                <TableCell>Output</TableCell>
                 <TableCell>Created By</TableCell>
                 <TableCell />
               </TableRow>
@@ -52,6 +66,15 @@ const ApplicationTable = ({ application }) => {
                   </TableCell>
                   <TableCell align='left'>{application.template.name}</TableCell>
                   <TableCell align='left'>{application.template.revision}</TableCell>
+                  <TableCell lign='left'>
+                    {output ? (
+                      <Box display='flex' alignItems='center'>
+                        <Box className='w-[50px] mr-20'>{output.substring(0, 12).concat('...')}</Box>
+                        <OutputTooltip output={output} />
+                      </Box>
+                    ) : null}
+                  </TableCell>
+
                   <TableCell align='left'>{application.creator.email}</TableCell>
                   <TableCell align='right'>
                     <Button

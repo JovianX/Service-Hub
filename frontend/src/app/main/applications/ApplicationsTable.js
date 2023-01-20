@@ -16,6 +16,7 @@ import {
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { Box } from '@mui/system';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -32,17 +33,20 @@ import {
 import { getContextList, selectContexts } from 'app/store/clustersSlice';
 import { getTemplatesList } from 'app/store/templatesSlice';
 
+import { getApplicationOutputs as getApplicationOutputsAPI } from '../../api/applications';
 import { useGetMe } from '../../hooks/useGetMe';
 import { getColorForStatus, getPresent } from '../../uitls';
 
 import ApplicationsModal from './ApplicationsModal';
 import ApplicationTtl from './ApplicationTtl';
 import DeleteApplicationModal from './DeleteApplicationModal';
+import OutputTooltip from './OutputTooltip';
 
 const ApplicationsTable = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [applicationsOutputs, setApplicationsOutputs] = useState({});
   const [kubernetesConfiguration, setKubernetesConfiguration] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -50,10 +54,12 @@ const ApplicationsTable = () => {
   const [openTtlModal, setOpenTtlModal] = useState(false);
   const [parameters, setParameters] = useState({});
   const [showOnlyMine, setShowOnlyMine] = useState(false);
+  const [isFirstRequestForGetOutputs, setIsFirstRequestForGetOutputs] = useState(true);
 
   const contextData = useSelector(selectContexts);
   const applicationsData = useSelector(selectApplications);
   const isLoading = useSelector(selectIsApplicationsLoading);
+
   const user = useGetMe();
 
   useEffect(() => {
@@ -75,6 +81,13 @@ const ApplicationsTable = () => {
     setKubernetesConfiguration(contextData);
   }, [contextData]);
 
+  useEffect(() => {
+    if (applicationsData.length && isFirstRequestForGetOutputs) {
+      getApplicationOutputs(applicationsData);
+      setIsFirstRequestForGetOutputs(false);
+    }
+  }, [applicationsData]);
+
   const applications = useMemo(() => {
     const sortedByCreatedAt = [...applicationsData].sort((first, second) => first.created_at - second.created_at);
     if (showOnlyMine) {
@@ -82,6 +95,23 @@ const ApplicationsTable = () => {
     }
     return sortedByCreatedAt;
   }, [applicationsData, showOnlyMine]);
+
+  async function getApplicationOutputs(applications) {
+    if (applications.length) {
+      await applications.map((application, index) => {
+        const applicationOutput = {};
+        getApplicationOutputsAPI(application.id)
+          .then((res) => {
+            applicationOutput[index] = res.data.notes;
+            setApplicationsOutputs((applicationOutputs) => ({ ...applicationOutputs, ...applicationOutput }));
+          })
+          .catch(() => {
+            applicationOutput[index] = null;
+            setApplicationsOutputs((applicationOutputs) => ({ ...applicationOutputs, ...applicationOutput }));
+          });
+      });
+    }
+  }
 
   const handleShowOnlyMineApplications = () => {
     setShowOnlyMine(!showOnlyMine);
@@ -115,9 +145,10 @@ const ApplicationsTable = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell align='center'>Status</TableCell>
                   <TableCell>Template</TableCell>
                   <TableCell>Reversion</TableCell>
+                  <TableCell>Output</TableCell>
                   <TableCell>TTL</TableCell>
                   <TableCell>Created By</TableCell>
                   <TableCell>Created At</TableCell>
@@ -127,7 +158,7 @@ const ApplicationsTable = () => {
 
               {applications.length ? (
                 <TableBody>
-                  {applications.map((row) => (
+                  {applications.map((row, index) => (
                     <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                       <TableCell align='left'>
                         <div
@@ -136,6 +167,7 @@ const ApplicationsTable = () => {
                             navigate(`${row.id}`, {
                               state: {
                                 row,
+                                output: applicationsOutputs[index],
                               },
                             });
                           }}
@@ -150,6 +182,16 @@ const ApplicationsTable = () => {
                       </TableCell>
                       <TableCell align='left'>{row.template.name}</TableCell>
                       <TableCell align='left'>{row.template.revision}</TableCell>
+                      <TableCell lign='left'>
+                        {applicationsOutputs[index] ? (
+                          <Box display='flex' alignItems='center'>
+                            <Box className='w-[50px] mr-20'>
+                              {applicationsOutputs[index].substring(0, 12).concat('...')}
+                            </Box>
+                            <OutputTooltip output={applicationsOutputs[index]} />
+                          </Box>
+                        ) : null}
+                      </TableCell>
                       <TableCell align='left'>{getPresent(row.ttl)}</TableCell>
                       <TableCell align='left'>{row.creator.email}</TableCell>
                       <TableCell align='left'>{getPresent(row.created_at)}</TableCell>

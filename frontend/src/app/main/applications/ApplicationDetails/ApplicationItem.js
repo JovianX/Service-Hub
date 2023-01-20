@@ -47,7 +47,7 @@ const ApplicationItem = () => {
         </Box>
       </Box>
 
-      <ApplicationTable application={application} />
+      <ApplicationTable application={application} applicationOutput={location.state.output} />
       <ApplicationTabs />
     </Box>
   );
