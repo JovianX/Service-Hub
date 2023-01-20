@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.27.0 (b0ed6a2c9)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: task-executor
+  name: task-executor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: task-executor
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.27.0 (b0ed6a2c9)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/service-network: "true"
+        io.kompose.service: task-executor
+    spec:
+      containers:
+        - args:
+            - ./start-task-executor.sh
+          env:
+            - name: DATABASE_URL
+              value: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
+            - name: ENV_FILE
+              value: .env
+            - name: FILE_STORAGE_ROOT
+              value: /tmp
+            - name: PYTHONPATH
+              value: .
+            - name: SECRETS_DIRECTORY
+              value: credentials
+            - name: TEST_DATABASE_URL
+              value: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
+            - name: UI_HOST
+              value: http://localhost:3000
+          image: jovianx/service-hub_application
+          name: task-executor
+          resources: {}
+      restartPolicy: Always
+status: {}
