@@ -368,7 +368,7 @@ inputs:                                         # Optional. User input list.
 # If you need show message to user, you can use output.
 #     notes:
 #         Simple multiline text. Template variables can be used here to make message more adaptive.
-output:
+outputs:
     notes: 'Message that informs that Mongo DB cluster IP is: {{ components.mongodb.manifest.Service.mongodb.spec.cluster_ip }}'
 ```
 
