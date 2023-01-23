@@ -6,14 +6,13 @@ from typing import Any
 from pydantic import BaseModel
 from pydantic import Extra
 from pydantic import Field
-from pydantic import conlist
 from pydantic import constr
 from pydantic import validator
 
 from .components import Component
 from .hooks import Hooks
 from .inputs import Input
-from .outputs import Output
+from .outputs import Outputs
 from .validators import unique_names
 
 
@@ -28,7 +27,7 @@ class TemplateSchema(BaseModel):
     components: list[Component] | None = Field(description='Application components.', default_factory=list)
     hooks: Hooks | None = Field(description='Application actions.', default_factory=Hooks)
     inputs: list[Input] | None = Field(description='Input that should be provided by user.', default_factory=list)
-    output: Output | None = Field(description='Valuable output for Application consumer.')
+    outputs: Outputs | None = Field(description='Valuable output for Application consumer.')
 
     class Config:
         extra = Extra.forbid

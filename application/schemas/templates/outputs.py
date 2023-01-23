@@ -1,12 +1,12 @@
 """
-Template Output schema.
+Template Outputs schema.
 """
 from pydantic import BaseModel
 from pydantic import Extra
 from pydantic import Field
 
 
-class Output(BaseModel):
+class Outputs(BaseModel):
     """
     Outputs for Application consumer.
     """
