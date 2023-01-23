@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from configparser import ConfigParser
-from datetime import datetime
 
 import fire
 import requests
@@ -24,6 +23,36 @@ if settings.access_token:
     session.headers['Authorization'] = f'Bearer {settings.access_token}'
 
 
+def set_setting(name, value):
+    """
+    Sets CLI setting.
+    """
+    if name not in settings.__fields__:
+        raise ValueError(f'Failed to change configuration. Unknown setting "{name}".')
+
+    if not SERVICE_HUB_SETTINGS_HOME.exists():
+        confirm_message = f'This will create initial configuration file in "{SERVICE_HUB_SETTINGS_HOME}". Continue?'
+        if Confirm.ask(confirm_message, default=True):
+            SERVICE_HUB_SETTINGS_HOME.mkdir()
+        else:
+            return
+    if not SERVICE_HUB_SETTINGS_FILE.exists():
+        configuration = ConfigParser()
+        configuration.add_section('default')
+        configuration['default'] = settings.dict()
+        with open(SERVICE_HUB_SETTINGS_FILE, 'w') as file:
+            configuration.write(file)
+
+    configuration = ConfigParser()
+    configuration.read(SERVICE_HUB_SETTINGS_FILE)
+    if configuration['default'][name] == value:
+        # Current setting is the same. Nothing to do exiting...
+        return
+    configuration['default'] = {**settings.dict(), **configuration['default'], **{name: value}}
+    with open(SERVICE_HUB_SETTINGS_FILE, 'w') as file:
+        configuration.write(file)
+
+
 class User:
     """
     User related actions.
@@ -32,11 +61,7 @@ class User:
         """
         Saves user's access token to settings file.
         """
-        configuration = ConfigParser()
-        configuration.add_section('default')
-        configuration['default']['access_token'] = token
-        with open(SERVICE_HUB_SETTINGS_FILE, 'w') as file:
-            configuration.write(file)
+        set_setting('access_token', token)
 
 
 class API:
@@ -179,12 +204,7 @@ class ServiceHub:
         """
         Creates Service Hub home directory initial with configuration file.
         """
-        if (not SERVICE_HUB_SETTINGS_HOME.exists()
-            and Confirm.ask(
-                f'This will create initial configuration file in "{SERVICE_HUB_SETTINGS_HOME}". Continue?',
-                default=True)):
-            SERVICE_HUB_SETTINGS_HOME.mkdir()
-            self.user.set_access_token(settings.access_token)
+        self.user.set_access_token(settings.access_token)
 
 
 if __name__ == '__main__':
