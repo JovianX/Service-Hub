@@ -1,3 +1,4 @@
+import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
 import {
   Button,
   Chip,
@@ -10,29 +11,20 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Box } from '@mui/system';
-import { useEffect, useState } from 'react';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import { useState } from 'react';
 
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
-import { getApplicationOutputs as getApplicationOutputsAPI } from '../../../api';
-import { getColorForStatus } from '../../../uitls';
+import { getColorForStatus, getPresent } from '../../../uitls';
+import ApplicationTtl from '../ApplicationTtl';
 import ApplicationDeleteModal from '../DeleteApplicationModal';
-import OutputTooltip from '../OutputTooltip';
 
-const ApplicationTable = ({ application, applicationOutput }) => {
+const ApplicationTable = ({ application }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState();
-  const [output, setOutput] = useState(applicationOutput);
-
-  useEffect(() => {
-    if (!applicationOutput) {
-      (async () => {
-        console.log(1);
-        await getApplicationOutputsAPI(application.id).then(({ data }) => setOutput(data.notes));
-      })();
-    }
-  }, [applicationOutput, application]);
+  const [openTtlModal, setOpenTtlModal] = useState(false);
+  const [parameters, setParameters] = useState({});
 
   return (
     <Paper className='h-100 rounded mt-12'>
@@ -44,9 +36,9 @@ const ApplicationTable = ({ application, applicationOutput }) => {
                 <TableCell>Name</TableCell>
                 <TableCell align='center'>Status</TableCell>
                 <TableCell>Template</TableCell>
-                <TableCell>Reversion</TableCell>
-                <TableCell>Output</TableCell>
+                <TableCell>TTL</TableCell>
                 <TableCell>Created By</TableCell>
+                <TableCell>Created At</TableCell>
                 <TableCell />
               </TableRow>
             </TableHead>
@@ -64,28 +56,38 @@ const ApplicationTable = ({ application, applicationOutput }) => {
                       />
                     </Stack>
                   </TableCell>
-                  <TableCell align='left'>{application.template.name}</TableCell>
-                  <TableCell align='left'>{application.template.revision}</TableCell>
-                  <TableCell lign='left'>
-                    {output ? (
-                      <Box display='flex' alignItems='center'>
-                        <Box className='w-[50px] mr-20'>{output.substring(0, 12).concat('...')}</Box>
-                        <OutputTooltip output={output} />
-                      </Box>
-                    ) : null}
+                  <TableCell align='left'>
+                    {application.template.name}
+                    <span className='ml-4'> [Rev {application.template.revision}]</span>
                   </TableCell>
-
+                  <TableCell align='left'>{getPresent(application.ttl)}</TableCell>
                   <TableCell align='left'>{application.creator.email}</TableCell>
+                  <TableCell align='left'>{getPresent(application.created_at)}</TableCell>
                   <TableCell align='right'>
-                    <Button
-                      onClick={() => {
-                        setOpenDeleteModal(true);
-                      }}
-                      variant='text'
-                      color='error'
-                    >
-                      <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                    </Button>
+                    <ButtonGroup aria-label='primary button group'>
+                      <Button
+                        variant='text'
+                        color='error'
+                        onClick={() => {
+                          setParameters({
+                            currentDate: application.ttl,
+                            id: application.id,
+                          });
+                          setOpenTtlModal(true);
+                        }}
+                      >
+                        <AutoDeleteOutlinedIcon />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setOpenDeleteModal(true);
+                        }}
+                        variant='text'
+                        color='error'
+                      >
+                        <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                      </Button>
+                    </ButtonGroup>
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -94,6 +96,7 @@ const ApplicationTable = ({ application, applicationOutput }) => {
             )}
           </Table>
         </TableContainer>
+        <ApplicationTtl parameters={parameters} openTtlModal={openTtlModal} setOpenTtlModal={setOpenTtlModal} />
       </FuseScrollbars>
       {openDeleteModal ? (
         <ApplicationDeleteModal

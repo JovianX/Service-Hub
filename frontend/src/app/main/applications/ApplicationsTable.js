@@ -16,7 +16,6 @@ import {
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { Box } from '@mui/system';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -35,12 +34,11 @@ import { getTemplatesList } from 'app/store/templatesSlice';
 
 import { getApplicationOutputs as getApplicationOutputsAPI } from '../../api/applications';
 import { useGetMe } from '../../hooks/useGetMe';
-import { getColorForStatus, getPresent } from '../../uitls';
+import { getColorForStatus, getDate, getPresent } from '../../uitls';
 
 import ApplicationsModal from './ApplicationsModal';
 import ApplicationTtl from './ApplicationTtl';
 import DeleteApplicationModal from './DeleteApplicationModal';
-import OutputTooltip from './OutputTooltip';
 
 const ApplicationsTable = () => {
   const dispatch = useDispatch();
@@ -147,8 +145,7 @@ const ApplicationsTable = () => {
                   <TableCell>Name</TableCell>
                   <TableCell align='center'>Status</TableCell>
                   <TableCell>Template</TableCell>
-                  <TableCell>Reversion</TableCell>
-                  <TableCell>Output</TableCell>
+                  <TableCell width='25%'>Output</TableCell>
                   <TableCell>TTL</TableCell>
                   <TableCell>Created By</TableCell>
                   <TableCell>Created At</TableCell>
@@ -180,21 +177,21 @@ const ApplicationsTable = () => {
                           <Chip className='capitalize px-20' label={row.status} color={getColorForStatus(row.status)} />
                         </Stack>
                       </TableCell>
-                      <TableCell align='left'>{row.template.name}</TableCell>
-                      <TableCell align='left'>{row.template.revision}</TableCell>
-                      <TableCell lign='left'>
-                        {applicationsOutputs[index] ? (
-                          <Box display='flex' alignItems='center'>
-                            <Box className='w-[50px] mr-20'>
-                              {applicationsOutputs[index].substring(0, 12).concat('...')}
-                            </Box>
-                            <OutputTooltip output={applicationsOutputs[index]} />
-                          </Box>
-                        ) : null}
+                      <TableCell align='left'>
+                        {row.template.name}
+                        <span className='ml-4'> [Rev {row.template.revision}]</span>
+                      </TableCell>
+                      <TableCell lign='left' width='25%'>
+                        {applicationsOutputs[index]}
                       </TableCell>
                       <TableCell align='left'>{getPresent(row.ttl)}</TableCell>
                       <TableCell align='left'>{row.creator.email}</TableCell>
-                      <TableCell align='left'>{getPresent(row.created_at)}</TableCell>
+                      <TableCell align='left'>
+                        <div className='group'>
+                          <p className='group-hover:hidden'>{getDate(row.created_at)}</p>
+                          <p className='hidden group-hover:block'>{getPresent(row.created_at)}</p>
+                        </div>
+                      </TableCell>
                       <TableCell align='right'>
                         <ButtonGroup aria-label='primary button group'>
                           <Button

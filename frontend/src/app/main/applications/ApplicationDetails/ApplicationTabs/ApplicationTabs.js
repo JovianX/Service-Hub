@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 
 import ApplicationEvents from './TabValues/ApplicationEvents';
+import ApplicationValues from './TabValues/ApplicationValues';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -35,21 +36,26 @@ function a11yProps(index) {
   };
 }
 
-const ApplicationTabs = ({ release }) => {
+const ApplicationTabs = ({ output, inputs }) => {
   const [tab, setTab] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
+  console.log(inputs);
 
   return (
     <Box sx={{ width: '100%', marginTop: 4 }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tab} onChange={handleChange} aria-label='basic tabs example'>
-          <Tab label='Events' {...a11yProps(0)} />
+          <Tab label='Application' {...a11yProps(0)} />
+          <Tab label='Events' {...a11yProps(1)} />
         </Tabs>
       </Box>
       <TabPanel value={tab} index={0}>
+        <ApplicationValues output={output} inputs={inputs} />
+      </TabPanel>
+      <TabPanel value={tab} index={1}>
         <ApplicationEvents />
       </TabPanel>
     </Box>
