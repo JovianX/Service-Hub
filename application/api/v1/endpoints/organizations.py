@@ -10,7 +10,7 @@ from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
-from managers.organizations.settings_schemas import ROOT_SETTING_NAMES
+from schemas.organizations import ROOT_SETTING_NAMES
 from models.user import User
 from schemas.kubernetes import KubernetesConfigurationSchema
 

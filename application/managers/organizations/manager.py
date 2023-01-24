@@ -1,23 +1,28 @@
 """
 Classes that include business logic of Organizations.
 """
+import logging
 from typing import Any
 
 import yaml
 from faker import Faker
 from fastapi import Depends
 from fastapi import status
+from pydantic import ValidationError
 
 from crud.organizations import OrganizationDatabase
 from crud.organizations import get_organization_db
 from exceptions.common import CommonException
+from exceptions.organization import UnknownOrganizationSettingException
 from managers.kubernetes import K8sManager
 from models.organization import Organization
 from schemas.kubernetes import KubernetesConfigurationSchema
+from schemas.organizations import ROOT_SETTING_SCHEMAS
+from schemas.organizations import SettingsSchema
 from utils.kubernetes import KubernetesConfiguration
 
-from .settings_schemas import ROOT_SETTING_SCHEMAS
-from .settings_schemas import SettingsSchema
+
+logger = logging.getLogger(__name__)
 
 
 class OrganizationManager:
@@ -115,17 +120,29 @@ class OrganizationManager:
         """
         Sets organization settings and updates organization record in database.
 
-        In database storing only setting that was set previously. This allow us
-        use recent setting defaults changed in source code.
+        In database is storing only setting that was changed by user. This
+        allows us use most recent settings defaults after changing in source
+        code. On each setting change we validating old setting to ensure that
+        they correspond current settings schema.
         """
         if setting_name not in SettingsSchema.__fields__:
-            raise ValueError(f'Unknown organization setting: "{setting_name}".')
-        # Validating incoming setting value.
-        SettingsSchema.parse_obj({setting_name: setting_value})
+            raise UnknownOrganizationSettingException(setting_name=setting_name)
 
-        # It look like SQLAlchemy badly tracking changes of JSON field. Forcing
-        # it to spot field change by replacing full field value.
-        instance.settings = {**instance.settings, **{setting_name: setting_value}}
+        # Validating old setting.
+        try:
+            SettingsSchema.parse_obj(instance.settings)
+        except ValidationError as error:
+            logger.warning(
+                f'Failed to set setting "{setting_name}". Current organization settings is not valid. {error}'
+            )
+            raise CommonException(
+                f'Failed to set setting "{setting_name}". Current organization settings is not valid.'
+            )
+
+        # Validating incoming setting value.
+        SettingsSchema.parse_obj({**instance.settings, **{setting_name: setting_value}})
+
+        instance.settings[setting_name] = setting_value
         await self.db.save(instance)
 
     def get_setting(self, instance: Organization, setting_name: str) -> ROOT_SETTING_SCHEMAS:
