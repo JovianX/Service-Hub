@@ -59,7 +59,14 @@ const InputItem = ({ input, index, infoIsYamlValid }) => {
             infoIsYamlValid={infoIsYamlValid}
           />
         )}
-
+        {input.type === 'password' && (
+          <InputTypeText
+            input={input}
+            handleOnChangeInput={handleOnChangeInput}
+            index={index}
+            infoIsYamlValid={infoIsYamlValid}
+          />
+        )}
         {input.type === 'textarea' && (
           <InputTypeText
             input={input}

@@ -1,7 +1,17 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-const TYPE_VALUES = ['text', 'textarea', 'select', 'radio_select', 'switch', 'checkbox', 'slider', 'number'];
+const TYPE_VALUES = [
+  'text',
+  'password',
+  'textarea',
+  'select',
+  'radio_select',
+  'switch',
+  'checkbox',
+  'slider',
+  'number',
+];
 
 const InputTypes = ({ typeValue, index, handleOnChangeInput, infoIsYamlValid }) => {
   const [type, setType] = useState('');
