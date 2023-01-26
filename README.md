@@ -2,7 +2,7 @@
          
 ![service-hub-banner](https://user-images.githubusercontent.com/2787296/206389982-424ccee3-3f4e-42b9-ac0d-e62e5117b03c.png)
      
-| **Please star ⭐ the repo if you find it useful.** |
+| **Please star ⭐ the repo if you find it useful. Issues and PRs are more then WELCOME!** |
 | --- |
          
 

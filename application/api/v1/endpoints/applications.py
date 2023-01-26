@@ -18,8 +18,9 @@ from managers.applications import get_application_manager
 from managers.templates import TemplateManager
 from managers.templates import get_template_manager
 from models.user import User
-from schemas.templates.outputs import Output
+from schemas.templates.outputs import Outputs
 from utils.template import load_template
+from schemas.organizations import SettingsSchema
 
 from ..schemas.applications import ApplicationInstallResponseSchema
 from ..schemas.applications import ApplicationResponseSchema
@@ -65,8 +66,12 @@ async def install_application(
             'results': install_result
         }
     else:
-        if body.ttl:
+        organization_settings = SettingsSchema.from_organization(user.organization)
+        if body.ttl and body.ttl.hours:
             delta = timedelta(hours=body.ttl.hours)
+            await application_manager.set_ttl(install_result, delta)
+        elif organization_settings.application_ttl:
+            delta = timedelta(minutes=organization_settings.application_ttl)
             await application_manager.set_ttl(install_result, delta)
         return {
             'application': install_result,
@@ -114,7 +119,7 @@ async def get_application_health_status(
 
 @router.get(
     '/{application_id}/outputs',
-    response_model=Output,
+    response_model=Outputs,
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def get_application_outputs(
@@ -132,9 +137,9 @@ async def get_application_outputs(
         application=application,
         components_manifests=components_manifests
     )
-    manifet = load_template(raw_manifest)
+    manifest = load_template(raw_manifest)
 
-    return manifet.output
+    return manifest.outputs
 
 
 @router.post(
