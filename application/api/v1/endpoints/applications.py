@@ -20,6 +20,7 @@ from managers.templates import get_template_manager
 from models.user import User
 from schemas.templates.outputs import Outputs
 from utils.template import load_template
+from schemas.organizations import SettingsSchema
 
 from ..schemas.applications import ApplicationInstallResponseSchema
 from ..schemas.applications import ApplicationResponseSchema
@@ -65,8 +66,12 @@ async def install_application(
             'results': install_result
         }
     else:
-        if body.ttl:
+        organization_settings = SettingsSchema.from_organization(user.organization)
+        if body.ttl and body.ttl.hours:
             delta = timedelta(hours=body.ttl.hours)
+            await application_manager.set_ttl(install_result, delta)
+        elif organization_settings.application_ttl:
+            delta = timedelta(minutes=organization_settings.application_ttl)
             await application_manager.set_ttl(install_result, delta)
         return {
             'application': install_result,
