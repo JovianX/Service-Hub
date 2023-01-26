@@ -100,3 +100,7 @@ format: ## Format source code.
 
 tests: ## Run all test.
 	@. $(VE_DIRECTORY)/bin/activate; pytest -v ./application/tests
+
+cli_build: ## Builds Docker CLI builder image and creates CLI executable.
+	@docker build --no-cache --force-rm --tag service_hub_builder:latest cli/
+	@docker run --volume="${PWD}/cli/:/run/service_hub/build" service_hub_builder
