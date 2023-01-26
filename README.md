@@ -22,7 +22,7 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 
 
 # Use Cases
-- **Self-service infrastructure** Allow internal stackholders a very simple and maanged way to create 
+- **Self-service infrastructure** Allow internal stackholders a very simple and maanged way to access infrastrucutre.  
 - **Developmnet enviromnets**  accelerate and shorten the developmnet cylce via self-service app and infra componnets via  UI/CLI/IDE.
 - **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
 
