@@ -14,20 +14,16 @@
 
 # 🍱 Service-Hub vs. Alternatives
 
-JovianX Serivce-Hub offers a very simply way to create Self-Serivce experience for apps on Kubernetes. 
+JovianX Serivce-Hub offers an effortless way to create a Self-Serivce experience for apps and infrastructure with Kubernetes.
 
+With Service-Hub you can create service templates, and provide them as Self-Service applications to internal stakeholders (technical or non-technical), no extra DevOps magic glue is required to get started.
 
-With Service-Hub you can create applicaiton tempaltes, and provide them as Self-Service applications to users (technical or non-technical), no extra DevOps magic glue reuqired to get started.
-
-We love all of the alternatives/proxy tools in our space, and there are plenty. Our focus is on simplicitly, great developer experience, and a very short time-to-value. 
-
+Our focus is simplicity, excellent developer experience, and a short time-to-value. We love all of the alternatives/proxy tools in our space, and there are plenty. 
 
 ### Service-Hub vs. Helmfile
 
-### Service-Hub vs. Helmsman
+### Service Hub vs. AWS Service Catalog 
 
-### Service-Hub vs. Helm Dashboard
-
-### Service-Hub vs. Kubevela
+### Service Hub vs. Backstage
 
 ### Service-Hub vs. Kubeapps
