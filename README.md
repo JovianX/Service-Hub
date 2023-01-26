@@ -15,7 +15,7 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 </div>
 
-# JovianX Service Hub
+# What is JovianX Service Hub?
 JovianX **Service Hub** is an infrastructure Self-Service portal for internal stakeholders. It allows exposing on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
 
 Service Hub is commonly used by Platform and DevOps Engineers.
@@ -27,7 +27,13 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 - **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
 
 # How Service Hub works?
-Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. A temaptle defines 4 optinal etlements: **Inputs**, **Components**, **Hooks**, and **Outputs**. Serivce Hub has native integration with Kubernets,thus components can set Helm charts, Hooks(for example pre-install/post-install/post-delete) set to run Kubernetes Jobs.
+Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. A temaptle defines 4 optinal etlements: 
+- **Inputs**
+- **Components**
+- **Hooks**
+- **Outputs**. 
+
+Serivce Hub has native integration with Kubernets,thus components can setup Helm charts, Hooks( such as pre-install, post-delete, etc') can setup Kubernetes Jobs.
 
 
 # 🦄 Features:
