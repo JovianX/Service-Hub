@@ -21,7 +21,7 @@
 # JovianX Service Hub
 JovianX **Service Hub** is a tool to create and manage a Self-Service for your internal stakeholders. It allows exposing on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
 
-(Service Hub is commonly used by Platform and DevOps Engineers).
+Service Hub is commonly used by Platform and DevOps Engineers)
 
 # How Service Hub works?
 Serivce Hub allows internal users to create services from a catalog, the catalog is based on serivce tempaltes that you can create and manage. A temaptle defines 4 optinal etlements: **Inputs**, **Components**, **Hooks**, and **Outputs**. Serivce Hub has native integration with Kubernets, components can be defined with Helm charts and Kubernets objects. 
