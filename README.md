@@ -2,9 +2,6 @@
          
 ![Service Hub](https://user-images.githubusercontent.com/2787296/214809231-da86cf75-82e8-4c7d-9e58-12e690d5282c.png)
 
-        
-         
-     
 | **Please star ⭐ the repo if you find it useful. Issues and PRs are more then WELCOME!** |
 | --- |
          
@@ -19,30 +16,32 @@
 </div>
 
 # JovianX Service Hub
-JovianX **Service Hub** is a tool to create and manage a Self-Service for your internal stakeholders. It allows exposing on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
+JovianX **Service Hub** is a tool to create and manage Self-Service portals for internal stakeholders. It allows exposing on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
 
-Service Hub is commonly used by Platform and DevOps Engineers)
-
-# How Service Hub works?
-Serivce Hub allows internal users to create services from a catalog, the catalog is based on serivce tempaltes that you can create and manage. A temaptle defines 4 optinal etlements: **Inputs**, **Components**, **Hooks**, and **Outputs**. Serivce Hub has native integration with Kubernets, components can be defined with Helm charts and Kubernets objects. 
+Service Hub is commonly used by Platform and DevOps Engineers.
 
 
 # Use Cases
-- **Self-service infrastructure** 
-- **Developmnet enviromnets for developers** via self-service UI/CLI/IDE to accelerate and shorten the developmnet cylce. 
+- **Self-service infrastructure** Allow internal stackholders a very simple and maanged way to create 
+- **Developmnet enviromnets**  accelerate and shorten the developmnet cylce via self-service app and infra componnets via  UI/CLI/IDE.
 - **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
+
+# How Service Hub works?
+Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. A temaptle defines 4 optinal etlements: **Inputs**, **Components**, **Hooks**, and **Outputs**. Serivce Hub has native integration with Kubernets,thus components can set Helm charts, Hooks(for example pre-install/post-install/post-delete) set to run Kubernetes Jobs.
+
 
 # 🦄 Features:
 
-**Deploy environmnets from Templates** ([Docs](documentation/templates.md))
+**Service Templates** ([Docs](documentation/templates.md))
 
-- Create application templates from Helm Charts.
+- Create service templates from Helm Charts.
 - Manage template changes and reversions.
-- Allow operators to create applications from templates.
+- Allow operators to create services from templates.
+- Defualt TTL TTL for services
 
 <table><tbody>
 <tr align=center>
-<td><b>Templates</b> (For Platform Engineers)</td><td><b>Self-Service Environmnets</b> (For Software Engineers)</td>
+<td><b>Templates |</b> Platform Engineers create service catalog via tempaltes </td><td><b>Self-Service</b></td>
 </tr>
 <tr><td colspan=2>
 <img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png">
@@ -51,9 +50,7 @@ Serivce Hub allows internal users to create services from a catalog, the catalog
 
 
 
-
 **Helm Manager**
-
 - Manage Helm Releases, Monitor application Health, Set Releases TTL, Update release values, Upgrade versions, Manage repositories, etc'
 - Manage Helm Releases across multiple clusters.
 - Helm Restful API - Full restful API for Helm
