@@ -16,7 +16,7 @@
 </div>
 
 # JovianX Service Hub
-JovianX **Service Hub** is a Self-Service portal for internal stakeholders. It allows exposing on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
+JovianX **Service Hub** is an infrastructure Self-Service portal for internal stakeholders. It allows exposing on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
 
 Service Hub is commonly used by Platform and DevOps Engineers.
 
