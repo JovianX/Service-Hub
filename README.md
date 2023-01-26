@@ -28,10 +28,10 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 
 # How Service Hub works?
 Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. A temaptle defines 4 optinal etlements: 
-- **Inputs**
-- **Components**
-- **Hooks**
-- **Outputs**. 
+- **Inputs**  define the user inpus to collecto from the user
+- **Components** define what components should be set up when instantiating the service
+- **Hooks** can run scripts or trigger external APIs and services during diffenreny service lifecycle evetns(create, delete, etc')
+- **Outputs** define the output shown to the users after they create their serivce 
 
 Serivce Hub has native integration with Kubernets,thus components can setup Helm charts, Hooks( such as pre-install, post-delete, etc') can setup Kubernetes Jobs.
 
