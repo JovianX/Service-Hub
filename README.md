@@ -71,9 +71,13 @@ Serivce Hub allows internal users to create services from a catalog. The catalog
 
 # 👷 Installation
 
+## SaaS
+
 <table><tbody><tr><td>🌎 &nbsp;Service-Hub SaaS at &nbsp; &nbsp;👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a>&nbsp;</td></tr></tbody></table>
 
 ### OR
+
+## Docker Compose
 
 ```
 curl https://raw.githubusercontent.com/JovianX/Service-Hub/main/docker-compose.yaml -o docker-compose.yaml
