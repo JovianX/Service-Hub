@@ -1,6 +1,6 @@
 <div align=center>
          
-![service-hub-banner1](https://user-images.githubusercontent.com/2787296/214809231-da86cf75-82e8-4c7d-9e58-12e690d5282c.png)
+![Service Hub](https://user-images.githubusercontent.com/2787296/214809231-da86cf75-82e8-4c7d-9e58-12e690d5282c.png)
 
         
          
@@ -8,7 +8,6 @@
 | **Please star ⭐ the repo if you find it useful. Issues and PRs are more then WELCOME!** |
 | --- |
          
-
 <table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Thank you dear stargazers! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub//blob/main/documentation/">Docs 🕮 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Questions? Ask on Discord 💬 </a></td></tr></tbody></table>
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/JovianX/Service-Hub)
@@ -20,9 +19,16 @@
 </div>
 
 # JovianX Service Hub
-JovianX **Service Hub** is a tool to create and manage a Self-Service deployments for softawre stacks using Kubernetes and Helm (used by Platform Engineers).
+JovianX **Service Hub** is a tool to create and manage a Self-Service for your internal stakeholders. It allows exposing on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
+
+(Service Hub is commonly used by Platform and DevOps Engineers).
+
+# How Service Hub works?
+Serivce Hub allows internal users to create services from a catalog, the catalog is based on serivce tempaltes that you can create and manage. A temaptle defines 4 optinal etlements: **Inputs**, **Components**, **Hooks**, and **Outputs**. Serivce Hub has native integration with Kubernets, components can be defined with Helm charts and Kubernets objects. 
+
 
 # Use Cases
+- **Self-service infrastructure** 
 - **Developmnet enviromnets for developers** via self-service UI/CLI/IDE to accelerate and shorten the developmnet cylce. 
 - **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
 
