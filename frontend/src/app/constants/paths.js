@@ -4,6 +4,7 @@ export const PATHS = {
   APPLICATION_DETAILS: 'applications/:id',
   SERVICES: 'services',
   SERVICE_CREATE: 'services/create',
+  GENERAL_SETTINGS: 'general-settings',
   CHARTS: 'charts',
   CLUSTERS: 'clusters',
   DASHBOARD: 'dashboard',

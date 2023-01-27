@@ -93,6 +93,14 @@ const navigationConfig = [
     auth: authRoles.admin,
     children: [
       {
+        id: 'general-settings',
+        title: 'General',
+        translate: 'GENERAL',
+        type: 'item',
+        icon: 'heroicons-outline:cog',
+        url: 'general-settings',
+      },
+      {
         id: 'clusters-component',
         title: 'Clusters',
         translate: 'CLUSTERS',
