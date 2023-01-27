@@ -40,14 +40,13 @@ When a user creates a services from the templates catalog, Service Hub generates
 
 
 # 🦄 Features:
-**Login with GitHub or email/password**  
-**Basic RBAC**
-**Service Templates** ([Docs](documentation/templates.md))
-
-- Create service templates from Helm Charts.
-- Manage template changes and reversions.
-- Allow operators to create services from templates.
-- Defualt TTL TTL for services
+- **Login with GitHub or email/password**  
+- **Basic RBAC**  
+- **Service Templates** ([Docs](documentation/templates.md))
+  - Create service templates from Helm Charts.
+  - Manage template changes and reversions.
+  - Allow operators to create services from templates.
+  - Defualt TTL TTL for services
 
 <table><tbody>
 <tr align=center>
