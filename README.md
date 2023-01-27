@@ -23,17 +23,18 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 
 # 🦄 Features:
 - Self-Service Portal based on Tempaltes Catalog
-- Login with GitHub or email/password
+- Command line tool(service-hub cli) to instatiate services
+- Login with GitHub, email/password, Access Tokens
 - Basic RBAC
 - Templates Catalog ([Docs](documentation/templates.md))
   - Create service templates with Helm Charts.
   - Use Kubernetes jobs as serivce lifecyle(create/delete/etc') hooks
   - Remplate reversioning.
-  - TTL 
+  - Set TTL for services and resoruces
  
 <table><tbody>
 <tr align=center>
-<td><b>Templates |</b> Platform Engineers create service catalog via tempaltes </td><td><b>Self-Service</b></td>
+<td><b>Templates |</b> create catalog via templates </td><td><b>Self-Service Web UI</b></td>
 </tr>
 <tr><td colspan=2>
 <img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png">
