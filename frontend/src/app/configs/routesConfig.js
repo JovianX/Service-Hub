@@ -13,6 +13,7 @@ import ClustersConfig from '../main/clusters/ClustersConfig';
 import DashboardConfig from '../main/dashboard/DashboardConfig';
 import ExampleConfig from '../main/example/ExampleConfig';
 import ForgotPasswordConfig from '../main/forgot-password/ForgotPasswordConfig';
+import GeneralSettingsConfig from '../main/general-settings/GeneralSettingsLConfig';
 import ReleaseDetailsConfig from '../main/releases/ReleaseDetails/ReleaseDetailsConfig';
 import ReleasesConfig from '../main/releases/ReleasesConfig';
 import RepositoriesConfig from '../main/repositories/RepositoriesConfig';
@@ -43,6 +44,7 @@ const adminRouteConfigs = [
   UsersConfig,
   TemplatesConfig,
   AccessTokensConfig,
+  GeneralSettingsConfig,
 ];
 const operatorRouteConfigs = [
   SignInConfig,
@@ -59,6 +61,7 @@ const operatorRouteConfigs = [
   DashboardConfig,
   TemplatesConfig,
   AccessTokensConfig,
+  GeneralSettingsConfig,
 ];
 
 const adminRoutes = [
