@@ -40,7 +40,8 @@ When a user creates a services from the templates catalog, Service Hub generates
 
 
 # 🦄 Features:
-
+**Login with GitHub or email/password**  
+**Basic RBAC**
 **Service Templates** ([Docs](documentation/templates.md))
 
 - Create service templates from Helm Charts.
@@ -57,18 +58,16 @@ When a user creates a services from the templates catalog, Service Hub generates
 </td></tr>
 </tbody></table>
 
-
-
 **Helm Manager**
 - Manage Helm Releases, Monitor application Health, Set Releases TTL, Update release values, Upgrade versions, Manage repositories, etc'
 - Manage Helm Releases across multiple clusters.
 - Helm Restful API - Full restful API for Helm
 - Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
-
 ![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
 
-**Login with GitHub or email/password**
-**Basic RBAC**
+
+## Architecture
+![Service Hub Architecutre](https://user-images.githubusercontent.com/2787296/215046290-a89d375f-ecf0-4ac6-9409-dabeb40f55ba.svg)
 
 ## 🚀 Roadmap
 
