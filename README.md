@@ -20,6 +20,11 @@ JovianX **Service Hub** is a tool that enables Self-Service for internal stakeho
 
 Service Hub is commonly used by Platform and DevOps Engineers.
 
+## Use Cases
+- **Self-service infrastructure** Allow internal stackholders a very simple and maanged way to access infrastrucutre.  
+- **Developmnet enviromnets**  accelerate and shorten the developmnet cylce via self-service app and infra componnets via  UI/CLI/IDE.
+- **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
+
 
 # 🦄 Features:
 - Self-Service Portal based on Tempaltes Catalog
@@ -48,11 +53,14 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 - Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
 ![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
 
+## 🚀 Roadmap (accepting Feature Requests via GitHub issues)
 
-## Use Cases
-- **Self-service infrastructure** Allow internal stackholders a very simple and maanged way to access infrastrucutre.  
-- **Developmnet enviromnets**  accelerate and shorten the developmnet cylce via self-service app and infra componnets via  UI/CLI/IDE.
-- **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
+- **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc')
+- **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
+- **RBAC** - Role-based access control
+- **Login with Google**
+- **Installation via Helm Chart**
+
 
 # How Service Hub works?
 Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. 
@@ -70,22 +78,13 @@ When a user creates a services from the templates catalog, Service Hub generates
 ## Architecture
 ![Service Hub Architecutre](https://user-images.githubusercontent.com/2787296/215046290-a89d375f-ecf0-4ac6-9409-dabeb40f55ba.svg)
 
-## 🚀 Roadmap
-
-- **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc')
-- **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
-- **RBAC** - Role-based access control
-- **Login with Google**
-- **Installation via Helm Chart**
 
 # 👷 Installation
-
 ## SaaS
 
 <table><tbody><tr><td>🌎 &nbsp;Service-Hub SaaS at &nbsp; &nbsp;👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a>&nbsp;</td></tr></tbody></table>
 
 OR
-
 ## Docker Compose
 
 ```
