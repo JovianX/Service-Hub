@@ -27,7 +27,7 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 
 
 # 🦄 Features:
-- Self-Service Portal based on Tempaltes Catalog
+- Self-Service Portal based on Templates Catalog
 - Command line tool(service-hub cli) to instatiate services
 - Login with GitHub, email/password, Access Tokens
 - Basic RBAC
