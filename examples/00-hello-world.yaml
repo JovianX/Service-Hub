@@ -1,0 +1,9 @@
+# Template reference and documentation at
+# https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
+
+name: hello-world-redis
+
+components:                                     # Required. Application components list.
+  - name: redis                                 # Required. Component name.
+    type: helm_chart                            # Required. Component type.
+    chart: bitnami/redis                        # Required. Chart name in format `<repository name>/<application name>`.
