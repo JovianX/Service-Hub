@@ -1,7 +1,7 @@
 # Template reference and documentation at
 # https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
 
-name: my-new-service                            # Required. Name of service.
+name: basic-example-redis                       # Required. Name of service.
 
 inputs:                                         # Optional. User input list.
   - name: username                              # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
