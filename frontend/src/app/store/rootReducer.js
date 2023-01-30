@@ -1,5 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
+import { generalSettingsAPI } from 'app/store/generalSettingSlice';
+
 import accessTokens from './accessTokensSlice';
 import applications from './applicationsSlice';
 import charts from './chartsSlice';
@@ -33,6 +35,7 @@ const createReducer = (asyncReducers) => (state, action) => {
     repositories,
     clusters,
     accessTokens,
+    [generalSettingsAPI.reducerPath]: generalSettingsAPI.reducer,
     ...asyncReducers,
   });
 
