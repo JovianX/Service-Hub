@@ -36,13 +36,12 @@ function a11yProps(index) {
   };
 }
 
-const ApplicationTabs = ({ output, inputs }) => {
+const ApplicationTabs = ({ outputs, inputs }) => {
   const [tab, setTab] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
-  console.log(inputs);
 
   return (
     <Box sx={{ width: '100%', marginTop: 4 }}>
@@ -53,7 +52,7 @@ const ApplicationTabs = ({ output, inputs }) => {
         </Tabs>
       </Box>
       <TabPanel value={tab} index={0}>
-        <ApplicationValues output={output} inputs={inputs} />
+        <ApplicationValues outputs={outputs} inputs={inputs} />
       </TabPanel>
       <TabPanel value={tab} index={1}>
         <ApplicationEvents />

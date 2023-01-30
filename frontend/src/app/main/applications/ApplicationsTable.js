@@ -164,7 +164,7 @@ const ApplicationsTable = () => {
                             navigate(`${row.id}`, {
                               state: {
                                 row,
-                                output: applicationsOutputs[index],
+                                outputs: applicationsOutputs[index],
                               },
                             });
                           }}

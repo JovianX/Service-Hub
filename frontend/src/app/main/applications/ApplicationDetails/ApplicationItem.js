@@ -18,7 +18,7 @@ const ApplicationItem = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [application, setApplication] = useState({});
-  const [output, setOutput] = useState(location.state.output);
+  const [outputs, setOutputs] = useState(location.state.outputs);
 
   useEffect(() => {
     if (location.state?.row) {
@@ -27,12 +27,12 @@ const ApplicationItem = () => {
   }, [location]);
 
   useEffect(() => {
-    if (!location.state.output) {
+    if (!location.state.outputs) {
       (async () => {
-        await getApplicationOutputsAPI(application.id).then(({ data }) => setOutput(data.notes));
+        await getApplicationOutputsAPI(application.id).then(({ data }) => setOutputs(data.notes));
       })();
     }
-  }, [location.state.output, application]);
+  }, [location.state.outputs, application]);
 
   useEffect(() => {
     const getApplicationsTimer = setInterval(async () => {
@@ -59,7 +59,7 @@ const ApplicationItem = () => {
       </Box>
 
       <ApplicationTable application={application} />
-      <ApplicationTabs output={output} inputs={application.user_inputs} />
+      <ApplicationTabs outputs={outputs} inputs={application.user_inputs} />
     </Box>
   );
 };
