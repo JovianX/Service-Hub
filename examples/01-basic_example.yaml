@@ -1,0 +1,24 @@
+# Template reference and documentation at
+# https://github.com/JovianX/Service-Hub/blob/main/documentation/templates.md
+
+name: basic-example-redis                       # Required. Name of service.
+
+inputs:                                         # Optional. User input list.
+  - name: username                              # Required. Input name. Used in template dynamic variables. Must be unique acros all inputs.
+    type: text                                  # Required. Input type.
+    label: 'User Name'                          # Optional. User friendly short input title.
+    default: 'John Connor'                      # Optional. Default input value. Used if was no input from user.
+    description: 'Enter app username'           # Optional. Valuable for user description of this input.
+
+components:                                     # Required. Application components list.
+  - name: redis                                 # Required. Component name.
+    type: helm_chart                            # Required. Component type.
+    chart: bitnami/redis                        # Required. Chart name in format `<repository name>/<application name>`.
+    version: 17.0.6                             # Optional. Chart version to install.
+    values:                                     # Optional. Helm chart values to install/update.
+      - db:
+          username: {{ inputs.username }}       # Example of usage dynamic tempalte variables.
+
+outputs:
+  notes:
+    The IP address of your Redis instance is {{components.redis.manifest.Service.redis-master.spec.clusterIP}}
