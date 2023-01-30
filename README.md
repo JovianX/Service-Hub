@@ -15,53 +15,45 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 </div>
 
-# JovianX Service Hub
-JovianX **Service Hub** is a tool to create and manage Self-Service portals for internal stakeholders. It allows exposing on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
+# What is JovianX Service Hub?
+JovianX **Service Hub** is a tool that enables Self-Service for internal stakeholders. It exposes an on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with or without pre-configured or pre-loaded datasets , etc') via a simple to follow Web UI and CLI. 
 
 Service Hub is commonly used by Platform and DevOps Engineers.
 
-
-# Use Cases
-- **Self-service infrastructure** Allow internal stackholders a very simple and maanged way to create 
+## Use Cases
+- **Self-service infrastructure** Allow internal stackholders a very simple and maanged way to access infrastrucutre.  
 - **Developmnet enviromnets**  accelerate and shorten the developmnet cylce via self-service app and infra componnets via  UI/CLI/IDE.
 - **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
 
-# How Service Hub works?
-Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. A temaptle defines 4 optinal etlements: **Inputs**, **Components**, **Hooks**, and **Outputs**. Serivce Hub has native integration with Kubernets,thus components can set Helm charts, Hooks(for example pre-install/post-install/post-delete) set to run Kubernetes Jobs.
-
 
 # 🦄 Features:
-
-**Service Templates** ([Docs](documentation/templates.md))
-
-- Create service templates from Helm Charts.
-- Manage template changes and reversions.
-- Allow operators to create services from templates.
-- Defualt TTL TTL for services
-
+- Self-Service Portal based on Templates Catalog
+- Command line tool(service-hub cli) to instatiate services
+- Login with GitHub, email/password, Access Tokens
+- Basic RBAC
+- Templates Catalog ([Docs](documentation/templates.md))
+  - Create service templates with Helm Charts.
+  - Use Kubernetes jobs as serivce lifecyle(create/delete/etc') hooks
+  - Remplate reversioning.
+  - Set TTL for services and resoruces
+ 
 <table><tbody>
 <tr align=center>
-<td><b>Templates |</b> Platform Engineers create service catalog via tempaltes </td><td><b>Self-Service</b></td>
+<td><b>Templates |</b> create catalog via templates </td><td><b>Self-Service Web UI</b></td>
 </tr>
 <tr><td colspan=2>
 <img src="https://user-images.githubusercontent.com/2787296/198906162-5aaa83df-7a7b-4ec5-b1e0-3a6f455a010e.png">
 </td></tr>
 </tbody></table>
 
-
-
 **Helm Manager**
 - Manage Helm Releases, Monitor application Health, Set Releases TTL, Update release values, Upgrade versions, Manage repositories, etc'
 - Manage Helm Releases across multiple clusters.
 - Helm Restful API - Full restful API for Helm
 - Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
-
 ![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
 
-**Login with GitHub or email/password**
-**Basic RBAC**
-
-## 🚀 Roadmap
+## 🚀 Roadmap (accepting Feature Requests via GitHub issues)
 
 - **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc')
 - **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
@@ -69,11 +61,31 @@ Serivce Hub allows internal users to create services from a catalog. The catalog
 - **Login with Google**
 - **Installation via Helm Chart**
 
+
+# How Service Hub works?
+Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. 
+A temaptle defines 4 optinal etlements: 
+- **Inputs**  define the user inpus to collecto from the user
+- **Components** define what components should be set up when instantiating the service
+- **Hooks** can run scripts or trigger external APIs and services during diffenreny service lifecycle evetns(create, delete, etc')
+- **Outputs** define the output shown to the users after they create their serivce 
+
+Serivce Hub has native integration with Kubernets,thus components can setup Helm charts, Hooks( such as pre-install, post-delete, etc') can setup Kubernetes Jobs.
+
+When a user creates a services from the templates catalog, Service Hub generates a web-form UI from the *Inputs* definition, asking the user to provide inputs to complete service creation. When the the user provides the input values Service Hub passes the provided values to the Components and hooks, allowing creation of pre-scripted services following inputs end-users provide. 
+
+
+## Architecture
+![Service Hub Architecutre](https://user-images.githubusercontent.com/2787296/215046290-a89d375f-ecf0-4ac6-9409-dabeb40f55ba.svg)
+
+
 # 👷 Installation
+## SaaS
 
 <table><tbody><tr><td>🌎 &nbsp;Service-Hub SaaS at &nbsp; &nbsp;👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a>&nbsp;</td></tr></tbody></table>
 
-### OR
+OR
+## Docker Compose
 
 ```
 curl https://raw.githubusercontent.com/JovianX/Service-Hub/main/docker-compose.yaml -o docker-compose.yaml

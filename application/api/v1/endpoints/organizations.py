@@ -10,9 +10,10 @@ from core.authentication import OperatorRolePermission
 from core.authentication import current_active_user
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
-from schemas.organizations import ROOT_SETTING_NAMES
 from models.user import User
 from schemas.kubernetes import KubernetesConfigurationSchema
+from schemas.organizations import ROOT_SETTING_NAMES
+from schemas.organizations import SettingsSchema
 
 from ..schemas.organization import DefaultContextRequestBody
 from ..schemas.organization import K8sConfigurationResponseSchema
@@ -109,7 +110,22 @@ async def save_setting(
     await organization_manager.update_setting(organization, setting_name, setting_value)
 
 
-@router.get('/settings/{setting_name}', dependencies=[Depends(AuthorizedUser())])
+@router.get('/settings', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
+async def get_settings(user: User = Depends(current_active_user)):
+    """
+    Returns setting list and its defaults.
+    """
+    organization = user.organization
+    defaults = SettingsSchema.parse_obj({}).dict()
+    changed_settings = organization.settings
+
+    return {
+        'defaults': defaults,
+        'changed': changed_settings
+    }
+
+
+@router.get('/settings/{setting_name}', dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def get_setting(
     setting_name: ROOT_SETTING_NAMES,
     user: User = Depends(current_active_user),
