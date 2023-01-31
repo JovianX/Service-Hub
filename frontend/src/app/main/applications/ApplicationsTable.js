@@ -16,6 +16,7 @@ import {
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -187,10 +188,9 @@ const ApplicationsTable = () => {
                       <TableCell align='left'>{getPresent(row.ttl)}</TableCell>
                       <TableCell align='left'>{row.creator.email}</TableCell>
                       <TableCell align='left'>
-                        <div className='group'>
-                          <p className='group-hover:hidden'>{getDate(row.created_at)}</p>
-                          <p className='hidden group-hover:block'>{getPresent(row.created_at)}</p>
-                        </div>
+                        <Tooltip title={getPresent(row.created_at)} placement='top'>
+                          <p>{getDate(row.created_at)}</p>
+                        </Tooltip>
                       </TableCell>
                       <TableCell align='right'>
                         <ButtonGroup aria-label='primary button group'>
