@@ -1,9 +1,10 @@
 from typing import Annotated
-from typing import Literal
 from typing import Any
+from typing import Literal
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import PrivateAttr
 
 from constants.kubernetes import K8sKinds
 
@@ -52,8 +53,8 @@ class BaseK8sEntity(BaseModel):
                 return False
             return True
         elif self.kind == K8sKinds.daemon_set:
-            ready_number = self.status.get('numberReady', 0)
-            desired_number = self.status.get('desiredNumberScheduled', 0)
+            ready_number = self.status.get('number_ready', 0)
+            desired_number = self.status.get('desired_number_scheduled', 0)
             return desired_number == ready_number
         else:
             ready_replicas = self.status.get('ready_replicas')
@@ -281,6 +282,7 @@ class K8sEntitySchema(BaseModel):
     Wrapper class for Kubernetes entities.
     """
     __root__: Entities
+    _raw_representation = PrivateAttr(default=None)
 
     def __iter__(self):
         return iter(self.__root__)
@@ -300,3 +302,13 @@ class K8sEntitySchema(BaseModel):
         data = super().dict(*args, **kwargs)
 
         return data['__root__']
+
+    @property
+    def raw_representation(self):
+        """
+        Parsed original JSON representation of Kubernetes object.
+        """
+        if self._raw_representation is None:
+            raise ValueError('Original Kubernetes object was requested but was not set before.')
+
+        return self._raw_representation

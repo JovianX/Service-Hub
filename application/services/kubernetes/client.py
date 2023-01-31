@@ -4,6 +4,7 @@ Client to interact with Kubernetes cluster.
 import logging
 from typing import Any
 
+from kubernetes_asyncio.client import ApiClient
 from kubernetes_asyncio.client import AppsV1Api
 from kubernetes_asyncio.client import BatchV1Api
 from kubernetes_asyncio.client import CoreV1Api
@@ -99,9 +100,12 @@ class K8sClient:
         async with await new_client_from_config(self.configuration_file_path, context_name) as client:
             api = BatchV1Api(client)
             try:
-                entity = await api.create_namespaced_job(namespace, body)
+                k8s_entity = await api.create_namespaced_job(namespace, body)
 
-                return K8sEntitySchema.parse_obj(entity.to_dict())
+                entity = K8sEntitySchema.parse_obj(k8s_entity.to_dict())
+                entity._raw_representation = client.sanitize_for_serialization(k8s_entity)
+
+                return entity
             except ApiException as error:
                 logger.exception(
                     f'Failed to create <Job name="{job_name}", namespace="{namespace}" context_name="{context_name}">. '
@@ -117,9 +121,12 @@ class K8sClient:
             api = CoreV1Api(client)
             body = V1Namespace(metadata=V1ObjectMeta(name=name))
             try:
-                entity = await api.create_namespace(body)
+                k8s_entity = await api.create_namespace(body)
 
-                return K8sEntitySchema.parse_obj(entity.to_dict())
+                entity = K8sEntitySchema.parse_obj(k8s_entity.to_dict())
+                entity._raw_representation = client.sanitize_for_serialization(k8s_entity)
+
+                return entity
             except ApiException as error:
                 K8sAlreadyExistsException.check_and_raise(error)
                 raise KubernetesClientException(
@@ -135,7 +142,7 @@ class K8sClient:
             api = CoreV1Api(client)
             response = await api.list_namespace()
 
-        return self._list_data_post_processing(response, K8sKinds.namespace)
+            return self._list_data_post_processing(response, K8sKinds.namespace, client)
 
     async def list_ingress(self, context_name: str):
         """
@@ -145,7 +152,7 @@ class K8sClient:
             api = NetworkingV1Api(client)
             response = await api.list_ingress_for_all_namespaces()
 
-        return self._list_data_post_processing(response, K8sKinds.ingress)
+            return self._list_data_post_processing(response, K8sKinds.ingress, client)
 
     async def list_services(self, context_name: str):
         """
@@ -155,7 +162,7 @@ class K8sClient:
             api = CoreV1Api(client)
             response = await api.list_service_for_all_namespaces()
 
-        return self._list_data_post_processing(response, K8sKinds.service)
+            return self._list_data_post_processing(response, K8sKinds.service, client)
 
     async def get_cluster_role_details(self, context_name: str, name: str) -> K8sEntitySchema:
         """
@@ -370,13 +377,16 @@ class K8sClient:
         async with await new_client_from_config(self.configuration_file_path, context_name) as client:
             method = getattr(api_class(client), method_name)
             try:
-                entity = await method(**kwargs)
+                k8s_entity = await method(**kwargs)
             except ApiException as error:
                 K8sEntityDoesNotExistException.check_and_raise(error)
 
-        return K8sEntitySchema.parse_obj(entity.to_dict())
+        entity = K8sEntitySchema.parse_obj(k8s_entity.to_dict())
+        entity._raw_representation = client.sanitize_for_serialization(k8s_entity)
 
-    def _list_data_post_processing(self, item_list: Any, kind: K8sKinds) -> list[K8sEntitySchema]:
+        return entity
+
+    def _list_data_post_processing(self, item_list: Any, kind: K8sKinds, client: ApiClient) -> list[K8sEntitySchema]:
         """
         Kubernetes list item post processing.
 
@@ -386,9 +396,10 @@ class K8sClient:
         """
         entities_list = []
         for item in item_list.items:
-            entity = item.to_dict()
-            entity['apiVersion'] = 'v1'
-            entity['kind'] = kind
-            entities_list.append(K8sEntitySchema.parse_obj(entity))
+            item.api_version = item_list.api_version
+            item.kind = kind.value
+            entity = K8sEntitySchema.parse_obj(item.to_dict())
+            entity._raw_representation = client.sanitize_for_serialization(item)
+            entities_list.append(entity)
 
         return entities_list
