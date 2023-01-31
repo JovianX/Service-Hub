@@ -17,7 +17,7 @@ import { useState } from 'react';
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
-import { getColorForStatus, getPresent } from '../../../uitls';
+import { getColorForStatus, getPresent, getPresentFromIOSFormat } from '../../../uitls';
 import ApplicationTtl from '../ApplicationTtl';
 import ApplicationDeleteModal from '../DeleteApplicationModal';
 
@@ -60,9 +60,17 @@ const ApplicationTable = ({ application }) => {
                     {application.template.name}
                     <span className='ml-4'> [Rev {application.template.revision}]</span>
                   </TableCell>
-                  <TableCell align='left'>{getPresent(application.ttl)}</TableCell>
+                  <TableCell align='left'>
+                    {typeof application.ttl === 'string'
+                      ? getPresentFromIOSFormat(application.ttl)
+                      : getPresent(application.ttl)}
+                  </TableCell>
                   <TableCell align='left'>{application.creator.email}</TableCell>
-                  <TableCell align='left'>{getPresent(application.created_at)}</TableCell>
+                  <TableCell align='left'>
+                    {typeof application.created_at === 'string'
+                      ? getPresentFromIOSFormat(application.created_at)
+                      : getPresent(application.created_at)}
+                  </TableCell>
                   <TableCell align='right'>
                     <ButtonGroup aria-label='primary button group'>
                       <Button

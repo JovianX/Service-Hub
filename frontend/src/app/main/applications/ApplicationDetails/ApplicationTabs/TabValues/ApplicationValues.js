@@ -16,7 +16,7 @@ const ApplicationValues = ({ outputs }) => {
 
     for (const key in inputs) {
       yamlInputs.push(
-        <p>
+        <p key={inputs[key]}>
           {key}: {inputs[key]}
         </p>,
       );
