@@ -1,3 +1,5 @@
+import re
+
 import yaml
 
 from exceptions.helm import ReleaseNotFoundException
@@ -5,6 +7,8 @@ from exceptions.shell import NonZeroStatusException
 
 from ..schemas import ManifestSchema
 from .base import HelmBase
+
+MANIFEST_SEPARATOR = re.compile(r'^---$', flags=re.MULTILINE)
 
 
 class HelmGet(HelmBase):
@@ -56,7 +60,7 @@ class HelmGet(HelmBase):
             )
         if not output:
             return manifests
-        parsed_manifests = [yaml.safe_load(item) for item in output.split('---\n') if item]
+        parsed_manifests = [yaml.safe_load(item) for item in MANIFEST_SEPARATOR.split(output) if item]
         for parsed_manifest in parsed_manifests:
             manifest = ManifestSchema.parse_obj(parsed_manifest)
             if not manifest.metadata.namespace:
@@ -83,7 +87,7 @@ class HelmGet(HelmBase):
             )
         if not output:
             return manifests
-        parsed_manifests = [yaml.safe_load(item) for item in output.split('---\n') if item]
+        parsed_manifests = [yaml.safe_load(item) for item in MANIFEST_SEPARATOR.split(output) if item]
         for parsed_manifest in parsed_manifests:
             manifest = ManifestSchema.parse_obj(parsed_manifest)
             if not manifest.metadata.namespace:

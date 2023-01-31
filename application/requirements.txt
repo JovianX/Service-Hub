@@ -15,5 +15,5 @@ procrastinate
 pydantic[dotenv]
 pystache
 pyyaml
-sqlalchemy[asyncio]
+sqlalchemy[asyncio]==1.4.46
 uvicorn[standard]

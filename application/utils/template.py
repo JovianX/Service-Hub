@@ -84,7 +84,7 @@ def render_template(template: str, inputs: dict, components_manifests: dict[str,
     for component_name, entities in components_manifests.items():
         grouped_entites = {}
         for entity in entities:
-            grouped_entites.setdefault(entity.kind, {})[entity.metadata['name']] = entity.dict(by_alias=True)
+            grouped_entites.setdefault(entity.kind, {})[entity.metadata['name']] = entity.raw_representation
         components_context[component_name] = {'manifest': grouped_entites}
     context = {
         'inputs': inputs,
