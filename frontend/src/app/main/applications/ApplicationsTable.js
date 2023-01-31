@@ -146,7 +146,7 @@ const ApplicationsTable = () => {
                   <TableCell>Name</TableCell>
                   <TableCell align='center'>Status</TableCell>
                   <TableCell>Template</TableCell>
-                  <TableCell width='25%'>Output</TableCell>
+                  <TableCell width='25%'>Outputs</TableCell>
                   <TableCell>TTL</TableCell>
                   <TableCell>Created By</TableCell>
                   <TableCell>Created At</TableCell>
