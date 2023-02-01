@@ -6,9 +6,7 @@ import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 
-const inputs = { name: 'aaa', lastname: 'bbb', age: 30 };
-
-const ApplicationValues = ({ outputs }) => {
+const ApplicationValues = ({ inputs, outputs }) => {
   const [yamlInputsJSX, setYamlInputsJSX] = useState([]);
 
   useEffect(() => {
