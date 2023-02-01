@@ -7,6 +7,8 @@ import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { getApplicationsList } from 'app/store/applicationsSlice';
 
+import { getApplicationOutputs as getApplicationOutputsAPI } from '../../../api';
+
 import ApplicationTable from './ApplicationTable';
 import ApplicationTabs from './ApplicationTabs/ApplicationTabs';
 
@@ -16,12 +18,21 @@ const ApplicationItem = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [application, setApplication] = useState({});
+  const [outputs, setOutputs] = useState(location.state.outputs);
 
   useEffect(() => {
     if (location.state?.row) {
       setApplication(location.state.row);
     }
   }, [location]);
+
+  useEffect(() => {
+    if (!location.state.outputs) {
+      (async () => {
+        await getApplicationOutputsAPI(application.id).then(({ data }) => setOutputs(data.notes));
+      })();
+    }
+  }, [location.state.outputs, application]);
 
   useEffect(() => {
     const getApplicationsTimer = setInterval(async () => {
@@ -48,7 +59,7 @@ const ApplicationItem = () => {
       </Box>
 
       <ApplicationTable application={application} />
-      <ApplicationTabs />
+      <ApplicationTabs outputs={outputs} inputs={application.user_inputs} />
     </Box>
   );
 };

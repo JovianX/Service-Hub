@@ -18,24 +18,27 @@ export const getApplicationsList = createAsyncThunk('applications/getApplication
   }
 });
 
-export const applicationInstall = createAsyncThunk('applications/applicationInstall', async (application) => {
-  try {
-    const response = await applicationInstallAPI(application);
-    const { data } = response;
-    return data;
-  } catch (e) {
-    if (e?.response.data.message) {
-      return {
+export const applicationInstall = createAsyncThunk(
+  'applications/applicationInstall',
+  async (application, { rejectWithValue }) => {
+    try {
+      const response = await applicationInstallAPI(application);
+      const { data } = response;
+      return data;
+    } catch (e) {
+      if (e?.response.data.message) {
+        return rejectWithValue({
+          status: 'error',
+          message: e.response.data.message,
+        });
+      }
+      return rejectWithValue({
         status: 'error',
-        message: e.response.data.message,
-      };
+        message: 'Failed to install the application',
+      });
     }
-    return {
-      status: 'error',
-      message: 'Failed to install the application',
-    };
-  }
-});
+  },
+);
 
 export const deleteApplication = createAsyncThunk('applications/deleteApplication', async (id) => {
   try {
@@ -82,6 +85,7 @@ const applicationsSlice = createSlice({
   },
   extraReducers: {
     [getApplicationsList.fulfilled]: (state, { payload }) => ({
+      ...state,
       applications: payload,
       isLoading: false,
     }),

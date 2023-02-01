@@ -1,3 +1,4 @@
+import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
 import {
   Button,
   Chip,
@@ -10,16 +11,20 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import { useState } from 'react';
 
 import FuseScrollbars from '@fuse/core/FuseScrollbars/FuseScrollbars';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 
-import { getColorForStatus } from '../../../uitls';
+import { getColorForStatus, getPresent, getPresentFromIOSFormat } from '../../../uitls';
+import ApplicationTtl from '../ApplicationTtl';
 import ApplicationDeleteModal from '../DeleteApplicationModal';
 
 const ApplicationTable = ({ application }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState();
+  const [openTtlModal, setOpenTtlModal] = useState(false);
+  const [parameters, setParameters] = useState({});
 
   return (
     <Paper className='h-100 rounded mt-12'>
@@ -31,8 +36,9 @@ const ApplicationTable = ({ application }) => {
                 <TableCell>Name</TableCell>
                 <TableCell align='center'>Status</TableCell>
                 <TableCell>Template</TableCell>
-                <TableCell>Reversion</TableCell>
+                <TableCell>TTL</TableCell>
                 <TableCell>Created By</TableCell>
+                <TableCell>Created At</TableCell>
                 <TableCell />
               </TableRow>
             </TableHead>
@@ -50,19 +56,46 @@ const ApplicationTable = ({ application }) => {
                       />
                     </Stack>
                   </TableCell>
-                  <TableCell align='left'>{application.template.name}</TableCell>
-                  <TableCell align='left'>{application.template.revision}</TableCell>
+                  <TableCell align='left'>
+                    {application.template.name}
+                    <span className='ml-4'> [Rev {application.template.revision}]</span>
+                  </TableCell>
+                  <TableCell align='left'>
+                    {typeof application.ttl === 'string'
+                      ? getPresentFromIOSFormat(application.ttl)
+                      : getPresent(application.ttl)}
+                  </TableCell>
                   <TableCell align='left'>{application.creator.email}</TableCell>
+                  <TableCell align='left'>
+                    {typeof application.created_at === 'string'
+                      ? getPresentFromIOSFormat(application.created_at)
+                      : getPresent(application.created_at)}
+                  </TableCell>
                   <TableCell align='right'>
-                    <Button
-                      onClick={() => {
-                        setOpenDeleteModal(true);
-                      }}
-                      variant='text'
-                      color='error'
-                    >
-                      <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
-                    </Button>
+                    <ButtonGroup aria-label='primary button group'>
+                      <Button
+                        variant='text'
+                        color='error'
+                        onClick={() => {
+                          setParameters({
+                            currentDate: application.ttl,
+                            id: application.id,
+                          });
+                          setOpenTtlModal(true);
+                        }}
+                      >
+                        <AutoDeleteOutlinedIcon />
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setOpenDeleteModal(true);
+                        }}
+                        variant='text'
+                        color='error'
+                      >
+                        <FuseSvgIcon className='hidden sm:flex'>heroicons-outline:trash</FuseSvgIcon>
+                      </Button>
+                    </ButtonGroup>
                   </TableCell>
                 </TableRow>
               </TableBody>
@@ -71,6 +104,7 @@ const ApplicationTable = ({ application }) => {
             )}
           </Table>
         </TableContainer>
+        <ApplicationTtl parameters={parameters} openTtlModal={openTtlModal} setOpenTtlModal={setOpenTtlModal} />
       </FuseScrollbars>
       {openDeleteModal ? (
         <ApplicationDeleteModal

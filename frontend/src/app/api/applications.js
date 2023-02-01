@@ -8,3 +8,4 @@ export const applicationInstall = async (application) =>
 export const deleteApplication = async (id) => await axios.delete(`${APPLICATIONS_API_PATH}/${id}`);
 
 export const createApplicationTtl = async (id, hours) => await axios.post(`${APPLICATIONS_API_PATH}/${id}/ttl`, hours);
+export const getApplicationOutputs = async (id) => await axios.get(`${APPLICATIONS_API_PATH}/${id}/outputs`);
