@@ -67,8 +67,8 @@ async def install_application(
         }
     else:
         organization_settings = SettingsSchema.from_organization(user.organization)
-        if body.ttl and body.ttl.hours:
-            delta = timedelta(hours=body.ttl.hours)
+        if body.ttl and body.ttl.minutes:
+            delta = timedelta(minutes=body.ttl.minutes)
             await application_manager.set_ttl(install_result, delta)
         elif organization_settings.application_ttl:
             delta = timedelta(minutes=organization_settings.application_ttl)
@@ -197,10 +197,10 @@ async def set_application_ttl(
     application_manager: ApplicationManager = Depends(get_application_manager),
 ):
     """
-    Sets application deadline reaching which application will be deleted(TTL - time to live).
+    Sets application deadline after reaching which application will be deleted(TTL - time to live).
     """
     application = await application_manager.get_organization_application(application_id, user.organization)
-    delta = timedelta(hours=body.hours)
+    delta = timedelta(minutes=body.hours)
 
     await application_manager.set_ttl(application, delta)
 
