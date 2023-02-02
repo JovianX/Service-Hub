@@ -61,7 +61,7 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
       inputs: templateFormData,
       context_name: context_name.value,
       ttl: {
-        hours: 0,
+        minutes: 0,
       },
       namespace,
       dry_run: false,
