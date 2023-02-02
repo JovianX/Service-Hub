@@ -200,7 +200,7 @@ async def set_application_ttl(
     Sets application deadline after reaching which application will be deleted(TTL - time to live).
     """
     application = await application_manager.get_organization_application(application_id, user.organization)
-    delta = timedelta(minutes=body.hours)
+    delta = timedelta(minutes=body.minutes)
 
     await application_manager.set_ttl(application, delta)
 
