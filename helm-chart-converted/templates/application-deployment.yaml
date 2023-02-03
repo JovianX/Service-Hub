@@ -1,47 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -c
-    kompose.version: 1.27.0 (b0ed6a2c9)
-  creationTimestamp: null
   labels:
-    io.kompose.service: application
+    component: application
   name: application
 spec:
-  replicas: 1
+  replicas: {{ .Values.server.replicaCount }}
   selector:
     matchLabels:
-      io.kompose.service: application
-  strategy: {}
+      component: application
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert -c
-        kompose.version: 1.27.0 (b0ed6a2c9)
-      creationTimestamp: null
       labels:
-        io.kompose.network/service-network: "true"
-        io.kompose.service: application
+        component: application
     spec:
       containers:
-        - env:
+        - name: application
+          image: {{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}
+          env:
             - name: DATABASE_URL
               value: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
+            - name: TEST_DATABASE_URL
+              value: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
             - name: ENV_FILE
               value: .env
             - name: FILE_STORAGE_ROOT
               value: /tmp
             - name: SECRETS_DIRECTORY
               value: credentials
-            - name: TEST_DATABASE_URL
-              value: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
             - name: UI_HOST
               value: http://localhost:3000
-          image: jovianx/service-hub_application
-          name: application
           ports:
             - containerPort: 8000
-          resources: {}
-      restartPolicy: Always
-status: {}
