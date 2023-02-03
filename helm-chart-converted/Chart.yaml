@@ -1,8 +1,16 @@
-name: docker-compose
-description: A generated Helm Chart for docker-compose from Skippbox Kompose
+name: service-hub
+description: Self-service for infrastructure services (DBs, Workfolws, Apps, and pre-configured Services) based on Kubernetes and Helm.
 version: 0.0.1
 apiVersion: v1
 keywords:
-  - docker-compose
+  - jovianx
+  - service-hub
+  - self-service
+  - portal
 sources:
-home:
+- https://github.com/JovianX/Service-Hub/
+home: jovianx.com
+dependencies:
+- name: postgresql
+  version: "12.1.13"
+  repository: "https://charts.bitnami.com/bitnami"
