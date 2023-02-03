@@ -132,7 +132,7 @@ class NumericInput(BaseInput):
 
 class TextualInput(BaseInput):
     """
-    User inputs where user can choose one or more option from predefined set.
+    User inputs with one of the text kind widget.
     """
     type: Literal[InputTypes.text] | Literal[InputTypes.textarea] = Field(
         description='Type of form input.', example=Literal[InputTypes.text]
@@ -190,16 +190,23 @@ class SliderInput(NumericInput):
 
 class TextInput(TextualInput):
     """
-    User inputs where user can choose one or more option from predefined set.
+    User inputs with simple one line textfield.
     """
     type: Literal[InputTypes.text] = Field(description='Type of form input.', example=InputTypes.text)
 
 
 class TextareaInput(TextualInput):
     """
-    User inputs where user can choose one or more option from predefined set.
+    User inputs with multiline textbox.
     """
     type: Literal[InputTypes.textarea] = Field(description='Type of form input.', example=InputTypes.textarea)
+
+
+class PasswordInput(TextualInput):
+    """
+    User inputs with password textfield which hides entered text.
+    """
+    type: Literal[InputTypes.password] = Field(description='Type of form input.', example=InputTypes.password)
 
 
 Input = Annotated[CheckboxInput |
@@ -209,5 +216,6 @@ Input = Annotated[CheckboxInput |
                   SliderInput |
                   SwitchInput |
                   TextareaInput |
-                  TextInput,
+                  TextInput |
+                  PasswordInput,
                   Field(discriminator='type')]

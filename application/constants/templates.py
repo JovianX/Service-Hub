@@ -10,6 +10,7 @@ class InputTypes(StrEnum):
     """
     checkbox = 'checkbox'
     number = 'number'
+    password = 'password'
     radio_select = 'radio_select'
     select = 'select'
     slider = 'slider'

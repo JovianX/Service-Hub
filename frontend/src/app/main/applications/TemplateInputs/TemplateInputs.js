@@ -7,6 +7,7 @@ import { selectTemplates } from 'app/store/templatesSlice';
 
 import TypeCheckbox from './TypeCheckbox';
 import TypeNumber from './TypeNumber';
+import TypePassword from './TypePassword';
 import TypeRadio from './TypeRadio';
 import TypeSelect from './TypeSelect';
 import TypeSlider from './TypeSlider';
@@ -65,6 +66,9 @@ const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalo
 
     switch (item.type) {
       case 'text':
+        newItem = { ...item, default: e.target.value };
+        break;
+      case 'password':
         newItem = { ...item, default: e.target.value };
         break;
       case 'textarea':
@@ -127,6 +131,8 @@ const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalo
           switch (item.type) {
             case 'text':
               return <TypeText key={item.name} item={item} onChangeInputs={onChangeInputs} />;
+            case 'password':
+              return <TypePassword key={item.name} item={item} onChangeInputs={onChangeInputs} />;
             case 'textarea':
               return <TypeTextarea key={item.name} item={item} onChangeInputs={onChangeInputs} />;
             case 'select':
