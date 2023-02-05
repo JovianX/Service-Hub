@@ -43,8 +43,13 @@ When a user creates a services from the templates catalog, Service Hub generates
 https://github.com/JovianX/Service-Hub/tree/main/examples
 
 # 🦄 Features:
-- Self-Service Portal based on Templates Catalog
-- Command line tool(service-hub cli) to instatiate services
+
+- **Self-Service Portal** based on Catalog of templates)
+![image](https://user-images.githubusercontent.com/2787296/216806826-c3491755-da9f-4b37-8b83-f1eefd1d230d.png)
+
+- **Command line tool** (service-hub cli) to instatiate services
+![image](https://user-images.githubusercontent.com/2787296/216807224-7de710c3-49a7-4f58-b18c-33843040f0ca.png)
+
 - Login with GitHub, email/password, Access Tokens
 - Basic RBAC
 - Templates Catalog ([Docs](documentation/templates.md))
@@ -70,7 +75,6 @@ https://github.com/JovianX/Service-Hub/tree/main/examples
 ![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
 
 ## 🚀 Roadmap (accepting Feature Requests via GitHub issues)
-
 - **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc')
 - **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
 - **RBAC** - Role-based access control
@@ -81,15 +85,12 @@ https://github.com/JovianX/Service-Hub/tree/main/examples
 ## Architecture
 ![Service Hub Architecutre](https://user-images.githubusercontent.com/2787296/215046290-a89d375f-ecf0-4ac6-9409-dabeb40f55ba.svg)
 
-
-# 👷 Installation
+# Installation
 ## SaaS
-
 <table><tbody><tr><td>🌎 &nbsp;Service-Hub SaaS at &nbsp; &nbsp;👉 <a href="https://hub.jovianx.app/"><strong>https://hub.jovianx.app</strong></a>&nbsp;</td></tr></tbody></table>
 
 OR
 ## Docker Compose
-
 ```
 curl https://raw.githubusercontent.com/JovianX/Service-Hub/main/docker-compose.yaml -o docker-compose.yaml
 docker-compose up
@@ -97,7 +98,6 @@ xdg-open 'http://localhost:3000'
 ```
 
 # 🤽‍♀️ Getting Strated - Usage
-
 1.  Create account with email/Password or GitHub login https://hub.jovianx.app/sign-up
 2.  Add your Kubernetes cluster https://youtu.be/gkUHn_gnS1c?t=10
 
@@ -106,7 +106,6 @@ xdg-open 'http://localhost:3000'
 https://www.youtube.com/watch?v=gkUHn_gnS1c
 
 # Documentation
-
 For product documentation refer to the [Documentation Folder](documentation/README.md).
 
 # Contributors
