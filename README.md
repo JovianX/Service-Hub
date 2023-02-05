@@ -44,11 +44,11 @@ https://github.com/JovianX/Service-Hub/tree/main/examples
 
 # 🦄 Features:
 
-- **Self-Service Portal** based on Catalog of templates)
+- **Self-Service Portal** based on Catalog of templates
 ![image](https://user-images.githubusercontent.com/2787296/216806826-c3491755-da9f-4b37-8b83-f1eefd1d230d.png)
 
 - **Command line tool** (service-hub cli) to instatiate services
-![image](https://user-images.githubusercontent.com/2787296/216807224-7de710c3-49a7-4f58-b18c-33843040f0ca.png)
+![image](https://user-images.githubusercontent.com/2787296/216807787-1c22810d-7a97-4feb-b632-b42aefb964c9.png)
 
 - Login with GitHub, email/password, Access Tokens
 - Basic RBAC
@@ -80,7 +80,6 @@ https://github.com/JovianX/Service-Hub/tree/main/examples
 - **RBAC** - Role-based access control
 - **Login with Google**
 - **Installation via Helm Chart**
-
 
 ## Architecture
 ![Service Hub Architecutre](https://user-images.githubusercontent.com/2787296/215046290-a89d375f-ecf0-4ac6-9409-dabeb40f55ba.svg)
