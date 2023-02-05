@@ -26,22 +26,6 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 - **Developmnet enviromnets**  accelerate and shorten the developmnet cylce via self-service app and infra componnets via  UI/CLI/IDE.
 - **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
 
-
-# How Service Hub works?
-Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. 
-A temaptle defines 4 optinal etlements: 
-- **Inputs**  define the user inpus to collecto from the user
-- **Components** define what components should be set up when instantiating the service
-- **Hooks** can run scripts or trigger external APIs and services during diffenreny service lifecycle evetns(create, delete, etc')
-- **Outputs** define the output shown to the users after they create their serivce 
-
-Serivce Hub has native integration with Kubernets,thus components can setup Helm charts, Hooks( such as pre-install, post-delete, etc') can setup Kubernetes Jobs.
-
-When a user creates a services from the templates catalog, Service Hub generates a web-form UI from the *Inputs* definition, asking the user to provide inputs to complete service creation. When the the user provides the input values Service Hub passes the provided values to the Components and hooks, allowing creation of pre-scripted services following inputs end-users provide. 
-
-### Examples:
-https://github.com/JovianX/Service-Hub/tree/main/examples
-
 # 🦄 Features:
 
 - **Self-Service Portal** based on Catalog of templates
@@ -80,6 +64,22 @@ https://github.com/JovianX/Service-Hub/tree/main/examples
 - **RBAC** - Role-based access control
 - **Login with Google**
 - **Installation via Helm Chart**
+
+# How Service Hub works?
+Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. 
+A temaptle defines 4 optinal etlements: 
+- **Inputs**  define the user inpus to collecto from the user
+- **Components** define what components should be set up when instantiating the service
+- **Hooks** can run scripts or trigger external APIs and services during diffenreny service lifecycle evetns(create, delete, etc')
+- **Outputs** define the output shown to the users after they create their serivce 
+
+Serivce Hub has native integration with Kubernets,thus components can setup Helm charts, Hooks( such as pre-install, post-delete, etc') can setup Kubernetes Jobs.
+
+When a user creates a services from the templates catalog, Service Hub generates a web-form UI from the *Inputs* definition, asking the user to provide inputs to complete service creation. When the the user provides the input values Service Hub passes the provided values to the Components and hooks, allowing creation of pre-scripted services following inputs end-users provide. 
+
+### Examples:
+https://github.com/JovianX/Service-Hub/tree/main/examples
+
 
 ## Architecture
 ![Service Hub Architecutre](https://user-images.githubusercontent.com/2787296/215046290-a89d375f-ecf0-4ac6-9409-dabeb40f55ba.svg)
