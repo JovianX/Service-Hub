@@ -570,13 +570,14 @@ class ApplicationManager:
         return manifests
 
     def render_manifest(self, template: TemplateRevision, *, application: Application | None = None,
-                        user_inputs: dict | None = None, components_manifests: dict[str, list] | None = None) -> str:
+                        user_inputs: dict | None = None, components_manifests: dict[str, list] | None = None,
+                        skip_context_error: bool = True) -> str:
         """
         Renders new application's manifest using existing user input.
         """
         inputs = self.get_inputs(template, application=application, user_inputs=user_inputs)
 
-        manifest = render_template(template.template, inputs, components_manifests)
+        manifest = render_template(template.template, inputs, components_manifests, skip_context_error=skip_context_error)
 
         return manifest
 

@@ -1,6 +1,7 @@
 aiosmtplib
 alembic
 asyncpg
+chevron
 deepdiff
 email-validator
 Faker #  This dependency temporary must be in production requirements until Organization title change will be implemented.
@@ -13,7 +14,6 @@ kubernetes_asyncio==22.6.5 #  Version locked because of issue https://github.com
 mergedeep
 procrastinate
 pydantic[dotenv]
-pystache
 pyyaml
 sqlalchemy[asyncio]==1.4.46
 uvicorn[standard]

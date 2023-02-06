@@ -11,6 +11,7 @@ from exceptions.application import ApplicationComponentInstallTimeoutException
 from exceptions.application import ApplicationException
 from exceptions.application import ApplicationHookLaunchException
 from exceptions.application import ApplicationHookTimeoutException
+from exceptions.templates import TemlateVariableNotFoundException
 from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
 from services.procrastinate.application import procrastinate
@@ -129,6 +130,22 @@ async def install_applicatoin_components(application_id: int):
             raise
 
         await application_manager.set_health_status(application, ApplicationHealthStatuses.healthy)
+        components_manifests = await application_manager.get_components_manifests(application)
+        try:
+            raw_manifest = application_manager.render_manifest(
+                application.template, application=application, components_manifests=components_manifests,
+                skip_context_error=False
+            )
+        except TemlateVariableNotFoundException as error:
+            await application_manager.event_manager.create(EventSchema(
+                title='Application deployment',
+                message=f'Application deployment failed. {error.message.strip(".")}.',
+                organization_id=application.organization.id,
+                category=EventCategory.application,
+                severity=EventSeverityLevel.error,
+                data={'application_id': application.id}
+            ))
+            raise
         application.manifest = raw_manifest
         await application_manager.db.save(application)
 
