@@ -119,7 +119,7 @@ async def get_application_health_status(
 
 @router.get(
     '/{application_id}/outputs',
-    response_model=Outputs,
+    response_model=Outputs | None,
     dependencies=[Depends(AuthorizedUser(OperatorRolePermission))]
 )
 async def get_application_outputs(
