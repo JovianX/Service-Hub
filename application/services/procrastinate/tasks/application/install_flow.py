@@ -142,10 +142,12 @@ async def install_applicatoin_components(application_id: int):
                 message=f'Application deployment failed. {error.message.strip(".")}.',
                 organization_id=application.organization.id,
                 category=EventCategory.application,
-                severity=EventSeverityLevel.error,
+                severity=EventSeverityLevel.warning,
                 data={'application_id': application.id}
             ))
-            raise
+            raw_manifest = application_manager.render_manifest(
+                application.template, application=application, components_manifests=components_manifests
+            )
         application.manifest = raw_manifest
         await application_manager.db.save(application)
 
