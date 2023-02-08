@@ -280,7 +280,7 @@ async def release_detailed_hooks(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
 
-    return detailed_hooks
+    return [hook.raw_representation for hook in detailed_hooks]
 
 
 @router.get(
@@ -302,7 +302,7 @@ async def release_detailed_manifest(
         user.organization, context_name=context_name, namespace=namespase, release_name=release_name
     )
 
-    return detailed_manifest
+    return [manifest.raw_representation for manifest in detailed_manifest]
 
 
 @router.get(
