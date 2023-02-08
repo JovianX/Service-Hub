@@ -26,6 +26,8 @@ class InstallRequestBodySchema(BaseModel):
     """
     Body of request for application installation from specific template.
     """
+    name: str | None = Field(description='Name of applicatoin instance.')
+    description: str | None = Field(description='Comment for applicatoin instance.')
     template_id: int = Field(description='Identifier of template from which application should be installed.')
     inputs: dict[str, Any] = Field(description='Inputs provided by user.')
     context_name: str = Field(description='Kubernetes configuration context name.')
