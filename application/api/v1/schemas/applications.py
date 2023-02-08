@@ -112,6 +112,11 @@ class ApplicationInstallResponseSchema(BaseModel):
     application: ApplicationResponseSchema | None = Field(description='Application database record')
     results: dict[str, dict] = Field(description='Application installation result for each release')
 
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.timestamp()
+        }
+
 
 class ApplicationUpgradeResponseSchema(BaseModel):
     """
