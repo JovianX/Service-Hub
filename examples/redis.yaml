@@ -1,0 +1,22 @@
+name: redis
+inputs:
+  - name: password
+    type: password
+    label: Password
+    default: ''
+    description: Choose a password or Redis
+components:
+  - name: redis
+    type: helm_chart
+    chart: bitnami/redis
+    version: 17.0.6
+    values:
+      - auth:
+          password: '{{ inputs.password }}'
+      - master:
+          service:
+            type: LoadBalancer
+outputs:
+  notes: >
+    Connect using Redis CLI: $ redis-cli -u redis://'{{ inputs.password
+    }}'@'{{components.redis.manifest.Service.redis-master.status.loadBalancer.ingress.0.ip}}'
