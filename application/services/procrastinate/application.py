@@ -12,5 +12,5 @@ procrastinate = App(
         port=settings.DATABASE_URL.port,
         database=settings.DATABASE_URL.path.strip('/')
     ),
-    import_paths=['services.procrastinate.tasks.application']
+    import_paths=['services.procrastinate.tasks']
 )
