@@ -80,13 +80,6 @@ const ApplicationsTable = () => {
     setKubernetesConfiguration(contextData);
   }, [contextData]);
 
-  useEffect(() => {
-    if (applicationsData.length && isFirstRequestForGetOutputs) {
-      getApplicationOutputs(applicationsData);
-      setIsFirstRequestForGetOutputs(false);
-    }
-  }, [applicationsData]);
-
   const applications = useMemo(() => {
     const sortedByCreatedAt = [...applicationsData].sort((first, second) => first.created_at - second.created_at);
     if (showOnlyMine) {
@@ -94,6 +87,13 @@ const ApplicationsTable = () => {
     }
     return sortedByCreatedAt;
   }, [applicationsData, showOnlyMine]);
+
+  useEffect(() => {
+    if (applications.length && isFirstRequestForGetOutputs) {
+      getApplicationOutputs(applications);
+      setIsFirstRequestForGetOutputs(false);
+    }
+  }, [applications]);
 
   async function getApplicationOutputs(applications) {
     if (applications.length) {
