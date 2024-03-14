@@ -12,7 +12,7 @@ httpx-oauth
 kubernetes
 kubernetes_asyncio==22.6.5 #  Version locked because of issue https://github.com/kubernetes-client/python/issues/1718 and https://github.com/kubernetes-client/python/issues/1751
 mergedeep
-procrastinate
+procrastinate==0.33.0
 pydantic[dotenv]==1.10.13
 pyyaml
 sqlalchemy[asyncio]==1.4.46

@@ -31,7 +31,7 @@ const DialogModal = ({
         <Button onClick={onCancel} color='primary'>
           {cancelText}
         </Button>
-        <Button onClick={onConfirm} color='primary' autoFocus>
+        <Button onClick={onConfirm} color='error' autoFocus>
           {confirmText}
         </Button>
       </DialogActions>
