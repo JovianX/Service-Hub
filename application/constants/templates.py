@@ -1,11 +1,16 @@
 """
 Templates related constants.
 """
-from .base_enum import StrEnum
-from typing import Union
-from pydantic import Field, BaseModel, constr
-from .base_enum import StrEnum
 from typing import Optional
+from typing import Union
+
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import HttpUrl
+from pydantic import constr
+from pydantic import validator
+
+from .base_enum import StrEnum
 
 
 class InputTypes(StrEnum):
@@ -31,7 +36,6 @@ class ComponentTypes(StrEnum):
     http = 'http'
 
 
-
 class HookOnFailureBehavior(StrEnum):
     """
     Template application behavior on hook failure types.
@@ -51,49 +55,60 @@ class HookTypes(StrEnum):
     kubernetes_job = 'kubernetes_job'
 
 
-class http(StrEnum):
-    """
-    Template HTTP component types.
-    """
-    url = 'url'
-    method = 'method'
-    headers = 'headers'
-    parameters = 'parameters'
-
-class httpMethods(StrEnum):
+class ComponentTypeHttpMethods(StrEnum):
     """
     Template HTTP component methods.
     """
-    get = 'GET'
-    post = 'POST'
-    put = 'PUT'
-    patch = 'PATCH'
-    delete = 'DELETE'
+    get = 'get'
+    post = 'post'
+    put = 'put'
+    patch = 'patch'
+    delete = 'delete'
 
 
-class httpDeploy(BaseModel):
+class HttpDeploy(BaseModel):
     """
     Deploy schema for HTTP type components.
     """
-    url: constr(min_length=1, strip_whitespace=True) = Field(description='URL for HTTP deployment', example='http://example.com')
-    method: Union[httpMethods, constr(min_length=1, strip_whitespace=True)] = Field(default=httpMethods.get, description='HTTP method for deployment', example=httpMethods.post)
-    headers: Optional[dict] = Field(description='Headers for HTTP deployment', example={'Content-Type': 'application/json'})
-    parameters: Optional[dict | list[dict]] = Field(description='Parameters for HTTP deployment', example=[{'param1': 'value1'}])
+    url: HttpUrl = Field(description='URL for HTTP deployment.', example='http://example.com/path/to/deploy')
+    method: ComponentTypeHttpMethods = Field(
+        default=ComponentTypeHttpMethods.get,
+        description='HTTP method for deployment',
+        example=ComponentTypeHttpMethods.post)
+    headers: dict | list[dict] | None = Field(
+        description='Headers for HTTP deployment', example={
+            'Content-Type': 'application/json'})
+    parameters: dict | list[dict] | None = Field(
+        description='Parameters for HTTP deployment', example=[{'param1': 'value1'}])
 
-class httpStatus(BaseModel):
+
+class HttpStatus(BaseModel):
     """
     Status schema for HTTP type components.
     """
-    url: constr(min_length=1, strip_whitespace=True) = Field(description='URL for HTTP status', example='http://example.com/status')
-    method: Union[httpMethods, constr(min_length=1, strip_whitespace=True)] = Field(default=httpMethods.get, description='HTTP method for status', example=httpMethods.post)
-    headers: Optional[dict] = Field(description='Headers for HTTP status', example={'Content-Type': 'application/json'})
-    parameters: Optional[dict | list[dict]] = Field(description='Parameters for HTTP status', example=[{'param1': 'value1'}])
+    url: HttpUrl = Field(description='URL for HTTP status.', example='http://example.com/path/to/status')
+    method: ComponentTypeHttpMethods = Field(
+        default=ComponentTypeHttpMethods.get,
+        description='HTTP method for status',
+        example=ComponentTypeHttpMethods.post)
+    headers: dict | list[dict] | None = Field(
+        description='Headers for HTTP status', example={
+            'Content-Type': 'application/json'})
+    parameters: dict | list[dict] | None = Field(
+        description='Parameters for HTTP status', example=[{'param1': 'value1'}])
 
-class httpDelete(BaseModel):
+
+class HttpDelete(BaseModel):
     """
     Delete schema for HTTP type components.
     """
-    url: constr(min_length=1, strip_whitespace=True) = Field(description='URL for HTTP deletion', example='http://example.com/delete')
-    method: Union[httpMethods, constr(min_length=1, strip_whitespace=True)] = Field(default=httpMethods.delete, description='HTTP method for deletion', example=httpMethods.post)
-    headers: Optional[dict] = Field(description='Headers for HTTP deletion', example={'Content-Type': 'application/json'})
-    parameters: Optional[dict | list[dict]] = Field(description='Parameters for HTTP deletion', example=[{'param1': 'value1'}])
+    url: HttpUrl = Field(description='URL for HTTP delete.', example='http://example.com/path/to/delete')
+    method: ComponentTypeHttpMethods = Field(
+        default=ComponentTypeHttpMethods.get,
+        description='HTTP method for delete',
+        example=ComponentTypeHttpMethods.delete)
+    headers: dict | list[dict] | None = Field(
+        description='Headers for HTTP delete', example={
+            'Content-Type': 'application/json'})
+    parameters: dict | list[dict] | None = Field(
+        description='Parameters for HTTP delete', example=[{'param1': 'value1'}])

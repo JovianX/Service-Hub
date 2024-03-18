@@ -5,8 +5,9 @@ Revision ID: b45f1fcb3840
 Revises: c5f94e6d60ea
 Create Date: 2022-10-25 08:21:01.902682
 """
-import subprocess
 import os
+import subprocess
+
 
 # revision identifiers, used by Alembic.
 revision = 'b45f1fcb3840'

@@ -9,15 +9,17 @@ from uuid import uuid4
 
 from fastapi import Depends
 from fastapi import status
+from httpx import HTTPError
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
 from constants.events import EventCategory
 from constants.events import EventSeverityLevel
 from constants.helm import ReleaseHealthStatuses
+from constants.http import HttpHealthStatuses
 from constants.kubernetes import K8sKinds
-from constants.templates import HookOnFailureBehavior
 from constants.templates import ComponentTypes
+from constants.templates import HookOnFailureBehavior
 from core.configuration import settings
 from crud.applications import ApplicationDatabase
 from crud.applications import get_application_db
@@ -31,12 +33,14 @@ from exceptions.common import CommonException
 from exceptions.helm import HelmException
 from exceptions.helm import ReleaseAlreadyExistsException
 from exceptions.helm import ReleaseNotFoundException
+from exceptions.http import HttpException
+from exceptions.templates import InvalidTemplateException
 from exceptions.templates import InvalidUserInputsException
 from managers.events import EventManager
 from managers.events import get_event_manager
 from managers.helm.manager import HelmManager
-from managers.http.manager import HttpManager
 from managers.helm.manager import get_helm_manager
+from managers.http.manager import HttpManager
 from managers.http.manager import get_http_manager
 from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
@@ -292,8 +296,6 @@ class ApplicationManager:
             case ComponentTypes.http:
                 try:
                     component_health_status = await self.http_manager.http_request(
-                        organization=application.organization,
-                        context_name=application.context_name,
                         component_name=component.name,
                         url=component.status.url,
                         method=component.status.method,
@@ -301,11 +303,13 @@ class ApplicationManager:
                         parameters=component.status.parameters,
                         dry_run=False
                     )
-                    health_status = ReleaseHealthStatuses.healthy
+                    health_status = HttpHealthStatuses.healthy
                     details = component_health_status
-                except Exception as error:
-                    health_status = ReleaseHealthStatuses.unhealthy
+                except HTTPError as error:
+                    health_status = HttpHealthStatuses.unhealthy
                     details = {'error': str(error)}
+            case _:
+                raise InvalidTemplateException(f'Unknown component type "{component.type}".')
 
         return {
             'status': health_status,
@@ -377,9 +381,7 @@ class ApplicationManager:
                 except ReleaseAlreadyExistsException as error:
                     raise ApplicationComponentInstallException(
                         f'Failed to install application component "{component.name}". Helm release "{component.name}" already '
-                        f'exists in namespace "{namespace}".',
-                        application=application, component=component
-                    )
+                        f'exists in namespace "{namespace}".', application=application, component=component)
                 except HelmException as error:
                     raise ApplicationComponentInstallException(
                         f'Failed to install application component "{component.name}". {error.message}.',
@@ -388,8 +390,6 @@ class ApplicationManager:
             case ComponentTypes.http:
                 try:
                     return await self.http_manager.http_request(
-                        organization=organization,
-                        context_name=context_name,
                         component_name=component.name,
                         url=component.deploy.url,
                         method=component.deploy.method,
@@ -397,12 +397,11 @@ class ApplicationManager:
                         parameters=component.deploy.parameters,
                         dry_run=dry_run
                     )
-                except Exception as error:
+                except HTTPError as error:
                     raise ApplicationComponentInstallException(
                         f'Failed to install application component "{component.name}". {error}.',
                         application=application, component=component
                     )
-
 
     async def update_component(self, application: Application, component: Component, dry_run: bool = False) -> str:
         """
@@ -439,7 +438,8 @@ class ApplicationManager:
                         dry_run=dry_run
                     )
                 except ReleaseNotFoundException:
-                    logging.warning(f'Failed to uninstall component "{component.name}". No corresponding Helm release found.')
+                    logging.warning(
+                        f'Failed to uninstall component "{component.name}". No corresponding Helm release found.')
                 except HelmException as error:
                     raise ApplicationComponentUninstallException(
                         f'Failed to uninstall component "{component.name}". {error.message}',
@@ -448,8 +448,6 @@ class ApplicationManager:
             case ComponentTypes.http:
                 try:
                     await self.http_manager.http_request(
-                        organization=application.organization,
-                        context_name=application.context_name,
                         component_name=component.name,
                         url=component.delete.url,
                         method=component.delete.method,
@@ -457,7 +455,7 @@ class ApplicationManager:
                         parameters=component.delete.parameters,
                         dry_run=dry_run
                     )
-                except Exception as error:
+                except HTTPError as error:
                     raise ApplicationComponentUninstallException(
                         f'Failed to uninstall application component "{component.name}". {error}.',
                         application=application, component=component
@@ -641,7 +639,11 @@ class ApplicationManager:
         """
         inputs = self.get_inputs(template, application=application, user_inputs=user_inputs)
 
-        manifest = render_template(template.template, inputs, components_manifests, skip_context_error=skip_context_error)
+        manifest = render_template(
+            template.template,
+            inputs,
+            components_manifests,
+            skip_context_error=skip_context_error)
 
         return manifest
 
