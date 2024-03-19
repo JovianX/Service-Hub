@@ -54,11 +54,6 @@ class Component(BaseModel):
                 raise ValueError('delete is required when type is http')
         return values
 
-    def __hash__(self) -> str:
-        return hash(self.name)
-
     class Config:
         extra = Extra.forbid
 
-    def __hash__(self) -> str:
-        return hash(self.name)

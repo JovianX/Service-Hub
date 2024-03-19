@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-const TYPE_VALUES = ['helm_chart','curl'];
+const TYPE_VALUES = ['helm_chart','http'];
 
 const TypeSelector = ({ typeValue, handleOnChangeComponent, index, infoIsYamlValid }) => {
   const [type, setType] = useState('');
