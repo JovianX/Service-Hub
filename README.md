@@ -1,6 +1,6 @@
 <div align=center>
          
-![Service Hub](https://user-images.githubusercontent.com/2787296/214809231-da86cf75-82e8-4c7d-9e58-12e690d5282c.png)
+![Service Hub](https://raw.githubusercontent.com/JovianX/Service-Hub/main/documentation/service-hub-diagram.png)
 
 | **Please star ⭐ the repo if you find it useful. Issues and PRs are more than WELCOME!** |
 | --- |
