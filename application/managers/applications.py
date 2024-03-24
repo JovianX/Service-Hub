@@ -295,16 +295,20 @@ class ApplicationManager:
 
             case ComponentTypes.http:
                 try:
-                    component_health_status = await self.http_manager.http_request(
-                        component_name=component.name,
-                        url=component.status.url,
-                        method=component.status.method,
-                        headers=component.status.headers,
-                        parameters=component.status.parameters,
-                        dry_run=False
-                    )
-                    health_status = HttpHealthStatuses.healthy
-                    details = component_health_status
+                    if component.health is None:
+                        health_status = HttpHealthStatuses.healthy
+                        details = "No health check provided."
+                    else:
+                        component_health_status = await self.http_manager.http_request(
+                            component_name=component.name,
+                            url=component.health.url,
+                            method=component.health.method,
+                            headers=component.health.headers,
+                            parameters=component.health.parameters,
+                            dry_run=False
+                        )
+                        health_status = HttpHealthStatuses.healthy
+                        details = component_health_status
                 except HTTPError as error:
                     health_status = HttpHealthStatuses.unhealthy
                     details = {'error': str(error)}
@@ -391,10 +395,10 @@ class ApplicationManager:
                 try:
                     return await self.http_manager.http_request(
                         component_name=component.name,
-                        url=component.deploy.url,
-                        method=component.deploy.method,
-                        headers=component.deploy.headers,
-                        parameters=component.deploy.parameters,
+                        url=component.create.url,
+                        method=component.create.method,
+                        headers=component.create.headers,
+                        parameters=component.create.parameters,
                         dry_run=dry_run
                     )
                 except HTTPError as error:
@@ -619,12 +623,19 @@ class ApplicationManager:
         components = [component for component in manifest.components if component.enabled]
         for component in components:
             try:
-                manifests[component.name] = await self.helm_manager.get_detailed_manifest(
-                    application.organization,
-                    application.context_name,
-                    application.namespace,
-                    component.name
-                )
+                match component.type:
+                    case ComponentTypes.helm_chart:
+                        manifests[component.name] = await self.helm_manager.get_detailed_manifest(
+                            application.organization,
+                            application.context_name,
+                            application.namespace,
+                            component.name
+                        )
+                    case ComponentTypes.http:
+                        manifests[component.name] = []
+                    case _:
+                        raise InvalidTemplateException(f'Unknown component type "{component.type}".')
+
             except ReleaseNotFoundException:
                 if not skip_absent:
                     raise

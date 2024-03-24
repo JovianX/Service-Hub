@@ -1,5 +1,5 @@
 """
-Helm related exceptions.
+Http related exceptions.
 """
 from fastapi import status
 

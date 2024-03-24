@@ -1,5 +1,0 @@
-{
-    "isort.args": [
-        "--multi-line", "7", "--sl"
-    ]
-}
