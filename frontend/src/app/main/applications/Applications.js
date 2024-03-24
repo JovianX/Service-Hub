@@ -9,7 +9,7 @@ const Application = () => {
 
   return (
     <FusePageCarded
-      header={<TableHeader title='Applications' />}
+      header={<TableHeader title='Services' />}
       content={<ApplicationsTable />}
       scroll={isMobile ? 'normal' : 'content'}
       className='px-24'

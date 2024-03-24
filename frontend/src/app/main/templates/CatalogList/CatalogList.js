@@ -63,7 +63,7 @@ const CatalogList = ({ transformedTemplates }) => {
                 setTemplate(template);
               }}
             >
-              Deploy
+              Create
             </Button>
           </CardActions>
         </Card>

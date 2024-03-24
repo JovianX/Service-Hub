@@ -104,9 +104,9 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
         <form onSubmit={handleSubmitInstall}>
-          <DialogTitle className='bg-primary text-center text-white'>Deploy Application</DialogTitle>
+          <DialogTitle className='bg-primary text-center text-white'>Create Service</DialogTitle>
           <DialogContent className='pb-0  overflow-y-hidden'>
-            <div className='mt-24'>Create a new applicaion</div>
+            <div className='mt-24'>Create a new service</div>
             <TemplateInputs
               setTemplateFormData={setTemplateFormData}
               clearMessages={clearMessages}
@@ -152,7 +152,7 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
                 startIcon={<AddIcon />}
                 variant='contained'
               >
-                Deploy
+                Create
               </LoadingButton>
             </div>
           </DialogActions>
