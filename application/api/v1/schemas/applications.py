@@ -87,7 +87,8 @@ class ApplicationResponseSchema(BaseModel):
     created_at: datetime = Field(description='Date and time when application was launched.')
     name: str = Field(description='Name of application.')
     description: str | None = Field(description='Application description.')
-    ttl: datetime | None = Field(description='Date and time when application will reach end of life and will be terminated.')
+    ttl: datetime | None = Field(
+        description='Date and time when application will reach end of life and will be terminated.')
     manifest: str = Field(description='Rendered template with which application was deployed or upgraded.')
     status: ApplicationStatuses = Field(description='Application condition status.')
     health: ApplicationHealthStatuses = Field(description='Application application health condition.')

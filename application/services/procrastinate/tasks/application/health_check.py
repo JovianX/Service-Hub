@@ -2,9 +2,9 @@ import logging
 
 from constants.events import EventCategory
 from constants.events import EventSeverityLevel
+from constants.helm import ReleaseHealthStatuses
 from db.session import session_maker
 from schemas.events import EventSchema
-from constants.helm import ReleaseHealthStatuses
 from services.procrastinate.application import procrastinate
 
 from .utils import get_application_manager

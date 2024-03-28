@@ -8,6 +8,7 @@ from exceptions.shell import NonZeroStatusException
 from ..schemas import ManifestSchema
 from .base import HelmBase
 
+
 MANIFEST_SEPARATOR = re.compile(r'^---$', flags=re.MULTILINE)
 
 

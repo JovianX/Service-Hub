@@ -112,8 +112,8 @@ const ApplicationTable = ({ application }) => {
             id: application.id,
             isOpenModal: true,
             is_application_page: true,
-            title: `Delete application ${application.name}?`,
-            text: 'Are you sure you want to proceed',
+            title: `Delete application ${application.name}`,
+            text: 'Are you sure you want to proceed? This action cannot be undone.',
             confirmText: 'Delete',
           }}
           setOpenDeleteModal={setOpenDeleteModal}

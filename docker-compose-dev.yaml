@@ -10,12 +10,13 @@ services:
         HELM_VERSION: ${HELM_VERSION}
         KUBECTL_VERSION: ${KUBECTL_VERSION}
     image: back-end
+    command: ["./start.sh", "--sync-db", "--reload"]
     volumes:
       - ./application:/home/app/hub
       - ./credentials:/home/app/hub/credentials
       - ./.env:/home/app/hub/.env
     networks:
-      - service-network
+      - minikube
     ports:
       - '8000:8000'
     environment:
@@ -36,7 +37,7 @@ services:
       - ./credentials:/home/app/hub/credentials
       - ./.env:/home/app/hub/.env
     networks:
-      - service-network
+      - minikube
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/service_hub
       TEST_DATABASE_URL: postgresql+asyncpg://postgres_user:super_secret_password@postgres/test
@@ -56,7 +57,7 @@ services:
       dockerfile: Dockerfile
 
     networks:
-      - service-network
+      - minikube
     ports:
       - '3000:80'
     depends_on:
@@ -80,8 +81,8 @@ services:
     volumes:
       - ./docker-data/postgres-data:/var/lib/postgresql/data
     networks:
-      - service-network
+      - minikube
 networks:
-  service-network:
-    name: service-network
-
+  minikube:
+    name: minikube
+    external: true
