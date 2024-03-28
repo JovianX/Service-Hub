@@ -22,5 +22,7 @@ Our focus is simplicity, excellent developer experience, and a short time-to-val
 
 ### Service Hub vs. AWS Service Catalog 
 
+### Service Hub vs. Azure Deployment Environments
+
 ### Service Hub vs. Backstage
 
