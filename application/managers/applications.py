@@ -51,7 +51,7 @@ from models.template import TemplateRevision
 from models.user import User
 from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
-from schemas.templates.components import Component
+from schemas.templates.components import Components
 from schemas.templates.hooks import Hook
 from utils.template import load_template
 from utils.template import render_template
@@ -274,7 +274,7 @@ class ApplicationManager:
             data={'application_id': application.id}
         ))
 
-    async def get_component_health(self, component: Component, application: Application) -> dict:
+    async def get_component_health(self, component: Components, application: Application) -> dict:
         """
         Returns component health condition.
         """
@@ -339,7 +339,7 @@ class ApplicationManager:
             'problem_components': problem_components
         }
 
-    async def await_component_healthy_state(self, component: Component, application: Application) -> None:
+    async def await_component_healthy_state(self, component: Components, application: Application) -> None:
         """
         Awaits until application component becomes healthy otherwise raises timeout exception.
         """
@@ -354,7 +354,7 @@ class ApplicationManager:
                 application=application, component=component
             )
 
-    async def install_component(self, component: Component, application: Application | None = None,
+    async def install_component(self, component: Components, application: Application | None = None,
                                 organization: Organization | None = None, context_name: str | None = None,
                                 namespace: str | None = None, dry_run: bool = False) -> str:
         """
@@ -407,7 +407,7 @@ class ApplicationManager:
                         application=application, component=component
                     )
 
-    async def update_component(self, application: Application, component: Component, dry_run: bool = False) -> str:
+    async def update_component(self, application: Application, component: Components, dry_run: bool = False) -> str:
         """
         Updates application component.
         """
@@ -427,7 +427,7 @@ class ApplicationManager:
                 application=application, component=component
             )
 
-    async def uninstall_component(self, application: Application, component: Component, dry_run: bool = False) -> str:
+    async def uninstall_component(self, application: Application, component: Components, dry_run: bool = False) -> str:
         """
         Uninstalls application component.
         """
