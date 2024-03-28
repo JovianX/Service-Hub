@@ -13,6 +13,7 @@ class KubernetesException(CommonException):
     """
     Common exception for Kubernetes Python client and kubectl CLI.
     """
+
     def __init__(self, message: str, status_code: int | None = None) -> None:
         status_code = status_code or status.HTTP_503_SERVICE_UNAVAILABLE
         super().__init__(message=message, status_code=status_code)

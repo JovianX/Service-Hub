@@ -4,8 +4,8 @@ from datetime import datetime
 from db.session import session_maker
 from services.procrastinate.application import procrastinate
 
-from .utils import get_application_manager
 from .terminate_flow import execute_pre_terminate_hooks
+from .utils import get_application_manager
 
 
 logger = logging.getLogger(__name__)

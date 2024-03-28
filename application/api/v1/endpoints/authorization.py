@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from core.authentication import jwt_backend
 from core.authentication import fastapi_users
 from core.authentication import github_client
 from core.authentication import google_client
+from core.authentication import jwt_backend
 from core.configuration import settings
 from schemas.users import UserCreate
 from schemas.users import UserRead

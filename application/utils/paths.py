@@ -3,8 +3,8 @@ Project paths.
 """
 from pathlib import Path
 
-from models.organization import Organization
 from core.configuration import settings
+from models.organization import Organization
 
 
 def organization_home(organization: Organization) -> Path:

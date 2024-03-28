@@ -45,8 +45,10 @@ class TemplateVariable(str):
     @classmethod
     def __modify_schema__(cls, field_schema):
         field_schema.update(
-            pattern='^\{\{ *(components\.[a-zA-Z0-9-]+\.manifest\.[a-zA-Z0-9\.\[\]_-]+|inputs\.[a-zA-Z0-9_-]+) *\}\}$',
-            examples=['inputs.input_name', 'components.component-name.manifest.Service.some-service.spec.cluster_ip'],
+            pattern='^\\{\\{ *(components\\.[a-zA-Z0-9-]+\\.manifest\\.[a-zA-Z0-9\\.\\[\\]_-]+|inputs\\.[a-zA-Z0-9_-]+) *\\}\\}$',
+            examples=[
+                'inputs.input_name',
+                'components.component-name.manifest.Service.some-service.spec.cluster_ip'],
         )
 
     @classmethod

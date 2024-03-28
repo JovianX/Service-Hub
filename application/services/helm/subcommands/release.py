@@ -9,7 +9,6 @@ from fastapi import status
 from exceptions.common import CommonException
 from exceptions.shell import NonZeroStatusException
 from utils.temporary_file import yaml_temporary_file
-from exceptions.helm import ReleaseUpdateException
 
 from .base import HelmBase
 

@@ -37,7 +37,7 @@ const ChartSelector = ({ chartValue, index, handleOnChangeComponent, infoIsYamlV
   };
 
   return (
-    <FormControl size='small' required fullWidth disabled={!!infoIsYamlValid}>
+    <FormControl size='small' fullWidth disabled={!!infoIsYamlValid}>
       <InputLabel>Chart</InputLabel>
       <Select
         name='chart'

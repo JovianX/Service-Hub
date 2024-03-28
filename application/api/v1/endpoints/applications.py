@@ -18,9 +18,9 @@ from managers.applications import get_application_manager
 from managers.templates import TemplateManager
 from managers.templates import get_template_manager
 from models.user import User
+from schemas.organizations import SettingsSchema
 from schemas.templates.outputs import Outputs
 from utils.template import load_template
-from schemas.organizations import SettingsSchema
 
 from ..schemas.applications import ApplicationInstallResponseSchema
 from ..schemas.applications import ApplicationResponseSchema

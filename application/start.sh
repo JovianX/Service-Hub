@@ -10,4 +10,11 @@ then
     sleep 2
     done
 fi
-uvicorn instance:instance --host 0.0.0.0 --port 8000
+if [[ $* == *--reload* ]]
+then
+    OPTIONAL_ARGS="--reload"
+fi
+echo "Starting server"
+echo "OPTIONAL_ARGS: $OPTIONAL_ARGS"
+
+uvicorn $OPTIONAL_ARGS instance:instance --host 0.0.0.0 --port 8000

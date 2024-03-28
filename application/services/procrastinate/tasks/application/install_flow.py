@@ -89,18 +89,16 @@ async def install_applicatoin_components(application_id: int):
                         f'Error during deployment of <Application ID="{application.id}"> from '
                         f'<Template ID="{application.template.id}">. Some of the application components were changed while '
                         f'rerendering the template. This probably happened because of altered '
-                        f'`component.enabled` flag for one or more components after rerendering the template. '
-                    )
+                        f'`component.enabled` flag for one or more components after rerendering the template. ')
                     raise ApplicationException(
                         'Some application components were changed during the installation process. '
                         'This probably happened because of changed `component.enabled` flag for one or more components.',
-                        status.HTTP_500_INTERNAL_SERVER_ERROR, application=application
-                    )
+                        status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        application=application)
         except ApplicationComponentInstallTimeoutException as error:
             logger.error(
                 f'Failed to install <Applicaton ID="{application.id}">. Reached timeout for awaiting for the application '
-                f'component to become healthy.'
-            )
+                f'component to become healthy.')
             await application_manager.set_state_status(application, ApplicationStatuses.error)
             await application_manager.event_manager.create(EventSchema(
                 title='Application deployment',
