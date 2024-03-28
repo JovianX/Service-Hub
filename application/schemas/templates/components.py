@@ -37,6 +37,9 @@ class ComponentHelm(BaseModel):
                     'a higher priority.',
     )
 
+    class Config:
+        extra = Extra.forbid
+
 
 class HttpRequest(BaseModel):
     """
@@ -72,6 +75,6 @@ class ComponentHttp(BaseModel):
         extra = Extra.forbid
 
 
-Component = Annotated[ComponentHelm |
+Components = Annotated[ComponentHelm |
                       ComponentHttp,
                       Field(discriminator='type')]
