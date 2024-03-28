@@ -5,6 +5,7 @@ from typing import Annotated
 from typing import Literal
 
 from pydantic import BaseModel
+from pydantic import Extra
 from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import constr
@@ -52,6 +53,9 @@ class HttpRequest(BaseModel):
     parameters: dict | list[dict] | None = Field(
         description='Parameters for HTTP deployment', example=[{'param1': 'value1'}])
 
+    class Config:
+        extra = Extra.forbid
+
 
 class ComponentHttp(BaseModel):
     """
@@ -63,6 +67,9 @@ class ComponentHttp(BaseModel):
     create: HttpRequest = Field(description='Creation details for HTTP type components')
     delete: HttpRequest = Field(description='Deletion details for HTTP type components')
     health: HttpRequest | None = Field(description='Health check for HTTP type components')
+
+    class Config:
+        extra = Extra.forbid
 
 
 Component = Annotated[ComponentHelm |
