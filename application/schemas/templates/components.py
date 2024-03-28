@@ -5,20 +5,15 @@ from typing import Annotated
 from typing import Literal
 
 from pydantic import BaseModel
-from pydantic import Extra
-from pydantic import Field
-from pydantic import PrivateAttr
-from pydantic import constr
-from pydantic import BaseModel
 from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import constr
 
-
+from constants.http import ComponentTypeHttpMethods
 from constants.templates import ComponentTypes
-from constants.templates import StrEnum
 
 from .validators import TemplateVariable
+
 
 class ComponentHelm(BaseModel):
     """
@@ -40,17 +35,6 @@ class ComponentHelm(BaseModel):
         description='Helm values that will be provided during chart install/upgrade. The later element in the list has '
                     'a higher priority.',
     )
-
-
-class ComponentTypeHttpMethods(StrEnum):
-    """
-    Template HTTP component methods.
-    """
-    get = 'get'
-    post = 'post'
-    put = 'put'
-    patch = 'patch'
-    delete = 'delete'
 
 
 class HttpRequest(BaseModel):
@@ -81,49 +65,6 @@ class ComponentHttp(BaseModel):
     health: HttpRequest | None = Field(description='Health check for HTTP type components')
 
 
-Components = Annotated[ComponentHelm |
-                       ComponentHttp,
-                       Field(discriminator='type')]
-
-
-class Component(BaseModel):
-    """
-    Wrapper class for Template Components
-    """
-    __root__: Components
-    _raw_representation = PrivateAttr(default=None)
-
-    def __iter__(self):
-        return iter(self.__root__)
-
-    def __getitem__(self, item):
-        return self.__root__[item]
-
-    def __getattribute__(self, name: str) -> any:
-        try:
-            value = super().__getattribute__(name)
-        except AttributeError:
-            value = getattr(self.__root__, name)
-
-        return value
-
-    def __hash__(self) -> str:
-        return hash(self.name)
-
-    def dict(self, *args, **kwargs) -> dict:
-        data = super().dict(*args, **kwargs)
-
-        return data['__root__']
-
-    @property
-    def raw_representation(self):
-        """
-        Parsed original JSON representation of Component object.
-        """
-        if self._raw_representation is None:
-            raise ValueError('Original Component object was requested but was not set before.')
-
-        return self._raw_representation
-
-    class Config:
-        extra = Extra.forbid
+Component = Annotated[ComponentHelm |
+                      ComponentHttp,
+                      Field(discriminator='type')]

@@ -29,3 +29,14 @@ class HttpHealthStatuses(StrEnum):
     """
     healthy = 'healthy'
     unhealthy = 'unhealthy'
+
+
+class ComponentTypeHttpMethods(StrEnum):
+    """
+    Template HTTP component methods.
+    """
+    get = 'get'
+    post = 'post'
+    put = 'put'
+    patch = 'patch'
+    delete = 'delete'

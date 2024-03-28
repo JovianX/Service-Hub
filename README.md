@@ -120,7 +120,7 @@ For product documentation refer to the [Documentation Folder](documentation/READ
 
 # 📜 License
 
-Copyright 2024 JovianX Ltd.
+Copyright 2022 JovianX Ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 

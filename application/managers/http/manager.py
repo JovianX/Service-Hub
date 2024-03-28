@@ -6,16 +6,12 @@ Manager for http business logic.
 import httpx
 from fastapi import Depends
 
-from constants.events import EventCategory
+from constants.http import ComponentTypeHttpMethods
 from exceptions.http import HttpException
 from managers.events import EventManager
 from managers.events import get_event_manager
-from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
-from models.organization import Organization
-from schemas.events import EventSchema
-from services.helm.facade import HelmService
 
 
 class HttpManager:
@@ -46,20 +42,10 @@ class HttpManager:
         # Create an HTTP client
         async with httpx.AsyncClient() as client:
             # Prepare the request
-            method = method.lower()
-            match method:
-                case 'get':
-                    response = await client.get(url, params=parameters, headers=headers)
-                case 'post':
-                    response = await client.post(url, params=parameters, headers=headers)
-                case 'put':
-                    response = await client.put(url, params=parameters, headers=headers)
-                case 'delete':
-                    response = await client.delete(url, params=parameters, headers=headers)
-                case 'patch':
-                    response = await client.patch(url, params=parameters, headers=headers)
-                case _:
-                    raise HttpException(f"Unsupported method: {method}")
+            if method.lower() in ComponentTypeHttpMethods:
+                response = await client.request(method, url, params=parameters, headers=headers)
+            else:
+                raise HttpException(f"Unsupported method: {method}")
 
         # Check the response status code
         if not 200 <= response.status_code < 300:

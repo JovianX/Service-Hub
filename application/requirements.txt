@@ -17,4 +17,3 @@ pydantic[dotenv]==1.10.14
 pyyaml
 sqlalchemy[asyncio]==1.4.46
 uvicorn[standard]
-bcrypt==4.0.1
