@@ -1,6 +1,7 @@
 """
 Templates related constants.
 """
+
 from .base_enum import StrEnum
 
 
@@ -24,6 +25,7 @@ class ComponentTypes(StrEnum):
     Template application components types.
     """
     helm_chart = 'helm_chart'
+    http = 'http'
 
 
 class HookOnFailureBehavior(StrEnum):

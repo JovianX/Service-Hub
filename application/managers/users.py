@@ -199,7 +199,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
         # Creating initial organization's repository and template.
         await self.helm_manager.add_repository(
-            user.organization, 'Bitnami', settings.INITIAL_ORGANIZATION_REPOSITORY_URL
+            user.organization, 'bitnami', settings.INITIAL_ORGANIZATION_REPOSITORY_URL
         )
         if settings.INITIAL_ORGANIZATION_TEMPLATE:
             await self.template_manager.create_template(

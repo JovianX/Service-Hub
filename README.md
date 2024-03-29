@@ -1,8 +1,8 @@
 <div align=center>
          
-![Service Hub](https://user-images.githubusercontent.com/2787296/214809231-da86cf75-82e8-4c7d-9e58-12e690d5282c.png)
+![Service Hub](https://raw.githubusercontent.com/JovianX/Service-Hub/main/documentation/service-hub-banner.png)
 
-| **Please star ⭐ the repo if you find it useful. Issues and PRs are more then WELCOME!** |
+| **Please star ⭐ the repo if you find it useful. Issues and PRs are more than WELCOME!** |
 | --- |
          
 <table><tbody><tr><td><a href="https://github.com/JovianX/service-hub/stargazers"> Thank you dear stargazers! ⭐🤩 </a></td><td> <a href="https://github.com/JovianX/Service-Hub//blob/main/documentation/">Docs 🕮 </a></td><td><a href="https://discord.gg/CmFvFJDXZv"> Questions? Ask on Discord 💬 </a></td></tr></tbody></table>
@@ -16,29 +16,32 @@
 </div>
 
 # What is JovianX Service Hub?
-JovianX **Service Hub** is a tool that enables Self-Service for internal stakeholders. It exposes an on-demand catalog of infrastrucutre services (for example databases, s3 buckets, Airflow workflow execution, services with or without pre-configured or pre-loaded datasets , etc') via a simple self-service UI and CLI. 
+JovianX **Service Hub** is a self-service portal. It exposes an on-demand catalog of infrastructure services (for example databases, s3 buckets, Airflow workflow execution, Jenkins Pipelines, services with or without pre-configured or pre-loaded datasets, etc) via a simple self-service UI and CLI. 
 
 Service Hub is commonly used by Platform and DevOps Engineers.
 
 
 ## Use Cases
-- **Self-service infrastructure** Allow internal stackholders a very simple and maanged way to access infrastrucutre.  
-- **Developmnet enviromnets**  accelerate and shorten the developmnet cylce via self-service app and infra componnets via  UI/CLI/IDE.
-- **Testing and review envriomnents** to allow non-developer stackholders (Product Management, Sales, Support) to review developmnet progress early in the dev cycle. 
+- **Self-service infrastructure** Enable internal stakeholders to easily and efficiently create their infrastructure.
+  - **Jenkins** pipeline execution self-service
+  - **S3 Bucket** creation via self-service
+  - **RDS** Creation via self-service 
+- **Development environments**  Shorten the development cycle with self-service app & infra components via UI/CLI/IDE.
+- **Testing and review environments** Allow non-technical stakeholders (such as Product Management, Sales, and Support) to review development progress early in the development cycle. 
 
 # 🦄 Features:
 
-- **Self-Service Portal** based on Catalog of templates
+- **Self-Service Portal** based on a Catalog of templates
 ![image](https://user-images.githubusercontent.com/2787296/216806826-c3491755-da9f-4b37-8b83-f1eefd1d230d.png)
 
-- **Command line tool** (service-hub cli) to instatiate services
+- **Command line tool** (service-hub CLI) to instantiate services
 ![image](https://user-images.githubusercontent.com/2787296/216807787-1c22810d-7a97-4feb-b632-b42aefb964c9.png)
 
 - Login with GitHub, email/password, Access Tokens
 - Basic RBAC
 - Templates Catalog ([Docs](documentation/templates.md))
   - Create service templates with Helm Charts.
-  - Use Kubernetes jobs as serivce lifecyle(create/delete/etc') hooks
+  - Use Kubernetes jobs as service lifecycle(create/delete/etc') hooks
   - Remplate reversioning.
   - Set TTL for services and resoruces
  
@@ -55,27 +58,27 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 - Manage Helm Releases, Monitor application Health, Set Releases TTL, Update release values, Upgrade versions, Manage repositories, etc'
 - Manage Helm Releases across multiple clusters.
 - Helm Restful API - Full restful API for Helm
-- Helm UI - Allow operators and SRE quickly manage the helm application via WebUI.
+- Helm UI - Allow operators and SRE to quickly manage the helm application via WebUI.
 ![](https://user-images.githubusercontent.com/2787296/194758301-d50ad7a3-ea8d-4b56-91bf-01bf732c4fce.png)
 
 ## 🚀 Roadmap (accepting Feature Requests via GitHub issues)
-- **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc')
+- **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc)
 - **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
 - **RBAC** - Role-based access control
 - **Login with Google**
 - **Installation via Helm Chart**
 
-# How Service Hub works?
-Serivce Hub allows internal users to create services from a catalog. The catalog is based on serivce tempaltes that you can create and manage. 
-A temaptle defines 4 optinal etlements: 
-- **Inputs**  define the user inpus to collecto from the user
-- **Components** define what components should be set up when instantiating the service
-- **Hooks** can run scripts or trigger external APIs and services during diffenreny service lifecycle evetns(create, delete, etc')
-- **Outputs** define the output shown to the users after they create their serivce 
+# How does Service Hub work?
+Service Hub allows internal users to create services from a catalog. The catalog is based on service templates that you can create and manage. 
+A template defines 4 optional elements: 
+- **Inputs**  define the user inputs to collect from the user.
+- **Components** define what components should be set up when instantiating the service.
+- **Hooks** can run scripts or trigger external APIs and services during different service lifecycle events (create, delete, etc).
+- **Outputs** define the output shown to the users after they create their service.
 
-Serivce Hub has native integration with Kubernets,thus components can setup Helm charts, Hooks( such as pre-install, post-delete, etc') can setup Kubernetes Jobs.
+Service Hub has native integration with Kubernets, thus components can set up Helm charts, and Hooks( such as pre-install, post-delete, etc') can setup Kubernetes Jobs.
 
-When a user creates a services from the templates catalog, Service Hub generates a web-form UI from the *Inputs* definition, asking the user to provide inputs to complete service creation. When the the user provides the input values Service Hub passes the provided values to the Components and hooks, allowing creation of pre-scripted services following inputs end-users provide. 
+When a user creates a service from the templates catalog, Service Hub generates a web-form UI from the *Inputs* definition, asking the user to provide inputs to complete service creation. When the the user provides the input values Service Hub passes the provided values to the Components and hooks, allowing the creation of pre-scripted services following inputs end-users provide. 
 
 ### Examples:
 https://github.com/JovianX/Service-Hub/tree/main/examples
@@ -103,7 +106,7 @@ xdg-open 'http://localhost:3000'
 ```
 
 # 🤽‍♀️ Getting Strated - Usage
-1.  Create account with email/Password or GitHub login https://hub.jovianx.app/sign-up
+1.  Create an account with email/Password or GitHub login https://hub.jovianx.app/sign-up
 2.  Add your Kubernetes cluster https://youtu.be/gkUHn_gnS1c?t=10
 
 ![](https://raw.githubusercontent.com/JovianX/Service-Hub/main/documentation/JovianX_Service_Hub_Getting_Started.gif)

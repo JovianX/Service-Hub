@@ -24,7 +24,7 @@ class EventDatabase(BaseDatabase):
             self.table.organization_id == organization_id,
             self.table.category == EventCategory.application,
             self.table.data['application_id'].as_integer() == application_id
-        )
+        ).order_by(self.table.created_at.desc())
         result = await self.session.execute(query)
 
         return result.unique().scalars().all()

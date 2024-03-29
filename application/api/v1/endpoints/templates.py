@@ -12,8 +12,8 @@ from fastapi import Query
 
 from constants.base_enum import StrEnum
 from core.authentication import AuthorizedUser
-from core.authentication import current_active_user
 from core.authentication import OperatorRolePermission
+from core.authentication import current_active_user
 from managers.templates import TemplateManager
 from managers.templates import get_template_manager
 from models.user import User
@@ -53,7 +53,8 @@ async def create_template_revision(
     return created_template
 
 
-@router.get('/list', response_model=list[TemplateResponseBodySchema], dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
+@router.get('/list', response_model=list[TemplateResponseBodySchema],
+            dependencies=[Depends(AuthorizedUser(OperatorRolePermission))])
 async def list_organization_templates(
     user: User = Depends(current_active_user),
     template_manager: TemplateManager = Depends(get_template_manager)
