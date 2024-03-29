@@ -8,6 +8,7 @@ from db.session import session_maker
 from managers.applications import ApplicationManager
 from managers.events import EventManager
 from managers.helm.manager import HelmManager
+from managers.http.manager import HttpManager
 from managers.organizations.manager import OrganizationManager
 from managers.templates import TemplateManager
 
@@ -21,6 +22,10 @@ def get_application_manager(session: AsyncSession) -> ApplicationManager:
         OrganizationManager(OrganizationDatabase(session_maker())),
         EventManager(EventDatabase(session_maker())),
         HelmManager(
+            OrganizationManager(OrganizationDatabase(session_maker())),
+            EventManager(EventDatabase(session_maker()))
+        ),
+        HttpManager(
             OrganizationManager(OrganizationDatabase(session_maker())),
             EventManager(EventDatabase(session_maker()))
         )

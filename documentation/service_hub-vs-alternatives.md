@@ -20,10 +20,7 @@ With Service-Hub you can create service templates, and provide them as Self-Serv
 
 Our focus is simplicity, excellent developer experience, and a short time-to-value. We love all of the alternatives/proxy tools in our space, and there are plenty. 
 
-### Service-Hub vs. Helmfile
-
 ### Service Hub vs. AWS Service Catalog 
 
 ### Service Hub vs. Backstage
 
-### Service-Hub vs. Kubeapps

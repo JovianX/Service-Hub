@@ -9,13 +9,16 @@ from uuid import uuid4
 
 from fastapi import Depends
 from fastapi import status
+from httpx import HTTPError
 
 from constants.applications import ApplicationHealthStatuses
 from constants.applications import ApplicationStatuses
 from constants.events import EventCategory
 from constants.events import EventSeverityLevel
 from constants.helm import ReleaseHealthStatuses
+from constants.http import HttpHealthStatuses
 from constants.kubernetes import K8sKinds
+from constants.templates import ComponentTypes
 from constants.templates import HookOnFailureBehavior
 from core.configuration import settings
 from crud.applications import ApplicationDatabase
@@ -30,11 +33,15 @@ from exceptions.common import CommonException
 from exceptions.helm import HelmException
 from exceptions.helm import ReleaseAlreadyExistsException
 from exceptions.helm import ReleaseNotFoundException
+from exceptions.http import HttpException
+from exceptions.templates import InvalidTemplateException
 from exceptions.templates import InvalidUserInputsException
 from managers.events import EventManager
 from managers.events import get_event_manager
 from managers.helm.manager import HelmManager
 from managers.helm.manager import get_helm_manager
+from managers.http.manager import HttpManager
+from managers.http.manager import get_http_manager
 from managers.kubernetes import K8sManager
 from managers.organizations.manager import OrganizationManager
 from managers.organizations.manager import get_organization_manager
@@ -44,7 +51,7 @@ from models.template import TemplateRevision
 from models.user import User
 from schemas.events import EventSchema
 from schemas.templates import TemplateSchema
-from schemas.templates.components import Component
+from schemas.templates.components import Components
 from schemas.templates.hooks import Hook
 from utils.template import load_template
 from utils.template import render_template
@@ -61,13 +68,15 @@ class ApplicationManager:
     db: ApplicationDatabase
     organization_manager: OrganizationManager
     helm_manager: HelmManager
+    http_manager: HttpManager
     event_manager: EventManager
 
     def __init__(self, db: ApplicationDatabase, organization_manager: OrganizationManager, event_manager: EventManager,
-                 helm_manager: HelmManager) -> None:
+                 helm_manager: HelmManager, http_manager: HttpManager) -> None:
         self.db = db
         self.organization_manager = organization_manager
         self.helm_manager = helm_manager
+        self.http_manager = http_manager
         self.event_manager = event_manager
 
     async def install(self, context_name: str, namespace: str, user: User, template: TemplateRevision, inputs: dict,
@@ -265,22 +274,46 @@ class ApplicationManager:
             data={'application_id': application.id}
         ))
 
-    async def get_component_health(self, component: Component, application: Application) -> dict:
+    async def get_component_health(self, component: Components, application: Application) -> dict:
         """
         Returns component health condition.
         """
-        try:
-            component_health_status = await self.helm_manager.release_health_status(
-                application.organization,
-                application.context_name,
-                application.namespace,
-                component.name
-            )
-            health_status = component_health_status['status']
-            details = component_health_status['details']
-        except ReleaseNotFoundException:
-            health_status = ReleaseHealthStatuses.unhealthy
-            details = {}
+        match component.type:
+            case ComponentTypes.helm_chart:
+                try:
+                    component_health_status = await self.helm_manager.release_health_status(
+                        application.organization,
+                        application.context_name,
+                        application.namespace,
+                        component.name
+                    )
+                    health_status = component_health_status['status']
+                    details = component_health_status['details']
+                except ReleaseNotFoundException:
+                    health_status = ReleaseHealthStatuses.unhealthy
+                    details = {}
+
+            case ComponentTypes.http:
+                try:
+                    if component.health is None:
+                        health_status = HttpHealthStatuses.healthy
+                        details = "No health check provided."
+                    else:
+                        component_health_status = await self.http_manager.http_request(
+                            component_name=component.name,
+                            url=component.health.url,
+                            method=component.health.method,
+                            headers=component.health.headers,
+                            parameters=component.health.parameters,
+                            dry_run=False
+                        )
+                        health_status = HttpHealthStatuses.healthy
+                        details = component_health_status
+                except HTTPError as error:
+                    health_status = HttpHealthStatuses.unhealthy
+                    details = {'error': str(error)}
+            case _:
+                raise InvalidTemplateException(f'Unknown component type "{component.type}".')
 
         return {
             'status': health_status,
@@ -306,7 +339,7 @@ class ApplicationManager:
             'problem_components': problem_components
         }
 
-    async def await_component_healthy_state(self, component: Component, application: Application) -> None:
+    async def await_component_healthy_state(self, component: Components, application: Application) -> None:
         """
         Awaits until application component becomes healthy otherwise raises timeout exception.
         """
@@ -321,7 +354,7 @@ class ApplicationManager:
                 application=application, component=component
             )
 
-    async def install_component(self, component: Component, application: Application | None = None,
+    async def install_component(self, component: Components, application: Application | None = None,
                                 organization: Organization | None = None, context_name: str | None = None,
                                 namespace: str | None = None, dry_run: bool = False) -> str:
         """
@@ -336,30 +369,45 @@ class ApplicationManager:
                 'Application instance or organization and context_name and namespace must be provided to install '
                 'application component.'
             )
-        try:
-            return await self.helm_manager.install_chart(
-                organization=organization,
-                context_name=context_name,
-                namespace=namespace,
-                release_name=component.name,
-                chart_name=component.chart,
-                version=component.version,
-                values=component.values,
-                dry_run=dry_run
-            )
-        except ReleaseAlreadyExistsException as error:
-            raise ApplicationComponentInstallException(
-                f'Failed to install application component "{component.name}". Helm release "{component.name}" already '
-                f'exists in namespace "{namespace}".',
-                application=application, component=component
-            )
-        except HelmException as error:
-            raise ApplicationComponentInstallException(
-                f'Failed to install application component "{component.name}". {error.message}.',
-                application=application, component=component
-            )
+        match component.type:
+            case ComponentTypes.helm_chart:
+                try:
+                    return await self.helm_manager.install_chart(
+                        organization=organization,
+                        context_name=context_name,
+                        namespace=namespace,
+                        release_name=component.name,
+                        chart_name=component.chart,
+                        version=component.version,
+                        values=component.values,
+                        dry_run=dry_run
+                    )
+                except ReleaseAlreadyExistsException as error:
+                    raise ApplicationComponentInstallException(
+                        f'Failed to install application component "{component.name}". Helm release "{component.name}" already '
+                        f'exists in namespace "{namespace}".', application=application, component=component)
+                except HelmException as error:
+                    raise ApplicationComponentInstallException(
+                        f'Failed to install application component "{component.name}". {error.message}.',
+                        application=application, component=component
+                    )
+            case ComponentTypes.http:
+                try:
+                    return await self.http_manager.http_request(
+                        component_name=component.name,
+                        url=component.create.url,
+                        method=component.create.method,
+                        headers=component.create.headers,
+                        parameters=component.create.parameters,
+                        dry_run=dry_run
+                    )
+                except HTTPError as error:
+                    raise ApplicationComponentInstallException(
+                        f'Failed to install application component "{component.name}". {error}.',
+                        application=application, component=component
+                    )
 
-    async def update_component(self, application: Application, component: Component, dry_run: bool = False) -> str:
+    async def update_component(self, application: Application, component: Components, dry_run: bool = False) -> str:
         """
         Updates application component.
         """
@@ -379,25 +427,43 @@ class ApplicationManager:
                 application=application, component=component
             )
 
-    async def uninstall_component(self, application: Application, component: Component, dry_run: bool = False) -> str:
+    async def uninstall_component(self, application: Application, component: Components, dry_run: bool = False) -> str:
         """
         Uninstalls application component.
         """
-        try:
-            await self.helm_manager.uninstall_release(
-                organization=application.organization,
-                context_name=application.context_name,
-                namespace=application.namespace,
-                release_name=component.name,
-                dry_run=dry_run
-            )
-        except ReleaseNotFoundException:
-            logging.warning(f'Failed to uninstall component "{component.name}". No corresponding Helm release found.')
-        except HelmException as error:
-            raise ApplicationComponentUninstallException(
-                f'Failed to uninstall component "{component.name}". {error.message}',
-                application=application, component=component
-            )
+        match component.type:
+            case ComponentTypes.helm_chart:
+                try:
+                    await self.helm_manager.uninstall_release(
+                        organization=application.organization,
+                        context_name=application.context_name,
+                        namespace=application.namespace,
+                        release_name=component.name,
+                        dry_run=dry_run
+                    )
+                except ReleaseNotFoundException:
+                    logging.warning(
+                        f'Failed to uninstall component "{component.name}". No corresponding Helm release found.')
+                except HelmException as error:
+                    raise ApplicationComponentUninstallException(
+                        f'Failed to uninstall component "{component.name}". {error.message}',
+                        application=application, component=component
+                    )
+            case ComponentTypes.http:
+                try:
+                    await self.http_manager.http_request(
+                        component_name=component.name,
+                        url=component.delete.url,
+                        method=component.delete.method,
+                        headers=component.delete.headers,
+                        parameters=component.delete.parameters,
+                        dry_run=dry_run
+                    )
+                except HTTPError as error:
+                    raise ApplicationComponentUninstallException(
+                        f'Failed to uninstall application component "{component.name}". {error}.',
+                        application=application, component=component
+                    )
 
     async def execute_hook(self, application: Application, hook: Hook) -> None:
         """
@@ -557,12 +623,19 @@ class ApplicationManager:
         components = [component for component in manifest.components if component.enabled]
         for component in components:
             try:
-                manifests[component.name] = await self.helm_manager.get_detailed_manifest(
-                    application.organization,
-                    application.context_name,
-                    application.namespace,
-                    component.name
-                )
+                match component.type:
+                    case ComponentTypes.helm_chart:
+                        manifests[component.name] = await self.helm_manager.get_detailed_manifest(
+                            application.organization,
+                            application.context_name,
+                            application.namespace,
+                            component.name
+                        )
+                    case ComponentTypes.http:
+                        manifests[component.name] = []
+                    case _:
+                        raise InvalidTemplateException(f'Unknown component type "{component.type}".')
+
             except ReleaseNotFoundException:
                 if not skip_absent:
                     raise
@@ -577,7 +650,11 @@ class ApplicationManager:
         """
         inputs = self.get_inputs(template, application=application, user_inputs=user_inputs)
 
-        manifest = render_template(template.template, inputs, components_manifests, skip_context_error=skip_context_error)
+        manifest = render_template(
+            template.template,
+            inputs,
+            components_manifests,
+            skip_context_error=skip_context_error)
 
         return manifest
 
@@ -658,6 +735,7 @@ async def get_application_manager(
     db=Depends(get_application_db),
     organization_manager=Depends(get_organization_manager),
     event_manager=Depends(get_event_manager),
-    helm_manager=Depends(get_helm_manager)
+    helm_manager=Depends(get_helm_manager),
+    http_manager=Depends(get_http_manager)
 ):
-    yield ApplicationManager(db, organization_manager, event_manager, helm_manager)
+    yield ApplicationManager(db, organization_manager, event_manager, helm_manager, http_manager)

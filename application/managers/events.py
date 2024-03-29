@@ -4,10 +4,10 @@ Events business logic.
 from fastapi import Depends
 
 from constants.events import EventCategory
-from schemas.events import EventSchema
 from crud.events import EventDatabase
 from crud.events import get_event_db
 from models.organization import Organization
+from schemas.events import EventSchema
 
 
 class EventManager:

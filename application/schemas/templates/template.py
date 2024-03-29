@@ -9,7 +9,7 @@ from pydantic import Field
 from pydantic import constr
 from pydantic import validator
 
-from .components import Component
+from .components import Components
 from .hooks import Hooks
 from .inputs import Input
 from .outputs import Outputs
@@ -24,7 +24,7 @@ class TemplateSchema(BaseModel):
         description='Name of application which describes this template.',
         example='My Application'
     )
-    components: list[Component] | None = Field(description='Application components.', default_factory=list)
+    components: list[Components] | None = Field(description='Application components.', default_factory=list)
     hooks: Hooks | None = Field(description='Application actions.', default_factory=Hooks)
     inputs: list[Input] | None = Field(description='Input that should be provided by user.', default_factory=list)
     outputs: Outputs | None = Field(description='Valuable output for Application consumer.')
@@ -36,7 +36,7 @@ class TemplateSchema(BaseModel):
     _unique_inputs = validator('inputs', allow_reuse=True)(unique_names)
 
     @property
-    def components_mapping(self) -> dict[str, Component]:
+    def components_mapping(self) -> dict[str, Components]:
         """
         Mapping of application component name and component itself.
         """
