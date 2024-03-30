@@ -1,6 +1,7 @@
+from enum import Enum as PyEnum
+
 from sqlalchemy import JSON
 from sqlalchemy import Enum
-from enum import Enum as PyEnum
 from sqlalchemy.ext.mutable import MutableDict
 
 

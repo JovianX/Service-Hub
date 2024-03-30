@@ -1,6 +1,6 @@
 from constants.kubernetes import K8sKinds
-from exceptions.shell import NonZeroStatusException
 from exceptions.kubernetes import KubectlException
+from exceptions.shell import NonZeroStatusException
 
 from .base import KubectlBase
 
