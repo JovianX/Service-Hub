@@ -119,7 +119,7 @@ const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalo
           >
             {templates?.map((template) => (
               <MenuItem key={template.id} value={template.id}>
-                {`${template.name} ${template.revision}`}
+                {`${template.name} (Rev. ${template.revision})`}
               </MenuItem>
             ))}
           </Select>

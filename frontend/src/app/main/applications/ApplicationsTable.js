@@ -134,7 +134,7 @@ const ApplicationsTable = () => {
           />
         </FormGroup>
         <Button variant='contained' color='primary' startIcon={<AddIcon />} onClick={() => setOpenModal(true)}>
-          Deploy Application
+          Create Service
         </Button>
       </div>
       <Paper className='h-full mx-24 rounded'>
