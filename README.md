@@ -91,7 +91,8 @@ https://github.com/JovianX/Service-Hub/tree/main/examples
 
 
 ## Architecture
-![Service Hub Architecutre](https://github.com/JovianX/Service-Hub/assets/2787296/795b55fc-fd26-46fd-9c3f-6304b2330859)
+![Service Hub Architecutre](https://github.com/JovianX/Service-Hub/assets/2787296/64d30be3-61bc-499c-acc3-537fa120e9ce)
+
 
 
 # Installation
