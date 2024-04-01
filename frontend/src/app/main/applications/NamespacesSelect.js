@@ -8,12 +8,13 @@ import { formattedNamespace } from '../../uitls/formattedNamespace';
 
 const filter = createFilterOptions();
 
-const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
+const NamespacesSelect = ({ hidden, clusterContextName, handleGetNamespace }) => {
   const [namespace, setNamespace] = useState(null);
   const [list, setList] = useState([]);
   const user = useGetMe();
 
   useEffect(() => {
+    namespace &&
     handleGetNamespace(namespace?.name);
   }, [namespace]);
 
@@ -95,7 +96,8 @@ const NamespacesSelect = ({ clusterContextName, handleGetNamespace }) => {
       renderOption={(props, option) => <li {...props}>{option.name}</li>}
       sx={{ marginTop: 1.4 }}
       freeSolo
-      renderInput={(params) => <TextField {...params} required label='Namespace' />}
+      hidden={hidden}
+      renderInput={(params) => <TextField {...params} label='Namespace' />}
     />
   );
 };

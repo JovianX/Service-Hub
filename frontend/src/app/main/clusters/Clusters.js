@@ -9,7 +9,7 @@ const Clusters = () => {
 
   return (
     <FusePageCarded
-      header={<TableHeader title='Clusters' />}
+      header={<TableHeader title='Kubernetes Clusters' />}
       content={<ClustersBlocks />}
       scroll={isMobile ? 'normal' : 'content'}
       className='px-24'

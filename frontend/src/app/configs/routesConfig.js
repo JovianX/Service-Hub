@@ -65,7 +65,7 @@ const adminRoutes = [
   ...FuseUtils.generateRoutesFromConfigs(adminRouteConfigs, settingsConfig.defaultAuth),
   {
     path: '/',
-    element: <Navigate to='/dashboard' />,
+    element: <Navigate to='/applications' />,
     // auth: settingsConfig.defaultAuth,
   },
   {
@@ -86,7 +86,7 @@ const operatorRoutes = [
   ...FuseUtils.generateRoutesFromConfigs(operatorRouteConfigs, settingsConfig.defaultAuth),
   {
     path: '/',
-    element: <Navigate to='/dashboard' />,
+    element: <Navigate to='/applications' />,
     // auth: settingsConfig.defaultAuth,
   },
   {

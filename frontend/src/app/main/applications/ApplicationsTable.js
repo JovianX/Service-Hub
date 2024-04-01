@@ -32,6 +32,7 @@ import {
 } from 'app/store/applicationsSlice';
 import { getContextList, selectContexts } from 'app/store/clustersSlice';
 import { getTemplatesList } from 'app/store/templatesSlice';
+import { selectTemplates } from 'app/store/templatesSlice';
 
 import { getApplicationOutputs as getApplicationOutputsAPI } from '../../api/applications';
 import { useGetMe } from '../../hooks/useGetMe';
@@ -58,6 +59,10 @@ const ApplicationsTable = () => {
   const contextData = useSelector(selectContexts);
   const applicationsData = useSelector(selectApplications);
   const isLoading = useSelector(selectIsApplicationsLoading);
+
+  const [templates, setTemplates] = useState([]);
+  const templatesData = useSelector(selectTemplates);
+  const [templateId, setTemplateId] = useState('');
 
   const user = useGetMe();
 

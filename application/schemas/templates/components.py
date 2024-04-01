@@ -76,5 +76,5 @@ class ComponentHttp(BaseModel):
 
 
 Components = Annotated[ComponentHelm |
-                      ComponentHttp,
-                      Field(discriminator='type')]
+                       ComponentHttp,
+                       Field(discriminator='type')]
