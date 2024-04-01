@@ -8,6 +8,7 @@ from fastapi import Depends
 
 from constants.http import ComponentTypeHttpMethods
 from exceptions.http import HttpException
+from exceptions.http import HttpNotOk
 from managers.events import EventManager
 from managers.events import get_event_manager
 from managers.organizations.manager import OrganizationManager
@@ -49,7 +50,7 @@ class HttpManager:
 
         # Check the response status code
         if not 200 <= response.status_code < 300:
-            raise Exception(f"Request failed with status {response.status_code}")
+            raise HttpNotOk(f"Request failed with status {response.status_code}")
         # Return the response text
         return response.text
 

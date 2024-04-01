@@ -97,7 +97,7 @@ async def install_applicatoin_components(application_id: int):
                         application=application)
         except ApplicationComponentInstallTimeoutException as error:
             logger.error(
-                f'Failed to install <Applicaton ID="{application.id}">. Reached timeout for awaiting for the application '
+                f'Failed to install <Application ID="{application.id}">. Reached timeout for awaiting for the application '
                 f'component to become healthy.')
             await application_manager.set_state_status(application, ApplicationStatuses.error)
             await application_manager.event_manager.create(EventSchema(

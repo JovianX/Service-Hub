@@ -6,12 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
 } from '@mui/material';
-import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +15,6 @@ import { applicationInstall } from 'app/store/applicationsSlice';
 
 import { PATHS } from '../../constants/paths';
 
-import NamespacesSelect from './NamespacesSelect';
 import TemplateInputs from './TemplateInputs/TemplateInputs';
 
 const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, templateFromCatalog }) => {
@@ -29,15 +23,10 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
   const [loading, setLoading] = useState(false);
   const [infoMessageError, setInfoMessageError] = useState('');
   const [infoMessageSuccess, setInfoMessageSuccess] = useState('');
-  const [cluster, setCluster] = useState('');
-  const [namespace, setNamespace] = useState('');
+  const [namespace] = useState('');
   const [templateFormData, setTemplateFormData] = useState({});
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setCluster(kubernetesConfiguration[0]?.name);
-  }, [kubernetesConfiguration]);
 
   useEffect(() => {
     if (openModal) {
@@ -70,7 +59,7 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
     if (payload.status === 'error') {
       setInfoMessageError(payload.message);
     } else {
-      setInfoMessageSuccess('Application was successfully created');
+      setInfoMessageSuccess('Service was successfully created');
 
       navigate(`/${PATHS.APPLICATIONS}/${payload.application.id}`, {
         state: {
@@ -92,14 +81,6 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
     clearMessages();
   };
 
-  const handleChangeSelect = (e) => {
-    setCluster(e.target.value);
-  };
-
-  const handleGetNamespace = (value) => {
-    setNamespace(value);
-  };
-
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
@@ -111,28 +92,8 @@ const ApplicationsModal = ({ openModal, setOpenModal, kubernetesConfiguration, t
               setTemplateFormData={setTemplateFormData}
               clearMessages={clearMessages}
               templateFromCatalog={templateFromCatalog}
+              kubernetesConfiguration={kubernetesConfiguration}
             />
-            <Box sx={{ minWidth: 120 }}>
-              <FormControl margin='normal' fullWidth required>
-                <InputLabel id='cluster'>Cluster</InputLabel>
-                <Select
-                  name='context_name'
-                  labelId='cluster'
-                  value={cluster}
-                  required
-                  label='Clusters'
-                  onChange={handleChangeSelect}
-                >
-                  {kubernetesConfiguration.length &&
-                    kubernetesConfiguration?.map((cluster) => (
-                      <MenuItem key={cluster.name} value={cluster.name}>
-                        {cluster.cluster}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            </Box>
-            <NamespacesSelect clusterContextName={cluster} handleGetNamespace={(value) => handleGetNamespace(value)} />
           </DialogContent>
 
           <DialogActions className='p-24 justify-between'>
