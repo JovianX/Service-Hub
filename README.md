@@ -27,7 +27,13 @@ Service Hub is commonly used by Platform and DevOps Engineers.
   - **S3 Bucket** creation via self-service
   - **RDS** Creation via self-service 
 - **Development environments**  Shorten the development cycle with self-service app & infra components via UI/CLI/IDE.
-- **Testing and review environments** Allow non-technical stakeholders (such as Product Management, Sales, and Support) to review development progress early in the development cycle. 
+- **Testing and review environments** Allow non-technical stakeholders (such as Product Management, Sales, and Support) to review development progress early in the development cycle.
+
+## Demo 
+[ServiceHub Demo Video.webm](https://github.com/JovianX/Service-Hub/assets/2787296/7061046e-f5fa-4bb9-a062-5c716aa7b1c7)
+
+
+
 
 # 🦄 Features:
 
