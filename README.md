@@ -91,7 +91,8 @@ https://github.com/JovianX/Service-Hub/tree/main/examples
 
 
 ## Architecture
-![Service Hub Architecutre](https://user-images.githubusercontent.com/2787296/215046290-a89d375f-ecf0-4ac6-9409-dabeb40f55ba.svg)
+![Service Hub Architecutre](https://github.com/JovianX/Service-Hub/assets/2787296/795b55fc-fd26-46fd-9c3f-6304b2330859)
+
 
 # Installation
 ## SaaS
