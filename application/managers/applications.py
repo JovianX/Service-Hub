@@ -34,6 +34,7 @@ from exceptions.helm import HelmException
 from exceptions.helm import ReleaseAlreadyExistsException
 from exceptions.helm import ReleaseNotFoundException
 from exceptions.http import HttpException
+from exceptions.http import HttpNotOk
 from exceptions.templates import InvalidTemplateException
 from exceptions.templates import InvalidUserInputsException
 from managers.events import EventManager
@@ -360,17 +361,16 @@ class ApplicationManager:
         """
         Installs application component.
         """
-        if application is not None:
-            organization = application.organization
-            context_name = application.context_name
-            namespace = application.namespace
-        if not all([organization is not None, context_name, namespace]):
-            raise ValueError(
-                'Application instance or organization and context_name and namespace must be provided to install '
-                'application component.'
-            )
         match component.type:
             case ComponentTypes.helm_chart:
+                if application is not None:
+                    organization = application.organization
+                    context_name = application.context_name
+                    namespace = application.namespace
+                if not all([organization is not None, context_name, namespace]):
+                    raise ValueError(
+                        'Application instance or organization and context_name and namespace must be provided to install '
+                        'application component.')
                 try:
                     return await self.helm_manager.install_chart(
                         organization=organization,
@@ -401,7 +401,12 @@ class ApplicationManager:
                         parameters=component.create.parameters,
                         dry_run=dry_run
                     )
-                except HTTPError as error:
+                except HttpNotOk as error:
+                    raise ApplicationComponentInstallException(
+                        f'Failed to install application component "{component.name}". {error.message}.',
+                        application=application, component=component
+                    )
+                except HttpException as error:
                     raise ApplicationComponentInstallException(
                         f'Failed to install application component "{component.name}". {error}.',
                         application=application, component=component

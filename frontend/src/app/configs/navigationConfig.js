@@ -11,15 +11,7 @@ i18next.addResourceBundle('tr', 'navigation', tr);
 i18next.addResourceBundle('ar', 'navigation', ar);
 
 const navigationConfig = [
-  {
-    id: 'dashboard-component',
-    title: 'Dashboard',
-    translate: 'DASHBOARD',
-    type: 'item',
-    icon: 'heroicons-outline:chart-pie',
-    url: 'dashboard',
-    auth: authRoles.staff,
-  },
+
   // {
   //   id: 'services-component',
   //   title: 'services',
@@ -34,7 +26,7 @@ const navigationConfig = [
     title: 'Applications',
     translate: 'APPLICATIONS',
     type: 'item',
-    icon: 'material-outline:apps',
+    icon: 'heroicons-outline:template',
     url: 'applications',
     auth: authRoles.staff,
   },
@@ -43,46 +35,12 @@ const navigationConfig = [
     title: 'Catalog',
     translate: 'CATALOG',
     type: 'item',
-    icon: 'heroicons-outline:template',
+    icon: 'material-outline:apps',
     url: 'templates',
     auth: authRoles.staff,
   },
   {
-    id: 'helm-component',
-    title: 'Helm',
-    translate: 'HELM',
-    type: 'group',
-    icon: 'heroicons-outline:view-grid-add',
-    auth: authRoles.staff,
-    children: [
-      {
-        id: 'releases-component',
-        title: 'Releases',
-        translate: 'RELEASES',
-        type: 'item',
-        icon: 'heroicons-outline:cube-transparent',
-        url: 'releases',
-        auth: authRoles.staff,
-      },
-      {
-        id: 'charts-component',
-        title: 'Releases',
-        translate: 'CHARTS',
-        type: 'item',
-        icon: 'heroicons-outline:cube',
-        url: 'charts',
-        auth: authRoles.staff,
-      },
-      {
-        id: 'repositories-component',
-        title: 'Repos',
-        translate: 'REPOS',
-        type: 'item',
-        icon: 'heroicons-outline:archive',
-        url: 'repositories',
-        auth: authRoles.staff,
-      },
-    ],
+    'type': 'divider',
   },
   {
     id: 'settings-component',
@@ -93,9 +51,18 @@ const navigationConfig = [
     auth: authRoles.admin,
     children: [
       {
+        id: 'dashboard-component',
+        title: 'Dashboard',
+        translate: 'DASHBOARD',
+        type: 'item',
+        icon: 'heroicons-outline:chart-pie',
+        url: 'dashboard',
+        auth: authRoles.staff,
+      },
+      {
         id: 'clusters-component',
-        title: 'Clusters',
-        translate: 'CLUSTERS',
+        title: 'Kubernetes',
+        translate: 'KUBERNETES',
         type: 'item',
         icon: 'heroicons-outline:collection',
         url: 'clusters',
@@ -108,8 +75,44 @@ const navigationConfig = [
         icon: 'heroicons-outline:users',
         url: 'users',
       },
+      {
+        id: 'helm-component',
+        title: 'Helm',
+        translate: 'HELM',
+        type: 'group',
+        icon: 'heroicons-outline:view-grid-add',
+        auth: authRoles.staff,
+        children: [
+          {
+            id: 'releases-component',
+            title: 'Releases',
+            translate: 'RELEASES',
+            type: 'item',
+            icon: 'heroicons-outline:cube-transparent',
+            url: 'releases',
+            auth: authRoles.staff,
+          },
+          {
+            id: 'charts-component',
+            title: 'Releases',
+            translate: 'CHARTS',
+            type: 'item',
+            icon: 'heroicons-outline:cube',
+            url: 'charts',
+            auth: authRoles.staff,
+          },
+          {
+            id: 'repositories-component',
+            title: 'Repos',
+            translate: 'REPOS',
+            type: 'item',
+            icon: 'heroicons-outline:archive',
+            url: 'repositories',
+            auth: authRoles.staff,
+          },
+        ],
+      },
     ],
   },
 ];
-
 export default navigationConfig;

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { selectTemplates } from 'app/store/templatesSlice';
+import NamespacesSelect from '../NamespacesSelect';
 
 import TypeCheckbox from './TypeCheckbox';
 import TypeNumber from './TypeNumber';
@@ -15,11 +16,17 @@ import TypeSwitch from './TypeSwitch';
 import TypeText from './TypeText';
 import TypeTextarea from './TypeTextarea';
 
-const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalog }) => {
+const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalog, kubernetesConfiguration}) => {
   const [templates, setTemplates] = useState([]);
   const [templateId, setTemplateId] = useState('');
   const [inputs, setInputs] = useState([]);
   const templatesData = useSelector(selectTemplates);
+  const [cluster, setCluster] = useState('');
+  const [namespace, setNamespace] = useState('');
+
+  useEffect(() => {
+    setCluster(kubernetesConfiguration[0]?.name);
+  }, [kubernetesConfiguration]);
 
   useEffect(() => {
     if (templateFromCatalog?.id) {
@@ -59,6 +66,21 @@ const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalo
   const handleChangeSelect = (e) => {
     setTemplateId(e.target.value);
   };
+
+  const handleClusterChangeSelect = (e) => {
+    setCluster(e.target.value);
+  };
+
+  const handleGetNamespace = (value) => {
+    setNamespace(value);
+  };
+
+  const isNotKubernetesTemplate = () => {
+    const selectedTemplate = templates.find(template => template.id === templateId);
+    const isHelmChart = selectedTemplate?.parsed_template?.components?.some(component => component.type === 'helm_chart');
+    return !isHelmChart
+  };
+
 
   const onChangeInputs = (e, item) => {
     clearMessages();
@@ -151,6 +173,28 @@ const TemplateInputs = ({ setTemplateFormData, clearMessages, templateFromCatalo
               return null;
           }
         })}
+            <Box sx={{ minWidth: 120 }} hidden={isNotKubernetesTemplate()}>
+              <FormControl margin='normal' fullWidth>
+                <InputLabel id='cluster'>Cluster</InputLabel>
+                <Select
+                  name='context_name'
+                  labelId='cluster'
+                  value={cluster}
+                  required
+                  label='Clusters'
+                  onChange={handleClusterChangeSelect}
+                >
+                  {kubernetesConfiguration.length &&
+                    kubernetesConfiguration?.map((cluster) => (
+                      <MenuItem key={cluster.name} value={cluster.name}>
+                        {cluster.cluster}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </Box>
+            <NamespacesSelect hidden={isNotKubernetesTemplate()}
+                              clusterContextName={cluster} handleGetNamespace={(value) => handleGetNamespace(value)} />
     </>
   );
 };
