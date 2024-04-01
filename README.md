@@ -32,7 +32,7 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 # 🦄 Features:
 
 - **Self-Service Portal** based on a Catalog of templates
-![image](https://user-images.githubusercontent.com/2787296/216806826-c3491755-da9f-4b37-8b83-f1eefd1d230d.png)
+  ![image](https://github.com/JovianX/Service-Hub/assets/2787296/ceb42680-4270-4eb5-b009-b5ba8e802880)
 
 - **Command line tool** (service-hub CLI) to instantiate services
 ![image](https://user-images.githubusercontent.com/2787296/216807787-1c22810d-7a97-4feb-b632-b42aefb964c9.png)
