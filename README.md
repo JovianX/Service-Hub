@@ -91,7 +91,7 @@ https://github.com/JovianX/Service-Hub/tree/main/examples
 
 
 ## Architecture
-![Service Hub Architecutre](https://github.com/JovianX/Service-Hub/assets/2787296/64d30be3-61bc-499c-acc3-537fa120e9ce)
+![Service Hub Architecutre](https://github.com/JovianX/Service-Hub/assets/2787296/acc120b3-5000-4823-9624-29fedb6e64fc)
 
 
 
