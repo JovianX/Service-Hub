@@ -104,8 +104,6 @@ xdg-open 'http://localhost:3000'
 ```
 
 # 🤽‍♀️ Getting Strated - Usage
-1.  Create an account with email/Password or GitHub login https://hub.jovianx.app/sign-up
-2.  Add your Kubernetes cluster https://youtu.be/gkUHn_gnS1c?t=10
 
 ![](https://raw.githubusercontent.com/JovianX/Service-Hub/main/documentation/JovianX_Service_Hub_Getting_Started.gif)
 
