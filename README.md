@@ -23,9 +23,10 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 
 ## Use Cases
 - **Self-service infrastructure** Enable internal stakeholders to easily and efficiently create their infrastructure.
-  - **Jenkins** pipeline execution self-service
-  - **S3 Bucket** creation via self-service
-  - **RDS** Creation via self-service 
+  - **Jenkins** pipeline execution self-service.
+  - **VM Instance Creation** Create an on-demand VM on AWS/GCP/Azure/VMware via self-service.
+  - **S3 Bucket** creation via self-service.
+  - **RDS** Creation via self-service.
 - **Development environments**  Shorten the development cycle with self-service app & infra components via UI/CLI/IDE.
 - **Testing and review environments** Allow non-technical stakeholders (such as Product Management, Sales, and Support) to review development progress early in the development cycle.
 
