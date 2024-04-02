@@ -49,9 +49,7 @@ https://www.youtube.com/watch?v=QwtQkDiBvzs
 ![image](https://user-images.githubusercontent.com/2787296/216807787-1c22810d-7a97-4feb-b632-b42aefb964c9.png)
 
 - Login with GitHub, email/password, Access Tokens
-- 
 - Basic RBAC
-- 
 - Templates Catalog ([Docs](documentation/templates.md))
   - Create service templates with Helm Charts.
   - Use Kubernetes jobs as service lifecycle(create/delete/etc') hooks
