@@ -107,8 +107,8 @@ xdg-open 'http://localhost:3000'
 ```
 name: jenkins_job
 
-# ServiceHub generates the UI from the input session
-# and passes the user-provided values to the Components
+# Input definitions are used for generating the UI,
+# User-provided values can be passed to Components
 inputs:
   - name: user_input1
     type: text
@@ -116,7 +116,7 @@ inputs:
     default: some_text
     description: Your custom text
 
-# The Components section tells ServiceHub what operations to perform
+# Components section tells ServiceHub what operations to perform
 # when users create/delete/update their services. Components can be
 # of type 'http' or 'helm_chart. refer to Docs for a detailed description. 
 components:
