@@ -40,16 +40,21 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 - **Self-Service Portal** based on a Catalog of templates
   ![image](https://github.com/JovianX/Service-Hub/assets/2787296/ceb42680-4270-4eb5-b009-b5ba8e802880)
 
+- **Service Endpoint Health Monitoring** - Monitor service HTTP endpoints for service availability and health
+
+- **Service Time-To-Live** - Set TTL for services and resoruces
+
 - **Command line tool** (service-hub CLI) to instantiate services
 ![image](https://user-images.githubusercontent.com/2787296/216807787-1c22810d-7a97-4feb-b632-b42aefb964c9.png)
 
 - Login with GitHub, email/password, Access Tokens
+- 
 - Basic RBAC
+- 
 - Templates Catalog ([Docs](documentation/templates.md))
   - Create service templates with Helm Charts.
   - Use Kubernetes jobs as service lifecycle(create/delete/etc') hooks
   - Remplate reversioning.
-  - Set TTL for services and resoruces
  
 <table><tbody>
 <tr align=center>
@@ -69,7 +74,6 @@ Service Hub is commonly used by Platform and DevOps Engineers.
 
 ## 🚀 Roadmap (accepting Feature Requests via GitHub issues)
 - **Context-based Helm values** - Set Helm values based on application context(Cloud provider, region, etc)
-- **Service Endpoint Monitoring** - Monitor service HTTP endpoints for service availability and health
 - **RBAC** - Role-based access control
 - **Login with Google**
 - **Installation via Helm Chart**
