@@ -105,6 +105,20 @@ xdg-open 'http://localhost:3000'
 
 # Example Template
 ```
+name: jenkins_job
+
+# ServiceHub generates the UI from the input session
+# and passes the user-provided values to the Components
+inputs:
+  - name: user_input1
+    type: text
+    label: Your text
+    default: some_text
+    description: Your custom text
+
+# The Components section tells ServiceHub what operations to perform
+# when users create/delete/update their services. Components can be
+# of type 'http' or 'helm_chart. refer to Docs for a detailed description. 
 components:
   - name: jenkins_pipeline_mypipe1
     type: http
@@ -123,13 +137,6 @@ components:
       parameters:
         - action: delete
         - my_param2: '{{inputs.my_text}}'
-name: jenkins_job
-inputs:
-  - name: user_input1
-    type: text
-    label: Your text
-    default: some_text
-    description: Your custom text
 
 ```
 
