@@ -103,12 +103,6 @@ docker-compose up
 xdg-open 'http://localhost:3000'
 ```
 
-# 🤽‍♀️ Getting Strated - Usage
-
-![](https://raw.githubusercontent.com/JovianX/Service-Hub/main/documentation/JovianX_Service_Hub_Getting_Started.gif)
-
-https://www.youtube.com/watch?v=gkUHn_gnS1c
-
 # Documentation
 For product documentation refer to the [Documentation Folder](documentation/README.md).
 
