@@ -103,6 +103,37 @@ docker-compose up
 xdg-open 'http://localhost:3000'
 ```
 
+# Example Template
+```
+components:
+  - name: jenkins_pipeline_mypipe1
+    type: http
+    create:
+      url: https://<JENKINS_SERVER>/job/mypipe1/buildWithParameters
+      method: post
+      parameters:
+        - action: deploy1
+        - myparam: '{{inputs.user_input1}}'
+      headers:
+        Authorization: Basic <JENKINS_TOKEN_BASE64>
+        Content-Type: application/json
+    delete:
+      url: https://httpbin.org/anything
+      method: delete
+      parameters:
+        - action: delete
+        - my_param2: '{{inputs.my_text}}'
+name: jenkins_job
+inputs:
+  - name: user_input1
+    type: text
+    label: Your text
+    default: some_text
+    description: Your custom text
+
+```
+
+
 # Documentation
 For product documentation refer to the [Documentation Folder](documentation/README.md).
 
