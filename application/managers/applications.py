@@ -81,6 +81,7 @@ class ApplicationManager:
         self.event_manager = event_manager
 
     async def install(self, context_name: str, namespace: str, user: User, template: TemplateRevision, inputs: dict,
+                      application_name: str | None = None, application_description: str | None = None,
                       dry_run: bool = False) -> Application | dict[str, dict]:
         """
         Installs application from provided manifest.
@@ -104,9 +105,11 @@ class ApplicationManager:
 
             return {component.name: output for component, output in zip(components, outputs)}
         else:
+            name = application_name or manifest.name
+            description = application_description or ''
             application = {
-                'name': manifest.name,
-                'description': '',
+                'name': name,
+                'description': description,
                 'manifest': raw_manifest,
                 'status': ApplicationStatuses.deploy_requested,
                 'health': ApplicationHealthStatuses.unhealthy,

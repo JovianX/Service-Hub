@@ -58,6 +58,8 @@ async def install_application(
         user=user,
         template=template,
         inputs=body.inputs,
+        application_name=body.name,
+        application_description=body.description,
         dry_run=body.dry_run
     )
     if body.dry_run:
