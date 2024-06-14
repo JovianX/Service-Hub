@@ -26,6 +26,7 @@ services:
       SECRETS_DIRECTORY: credentials
       UI_HOST: http://localhost:3000
       ENV_FILE: .env
+      PYTHONUNBUFFERED: 1
     depends_on:
       - postgres
 
