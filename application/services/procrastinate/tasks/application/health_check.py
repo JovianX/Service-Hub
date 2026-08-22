@@ -14,7 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 @procrastinate.periodic(cron='*/1 * * * *')
-@procrastinate.task(name='application__check_health')
+@procrastinate.task(
+    name='application__check_health',
+    queueing_lock='application__check_health',
+    lock='application__check_health'
+)
 async def check_applications_health(*args, **kwargs):
     """
     Checks applications health status.
