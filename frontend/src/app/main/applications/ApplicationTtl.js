@@ -63,17 +63,17 @@ const ApplicationTtl = ({ openTtlModal, setOpenTtlModal, parameters }) => {
     const selectedUnixTimestamp = selectedDateUnix.getTime();
     const timestamp = Date.now();
 
-    let hours = {};
+    let minutes = {};
     if (selectedUnixTimestamp) {
-      hours = { hours: Math.round((selectedUnixTimestamp - timestamp) / 1000 / 3600) };
+      minutes = { minutes: Math.round((selectedUnixTimestamp - timestamp) / 1000 / 60) };
     }
 
-    await requestForApplicationTll(id, hours);
+    await requestForApplicationTll(id, minutes);
   };
 
   const handleUnsetApplicationTtl = async () => {
-    const hours = { hours: 0 };
-    await requestForApplicationTll(id, hours);
+    const minutes = { minutes: 0 };
+    await requestForApplicationTll(id, minutes);
   };
 
   return (

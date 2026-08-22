@@ -19,7 +19,7 @@ class ApplicationTTLSchema(BaseModel):
     """
     Body of request for setting applicatoin TTL.
     """
-    hours: NonNegativeInt = Field(description='Time to live in hours. If 0 pass, TTL will be removed.')
+    minutes: NonNegativeInt = Field(description='Time to live in hours. If 0 pass, TTL will not be set.')
 
 
 class InstallRequestBodySchema(BaseModel):
